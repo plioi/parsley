@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parsley", "Parsley\Parsley.csproj", "{642736CB-2187-4C06-B93C-8511CAC2A5C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parsley.Test", "Parsley.Test\Parsley.Test.csproj", "{3ED56F1F-EF36-4DAA-8986-B70C03EA9F58}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{642736CB-2187-4C06-B93C-8511CAC2A5C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{642736CB-2187-4C06-B93C-8511CAC2A5C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{642736CB-2187-4C06-B93C-8511CAC2A5C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{642736CB-2187-4C06-B93C-8511CAC2A5C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3ED56F1F-EF36-4DAA-8986-B70C03EA9F58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3ED56F1F-EF36-4DAA-8986-B70C03EA9F58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3ED56F1F-EF36-4DAA-8986-B70C03EA9F58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3ED56F1F-EF36-4DAA-8986-B70C03EA9F58}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
