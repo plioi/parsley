@@ -41,7 +41,23 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AssertionExtensions.cs" />
+    <Compile Include="IntegrationTests\Calculator.cs" />
+    <Compile Include="CharLexer.cs" />
+    <Compile Include="IntegrationTests\CommaSeparatedValues.cs" />
+    <Compile Include="ErrorMessageListTests.cs" />
+    <Compile Include="ErrorMessageTests.cs" />
+    <Compile Include="ErrorTests.cs" />
+    <Compile Include="GrammarTests.cs" />
+    <Compile Include="LexerTests.cs" />
+    <Compile Include="ParsedTests.cs" />
+    <Compile Include="ParserQueryTests.cs" />
+    <Compile Include="ParsingAssertions.cs" />
+    <Compile Include="PatternTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TextTests.cs" />
+    <Compile Include="TokenKindTests.cs" />
+    <Compile Include="ValueTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Parsley\Parsley.csproj">
