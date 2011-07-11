@@ -1,7 +1,7 @@
 Introduction
 ============
 
-Parsley is a monadic parser combinator library inspired by Haskell's Parsec (http://www.haskell.org/haskellwiki/Parsec) and F#'s FParsec (http://www.quanttec.com/fparsec/).  It can parse context-sensitive, infinite look-ahead grammars but it performs best on predictive (LL[1]) grammars.
+Parsley (https://github.com/plioi/parsley) is a monadic parser combinator library inspired by Haskell's Parsec (http://www.haskell.org/haskellwiki/Parsec) and F#'s FParsec (http://www.quanttec.com/fparsec/).  It can parse context-sensitive, infinite look-ahead grammars but it performs best on predictive (LL[1]) grammars.
 
 Unlike Parsec/FParsec, Parsley provides separate lexer/parser phases.  Lexers are created with an ordered series of regex patterns, and parser grammars are expressed in terms of the tokens produced by the lexer.
 
