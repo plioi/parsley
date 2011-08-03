@@ -31,6 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.5.10.11092\lib\nunit.framework.dll</HintPath>
     </Reference>
@@ -49,6 +50,10 @@
     <Compile Include="ErrorMessageTests.cs" />
     <Compile Include="ErrorTests.cs" />
     <Compile Include="GrammarTests.cs" />
+    <Compile Include="IntegrationTests\Json\JsonGrammarTests.cs" />
+    <Compile Include="IntegrationTests\Json\JsonLexer.cs" />
+    <Compile Include="IntegrationTests\Json\JsonLexerTests.cs" />
+    <Compile Include="IntegrationTests\Json\JsonGrammar.cs" />
     <Compile Include="LexerTests.cs" />
     <Compile Include="ParsedTests.cs" />
     <Compile Include="ParserQueryTests.cs" />
