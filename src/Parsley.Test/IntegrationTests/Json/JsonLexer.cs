@@ -1,4 +1,4 @@
-namespace Parsley.Test.IntegrationTests
+namespace Parsley.Test.IntegrationTests.Json
 {
     public class JsonLexer : Lexer
     {

@@ -43,13 +43,15 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssertionExtensions.cs" />
-    <Compile Include="IntegrationTests\Calculator.cs" />
+    <Compile Include="IntegrationTests\Calculator\AbstractSyntaxTree.cs" />
+    <Compile Include="IntegrationTests\Calculator\CalculatorGrammarTests.cs" />
     <Compile Include="CharLexer.cs" />
-    <Compile Include="IntegrationTests\CommaSeparatedValues.cs" />
     <Compile Include="ErrorMessageListTests.cs" />
     <Compile Include="ErrorMessageTests.cs" />
     <Compile Include="ErrorTests.cs" />
     <Compile Include="GrammarTests.cs" />
+    <Compile Include="IntegrationTests\Calculator\CalculatorGrammar.cs" />
+    <Compile Include="IntegrationTests\Calculator\CalculatorLexer.cs" />
     <Compile Include="IntegrationTests\Json\JsonGrammarTests.cs" />
     <Compile Include="IntegrationTests\Json\JsonLexer.cs" />
     <Compile Include="IntegrationTests\Json\JsonLexerTests.cs" />
