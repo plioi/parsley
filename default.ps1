@@ -1,14 +1,12 @@
 properties {
     $projectName = "Parsley"
-    $unitTestAssembly = "Parsley.Test.dll"
-
+    
     $projectConfig = "Release"
     $base_dir = resolve-path .\
     $source_dir = "$base_dir\src"
-    $nunit_dir = "$source_dir\packages\NUnit.2.5.10.11092\Tools"
 	
     $build_dir = "$base_dir\build"
-    $test_dir = "$build_dir\test"
+    $unittest_dir = "$base_dir\src\Parsley.Test\bin\$projectConfig"
     $package_dir = "$build_dir\package"	
     $package_file = "$build_dir\latestVersion\" + $projectName +".zip"
 }
@@ -25,7 +23,6 @@ task package -depends Init, CommonAssemblyInfo, Compile, Test, ZipPackage
 task Init {
     delete_file $package_file
     delete_directory $build_dir
-    create_directory $test_dir
     create_directory $build_dir
 }
 
@@ -41,9 +38,8 @@ task Compile -depends Init {
 }
 
 task Test {
-    copy_all_assemblies_for_test $test_dir
     exec {
-        & $nunit_dir\nunit-console.exe $test_dir\$unitTestAssembly /nologo /nodots /xml=$build_dir\TestResult.xml    
+        & $base_dir\src\packages\NUnit.2.5.10.11092\tools\nunit-console.exe $unittest_dir\$projectName.Test.dll /nologo /nodots /xml=$build_dir\TestResult.xml    
     }
 }
 
@@ -71,15 +67,6 @@ function global:copy_files($source,$destination,$exclude=@()){
 
 function global:copy_and_flatten ($source,$filter,$dest) {
     ls $source -filter $filter -r | cp -dest $dest
-}
-
-function global:copy_all_assemblies_for_test($destination){
-    create_directory $destination
-    copy_and_flatten $source_dir *.exe $destination
-    copy_and_flatten $source_dir *.dll $destination
-    copy_and_flatten $source_dir *.config $destination
-    copy_and_flatten $source_dir *.xml $destination
-    copy_and_flatten $source_dir *.pdb $destination
 }
 
 function global:delete_file($file) {
