@@ -8,7 +8,9 @@ properties {
     $build_dir = "$base_dir\build"
     $unittest_dir = "$base_dir\src\Parsley.Test\bin\$projectConfig"
     $package_dir = "$build_dir\package"	
-    $package_file = "$build_dir\latestVersion\" + $projectName +".zip"
+    $package_file = "$build_dir\" + $projectName +".zip"
+
+    $defaultVersion = "1.0.0.0"
 }
 
 $framework = '4.0'
@@ -17,33 +19,33 @@ FormatTaskName "------------------------------
 -- {0}
 ------------------------------"
 
-task default -depends Init, CommonAssemblyInfo, Compile, Test
-task package -depends Init, CommonAssemblyInfo, Compile, Test, ZipPackage
+task default -depends Compile, Test, Package
 
 task Init {
-    delete_file $package_file
     delete_directory $build_dir
     create_directory $build_dir
 }
 
 task CommonAssemblyInfo {
-    $version = "1.0.0.0"
+    if(-not $version)
+    {
+        $version = $defaultVersion
+    }
     create-commonAssemblyInfo "$version" $projectName "$source_dir\CommonAssemblyInfo.cs"
 }
 
-task Compile -depends Init {
+task Compile -depends Init, CommonAssemblyInfo {
     msbuild /t:clean /v:q /nologo /p:Configuration=$projectConfig $source_dir\$projectName.sln
-    delete_file $error_dir
     msbuild /t:build /v:q /nologo /p:Configuration=$projectConfig $source_dir\$projectName.sln
 }
 
-task Test {
+task Test -depends Compile {
     exec {
         & $base_dir\src\packages\NUnit.2.5.10.11092\tools\nunit-console.exe $unittest_dir\$projectName.Test.dll /nologo /nodots /xml=$build_dir\TestResult.xml    
     }
 }
 
-task ZipPackage -depends Compile {
+task Package -depends Compile {
     delete_directory $package_dir
 
     copy_files "$source_dir\Parsley\bin\$projectConfig\" $package_dir
@@ -51,6 +53,7 @@ task ZipPackage -depends Compile {
     Copy-Item "$base_dir\README.md" "$package_dir\README.txt"
 
     zip_directory $package_dir $package_file 
+    write-host "Created deployment package: $package_file" -ForegroundColor Green
 }
 
 function global:zip_directory($directory,$file) {
