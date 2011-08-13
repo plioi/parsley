@@ -6,6 +6,29 @@ namespace Parsley
 {
     public static class ParsingAssertions
     {
+        public static void ShouldYieldTokens(this Lexer lexer, TokenKind expectedKind, params string[] expectedLiterals)
+        {
+            foreach (var expectedLiteral in expectedLiterals)
+            {
+                lexer.CurrentToken.ShouldBe(expectedKind, expectedLiteral);
+                lexer = lexer.Advance();
+            }
+
+            lexer.CurrentToken.Kind.ShouldEqual(Lexer.EndOfInput);
+        }
+
+        public static void ShouldYieldTokens(this Lexer lexer, params string[] expectedLiterals)
+        {
+            foreach (var expectedLiteral in expectedLiterals)
+            {
+                lexer.CurrentToken.Literal.ShouldEqual(expectedLiteral);
+                lexer.CurrentToken.Kind.ShouldNotEqual(Lexer.Unknown);
+                lexer = lexer.Advance();
+            }
+
+            lexer.CurrentToken.Kind.ShouldEqual(Lexer.EndOfInput);
+        }
+
         public static void ShouldBe(this Token actual, TokenKind expectedKind, string expectedLiteral, int expectedLine, int expectedColumn)
         {
             actual.ShouldBe(expectedKind, expectedLiteral);

@@ -8,99 +8,72 @@ namespace Parsley.Test.IntegrationTests.Json
         [Test]
         public void RecognizesSkippableWhitespace()
         {
-            AssertTokens(" ", Lexer.EndOfInput, "");
-            AssertTokens("\t", Lexer.EndOfInput, "");
-            AssertTokens("\n", Lexer.EndOfInput, "");
-            AssertTokens("\r", Lexer.EndOfInput, "");
+            new JsonLexer(" ").ShouldYieldTokens(Lexer.EndOfInput, "");
+            new JsonLexer("\t").ShouldYieldTokens(Lexer.EndOfInput, "");
+            new JsonLexer("\n").ShouldYieldTokens(Lexer.EndOfInput, "");
+            new JsonLexer("\r").ShouldYieldTokens(Lexer.EndOfInput, "");
 
-            AssertTokens(" \t\n\r", Lexer.EndOfInput, "");
+            new JsonLexer(" \t\n\r").ShouldYieldTokens(Lexer.EndOfInput, "");
         }
 
         [Test]
         public void RecognizesKeywords()
         {
-            AssertTokens("null", JsonLexer.@null, "null");
-            AssertTokens("true", JsonLexer.@true, "true");
-            AssertTokens("false", JsonLexer.@false, "false");
+            new JsonLexer("null").ShouldYieldTokens(JsonLexer.@null, "null");
+            new JsonLexer("true").ShouldYieldTokens(JsonLexer.@true, "true");
+            new JsonLexer("false").ShouldYieldTokens(JsonLexer.@false, "false");
 
-            AssertTokens("null true false", "null", "true", "false");
+            new JsonLexer("null true false").ShouldYieldTokens("null", "true", "false");
         }
 
         [Test]
         public void RecognizesOperators()
         {
-            AssertTokens(",", JsonLexer.Comma, ",");
-            AssertTokens("[", JsonLexer.OpenArray, "[");
-            AssertTokens("]", JsonLexer.CloseArray, "]");
-            AssertTokens("{", JsonLexer.OpenDictionary, "{");
-            AssertTokens("}", JsonLexer.CloseDictionary, "}");
-            AssertTokens(":", JsonLexer.Colon, ":");
+            new JsonLexer(",").ShouldYieldTokens(JsonLexer.Comma, ",");
+            new JsonLexer("[").ShouldYieldTokens(JsonLexer.OpenArray, "[");
+            new JsonLexer("]").ShouldYieldTokens(JsonLexer.CloseArray, "]");
+            new JsonLexer("{").ShouldYieldTokens(JsonLexer.OpenDictionary, "{");
+            new JsonLexer("}").ShouldYieldTokens(JsonLexer.CloseDictionary, "}");
+            new JsonLexer(":").ShouldYieldTokens(JsonLexer.Colon, ":");
 
-            AssertTokens(",[]{}:", ",", "[", "]", "{", "}", ":");
+            new JsonLexer(",[]{}:").ShouldYieldTokens(",", "[", "]", "{", "}", ":");
         }
 
         [Test]
         public void RecognizesQuotations()
         {
-            AssertTokens("\"\"", JsonLexer.Quotation, "\"\"");
-            AssertTokens("\"a\"", JsonLexer.Quotation, "\"a\"");
-            AssertTokens("\"abc\"", JsonLexer.Quotation, "\"abc\"");
-            AssertTokens("\"abc \\\" def\"", JsonLexer.Quotation, "\"abc \\\" def\"");
-            AssertTokens("\"abc \\\\ def\"", JsonLexer.Quotation, "\"abc \\\\ def\"");
-            AssertTokens("\"abc \\/ def\"", JsonLexer.Quotation, "\"abc \\/ def\"");
-            AssertTokens("\"abc \\b def\"", JsonLexer.Quotation, "\"abc \\b def\"");
-            AssertTokens("\"abc \\f def\"", JsonLexer.Quotation, "\"abc \\f def\"");
-            AssertTokens("\"abc \\n def\"", JsonLexer.Quotation, "\"abc \\n def\"");
-            AssertTokens("\"abc \\r def\"", JsonLexer.Quotation, "\"abc \\r def\"");
-            AssertTokens("\"abc \\t def\"", JsonLexer.Quotation, "\"abc \\t def\"");
-            AssertTokens("\"abc \\u005C def\"", JsonLexer.Quotation, "\"abc \\u005C def\"");
+            new JsonLexer("\"\"").ShouldYieldTokens(JsonLexer.Quotation, "\"\"");
+            new JsonLexer("\"a\"").ShouldYieldTokens(JsonLexer.Quotation, "\"a\"");
+            new JsonLexer("\"abc\"").ShouldYieldTokens(JsonLexer.Quotation, "\"abc\"");
+            new JsonLexer("\"abc \\\" def\"").ShouldYieldTokens(JsonLexer.Quotation, "\"abc \\\" def\"");
+            new JsonLexer("\"abc \\\\ def\"").ShouldYieldTokens(JsonLexer.Quotation, "\"abc \\\\ def\"");
+            new JsonLexer("\"abc \\/ def\"").ShouldYieldTokens(JsonLexer.Quotation, "\"abc \\/ def\"");
+            new JsonLexer("\"abc \\b def\"").ShouldYieldTokens(JsonLexer.Quotation, "\"abc \\b def\"");
+            new JsonLexer("\"abc \\f def\"").ShouldYieldTokens(JsonLexer.Quotation, "\"abc \\f def\"");
+            new JsonLexer("\"abc \\n def\"").ShouldYieldTokens(JsonLexer.Quotation, "\"abc \\n def\"");
+            new JsonLexer("\"abc \\r def\"").ShouldYieldTokens(JsonLexer.Quotation, "\"abc \\r def\"");
+            new JsonLexer("\"abc \\t def\"").ShouldYieldTokens(JsonLexer.Quotation, "\"abc \\t def\"");
+            new JsonLexer("\"abc \\u005C def\"").ShouldYieldTokens(JsonLexer.Quotation, "\"abc \\u005C def\"");
 
-            AssertTokens("\" a \" \" b \" \" c \"", JsonLexer.Quotation, "\" a \"", "\" b \"", "\" c \"");
+            new JsonLexer("\" a \" \" b \" \" c \"").ShouldYieldTokens(JsonLexer.Quotation, "\" a \"", "\" b \"", "\" c \"");
         }
 
         [Test]
         public void RecognizesNumbers()
         {
-            AssertTokens("0", JsonLexer.Number, "0");
-            AssertTokens("1", JsonLexer.Number, "1");
-            AssertTokens("12345", JsonLexer.Number, "12345");
-            AssertTokens("12345", JsonLexer.Number, "12345");
-            AssertTokens("0.012", JsonLexer.Number, "0.012");
-            AssertTokens("0e1", JsonLexer.Number, "0e1");
-            AssertTokens("0e+1", JsonLexer.Number, "0e+1");
-            AssertTokens("0e-1", JsonLexer.Number, "0e-1");
-            AssertTokens("0E1", JsonLexer.Number, "0E1");
-            AssertTokens("0E+1", JsonLexer.Number, "0E+1");
-            AssertTokens("0E-1", JsonLexer.Number, "0E-1");
-            AssertTokens("10e11", JsonLexer.Number, "10e11");
-            AssertTokens("10.123e11", JsonLexer.Number, "10.123e11");
-        }
-
-        private static void AssertTokens(string source, TokenKind expectedKind, params string[] expectedLiterals)
-        {
-            Lexer lexer = new JsonLexer(source);
-
-            foreach (var expectedLiteral in expectedLiterals)
-            {
-                lexer.CurrentToken.ShouldBe(expectedKind, expectedLiteral);
-                lexer = lexer.Advance();
-            }
-
-            lexer.CurrentToken.Kind.ShouldEqual(Lexer.EndOfInput);
-        }
-
-        private static void AssertTokens(string source, params string[] expectedLiterals)
-        {
-            Lexer lexer = new JsonLexer(source);
-
-            foreach (var expectedLiteral in expectedLiterals)
-            {
-                lexer.CurrentToken.Literal.ShouldEqual(expectedLiteral);
-                lexer.CurrentToken.Kind.ShouldNotEqual(Lexer.Unknown);
-                lexer = lexer.Advance();
-            }
-
-            lexer.CurrentToken.Kind.ShouldEqual(Lexer.EndOfInput);
+            new JsonLexer("0").ShouldYieldTokens(JsonLexer.Number, "0");
+            new JsonLexer("1").ShouldYieldTokens(JsonLexer.Number, "1");
+            new JsonLexer("12345").ShouldYieldTokens(JsonLexer.Number, "12345");
+            new JsonLexer("12345").ShouldYieldTokens(JsonLexer.Number, "12345");
+            new JsonLexer("0.012").ShouldYieldTokens(JsonLexer.Number, "0.012");
+            new JsonLexer("0e1").ShouldYieldTokens(JsonLexer.Number, "0e1");
+            new JsonLexer("0e+1").ShouldYieldTokens(JsonLexer.Number, "0e+1");
+            new JsonLexer("0e-1").ShouldYieldTokens(JsonLexer.Number, "0e-1");
+            new JsonLexer("0E1").ShouldYieldTokens(JsonLexer.Number, "0E1");
+            new JsonLexer("0E+1").ShouldYieldTokens(JsonLexer.Number, "0E+1");
+            new JsonLexer("0E-1").ShouldYieldTokens(JsonLexer.Number, "0E-1");
+            new JsonLexer("10e11").ShouldYieldTokens(JsonLexer.Number, "10e11");
+            new JsonLexer("10.123e11").ShouldYieldTokens(JsonLexer.Number, "10.123e11");
         }
     }
 }
