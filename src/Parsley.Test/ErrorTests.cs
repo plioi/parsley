@@ -55,7 +55,7 @@ namespace Parsley
         [Test]
         public void PropogatesItselfWithoutConsumingInputWhenAskedToParseRemainingInput()
         {
-            Parser<string> shouldNotBeCalled = tokens => { throw new Exception(); };
+            Parser<string> shouldNotBeCalled = new GrammarRule<string>(tokens => { throw new Exception(); });
 
             Reply<string> reply = new Error<object>(x, ErrorMessage.Expected("expectation")).ParseRest(o => shouldNotBeCalled);
             reply.Success.ShouldBeFalse();

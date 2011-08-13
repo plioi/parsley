@@ -5,45 +5,33 @@ namespace Parsley.Test.IntegrationTests.Calculator
 {
     public class CalculatorGrammar : Grammar
     {
-        public static Parser<Expression> Expression
+        public static readonly GrammarRule<Expression> Expression = new GrammarRule<Expression>();
+        private static readonly GrammarRule<Expression> Constant = new GrammarRule<Expression>();
+        private static readonly GrammarRule<Expression> Parenthesized = new GrammarRule<Expression>();
+        private static readonly GrammarRule<Expression> Operand = new GrammarRule<Expression>();
+        private static readonly GrammarRule<Expression> Multiplicative = new GrammarRule<Expression>();
+        private static readonly GrammarRule<Expression> Additive = new GrammarRule<Expression>();
+        
+        static CalculatorGrammar()
         {
-            get
-            {
-                var Multiplicative = Binary(Operand, "*", "/");
-                var Additive = Binary(Multiplicative, "+", "-");
-                return Additive;
-            }
-        }
+            Constant.Rule =
+                from token in Token(CalculatorLexer.Constant)
+                select new ConstantExpression(int.Parse(token.Literal));
 
-        private static Parser<Expression> Operand
-        {
-            get
-            {
-                return Choice(Constant, Parenthesized);
-            }
-        }
+            Parenthesized.Rule =
+                Between(Token("("), Expression, Token(")"));
 
-        private static Parser<Expression> Constant
-        {
-            get
-            {
-                return from token in Token(CalculatorLexer.Constant)
-                       select new ConstantExpression(int.Parse(token.Literal));
-            }
-        }
+            Operand.Rule =
+                Choice(Constant, Parenthesized);
 
-        private static Parser<Expression> Parenthesized
-        {
-            get
-            {
-                //NOTE: To avoid infinite recursion upon get, we cannot evaluate the 'Expression'
-                //      property right now. Instead, we must wrap it in a lambda so that it won't
-                //      be evaluated until the parser is actually being executed.
-                //
-                //      'Expression' is funcionally equivalent to 'tokens => Expression(tokens)'
+            Multiplicative.Rule =
+                Binary(Operand, "*", "/");
 
-                return Between(Token("("), tokens => Expression(tokens), Token(")"));
-            }
+            Additive.Rule =
+                Binary(Multiplicative, "+", "-");
+
+            Expression.Rule =
+                Additive;
         }
 
         private static Parser<Expression> Binary(Parser<Expression> operand, params string[] symbols)

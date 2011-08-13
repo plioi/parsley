@@ -14,23 +14,23 @@ namespace Parsley
         /// <param name="value">The value to treat as a parse result.</param>
         public static Parser<T> SucceedWithThisValue<T>(this T value)
         {
-            return tokens => new Parsed<T>(value, tokens);
+            return new GrammarRule<T>(tokens => new Parsed<T>(value, tokens));
         }
 
         /// <summary>
         /// Allows LINQ syntax to construct a new parser from a simpler parser, using a single 'from' clause.
         /// </summary>
-        public static Parser<U> Select<T, U>(this Parser<T> parse, Func<T, U> constructResult)
+        public static Parser<U> Select<T, U>(this Parser<T> parser, Func<T, U> constructResult)
         {
-            return parse.Bind(t => constructResult(t).SucceedWithThisValue());
+            return parser.Bind(t => constructResult(t).SucceedWithThisValue());
         }
 
         /// <summary>
         /// Allows LINQ syntax to contruct a new parser from an ordered sequence of simpler parsers, using multiple 'from' clauses.
         /// </summary>
-        public static Parser<V> SelectMany<T, U, V>(this Parser<T> parse, Func<T, Parser<U>> k, Func<T, U, V> s)
+        public static Parser<V> SelectMany<T, U, V>(this Parser<T> parser, Func<T, Parser<U>> k, Func<T, U, V> s)
         {
-            return parse.Bind(x => k(x).Bind(y => s(x, y).SucceedWithThisValue()));
+            return parser.Bind(x => k(x).Bind(y => s(x, y).SucceedWithThisValue()));
         }
 
         /// <summary>
@@ -39,9 +39,9 @@ namespace Parsley
         /// <remarks>
         /// In monadic terms, this is the 'Bind' function.
         /// </remarks>
-        private static Parser<U> Bind<T, U>(this Parser<T> parse, Func<T, Parser<U>> constructNextParser)
+        private static Parser<U> Bind<T, U>(this Parser<T> parser, Func<T, Parser<U>> constructNextParser)
         {
-            return tokens => parse(tokens).ParseRest(constructNextParser);
+            return new GrammarRule<U>(tokens => parser.Parse(tokens).ParseRest(constructNextParser));
         }
     }
 }

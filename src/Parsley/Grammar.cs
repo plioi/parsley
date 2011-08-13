@@ -8,7 +8,7 @@ namespace Parsley
     {
         public static Parser<T> Fail<T>()
         {
-            return tokens => new Error<T>(tokens, ErrorMessage.Unknown());
+            return new GrammarRule<T>(tokens => new Error<T>(tokens, ErrorMessage.Unknown()));
         }
 
         public static Parser<Token> EndOfInput
@@ -18,24 +18,24 @@ namespace Parsley
 
         public static Parser<Token> Token(TokenKind kind)
         {
-            return tokens =>
+            return new GrammarRule<Token>(tokens =>
             {
                 if (tokens.CurrentToken.Kind == kind)
                     return new Parsed<Token>(tokens.CurrentToken, tokens.Advance());
 
                 return new Error<Token>(tokens, ErrorMessage.Expected(kind.Name));
-            };
+            });
         }
 
         public static Parser<Token> Token(string expectation)
         {
-            return tokens =>
+            return new GrammarRule<Token>(tokens =>
             {
                 if (tokens.CurrentToken.Literal == expectation)
                     return new Parsed<Token>(tokens.CurrentToken, tokens.Advance());
 
                 return new Error<Token>(tokens, ErrorMessage.Expected(expectation));
-            };
+            });
         }
 
         /// <summary>
@@ -46,10 +46,10 @@ namespace Parsley
         /// </summary>
         public static Parser<IEnumerable<T>> ZeroOrMore<T>(Parser<T> item)
         {
-            return tokens =>
+            return new GrammarRule<IEnumerable<T>>(tokens =>
             {
                 Position oldPosition = tokens.Position;
-                var reply = item(tokens);
+                var reply = item.Parse(tokens);
                 Position newPosition = reply.UnparsedTokens.Position;
 
                 var list = new List<T>();
@@ -61,17 +61,17 @@ namespace Parsley
 
                     list.Add(reply.Value);
                     oldPosition = newPosition;
-                    reply = item(reply.UnparsedTokens);
+                    reply = item.Parse(reply.UnparsedTokens);
                     newPosition = reply.UnparsedTokens.Position;
                 }
 
-                //The item parse finally failed.
+                //The item parser finally failed.
 
                 if (oldPosition != newPosition)
                     return new Error<IEnumerable<T>>(reply.UnparsedTokens, reply.ErrorMessages);
 
                 return new Parsed<IEnumerable<T>>(list, reply.UnparsedTokens, reply.ErrorMessages);
-            };
+            });
         }
 
         /// <summary>
@@ -132,10 +132,10 @@ namespace Parsley
         /// Optional(p) is equivalent to p whenever p succeeds or when p fails after consuming input.
         /// If p fails without consuming input, Optional(p) succeeds.
         /// </summary>
-        public static Parser<T> Optional<T>(Parser<T> parse)
+        public static Parser<T> Optional<T>(Parser<T> parser)
         {
             var nothing = default(T).SucceedWithThisValue();
-            return Choice(parse, nothing);
+            return Choice(parser, nothing);
         }
 
         /// <summary>
@@ -145,17 +145,17 @@ namespace Parsley
         /// </summary>
         public static Parser<T> Attempt<T>(Parser<T> parse)
         {
-            return tokens =>
+            return new GrammarRule<T>(tokens =>
             {
                 var start = tokens.Position;
-                var reply = parse(tokens);
+                var reply = parse.Parse(tokens);
                 var newPosition = reply.UnparsedTokens.Position;
 
                 if (reply.Success || start == newPosition)
                     return reply;
 
                 return new Error<T>(tokens, ErrorMessage.Backtrack(newPosition, reply.ErrorMessages));
-            };
+            });
         }
 
         /// <summary>
@@ -181,10 +181,10 @@ namespace Parsley
             if (parsers.Length == 0)
                 return Fail<T>();
 
-            return tokens =>
+            return new GrammarRule<T>(tokens =>
             {
                 var start = tokens.Position;
-                var reply = parsers[0](tokens);
+                var reply = parsers[0].Parse(tokens);
                 var newPosition = reply.UnparsedTokens.Position;
 
                 var errors = ErrorMessageList.Empty;
@@ -192,7 +192,7 @@ namespace Parsley
                 while (!reply.Success && (start == newPosition) && i < parsers.Length)
                 {
                     errors = errors.Merge(reply.ErrorMessages);
-                    reply = parsers[i](tokens);
+                    reply = parsers[i].Parse(tokens);
                     newPosition = reply.UnparsedTokens.Position;
                     i++;
                 }
@@ -206,7 +206,7 @@ namespace Parsley
                 }
 
                 return reply;
-            };
+            });
         }
 
         /// <summary>
@@ -214,14 +214,14 @@ namespace Parsley
         /// When parser p does not consume any input, Label(p, e) is the same
         /// as p, except any messages are replaced with expectation e.
         /// </summary>
-        public static Parser<T> Label<T>(Parser<T> parse, string expectation)
+        public static Parser<T> Label<T>(Parser<T> parser, string expectation)
         {
             var errors = ErrorMessageList.Empty.With(ErrorMessage.Expected(expectation));
 
-            return tokens =>
+            return new GrammarRule<T>(tokens =>
             {
                 var start = tokens.Position;
-                var reply = parse(tokens);
+                var reply = parser.Parse(tokens);
                 var newPosition = reply.UnparsedTokens.Position;
                 if (start == newPosition)
                 {
@@ -231,7 +231,7 @@ namespace Parsley
                         reply = new Error<T>(reply.UnparsedTokens, errors);
                 }
                 return reply;
-            };
+            });
         }
 
         private static IEnumerable<T> List<T>(T first, IEnumerable<T> rest)

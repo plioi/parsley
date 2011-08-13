@@ -42,9 +42,9 @@ namespace Parsley
             actual.Literal.ShouldEqual(expectedLiteral);
         }
 
-        public static Reply<T> FailsToParse<T>(this Parser<T> parse, Lexer tokens, string expectedUnparsedSource)
+        public static Reply<T> FailsToParse<T>(this Parser<T> parser, Lexer tokens, string expectedUnparsedSource)
         {
-            return parse(tokens).Fails().WithUnparsedText(expectedUnparsedSource);
+            return parser.Parse(tokens).Fails().WithUnparsedText(expectedUnparsedSource);
         }
 
         private static Reply<T> Fails<T>(this Reply<T> reply)
@@ -68,14 +68,14 @@ namespace Parsley
             return reply;
         }
 
-        public static Reply<T> PartiallyParses<T>(this Parser<T> parse, Lexer tokens, string expectedUnparsedSource)
+        public static Reply<T> PartiallyParses<T>(this Parser<T> parser, Lexer tokens, string expectedUnparsedSource)
         {
-            return parse(tokens).Succeeds().WithUnparsedText(expectedUnparsedSource);
+            return parser.Parse(tokens).Succeeds().WithUnparsedText(expectedUnparsedSource);
         }
 
-        public static Reply<T> Parses<T>(this Parser<T> parse, Lexer tokens)
+        public static Reply<T> Parses<T>(this Parser<T> parser, Lexer tokens)
         {
-            return parse(tokens).Succeeds().WithAllInputConsumed();
+            return parser.Parse(tokens).Succeeds().WithAllInputConsumed();
         }
 
         private static Reply<T> Succeeds<T>(this Reply<T> reply)

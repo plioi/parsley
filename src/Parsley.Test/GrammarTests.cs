@@ -89,8 +89,8 @@ namespace Parsley
             parser.PartiallyParses(Tokenize("ABAB!"), "!").IntoTokens("AB", "AB");
             parser.FailsToParse(Tokenize("ABABA!"), "!").WithMessage("(1, 6): B expected");
 
-            Parser<Token> succeedWithoutConsuming = tokens => new Parsed<Token>(null, tokens);
-            Action infiniteLoop = () => ZeroOrMore(succeedWithoutConsuming)(Tokenize(""));
+            Parser<Token> succeedWithoutConsuming = new GrammarRule<Token>(tokens => new Parsed<Token>(null, tokens));
+            Action infiniteLoop = () => ZeroOrMore(succeedWithoutConsuming).Parse(Tokenize(""));
             infiniteLoop.ShouldThrow<Exception>("Parser encountered a potential infinite loop.");
         }
 
@@ -104,8 +104,8 @@ namespace Parsley
             parser.PartiallyParses(Tokenize("ABAB!"), "!").IntoTokens("AB", "AB");
             parser.FailsToParse(Tokenize("ABABA!"), "!").WithMessage("(1, 6): B expected");
 
-            Parser<Token> succeedWithoutConsuming = tokens => new Parsed<Token>(null, tokens);
-            Action infiniteLoop = () => OneOrMore(succeedWithoutConsuming)(Tokenize(""));
+            Parser<Token> succeedWithoutConsuming = new GrammarRule<Token>(tokens => new Parsed<Token>(null, tokens));
+            Action infiniteLoop = () => OneOrMore(succeedWithoutConsuming).Parse(Tokenize(""));
             infiniteLoop.ShouldThrow<Exception>("Parser encountered a potential infinite loop.");
         }
 
@@ -281,7 +281,7 @@ namespace Parsley
             //consuming input.  These tests simply describe the behavior under that
             //unusual situation.
 
-            Parser<Token> succeedWithoutConsuming = tokens => new Parsed<Token>(null, tokens);
+            Parser<Token> succeedWithoutConsuming = new GrammarRule<Token>(tokens => new Parsed<Token>(null, tokens));
 
             var reply = Choice(A, succeedWithoutConsuming).Parses(Tokenize(""));
             reply.ErrorMessages.ToString().ShouldEqual("A expected");
@@ -293,9 +293,9 @@ namespace Parsley
             reply.ErrorMessages.ToString().ShouldEqual("A expected");
         }
 
-        private static readonly Parser<Token> NeverExecuted = tokens =>
-                                                                  {
-                                                                      throw new Exception("Parser 'NeverExecuted' should not have been executed.");
-                                                                  };
+        private static readonly Parser<Token> NeverExecuted = new GrammarRule<Token>(tokens =>
+        {
+            throw new Exception("Parser 'NeverExecuted' should not have been executed.");
+        });
     }
 }

@@ -50,7 +50,7 @@ namespace Parsley
         [Test]
         public void CanContinueParsingTheRemainingInputWhenGivenAParserGenerator()
         {
-            Parser<string> next = tokens => new Parsed<string>(tokens.CurrentToken.Literal, tokens.Advance());
+            Parser<string> next = new GrammarRule<string>(tokens => new Parsed<string>(tokens.CurrentToken.Literal, tokens.Advance()));
 
             Reply<string> reply = new Parsed<string>("x", unparsed).ParseRest(s => next);
             reply.Success.ShouldBeTrue();

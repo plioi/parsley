@@ -8,92 +8,52 @@ namespace Parsley.Test.IntegrationTests.Json
 {
     public class JsonGrammar : Grammar
     {
-        public static Parser<object> JSON
+        public static readonly GrammarRule<object> Json = new GrammarRule<object>();
+        private static readonly GrammarRule<object> True = new GrammarRule<object>();
+        private static readonly GrammarRule<object> False = new GrammarRule<object>(); 
+        private static readonly GrammarRule<object> Null = new GrammarRule<object>();
+        private static readonly GrammarRule<object> Number = new GrammarRule<object>();
+        private static readonly GrammarRule<string> Quotation = new GrammarRule<string>();
+        private static readonly GrammarRule<object[]> Array = new GrammarRule<object[]>();
+        private static readonly GrammarRule<KeyValuePair<string, object>> Pair = new GrammarRule<KeyValuePair<string, object>>();
+        private static readonly GrammarRule<Dictionary<string, object>> Dictionary = new GrammarRule<Dictionary<string, object>>();
+
+        static JsonGrammar()
         {
-            get
-            {
-                return Choice(True, False, Null, Number, Quotation, Dictionary, Array);
-            }
+            True.Rule =
+                Constant(JsonLexer.@true, true);
+
+            False.Rule =
+                Constant(JsonLexer.@false, false);
+
+            Null.Rule =
+                Constant(JsonLexer.@null, null);
+
+            Number.Rule =
+                from number in Token(JsonLexer.Number)
+                select (object) Decimal.Parse(number.Literal, NumberStyles.Any);
+
+            Quotation.Rule =
+                from quotation in Token(JsonLexer.Quotation)
+                select Unescape(quotation.Literal);
+
+            Array.Rule =
+                from items in Between(Token("["), ZeroOrMore(Json, Token(",")), Token("]"))
+                select items.ToArray();
+
+            Pair.Rule =
+                from key in Quotation
+                from colon in Token(":")
+                from value in Json
+                select new KeyValuePair<string, object>(key, value);
+
+            Dictionary.Rule =
+                from pairs in Between(Token("{"), ZeroOrMore(Pair, Token(",")), Token("}"))
+                select ToDictionary(pairs);
+
+            Json.Rule =
+                Choice(True, False, Null, Number, Quotation, Dictionary, Array);
         }
-
-        private static Parser<object> True
-        {
-            get
-            {
-                return Constant(JsonLexer.@true, true);
-            }
-        }
-
-        private static Parser<object> False
-        {
-            get
-            {
-                return Constant(JsonLexer.@false, false);
-            }
-        }
-
-        private static Parser<object> Null
-        {
-            get
-            {
-                return Constant(JsonLexer.@null, null);
-            }
-        }
-
-        private static Parser<object> Number
-        {
-            get
-            {
-                return from number in Token(JsonLexer.Number)
-                       select (object)Decimal.Parse(number.Literal, NumberStyles.Any);
-            }
-        }
-
-        private static Parser<string> Quotation
-        {
-            get
-            {
-                return from quotation in Token(JsonLexer.Quotation)
-                       select Unescape(quotation.Literal);
-            }
-        }
-
-        private static Parser<object[]> Array
-        {
-            get
-            {
-                //Delay evaluation to avoid infinite recursion!
-                Parser<object> lazyValue = tokens => JSON(tokens);
-
-                return from items in Between(Token("["), ZeroOrMore(lazyValue, Token(",")), Token("]"))
-                       select items.ToArray();
-            }
-        }
-
-        private static Parser<Dictionary<string, object>> Dictionary
-        {
-            get
-            {
-                return from pairs in Between(Token("{"), ZeroOrMore(Pair, Token(",")), Token("}"))
-                       select ToDictionary(pairs);
-            }
-        }
-
-        private static Parser<KeyValuePair<string, object>> Pair
-        {
-            get
-            {
-                //Delay evaluation to avoid infinite recursion!
-                Parser<object> lazyValue = tokens => JSON(tokens);
-
-                return from key in Quotation
-                       from colon in Token(":")
-                       from value in lazyValue
-                       select new KeyValuePair<string, object>(key, value);
-            }
-        }
-
-        #region Helpers
 
         private static Parser<object> Constant(TokenKind kind, object constant)
         {
@@ -130,7 +90,5 @@ namespace Parsley.Test.IntegrationTests.Json
 
             return result;
         }
-
-        #endregion
     }
 }

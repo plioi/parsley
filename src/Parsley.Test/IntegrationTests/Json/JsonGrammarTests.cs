@@ -11,7 +11,7 @@ namespace Parsley.Test.IntegrationTests.Json
         {
             var tokens = new JsonLexer("true");
 
-            JSON.Parses(tokens).IntoValue(value => ((bool)value).ShouldBeTrue());
+            Json.Parses(tokens).IntoValue(value => ((bool)value).ShouldBeTrue());
         }
 
         [Test]
@@ -19,7 +19,7 @@ namespace Parsley.Test.IntegrationTests.Json
         {
             var tokens = new JsonLexer("false");
 
-            JSON.Parses(tokens).IntoValue(value => ((bool)value).ShouldBeFalse());
+            Json.Parses(tokens).IntoValue(value => ((bool)value).ShouldBeFalse());
         }
 
         [Test]
@@ -27,7 +27,7 @@ namespace Parsley.Test.IntegrationTests.Json
         {
             var tokens = new JsonLexer("null");
 
-            JSON.Parses(tokens).IntoValue(value => value.ShouldBeNull());
+            Json.Parses(tokens).IntoValue(value => value.ShouldBeNull());
         }
 
         [Test]
@@ -35,7 +35,7 @@ namespace Parsley.Test.IntegrationTests.Json
         {
             var tokens = new JsonLexer("10.123E-11");
 
-            JSON.Parses(tokens).IntoValue(value => value.ShouldEqual(10.123E-11m));
+            Json.Parses(tokens).IntoValue(value => value.ShouldEqual(10.123E-11m));
         }
 
         [Test]
@@ -45,8 +45,8 @@ namespace Parsley.Test.IntegrationTests.Json
             var filled = new JsonLexer("\"abc \\\" \\\\ \\/ \\b \\f \\n \\r \\t \\u263a def\"");
             const string expected = "abc \" \\ / \b \f \n \r \t ☺ def";
 
-            JSON.Parses(empty).IntoValue(value => value.ShouldEqual(""));
-            JSON.Parses(filled).IntoValue(value => value.ShouldEqual(expected));
+            Json.Parses(empty).IntoValue(value => value.ShouldEqual(""));
+            Json.Parses(filled).IntoValue(value => value.ShouldEqual(expected));
         }
 
         [Test]
@@ -55,9 +55,9 @@ namespace Parsley.Test.IntegrationTests.Json
             var empty = new JsonLexer("[]");
             var filled = new JsonLexer("[0, 1, 2]");
 
-            JSON.Parses(empty).IntoValue(value => ((object[])value).ShouldBeEmpty());
+            Json.Parses(empty).IntoValue(value => ((object[])value).ShouldBeEmpty());
 
-            JSON.Parses(filled).IntoValue(value => value.ShouldEqual(new[] {0, 1, 2}));
+            Json.Parses(filled).IntoValue(value => value.ShouldEqual(new[] { 0, 1, 2 }));
         }
 
         [Test]
@@ -66,9 +66,9 @@ namespace Parsley.Test.IntegrationTests.Json
             var empty = new JsonLexer("{}");
             var filled = new JsonLexer("{\"zero\" : 0, \"one\" : 1, \"two\" : 2}");
 
-            JSON.Parses(empty).IntoValue(value => ((Dictionary<string, object>)value).Count.ShouldEqual(0));
+            Json.Parses(empty).IntoValue(value => ((Dictionary<string, object>)value).Count.ShouldEqual(0));
 
-            JSON.Parses(filled).IntoValue(value =>
+            Json.Parses(filled).IntoValue(value =>
             {
                 var dictionary = (Dictionary<string, object>) value;
                 dictionary["zero"].ShouldEqual(0);
@@ -101,7 +101,7 @@ namespace Parsley.Test.IntegrationTests.Json
 
             ";
 
-            JSON.Parses(new JsonLexer(complex)).IntoValue(value =>
+            Json.Parses(new JsonLexer(complex)).IntoValue(value =>
             {
                 dynamic json = value;
 
