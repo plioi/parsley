@@ -1,1 +1,1 @@
-powershell.exe -NoProfile -ExecutionPolicy unrestricted -Command "& { Import-Module '.\tools\psakev4\psake.psm1'; Invoke-psake; if ($lastexitcode -ne 0) {write-host "ERROR: $lastexitcode" -fore RED; exit $lastexitcode} }" 
+powershell.exe -NoProfile -ExecutionPolicy unrestricted -Command "& { Import-Module '.\tools\psakev4\psake.psm1'; invoke-psake -parameters @{"version"="'%1'"} ; if ($lastexitcode -ne 0) {write-host "ERROR: $lastexitcode" -fore RED; exit $lastexitcode} }" 
