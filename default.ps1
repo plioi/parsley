@@ -65,10 +65,6 @@ function global:copy_files($source,$destination,$exclude=@()){
     Get-ChildItem $source -Recurse -Exclude $exclude | Copy-Item -Destination {Join-Path $destination $_.FullName.Substring($source.length)} 
 }
 
-function global:copy_and_flatten ($source,$filter,$dest) {
-    ls $source -filter $filter -r | cp -dest $dest
-}
-
 function global:delete_file($file) {
     if($file) { remove-item $file -force -ErrorAction SilentlyContinue | out-null } 
 }
