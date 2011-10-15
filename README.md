@@ -28,63 +28,22 @@ Parser Functions
 
 A Parser of thingies is any function that consumes a Lexer and produces a parsed-thingy:
 
-        public delegate Reply<T> Parser<out T>(Lexer tokens);
+        public interface Parser<out T>
+        {
+            Reply<T> Parse(Lexer lexer);
+        }
 
 A Reply<T> describes whether or not the parser succeeded, the parsed-thingy (on success), a possibly-empty error message list, and a reference to a Lexer representing the remaining unparsed tokens.
 
 Grammars
 ========
 
-Grammars should inherit from Grammar to take advantage of several Parser primitives.  Grammars should define each grammar rule as a property returning some Parser<T> type.  Grammar rule bodies usually return LINQ queries, which allow you to glue together other grammar rules in sequence:
+Grammars should inherit from Grammar to take advantage of several Parser primitives.  Grammars should define each grammar rule in terms of these primitives, ultimately exposing the start rule as some Parser<T> type.  Grammar rule bodies may consist of LINQ queries, which allow you to glue together other grammar rules in sequence:
 
-        private class CsvGrammar : Grammar
-        {
-            public static Parser<string[][]> CsvFile
-            {
-                get
-                {
-                    return from lines in ZeroOrMore(Line)
-                           from eoi in EndOfInput
-                           select lines.ToArray();
-                }
-            }
-
-            private static Parser<string[]> Line
-            {
-                get
-                {
-                    return from values in OneOrMore(Value, Comma)
-                           from eol in EndOfLine
-                           select values.Select(token => token.Literal).ToArray();
-                }
-            }
-
-            private static Parser<Token> EndOfLine
-            {
-                get { return Choice(Token(CsvLexer.EndOfLine), Token(Lexer.EndOfInput)); }
-            }
-
-            private static Parser<Token> Comma
-            {
-                get { return Token(","); }
-            }
-
-            private static Parser<Token> Value
-            {
-                get { return Token(CsvLexer.Value); }
-            }
-        }
+See /src/Parsley.Test/IntegrationTests for a sample calculator grammar and a sample JSON grammar.
 
 Finally, we can put all these pieces together to parse some text:
 
-        const string input = "abc,123,DEF\r\nghi,456,JKL\r\n";
-        var tokens = new CsvLexer(input);
-        string[][] csvContent = CsvGrammar.CsvFile(tokens).Value;
-            
-Above, the array 'csvContent' will be equal to the following:
-        
-         new[]
-         {
-             new[] {"abc", "123", "DEF"},
-             new[] {"ghi", "456", "JKL"}
-         });
+        const string input = "{\"zero\" : 0, \"one\" : 1, \"two\" : 2}";
+        var tokens = new JsonLexer(input);
+        var jsonDictionary = (Dictionary<string, object>) JsonGrammar.Json.Parse(tokens).Value;
