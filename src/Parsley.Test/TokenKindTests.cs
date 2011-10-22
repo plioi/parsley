@@ -47,6 +47,13 @@ namespace Parsley
         }
 
         [Test]
+        public void UsesDescriptiveNameForToString()
+        {
+            lower.ToString().ShouldEqual("Lowercase");
+            upper.ToString().ShouldEqual("Uppercase");
+        }
+
+        [Test]
         public void ProvidesConvenienceSubclassForDefiningKeywords()
         {
             Token token;

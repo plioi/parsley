@@ -57,11 +57,13 @@
     <Compile Include="IntegrationTests\Json\JsonLexerTests.cs" />
     <Compile Include="IntegrationTests\Json\JsonGrammar.cs" />
     <Compile Include="LexerTests.cs" />
+    <Compile Include="OperatorPrecedenceParserTests.cs" />
     <Compile Include="ParsedTests.cs" />
     <Compile Include="ParserQueryTests.cs" />
     <Compile Include="ParsingAssertions.cs" />
     <Compile Include="PatternTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SampleLexer.cs" />
     <Compile Include="TextTests.cs" />
     <Compile Include="TokenKindTests.cs" />
     <Compile Include="ValueTests.cs" />

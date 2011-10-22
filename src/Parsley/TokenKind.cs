@@ -40,6 +40,11 @@ namespace Parsley
         {
             get { return skippable;}
         }
+
+        public override string ToString()
+        {
+            return name;
+        }
     }
 
     public class Keyword : TokenKind

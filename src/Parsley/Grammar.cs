@@ -105,15 +105,6 @@ namespace Parsley
                    select List(first, rest);
         }
 
-        public static Parser<TAccumulated> LeftAssociative<TAccumulated, TSeparator>(Parser<TAccumulated> item, Parser<TSeparator> separator, Func<TAccumulated, Tuple<TSeparator, TAccumulated>, TAccumulated> associatePair)
-        {
-            return from first in item
-                   from pairs in ZeroOrMore(from s in separator
-                                            from i in item
-                                            select Tuple.Create(s, i))
-                   select pairs.Aggregate(first, associatePair);
-        }
-
         /// <summary>
         /// Between(left, goal, right) parses its arguments in order.  If all three
         /// parsers succeed, the result of the goal parser is returned.

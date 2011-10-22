@@ -1,0 +1,104 @@
+﻿using System.Collections.Generic;
+
+namespace Parsley
+{
+    public delegate Parser<T> ExtendParserBuilder<T>(T left);
+    public delegate T AtomNodeBuilder<out T>(Token atom);
+    public delegate T UnaryNodeBuilder<T>(Token symbol, T operand);
+    public delegate T BinaryNodeBuilder<T>(T left, Token symbol, T right);
+
+    public class OperatorPrecedenceParser<T> : Grammar, Parser<T>
+    {
+        private readonly IDictionary<TokenKind, Parser<T>> unitParsers;
+        private readonly IDictionary<TokenKind, ExtendParserBuilder<T>> extendParsers;
+        private readonly IDictionary<TokenKind, int> extendParserPrecedence;
+
+        public OperatorPrecedenceParser()
+        {
+            unitParsers = new Dictionary<TokenKind, Parser<T>>();
+            extendParsers = new Dictionary<TokenKind, ExtendParserBuilder<T>>();
+            extendParserPrecedence = new Dictionary<TokenKind, int>();
+        }
+
+        public void Unit(TokenKind kind, Parser<T> unitParser)
+        {
+            unitParsers[kind] = unitParser;
+        }
+
+        public void Atom(TokenKind kind, AtomNodeBuilder<T> createAtomNode)
+        {
+            Unit(kind, from token in Token(kind)
+                       select createAtomNode(token));
+        }
+
+        public void Prefix(TokenKind operation, int precedence, UnaryNodeBuilder<T> createUnaryNode)
+        {
+            Unit(operation, from symbol in Token(operation)
+                            from operand in OperandAtPrecedenceLevel(precedence)
+                            select createUnaryNode(symbol, operand));
+        }
+
+        public void Extend(TokenKind operation, int precedence, ExtendParserBuilder<T> createExtendParser)
+        {
+            extendParsers[operation] = createExtendParser;
+            extendParserPrecedence[operation] = precedence;
+        }
+
+        public void Binary(TokenKind operation, int precedence, BinaryNodeBuilder<T> createBinaryNode)
+        {
+            Extend(operation, precedence, left => from symbol in Token(operation)
+                                                  from right in OperandAtPrecedenceLevel(precedence)
+                                                  select createBinaryNode(left, symbol, right));
+        }
+
+        public Reply<T> Parse(Lexer lexer)
+        {
+            return Parse(lexer, 0);
+        }
+
+        private Parser<T> OperandAtPrecedenceLevel(int precedence)
+        {
+            return new GrammarRule<T>(tokens => Parse(tokens, precedence));
+        }
+
+        private Reply<T> Parse(Lexer lexer, int precedence)
+        {
+            Token token = lexer.CurrentToken;
+
+            if (!unitParsers.ContainsKey(token.Kind))
+                return new Error<T>(lexer, ErrorMessage.Unknown());
+
+            var reply = unitParsers[token.Kind].Parse(lexer);
+
+            if (!reply.Success)
+                return reply;
+
+            lexer = reply.UnparsedTokens;
+            token = lexer.CurrentToken;
+
+            while (precedence < GetPrecedence(token))
+            {
+                //Continue parsing at this precedence level.
+
+                reply = extendParsers[token.Kind](reply.Value).Parse(lexer);
+
+                if (!reply.Success)
+                    return reply;
+
+                lexer = reply.UnparsedTokens;
+                token = lexer.CurrentToken;
+            }
+
+            return reply;
+        }
+
+        private int GetPrecedence(Token token)
+        {
+            var kind = token.Kind;
+            if (extendParserPrecedence.ContainsKey(kind))
+                return extendParserPrecedence[kind];
+
+            return 0;
+        }
+    }
+}

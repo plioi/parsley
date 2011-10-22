@@ -11,16 +11,6 @@ namespace Parsley
             return new SampleLexer(source);
         }
 
-        private class SampleLexer : Lexer
-        {
-            public static readonly TokenKind Digit = new TokenKind("Digit", @"[0-9]");
-            public static readonly TokenKind Letter = new TokenKind("Letter", @"[a-zA-Z]");
-            public static readonly TokenKind Symbol = new TokenKind("Symbol", @".");
-
-            public SampleLexer(string source)
-                : base(new Text(source), Digit, Letter, Symbol) { }
-        }
-
         private Parser<Token> A, B, AB, COMMA;
 
         [SetUp]
@@ -133,21 +123,6 @@ namespace Parsley
             parser.Parses(Tokenize("AB,AB,AB")).IntoTokens("AB", "AB", "AB");
             parser.FailsToParse(Tokenize("AB,"), "").WithMessage("(1, 4): A expected");
             parser.FailsToParse(Tokenize("AB,A"), "").WithMessage("(1, 5): B expected");
-        }
-
-        [Test]
-        public void ApplyingARuleOneOrMoreTimesInterspersedByALeftAssociativeSeparatorRule()
-        {
-            var OPERATOR = Choice(Token("*"), Token("/"));
-            var parser =
-                LeftAssociative(AB, OPERATOR, (left, symbolAndRight) =>
-                    new Token(null, symbolAndRight.Item1.Position, String.Format("({0} {1} {2})", symbolAndRight.Item1.Literal, left.Literal, symbolAndRight.Item2.Literal)));
-
-            parser.FailsToParse(Tokenize(""), "").WithMessage("(1, 1): A expected");
-            parser.Parses(Tokenize("AB")).IntoToken("AB");
-            parser.Parses(Tokenize("AB*AB")).IntoToken("(* AB AB)");
-            parser.Parses(Tokenize("AB*AB/AB")).IntoToken("(/ (* AB AB) AB)");
-            parser.FailsToParse(Tokenize("AB*A"), "").WithMessage("(1, 5): B expected");
         }
 
         [Test]
