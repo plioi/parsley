@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using NUnit.Framework;
 
 namespace Parsley
@@ -7,84 +6,76 @@ namespace Parsley
     [TestFixture]
     public class OperatorPrecedenceParserTests : Grammar
     {
-        private static Lexer Tokenize(string source)
-        {
-            return new SampleLexer(source);
-        }
-
-        private OperatorPrecedenceParser<string> expression;
-        
-        private string List(IEnumerable<string> items)
-        {
-            return string.Join(", ", items.Select(x => "(" + x + ")"));
-        }
+        private OperatorPrecedenceParser<Expression> expression;
 
         [SetUp]
         public void SetUp()
         {
-            expression = new OperatorPrecedenceParser<string>();
+            expression = new OperatorPrecedenceParser<Expression>();
 
-            expression.Atom(SampleLexer.Digit, token => token.Literal);
-            expression.Atom(SampleLexer.Letter, token => token.Literal);
+            expression.Atom(SampleLexer.Digit, token => new Constant(int.Parse(token.Literal)));
+            expression.Atom(SampleLexer.Name, token => new Identifier(token.Literal));
 
-            expression.Unit(SampleLexer.LeftBrace,
-                            from items in Between(Token("["), OneOrMore(expression, Token(",")), Token("]"))
-                            select "[" + List(items) + "]");
+            expression.Unit(SampleLexer.LeftParen, Between(Token("("), expression, Token(")")));
 
-            expression.Prefix(SampleLexer.Not, 10, (symbol, operand) => "(" + symbol.Literal + "(" + operand + "))");
-            expression.Prefix(SampleLexer.Subtract, 10, (symbol, operand) => "(" + symbol.Literal + "(" + operand + "))");
+            expression.Prefix(SampleLexer.Subtract, 10, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
 
             expression.Extend(SampleLexer.LeftParen, 12, callable =>
                                                      from arguments in Between(Token("("), ZeroOrMore(expression, Token(",")), Token(")"))
-                                                     select "(" + callable + ")" + "(" + List(arguments) + ")");
+                                                     select new Form(callable, arguments));
 
-            expression.Binary(SampleLexer.Multiply, 9, (left, symbol, right) => "((" + left + ") * (" + right + "))");
-            expression.Binary(SampleLexer.Subtract, 8, (left, symbol, right) => "((" + left + ") - (" + right + "))");
+            expression.Binary(SampleLexer.Multiply, 9, (left, symbol, right) => new Form(symbol, left, right));
+            expression.Binary(SampleLexer.Divide, 9, (left, symbol, right) => new Form(symbol, left, right));
+            expression.Binary(SampleLexer.Add, 8, (left, symbol, right) => new Form(symbol, left, right));
+            expression.Binary(SampleLexer.Subtract, 8, (left, symbol, right) => new Form(symbol, left, right));
         }
 
         [Test]
         public void ParsesRegisteredTokensIntoCorrespondingAtoms()
         {
-            expression.Parses(Tokenize("1")).IntoValue("1");
-            expression.Parses(Tokenize("a")).IntoValue("a");
+            Parses("1", "1");
+            Parses("square", "square");
         }
 
         [Test]
         public void ParsesUnitExpressionsStartedByRegisteredTokens()
         {
-            expression.Parses(Tokenize("[a]")).IntoValue("[(a)]");
-            expression.Parses(Tokenize("[a,1,[b,2]]")).IntoValue("[(a), (1), ([(b), (2)])]");
+            Parses("(0)", "0");
+            Parses("(square)", "square");
+            Parses("(1+4)/(2-3)*4", "(* (/ (+ 1 4) (- 2 3)) 4)");
         }
 
         [Test]
         public void ParsesPrefixExpressionsStartedByRegisteredToken()
         {
-            expression.Parses(Tokenize("-1")).IntoValue("(-(1))");
-            expression.Parses(Tokenize("!a")).IntoValue("(!(a))");
-
-            expression.Parses(Tokenize("!-1")).IntoValue("(!((-(1))))");
-            expression.Parses(Tokenize("-!a")).IntoValue("(-((!(a))))");
+            Parses("-1", "(- 1)");
+            Parses("--1", "(- (- 1))");
         }
 
         [Test]
         public void ParsesExpressionsThatExtendTheLeftSideExpressionWhenTheRegisteredTokenIsEncountered()
         {
-            expression.Parses(Tokenize("x()")).IntoValue("(x)()");
-            expression.Parses(Tokenize("x(1)")).IntoValue("(x)((1))");
-            expression.Parses(Tokenize("x(1,a)")).IntoValue("(x)((1), (a))");
+            Parses("square(1)", "(square 1)");
+            Parses("square(1,2)", "(square 1 2)");
         }
 
         [Test]
         public void ParsesLeftAssociativeBinaryOperationsRespectingPrecedence()
         {
-            expression.Parses(Tokenize("1*2")).IntoValue("((1) * (2))");
-            expression.Parses(Tokenize("1-2")).IntoValue("((1) - (2))");
+            Parses("1*2", "(* 1 2)");
+            Parses("1/2", "(/ 1 2)");
+            Parses("1+2", "(+ 1 2)");
+            Parses("1-2", "(- 1 2)");
 
-            expression.Parses(Tokenize("1*2*3")).IntoValue("((((1) * (2))) * (3))");
-            expression.Parses(Tokenize("1-2-3")).IntoValue("((((1) - (2))) - (3))");
+            Parses("1*2*3", "(* (* 1 2) 3)");
+            Parses("1/2/3", "(/ (/ 1 2) 3)");
+            Parses("1+2+3", "(+ (+ 1 2) 3)");
+            Parses("1-2-3", "(- (- 1 2) 3)");
 
-            expression.Parses(Tokenize("1*2*3-4")).IntoValue("((((((1) * (2))) * (3))) - (4))");
-            expression.Parses(Tokenize("1-2-3*4")).IntoValue("((((1) - (2))) - (((3) * (4))))");
+            Parses("1*2/3-4", "(- (/ (* 1 2) 3) 4)");
+            Parses("1/2*3-4", "(- (* (/ 1 2) 3) 4)");
+            Parses("1+2-3*4", "(- (+ 1 2) (* 3 4))");
+            Parses("1-2+3*4", "(+ (- 1 2) (* 3 4))");
         }
 
         [Test]
@@ -92,10 +83,10 @@ namespace Parsley
         {
             //Upon unit-parser failures, stop!
             
-            //The "[" unit-parser is invoked but fails.  The next token, "*", has
+            //The "(" unit-parser is invoked but fails.  The next token, "*", has
             //high precedence, but that should not provoke parsing to continue.
             
-            expression.FailsToParse(Tokenize("[*"), "*").WithMessage("(1, 2): Parse error.");
+            expression.FailsToParse(Tokenize("(*"), "*").WithMessage("(1, 2): Parse error.");
         }
 
         [Test]
@@ -109,6 +100,89 @@ namespace Parsley
             //high precedence, but that should not provoke parsing to continue.
 
             expression.FailsToParse(Tokenize("2-*"), "*").WithMessage("(1, 3): Parse error.");
+        }
+
+        private void Parses(string input, string expectedTree)
+        {
+            expression.Parses(Tokenize(input)).IntoValue(e => e.ToString().ShouldEqual(expectedTree));
+        }
+
+        private static Lexer Tokenize(string source)
+        {
+            return new SampleLexer(source);
+        }
+
+        private class SampleLexer : Lexer
+        {
+            public static readonly TokenKind Digit = new TokenKind("Digit", @"[0-9]");
+            public static readonly TokenKind Name = new TokenKind("Name", @"[a-z]+");
+            public static readonly TokenKind Add = new Operator("+");
+            public static readonly TokenKind Subtract = new Operator("-");
+            public static readonly TokenKind Multiply = new Operator("*");
+            public static readonly TokenKind Divide = new Operator("/");
+            public static readonly TokenKind LeftParen = new Operator("(");
+            public static readonly TokenKind RightParen = new Operator(")");
+            public static readonly TokenKind Comma = new Operator(",");
+
+            public SampleLexer(string source)
+                : base(new Text(source), Digit, Name, Add, Subtract, Multiply, Divide, LeftParen, RightParen, Comma) { }
+        }
+
+        private interface Expression
+        {
+        }
+
+        private class Constant : Expression
+        {
+            private readonly int value;
+
+            public Constant(int value)
+            {
+                this.value = value;
+            }
+
+            public override string ToString()
+            {
+                return value.ToString();
+            }
+        }
+
+        private class Identifier : Expression
+        {
+            private readonly string identifier;
+
+            public Identifier(string identifier)
+            {
+                this.identifier = identifier;
+            }
+
+            public override string ToString()
+            {
+                return identifier;
+            }
+        }
+
+        private class Form : Expression
+        {
+            private readonly Expression head;
+            private readonly IEnumerable<Expression> expressions;
+
+            public Form(Token head, params Expression[] expressions)
+                : this(new Identifier(head.Literal), expressions) { }
+
+            public Form(Expression head, params Expression[] expressions)
+                : this(head, (IEnumerable<Expression>)expressions) { }
+
+            public Form(Expression head, IEnumerable<Expression> expressions)
+            {
+                this.head = head;
+                this.expressions = expressions;
+            }
+
+            public override string ToString()
+            {
+                return "(" + head + " " + string.Join(" ", expressions) + ")";
+            }
         }
     }
 }

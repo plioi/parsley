@@ -11,6 +11,16 @@ namespace Parsley
             return new SampleLexer(source);
         }
 
+        private class SampleLexer : Lexer
+        {
+            public static readonly TokenKind Digit = new TokenKind("Digit", @"[0-9]");
+            public static readonly TokenKind Letter = new TokenKind("Letter", @"[a-zA-Z]");
+            public static readonly TokenKind Symbol = new TokenKind("Symbol", @".");
+
+            public SampleLexer(string source)
+                : base(new Text(source), Digit, Letter, Symbol) { }
+        }
+
         private Parser<Token> A, B, AB, COMMA;
 
         [SetUp]
