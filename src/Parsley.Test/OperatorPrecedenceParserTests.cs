@@ -18,16 +18,17 @@ namespace Parsley
 
             expression.Unit(SampleLexer.LeftParen, Between(Token("("), expression, Token(")")));
 
-            expression.Prefix(SampleLexer.Subtract, 10, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
+            expression.Prefix(SampleLexer.Subtract, 6, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
 
-            expression.Extend(SampleLexer.LeftParen, 12, callable =>
+            expression.Extend(SampleLexer.LeftParen, 8, callable =>
                                                      from arguments in Between(Token("("), ZeroOrMore(expression, Token(",")), Token(")"))
                                                      select new Form(callable, arguments));
 
-            expression.Binary(SampleLexer.Multiply, 9, (left, symbol, right) => new Form(symbol, left, right));
-            expression.Binary(SampleLexer.Divide, 9, (left, symbol, right) => new Form(symbol, left, right));
-            expression.Binary(SampleLexer.Add, 8, (left, symbol, right) => new Form(symbol, left, right));
-            expression.Binary(SampleLexer.Subtract, 8, (left, symbol, right) => new Form(symbol, left, right));
+            expression.Binary(SampleLexer.Exponent, 5, (left, symbol, right) => new Form(symbol, left, right), Associativity.Right);
+            expression.Binary(SampleLexer.Multiply, 4, (left, symbol, right) => new Form(symbol, left, right));
+            expression.Binary(SampleLexer.Divide, 4, (left, symbol, right) => new Form(symbol, left, right));
+            expression.Binary(SampleLexer.Add, 3, (left, symbol, right) => new Form(symbol, left, right));
+            expression.Binary(SampleLexer.Subtract, 3, (left, symbol, right) => new Form(symbol, left, right));
         }
 
         [Test]
@@ -60,22 +61,28 @@ namespace Parsley
         }
 
         [Test]
-        public void ParsesLeftAssociativeBinaryOperationsRespectingPrecedence()
+        public void ParsesBinaryOperationsRespectingPrecedenceAndAssociativity()
         {
-            Parses("1*2", "(* 1 2)");
-            Parses("1/2", "(/ 1 2)");
             Parses("1+2", "(+ 1 2)");
             Parses("1-2", "(- 1 2)");
+            Parses("1*2", "(* 1 2)");
+            Parses("1/2", "(/ 1 2)");
+            Parses("1^2", "(^ 1 2)");
 
-            Parses("1*2*3", "(* (* 1 2) 3)");
-            Parses("1/2/3", "(/ (/ 1 2) 3)");
             Parses("1+2+3", "(+ (+ 1 2) 3)");
             Parses("1-2-3", "(- (- 1 2) 3)");
+            Parses("1*2*3", "(* (* 1 2) 3)");
+            Parses("1/2/3", "(/ (/ 1 2) 3)");
+            Parses("1^2^3", "(^ 1 (^ 2 3))");
 
             Parses("1*2/3-4", "(- (/ (* 1 2) 3) 4)");
             Parses("1/2*3-4", "(- (* (/ 1 2) 3) 4)");
             Parses("1+2-3*4", "(- (+ 1 2) (* 3 4))");
             Parses("1-2+3*4", "(+ (- 1 2) (* 3 4))");
+            Parses("1^2^3*4", "(* (^ 1 (^ 2 3)) 4)");
+            Parses("1^2^3*4", "(* (^ 1 (^ 2 3)) 4)");
+            Parses("1*2/3^4", "(/ (* 1 2) (^ 3 4))");
+            Parses("1^2+3^4", "(+ (^ 1 2) (^ 3 4))");
         }
 
         [Test]
@@ -120,12 +127,13 @@ namespace Parsley
             public static readonly TokenKind Subtract = new Operator("-");
             public static readonly TokenKind Multiply = new Operator("*");
             public static readonly TokenKind Divide = new Operator("/");
+            public static readonly TokenKind Exponent = new Operator("^");
             public static readonly TokenKind LeftParen = new Operator("(");
             public static readonly TokenKind RightParen = new Operator(")");
             public static readonly TokenKind Comma = new Operator(",");
 
             public SampleLexer(string source)
-                : base(new Text(source), Digit, Name, Add, Subtract, Multiply, Divide, LeftParen, RightParen, Comma) { }
+                : base(new Text(source), Digit, Name, Add, Subtract, Multiply, Divide, Exponent, LeftParen, RightParen, Comma) { }
         }
 
         private interface Expression

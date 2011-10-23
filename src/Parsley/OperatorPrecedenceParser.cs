@@ -6,6 +6,7 @@ namespace Parsley
     public delegate T AtomNodeBuilder<out T>(Token atom);
     public delegate T UnaryNodeBuilder<T>(Token symbol, T operand);
     public delegate T BinaryNodeBuilder<T>(T left, Token symbol, T right);
+    public enum Associativity { Left, Right }
 
     public class OperatorPrecedenceParser<T> : Grammar, Parser<T>
     {
@@ -44,10 +45,16 @@ namespace Parsley
             extendParserPrecedence[operation] = precedence;
         }
 
-        public void Binary(TokenKind operation, int precedence, BinaryNodeBuilder<T> createBinaryNode)
+        public void Binary(TokenKind operation, int precedence, BinaryNodeBuilder<T> createBinaryNode,
+                           Associativity associativity = Associativity.Left)
         {
+            int rightOperandPrecedence = precedence;
+
+            if (associativity == Associativity.Right)
+                rightOperandPrecedence = precedence - 1;
+
             Extend(operation, precedence, left => from symbol in Token(operation)
-                                                  from right in OperandAtPrecedenceLevel(precedence)
+                                                  from right in OperandAtPrecedenceLevel(rightOperandPrecedence)
                                                   select createBinaryNode(left, symbol, right));
         }
 
