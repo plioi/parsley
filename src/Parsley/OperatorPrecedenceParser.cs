@@ -45,6 +45,12 @@ namespace Parsley
             extendParserPrecedence[operation] = precedence;
         }
 
+        public void Postfix(TokenKind operation, int precedence, UnaryNodeBuilder<T> createUnaryNode)
+        {
+            Extend(operation, precedence, left => from symbol in Token(operation)
+                                                  select createUnaryNode(symbol, left));
+        }
+
         public void Binary(TokenKind operation, int precedence, BinaryNodeBuilder<T> createBinaryNode,
                            Associativity associativity = Associativity.Left)
         {
