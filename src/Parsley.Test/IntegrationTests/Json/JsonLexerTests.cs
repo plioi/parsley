@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace Parsley.Test.IntegrationTests.Json
+namespace Parsley.IntegrationTests.Json
 {
     [TestFixture]
     public class JsonLexerTests

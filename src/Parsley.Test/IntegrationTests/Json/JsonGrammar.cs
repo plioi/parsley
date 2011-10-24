@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Parsley.Test.IntegrationTests.Json
+namespace Parsley.IntegrationTests.Json
 {
     public class JsonGrammar : Grammar
     {

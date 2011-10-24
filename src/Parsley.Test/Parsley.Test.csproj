@@ -8,7 +8,7 @@
     <ProjectGuid>{3ED56F1F-EF36-4DAA-8986-B70C03EA9F58}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Parsley.Test</RootNamespace>
+    <RootNamespace>Parsley</RootNamespace>
     <AssemblyName>Parsley.Test</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
