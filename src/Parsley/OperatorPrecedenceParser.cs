@@ -64,9 +64,9 @@ namespace Parsley
                                                   select createBinaryNode(left, symbol, right));
         }
 
-        public Reply<T> Parse(Lexer lexer)
+        public Reply<T> Parse(Lexer tokens)
         {
-            return Parse(lexer, 0);
+            return Parse(tokens, 0);
         }
 
         private Parser<T> OperandAtPrecedenceLevel(int precedence)
@@ -74,32 +74,32 @@ namespace Parsley
             return new GrammarRule<T>(tokens => Parse(tokens, precedence));
         }
 
-        private Reply<T> Parse(Lexer lexer, int precedence)
+        private Reply<T> Parse(Lexer tokens, int precedence)
         {
-            Token token = lexer.CurrentToken;
+            Token token = tokens.CurrentToken;
 
             if (!unitParsers.ContainsKey(token.Kind))
-                return new Error<T>(lexer, ErrorMessage.Unknown());
+                return new Error<T>(tokens, ErrorMessage.Unknown());
 
-            var reply = unitParsers[token.Kind].Parse(lexer);
+            var reply = unitParsers[token.Kind].Parse(tokens);
 
             if (!reply.Success)
                 return reply;
 
-            lexer = reply.UnparsedTokens;
-            token = lexer.CurrentToken;
+            tokens = reply.UnparsedTokens;
+            token = tokens.CurrentToken;
 
             while (precedence < GetPrecedence(token))
             {
                 //Continue parsing at this precedence level.
 
-                reply = extendParsers[token.Kind](reply.Value).Parse(lexer);
+                reply = extendParsers[token.Kind](reply.Value).Parse(tokens);
 
                 if (!reply.Success)
                     return reply;
 
-                lexer = reply.UnparsedTokens;
-                token = lexer.CurrentToken;
+                tokens = reply.UnparsedTokens;
+                token = tokens.CurrentToken;
             }
 
             return reply;

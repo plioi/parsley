@@ -4,7 +4,7 @@ namespace Parsley
 {
     public interface Parser<out T>
     {
-        Reply<T> Parse(Lexer lexer);
+        Reply<T> Parse(Lexer tokens);
     }
 
     public class GrammarRule<T> : Parser<T>
@@ -21,9 +21,9 @@ namespace Parsley
             ParseTokens = parse;
         }
 
-        public Reply<T> Parse(Lexer lexer)
+        public Reply<T> Parse(Lexer tokens)
         {
-            return ParseTokens(lexer);
+            return ParseTokens(tokens);
         }
     }
 }

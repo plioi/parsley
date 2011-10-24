@@ -49,6 +49,13 @@
     <Compile Include="ParserQuery.cs" />
     <Compile Include="Pattern.cs" />
     <Compile Include="Position.cs" />
+    <Compile Include="Primitives\AttemptParser.cs" />
+    <Compile Include="Primitives\ChoiceParser.cs" />
+    <Compile Include="Primitives\LabeledParser.cs" />
+    <Compile Include="Primitives\FailingParser.cs" />
+    <Compile Include="Primitives\TokenByKindParser.cs" />
+    <Compile Include="Primitives\TokenByLiteralParser.cs" />
+    <Compile Include="Primitives\ZeroOrMoreParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reply.cs" />
     <Compile Include="Text.cs" />
