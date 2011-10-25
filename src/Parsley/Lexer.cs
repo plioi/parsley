@@ -11,15 +11,15 @@ namespace Parsley
         public static readonly TokenKind Unknown = new TokenKind("Unknown", @".*");
 
         private readonly Text text;
-        private readonly IEnumerable<TokenKind> kinds;
+        private readonly List<TokenKind> kinds;
 
         private readonly Token currentToken;
         private readonly Lazy<Lexer> lazyAdvance;
 
         public Lexer(Text text, params TokenKind[] kinds)
-            : this(text, kinds.Concat(new[] { EndOfInput, Unknown })) { }
+            : this(text, kinds.Concat(new[] { EndOfInput, Unknown }).ToList()) { }
 
-        private Lexer(Text text, IEnumerable<TokenKind> kinds)
+        private Lexer(Text text, List<TokenKind> kinds)
         {
             currentToken = GetToken(text, kinds);
 
