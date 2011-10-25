@@ -82,42 +82,31 @@ namespace Parsley.IntegrationTests.Json
         {
             const string complex = @"
 
-                {""widget"": {
-                    ""debug"": ""on"",
-                    ""window"": {
+                {
+                    ""numbers"" : [10, 20, 30],
+                    ""window"":
+                    {
                         ""title"": ""Sample Widget"",
-                        ""name"": ""main_window"",
-                        ""position"": [10, 20],
                         ""parent"": null,
                         ""maximized"": true,
                         ""transparent"": false
-                    },
-                    ""image"": { 
-                        ""src"": ""Images/Sun.png"",
-                        ""name"": ""sun"",
-                        ""alignment"": ""center""
                     }
-                }}
+                }
 
             ";
 
-            Json.Parses(new JsonLexer(complex)).IntoValue(value =>
+            var jsonLexer = new JsonLexer(complex);
+
+            Json.Parses(jsonLexer).IntoValue(value =>
             {
-                dynamic json = value;
+                var json = (Dictionary<string, object>)value;
+                json["numbers"].ShouldEqual(new[] {10, 20, 30});
 
-                ((string) json["widget"]["debug"]).ShouldEqual("on");
-
-                ((string) json["widget"]["window"]["title"]).ShouldEqual("Sample Widget");
-                ((string) json["widget"]["window"]["name"]).ShouldEqual("main_window");
-                ((int) json["widget"]["window"]["position"][0]).ShouldEqual(10);
-                ((int) json["widget"]["window"]["position"][1]).ShouldEqual(20);
-                ((object) json["widget"]["window"]["parent"]).ShouldBeNull();
-                ((bool) json["widget"]["window"]["maximized"]).ShouldBeTrue();
-                ((bool) json["widget"]["window"]["transparent"]).ShouldBeFalse();
-
-                ((string) json["widget"]["image"]["src"]).ShouldEqual("Images/Sun.png");
-                ((string) json["widget"]["image"]["name"]).ShouldEqual("sun");
-                ((string) json["widget"]["image"]["alignment"]).ShouldEqual("center");
+                var window = (Dictionary<string, object>) json["window"];
+                window["title"].ShouldEqual("Sample Widget");
+                window["parent"].ShouldBeNull();
+                window["maximized"].ShouldEqual(true);
+                window["transparent"].ShouldEqual(false);
             });
         }
     }
