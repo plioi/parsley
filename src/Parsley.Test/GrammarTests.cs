@@ -283,4 +283,64 @@ namespace Parsley
             throw new Exception("Parser 'NeverExecuted' should not have been executed.");
         });
     }
+
+    [TestFixture]
+    public class GrammarRuleNameInferenceTests : Grammar
+    {
+        private GrammarRule<int> AlreadyNamedRule;
+        public static GrammarRule<object> PublicStaticRule;
+        private static GrammarRule<string> PrivateStaticRule;
+        public GrammarRule<int> PublicInstanceRule;
+        private GrammarRule<int> PrivateInstanceRule;
+        private GrammarRule<int> NullRule;
+
+        [SetUp]
+        public void SetUp()
+        {
+            AlreadyNamedRule = new GrammarRule<int>("This name is not inferred.");
+            PublicStaticRule = new GrammarRule<object>();
+            PrivateStaticRule = new GrammarRule<string>();
+            PublicInstanceRule = new GrammarRule<int>();
+            PrivateInstanceRule = new GrammarRule<int>();
+            NullRule = null;
+
+            InferGrammarRuleNames();
+        }
+
+        [Test]
+        public void WillNotInferNameWhenNameIsAlreadyProvided()
+        {
+            AlreadyNamedRule.Name.ShouldEqual("This name is not inferred.");
+        }
+
+        [Test]
+        public void InfersNamesOfPublicStaticGrammarRules()
+        {
+            PublicStaticRule.Name.ShouldEqual("PublicStaticRule");
+        }
+
+        [Test]
+        public void InfersNamesOfPrivateStaticGrammarRules()
+        {
+            PrivateStaticRule.Name.ShouldEqual("PrivateStaticRule");
+        }
+
+        [Test]
+        public void InfersNamesOfPublicInstanceGrammarRules()
+        {
+            PublicInstanceRule.Name.ShouldEqual("PublicInstanceRule");
+        }
+
+        [Test]
+        public void InfersNamesOfPrivateInstanceGrammarRules()
+        {
+            PrivateInstanceRule.Name.ShouldEqual("PrivateInstanceRule");
+        }
+
+        [Test]
+        public void SilentlyIgnoresNullRules()
+        {
+            NullRule.ShouldBeNull();
+        }
+    }
 }
