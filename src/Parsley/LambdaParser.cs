@@ -2,18 +2,13 @@ using System;
 
 namespace Parsley
 {
-    public class GrammarRule<T> : Parser<T>
+    public class LambdaParser<T> : Parser<T>
     {
         private Func<Lexer, Reply<T>> parse { get; set; }
 
-        public Parser<T> Rule
+        public LambdaParser(Func<Lexer, Reply<T>> parse)
         {
-            set { parse = value.Parse; }
-        }
-
-        public GrammarRule()
-        {
-            parse = null;
+            this.parse = parse;
         }
 
         public Reply<T> Parse(Lexer tokens)

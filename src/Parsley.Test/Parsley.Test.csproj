@@ -46,11 +46,13 @@
     <Compile Include="ErrorMessageListTests.cs" />
     <Compile Include="ErrorMessageTests.cs" />
     <Compile Include="ErrorTests.cs" />
+    <Compile Include="GrammarRuleTests.cs" />
     <Compile Include="GrammarTests.cs" />
     <Compile Include="IntegrationTests\Json\JsonGrammarTests.cs" />
     <Compile Include="IntegrationTests\Json\JsonLexer.cs" />
     <Compile Include="IntegrationTests\Json\JsonLexerTests.cs" />
     <Compile Include="IntegrationTests\Json\JsonGrammar.cs" />
+    <Compile Include="LambdaParserTests.cs" />
     <Compile Include="LexerTests.cs" />
     <Compile Include="OperatorPrecedenceParserTests.cs" />
     <Compile Include="ParsedTests.cs" />

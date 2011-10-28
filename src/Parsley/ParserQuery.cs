@@ -14,7 +14,7 @@ namespace Parsley
         /// <param name="value">The value to treat as a parse result.</param>
         public static Parser<T> SucceedWithThisValue<T>(this T value)
         {
-            return new GrammarRule<T>(tokens => new Parsed<T>(value, tokens));
+            return new LambdaParser<T>(tokens => new Parsed<T>(value, tokens));
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Parsley
         /// </remarks>
         private static Parser<U> Bind<T, U>(this Parser<T> parser, Func<T, Parser<U>> constructNextParser)
         {
-            return new GrammarRule<U>(tokens => parser.Parse(tokens).ParseRest(constructNextParser));
+            return new LambdaParser<U>(tokens => parser.Parse(tokens).ParseRest(constructNextParser));
         }
     }
 }

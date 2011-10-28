@@ -43,6 +43,7 @@
     <Compile Include="ErrorMessageList.cs" />
     <Compile Include="Grammar.cs" />
     <Compile Include="GrammarRule.cs" />
+    <Compile Include="LambdaParser.cs" />
     <Compile Include="Lexer.cs" />
     <Compile Include="OperatorPrecedenceParser.cs" />
     <Compile Include="Parsed.cs" />

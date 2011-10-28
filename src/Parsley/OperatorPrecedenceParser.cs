@@ -71,7 +71,7 @@ namespace Parsley
 
         private Parser<T> OperandAtPrecedenceLevel(int precedence)
         {
-            return new GrammarRule<T>(tokens => Parse(tokens, precedence));
+            return new LambdaParser<T>(tokens => Parse(tokens, precedence));
         }
 
         private Reply<T> Parse(Lexer tokens, int precedence)
