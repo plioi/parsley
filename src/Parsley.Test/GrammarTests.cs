@@ -68,18 +68,6 @@ namespace Parsley
         }
 
         [Test]
-        public void ApplyingARuleFollowedByARequiredButDiscardedTerminatorRule()
-        {
-            var parser = A.TerminatedBy(B);
-
-            parser.FailsToParse(Tokenize(""), "").WithMessage("(1, 1): A expected");
-            parser.FailsToParse(Tokenize("B"), "B").WithMessage("(1, 1): A expected");
-            parser.FailsToParse(Tokenize("A"), "").WithMessage("(1, 2): B expected");
-            parser.FailsToParse(Tokenize("AA"), "A").WithMessage("(1, 2): B expected");
-            parser.Parses(Tokenize("AB")).IntoToken("A");
-        }
-
-        [Test]
         public void ApplyingARuleZeroOrMoreTimes()
         {
             var parser = ZeroOrMore(AB);
