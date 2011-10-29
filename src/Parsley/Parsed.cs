@@ -20,9 +20,5 @@ namespace Parsley
         public Lexer UnparsedTokens { get; private set; }
         public bool Success { get { return true; } }
         public ErrorMessageList ErrorMessages { get { return potentialErrors; } }
-        public Reply<U> ParseRest<U>(Func<T, Parser<U>> constructNextParser)
-        {
-            return constructNextParser(Value).Parse(UnparsedTokens);
-        }
     }
 }

@@ -51,16 +51,5 @@ namespace Parsley
         {
             new Error<object>(x, ErrorMessage.Unknown()).Success.ShouldBeFalse();
         }
-
-        [Test]
-        public void PropogatesItselfWithoutConsumingInputWhenAskedToParseRemainingInput()
-        {
-            Parser<string> shouldNotBeCalled = new LambdaParser<string>(tokens => { throw new Exception(); });
-
-            Reply<string> reply = new Error<object>(x, ErrorMessage.Expected("expectation")).ParseRest(o => shouldNotBeCalled);
-            reply.Success.ShouldBeFalse();
-            reply.UnparsedTokens.ShouldEqual(x);
-            reply.ErrorMessages.ToString().ShouldEqual("expectation expected");
-        }
     }
 }

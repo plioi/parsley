@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Parsley
+﻿namespace Parsley
 {
     public interface Reply<out T>
     {
@@ -8,6 +6,5 @@ namespace Parsley
         Lexer UnparsedTokens { get; }
         bool Success { get; }
         ErrorMessageList ErrorMessages { get; }
-        Reply<U> ParseRest<U>(Func<T, Parser<U>> constructNextParser);
     }
 }

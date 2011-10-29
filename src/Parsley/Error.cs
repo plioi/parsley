@@ -33,10 +33,5 @@ namespace Parsley
         {
             get { return errors; }
         }
-
-        public Reply<U> ParseRest<U>(Func<T, Parser<U>> constructNextParser)
-        {
-            return new Error<U>(UnparsedTokens, errors);
-        }
     }
 }

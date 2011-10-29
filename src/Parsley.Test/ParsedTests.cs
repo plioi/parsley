@@ -46,16 +46,5 @@ namespace Parsley
         {
             new Parsed<string>("parsed", unparsed).Success.ShouldBeTrue();
         }
-
-        [Test]
-        public void CanContinueParsingTheRemainingInputWhenGivenAParserGenerator()
-        {
-            Parser<string> next = new LambdaParser<string>(tokens => new Parsed<string>(tokens.CurrentToken.Literal, tokens.Advance()));
-
-            Reply<string> reply = new Parsed<string>("x", unparsed).ParseRest(s => next);
-            reply.Success.ShouldBeTrue();
-            reply.Value.ShouldEqual("0");
-            reply.UnparsedTokens.CurrentToken.Kind.ShouldEqual(Lexer.EndOfInput);
-        }
     }
 }

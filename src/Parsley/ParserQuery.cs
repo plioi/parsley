@@ -41,7 +41,15 @@ namespace Parsley
         /// </remarks>
         private static Parser<U> Bind<T, U>(this Parser<T> parser, Func<T, Parser<U>> constructNextParser)
         {
-            return new LambdaParser<U>(tokens => parser.Parse(tokens).ParseRest(constructNextParser));
+            return new LambdaParser<U>(tokens =>
+            {
+                var reply = parser.Parse(tokens);
+
+                if (reply.Success)
+                    return constructNextParser(reply.Value).Parse(reply.UnparsedTokens);
+
+                return new Error<U>(reply.UnparsedTokens, reply.ErrorMessages);
+            });
         }
     }
 }
