@@ -10,7 +10,7 @@ namespace Parsley
         private readonly int line;
 
         public Text(string source)
-            : this(source, 0, 1) {}
+            : this(NormalizeLineEndings(source), 0, 1) { }
 
         private Text(string source, int index, int line)
         {
@@ -71,6 +71,11 @@ namespace Parsley
         public override string ToString()
         {
             return source.Substring(index);
+        }
+
+        private static string NormalizeLineEndings(string source)
+        {
+            return source.Replace("\r\n", "\n").Replace('\r', '\n');
         }
     }
 }

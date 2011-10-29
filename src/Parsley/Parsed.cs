@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Parsley
+﻿namespace Parsley
 {
     public class Parsed<T> : Reply<T>
     {
