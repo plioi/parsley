@@ -38,6 +38,7 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AssertionException.cs" />
     <Compile Include="Error.cs" />
     <Compile Include="ErrorMessage.cs" />
     <Compile Include="ErrorMessageList.cs" />
@@ -49,6 +50,7 @@
     <Compile Include="Parsed.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="ParserQuery.cs" />
+    <Compile Include="ParsingAssertions.cs" />
     <Compile Include="Pattern.cs" />
     <Compile Include="Position.cs" />
     <Compile Include="Primitives\AttemptParser.cs" />
