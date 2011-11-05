@@ -14,32 +14,35 @@ namespace Parsley
                 lexer = lexer.Advance();
             }
 
-            lexer.CurrentToken.Kind.ShouldEqual(Lexer.EndOfInput);
+            AssertEqual(Lexer.EndOfInput, lexer.CurrentToken.Kind);
         }
 
         public static void ShouldYieldTokens(this Lexer lexer, params string[] expectedLiterals)
         {
             foreach (var expectedLiteral in expectedLiterals)
             {
-                lexer.CurrentToken.Literal.ShouldEqual(expectedLiteral);
-                lexer.CurrentToken.Kind.ShouldNotEqual(Lexer.Unknown);
+                AssertTokenLiteralsEqual(expectedLiteral, lexer.CurrentToken.Literal);
+                AssertNotEqual(Lexer.Unknown, lexer.CurrentToken.Kind);
                 lexer = lexer.Advance();
             }
 
-            lexer.CurrentToken.Kind.ShouldEqual(Lexer.EndOfInput);
+            AssertEqual(Lexer.EndOfInput, lexer.CurrentToken.Kind);
         }
 
         public static void ShouldBe(this Token actual, TokenKind expectedKind, string expectedLiteral, int expectedLine, int expectedColumn)
         {
             actual.ShouldBe(expectedKind, expectedLiteral);
-            actual.Position.Line.ShouldEqual(expectedLine);
-            actual.Position.Column.ShouldEqual(expectedColumn);
+
+            var expectedPosition = new Position(expectedLine, expectedColumn);
+            if (actual.Position != expectedPosition)
+                throw new AssertionException("token at position " + expectedPosition,
+                                             "token at position " + actual.Position);
         }
 
         public static void ShouldBe(this Token actual, TokenKind expectedKind, string expectedLiteral)
         {
-            actual.Kind.ShouldEqual(expectedKind);
-            actual.Literal.ShouldEqual(expectedLiteral);
+            AssertEqual(expectedKind, actual.Kind);
+            AssertTokenLiteralsEqual(expectedLiteral, actual.Literal);
         }
 
         public static Reply<T> FailsToParse<T>(this Parser<T> parser, Lexer tokens, string expectedUnparsedSource)
@@ -49,7 +52,8 @@ namespace Parsley
 
         private static Reply<T> Fails<T>(this Reply<T> reply)
         {
-            reply.Success.ShouldBeFalse("Parse completed without expected error.");
+            if (reply.Success)
+                throw new AssertionException("parser failure", "parser completed successfully");
 
             return reply;
         }
@@ -57,14 +61,20 @@ namespace Parsley
         public static Reply<T> WithMessage<T>(this Reply<T> reply, string expectedMessage)
         {
             var position = reply.UnparsedTokens.Position;
-            var actual = String.Format("({0}, {1}): {2}", position.Line, position.Column, reply.ErrorMessages);
-            actual.ShouldEqual(expectedMessage);
+            var actual = position + ": " + reply.ErrorMessages;
+            
+            if (actual != expectedMessage)
+                throw new AssertionException(string.Format("message at {0}", expectedMessage),
+                                             string.Format("message at {0}", actual));
+
             return reply;
         }
 
         public static Reply<T> WithNoMessage<T>(this Reply<T> reply)
         {
-            reply.ErrorMessages.ShouldEqual(ErrorMessageList.Empty);
+            if (reply.ErrorMessages != ErrorMessageList.Empty)
+                throw new AssertionException("no error message", reply.ErrorMessages);
+
             return reply;
         }
 
@@ -80,30 +90,35 @@ namespace Parsley
 
         private static Reply<T> Succeeds<T>(this Reply<T> reply)
         {
-            reply.Success.ShouldBeTrue(reply.ErrorMessages.ToString());
+            if (!reply.Success)
+                throw new AssertionException(reply.ErrorMessages.ToString(), "parser success", "parser failed");
 
             return reply;
         }
 
         private static Reply<T> WithUnparsedText<T>(this Reply<T> reply, string expected)
         {
-            reply.UnparsedTokens.ToString().ShouldEqual(expected);
+            var actual = reply.UnparsedTokens.ToString();
+            
+            if (actual != expected)
+                throw new AssertionException(string.Format("remaining unparsed text \"{0}\"", expected),
+                                             string.Format("remaining unparsed text \"{0}\"", actual));
 
             return reply;
         }
 
         private static Reply<T> WithAllInputConsumed<T>(this Reply<T> reply)
         {
-            var consumedAllInput = reply.UnparsedTokens.CurrentToken.Kind == Lexer.EndOfInput;
-            consumedAllInput.ShouldBeTrue("Did not consume all input.");
-            reply.UnparsedTokens.ToString().ShouldEqual("");
-
-            return reply;
+            var nextTokenKind = reply.UnparsedTokens.CurrentToken.Kind;
+            AssertEqual(Lexer.EndOfInput, nextTokenKind);
+            return reply.WithUnparsedText("");
         }
 
         public static Reply<T> IntoValue<T>(this Reply<T> reply, T expected)
         {
-            reply.Value.ShouldEqual(expected);
+            if (!Equals(expected, reply.Value))
+                throw new AssertionException(string.Format("parsed value: {0}", expected),
+                                             string.Format("parsed value: {0}", reply.Value));
 
             return reply;
         }
@@ -124,14 +139,50 @@ namespace Parsley
 
         public static Reply<Token> IntoToken(this Reply<Token> reply, string expectedLiteral)
         {
-            reply.Value.Literal.ShouldEqual(expectedLiteral);
-
+            AssertTokenLiteralsEqual(expectedLiteral, reply.Value.Literal);
             return reply;
         }
 
         public static Reply<IEnumerable<Token>> IntoTokens(this Reply<IEnumerable<Token>> reply, params string[] expectedLiterals)
         {
-            return reply.IntoValue(tokens => tokens.Select(x => x.Literal).ShouldList(expectedLiterals));
+            var actualLiterals = reply.Value.Select(x => x.Literal).ToArray();
+
+            Action raiseError = () =>
+            {
+                throw new AssertionException("Parse resulted in unexpected token literals.",
+                                             String.Join(", ", expectedLiterals),
+                                             String.Join(", ", actualLiterals));
+            };
+
+            if (actualLiterals.Length != expectedLiterals.Length)
+                raiseError();
+
+            for (int i = 0; i < actualLiterals.Length; i++)
+                if (actualLiterals[i] != expectedLiterals[i])
+                    raiseError();
+
+            return reply;
+        }
+
+        private static void AssertTokenLiteralsEqual(string expected, string actual)
+        {
+            if (actual != expected)
+                throw new AssertionException(string.Format("token with literal \"{0}\"", expected),
+                                             string.Format("token with literal \"{0}\"", actual));
+        }
+
+        private static void AssertEqual(TokenKind expected, TokenKind actual)
+        {
+            if (actual != expected)
+                throw new AssertionException(string.Format("<{0}> token", expected),
+                                             string.Format("<{0}> token", actual));
+        }
+
+        private static void AssertNotEqual(TokenKind expected, TokenKind actual)
+        {
+            if (actual == expected)
+                throw new AssertionException(string.Format("not <{0}> token", expected),
+                                             string.Format("<{0}> token", actual));
         }
     }
 }
