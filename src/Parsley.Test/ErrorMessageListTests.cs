@@ -1,32 +1,32 @@
-﻿using NUnit.Framework;
+﻿using Should;
+using Xunit;
 
 namespace Parsley
 {
-    [TestFixture]
     public class ErrorMessageListTests
     {
-        [Test]
+        [Fact]
         public void ShouldProvideSharedEmptyInstance()
         {
-            ErrorMessageList.Empty.ShouldBeTheSameAs(ErrorMessageList.Empty);
+            ErrorMessageList.Empty.ShouldBeSameAs(ErrorMessageList.Empty);
         }
 
-        [Test]
+        [Fact]
         public void CanBeEmpty()
         {
             ErrorMessageList.Empty.ToString().ShouldEqual("");
         }
 
-        [Test]
+        [Fact]
         public void CreatesNewCollectionWhenAddingItems()
         {
             ErrorMessageList list = ErrorMessageList.Empty.With(ErrorMessage.Expected("expectation"));
 
             list.ToString().ShouldEqual("expectation expected");
-            list.ShouldNotBeTheSameAs(ErrorMessageList.Empty);
+            list.ShouldNotBeSameAs(ErrorMessageList.Empty);
         }
 
-        [Test]
+        [Fact]
         public void CanIncludeUnknownErrors()
         {
             ErrorMessageList.Empty
@@ -34,7 +34,7 @@ namespace Parsley
                 .ToString().ShouldEqual("Parse error.");
         }
 
-        [Test]
+        [Fact]
         public void CanIncludeMultipleExpectations()
         {
             ErrorMessageList.Empty
@@ -56,7 +56,7 @@ namespace Parsley
                 .ToString().ShouldEqual("A, B, C or D expected");
         }
 
-        [Test]
+        [Fact]
         public void OmitsDuplicateExpectationsFromExpectationLists()
         {
             ErrorMessageList.Empty
@@ -71,7 +71,7 @@ namespace Parsley
                 .ToString().ShouldEqual("A, B or C expected");
         }
 
-        [Test]
+        [Fact]
         public void CanIncludeBacktrackErrors()
         {
             var deepBacktrack = ErrorMessage.Backtrack(new Position(3, 4),
@@ -106,7 +106,7 @@ namespace Parsley
                 .ToString().ShouldEqual("G or H expected [(1, 2): E or F expected] [(2, 3): C or D expected [(3, 4): A or B expected]]");
         }
 
-        [Test]
+        [Fact]
         public void CanMergeTwoLists()
         {
             var first = ErrorMessageList.Empty
@@ -125,7 +125,7 @@ namespace Parsley
                 .ToString().ShouldEqual("A, B, C, D or E expected");
         }
 
-        [Test]
+        [Fact]
         public void OmitsUnknownErrorsWhenAdditionalErrorsExist()
         {
             ErrorMessageList.Empty

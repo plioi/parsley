@@ -41,7 +41,7 @@ task Compile -depends Init, CommonAssemblyInfo {
 
 task Test -depends Compile {
     exec {
-        & $base_dir\src\packages\NUnit.2.5.10.11092\tools\nunit-console.exe $unittest_dir\$projectName.Test.dll /nologo /nodots /xml=$build_dir\TestResult.xml    
+        & $base_dir\src\packages\xunit.runners.1.9.0.1566\tools\xunit.console.clr4.exe "$unittest_dir\$projectName.Test.dll"
     }
 }
 

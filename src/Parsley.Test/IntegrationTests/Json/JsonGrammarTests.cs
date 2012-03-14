@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
-using NUnit.Framework;
+using Should;
+using Xunit;
 
 namespace Parsley.IntegrationTests.Json
 {
-    [TestFixture]
     public class JsonGrammarTests : JsonGrammar
     {
-        [Test]
+        [Fact]
         public void ParsesTrueLiteral()
         {
             var tokens = new JsonLexer("true");
@@ -14,7 +14,7 @@ namespace Parsley.IntegrationTests.Json
             Json.Parses(tokens).IntoValue(value => ((bool)value).ShouldBeTrue());
         }
 
-        [Test]
+        [Fact]
         public void ParsesFalseLiteral()
         {
             var tokens = new JsonLexer("false");
@@ -22,7 +22,7 @@ namespace Parsley.IntegrationTests.Json
             Json.Parses(tokens).IntoValue(value => ((bool)value).ShouldBeFalse());
         }
 
-        [Test]
+        [Fact]
         public void ParsesNullLiteral()
         {
             var tokens = new JsonLexer("null");
@@ -30,7 +30,7 @@ namespace Parsley.IntegrationTests.Json
             Json.Parses(tokens).IntoValue(value => value.ShouldBeNull());
         }
 
-        [Test]
+        [Fact]
         public void ParsesNumbers()
         {
             var tokens = new JsonLexer("10.123E-11");
@@ -38,7 +38,7 @@ namespace Parsley.IntegrationTests.Json
             Json.Parses(tokens).IntoValue(value => value.ShouldEqual(10.123E-11m));
         }
 
-        [Test]
+        [Fact]
         public void ParsesQuotations()
         {
             var empty = new JsonLexer("\"\"");
@@ -49,7 +49,7 @@ namespace Parsley.IntegrationTests.Json
             Json.Parses(filled).IntoValue(value => value.ShouldEqual(expected));
         }
 
-        [Test]
+        [Fact]
         public void ParsesArrays()
         {
             var empty = new JsonLexer("[]");
@@ -57,10 +57,10 @@ namespace Parsley.IntegrationTests.Json
 
             Json.Parses(empty).IntoValue(value => ((object[])value).ShouldBeEmpty());
 
-            Json.Parses(filled).IntoValue(value => value.ShouldEqual(new[] { 0, 1, 2 }));
+            Json.Parses(filled).IntoValue(value => value.ShouldEqual(new[] { 0m, 1m, 2m }));
         }
 
-        [Test]
+        [Fact]
         public void ParsesDictionaries()
         {
             var empty = new JsonLexer("{}");
@@ -71,13 +71,13 @@ namespace Parsley.IntegrationTests.Json
             Json.Parses(filled).IntoValue(value =>
             {
                 var dictionary = (Dictionary<string, object>) value;
-                dictionary["zero"].ShouldEqual(0);
-                dictionary["one"].ShouldEqual(1);
-                dictionary["two"].ShouldEqual(2);
+                dictionary["zero"].ShouldEqual(0m);
+                dictionary["one"].ShouldEqual(1m);
+                dictionary["two"].ShouldEqual(2m);
             });
         }
 
-        [Test]
+        [Fact]
         public void ParsesComplexJsonValues()
         {
             const string complex = @"
@@ -100,7 +100,7 @@ namespace Parsley.IntegrationTests.Json
             Json.Parses(jsonLexer).IntoValue(value =>
             {
                 var json = (Dictionary<string, object>)value;
-                json["numbers"].ShouldEqual(new[] {10, 20, 30});
+                json["numbers"].ShouldEqual(new[] {10m, 20m, 30m});
 
                 var window = (Dictionary<string, object>) json["window"];
                 window["title"].ShouldEqual("Sample Widget");

@@ -1,11 +1,10 @@
-using NUnit.Framework;
+using Xunit;
 
 namespace Parsley.IntegrationTests.Json
 {
-    [TestFixture]
     public class JsonLexerTests
     {
-        [Test]
+        [Fact]
         public void RecognizesSkippableWhitespace()
         {
             new JsonLexer(" ").ShouldYieldTokens(Lexer.EndOfInput, "");
@@ -16,7 +15,7 @@ namespace Parsley.IntegrationTests.Json
             new JsonLexer(" \t\n\r").ShouldYieldTokens(Lexer.EndOfInput, "");
         }
 
-        [Test]
+        [Fact]
         public void RecognizesKeywords()
         {
             new JsonLexer("null").ShouldYieldTokens(JsonLexer.@null, "null");
@@ -26,7 +25,7 @@ namespace Parsley.IntegrationTests.Json
             new JsonLexer("null true false").ShouldYieldTokens("null", "true", "false");
         }
 
-        [Test]
+        [Fact]
         public void RecognizesOperators()
         {
             new JsonLexer(",").ShouldYieldTokens(JsonLexer.Comma, ",");
@@ -39,7 +38,7 @@ namespace Parsley.IntegrationTests.Json
             new JsonLexer(",[]{}:").ShouldYieldTokens(",", "[", "]", "{", "}", ":");
         }
 
-        [Test]
+        [Fact]
         public void RecognizesQuotations()
         {
             new JsonLexer("\"\"").ShouldYieldTokens(JsonLexer.Quotation, "\"\"");
@@ -58,7 +57,7 @@ namespace Parsley.IntegrationTests.Json
             new JsonLexer("\" a \" \" b \" \" c \"").ShouldYieldTokens(JsonLexer.Quotation, "\" a \"", "\" b \"", "\" c \"");
         }
 
-        [Test]
+        [Fact]
         public void RecognizesNumbers()
         {
             new JsonLexer("0").ShouldYieldTokens(JsonLexer.Number, "0");

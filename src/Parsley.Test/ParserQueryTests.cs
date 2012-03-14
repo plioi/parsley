@@ -1,9 +1,8 @@
 ﻿using System;
-using NUnit.Framework;
+using Xunit;
 
 namespace Parsley
 {
-    [TestFixture]
     public class ParserQueryTests
     {
         private static readonly Parser<string> Next = new LambdaParser<string>(tokens => new Parsed<string>(tokens.CurrentToken.Literal, tokens.Advance()));
@@ -13,7 +12,7 @@ namespace Parsley
             return new CharLexer(source);
         }
 
-        [Test]
+        [Fact]
         public void CanBuildParserWhichSimulatesSuccessfulParsingOfGivenValueWithoutConsumingInput()
         {
             var parser = 1.SucceedWithThisValue();
@@ -21,7 +20,7 @@ namespace Parsley
             parser.PartiallyParses(Tokenize("input"), "input").IntoValue(1);
         }
 
-        [Test]
+        [Fact]
         public void CanBuildParserFromSingleSimplerParser()
         {
             var parser = from x in Next
@@ -30,7 +29,7 @@ namespace Parsley
             parser.PartiallyParses(Tokenize("xy"), "y").IntoValue("X");
         }
 
-        [Test]
+        [Fact]
         public void CanBuildParserFromOrderedSequenceOfSimplerParsers()
         {
             var parser = (from a in Next
@@ -41,7 +40,7 @@ namespace Parsley
             parser.PartiallyParses(Tokenize("abcdef"), "def").IntoValue("ABC");
         }
 
-        [Test]
+        [Fact]
         public void PropogatesErrorsWithoutRunningRemainingParsers()
         {
             Parser<string> Fail = Grammar.Fail<string>();

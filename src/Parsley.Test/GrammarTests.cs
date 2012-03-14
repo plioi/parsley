@@ -1,9 +1,9 @@
 ﻿using System;
-using NUnit.Framework;
+using Should;
+using Xunit;
 
 namespace Parsley
 {
-    [TestFixture]
     public class GrammarTests : Grammar
     {
         private static Lexer Tokenize(string source)
@@ -21,10 +21,9 @@ namespace Parsley
                 : base(new Text(source), Digit, Letter, Symbol) { }
         }
 
-        private Parser<Token> A, B, AB, COMMA;
+        private readonly Parser<Token> A, B, AB, COMMA;
 
-        [SetUp]
-        public void SetUp()
+        public GrammarTests()
         {
             A = Token("A");
             B = Token("B");
@@ -36,20 +35,20 @@ namespace Parsley
             COMMA = Token(",");
         }
 
-        [Test]
+        [Fact]
         public void CanFailWithoutConsumingInput()
         {
             Fail<string>().FailsToParse(Tokenize("ABC"), "ABC");
         }
 
-        [Test]
+        [Fact]
         public void CanDetectTheEndOfInputWithoutAdvancing()
         {
             EndOfInput.Parses(Tokenize("")).IntoToken("");
             EndOfInput.FailsToParse(Tokenize("!"), "!").WithMessage("(1, 1): end of input expected");
         }
 
-        [Test]
+        [Fact]
         public void CanDemandThatAGivenKindOfTokenAppearsNext()
         {
             Token(SampleLexer.Letter).Parses(Tokenize("A")).IntoToken("A");
@@ -59,7 +58,7 @@ namespace Parsley
             Token(SampleLexer.Digit).Parses(Tokenize("0")).IntoToken("0");
         }
 
-        [Test]
+        [Fact]
         public void CanDemandThatAGivenTokenLiteralAppearsNext()
         {
             Token("A").Parses(Tokenize("A")).IntoToken("A");
@@ -67,7 +66,7 @@ namespace Parsley
             Token("A").FailsToParse(Tokenize("B"), "B").WithMessage("(1, 1): A expected");
         }
 
-        [Test]
+        [Fact]
         public void ApplyingARuleZeroOrMoreTimes()
         {
             var parser = ZeroOrMore(AB);
@@ -82,7 +81,7 @@ namespace Parsley
             infiniteLoop.ShouldThrow<Exception>("Parser encountered a potential infinite loop.");
         }
 
-        [Test]
+        [Fact]
         public void ApplyingARuleOneOrMoreTimes()
         {
             var parser = OneOrMore(AB);
@@ -97,7 +96,7 @@ namespace Parsley
             infiniteLoop.ShouldThrow<Exception>("Parser encountered a potential infinite loop.");
         }
 
-        [Test]
+        [Fact]
         public void ApplyingARuleZeroOrMoreTimesInterspersedByASeparatorRule()
         {
             var parser = ZeroOrMore(AB, COMMA);
@@ -110,7 +109,7 @@ namespace Parsley
             parser.FailsToParse(Tokenize("AB,A"), "").WithMessage("(1, 5): B expected");
         }
 
-        [Test]
+        [Fact]
         public void ApplyingARuleOneOrMoreTimesInterspersedByASeparatorRule()
         {
             var parser = OneOrMore(AB, COMMA);
@@ -123,7 +122,7 @@ namespace Parsley
             parser.FailsToParse(Tokenize("AB,A"), "").WithMessage("(1, 5): B expected");
         }
 
-        [Test]
+        [Fact]
         public void ApplyingARuleBetweenTwoOtherRules()
         {
             var parser = Between(A, B, A);
@@ -137,7 +136,7 @@ namespace Parsley
             parser.Parses(Tokenize("ABA")).IntoToken("B");
         }
 
-        [Test]
+        [Fact]
         public void ParsingAnOptionalRuleZeroOrOneTimes()
         {
             Optional(AB).PartiallyParses(Tokenize("AB."), ".").IntoToken("AB");
@@ -145,7 +144,7 @@ namespace Parsley
             Optional(AB).FailsToParse(Tokenize("AC."), "C.").WithMessage("(1, 2): B expected");
         }
 
-        [Test]
+        [Fact]
         public void AttemptingToParseRuleButBacktrackingUponFailure()
         {
             //When p succeeds, Attempt(p) is the same as p.
@@ -158,7 +157,7 @@ namespace Parsley
             Attempt(AB).FailsToParse(Tokenize("A!"), "A!").WithMessage("(1, 1): [(1, 2): B expected]");
         }
 
-        [Test]
+        [Fact]
         public void ImprovingDefaultMessagesWithAKnownExpectation()
         {
             var labeled = Label(AB, "'A' followed by 'B'");
@@ -182,7 +181,6 @@ namespace Parsley
         }
     }
 
-    [TestFixture]
     public class AlternationTests : Grammar
     {
         private static Lexer Tokenize(string source)
@@ -190,23 +188,22 @@ namespace Parsley
             return new CharLexer(source);
         }
 
-        private Parser<Token> A, B, C;
+        private readonly Parser<Token> A, B, C;
 
-        [SetUp]
-        public void Setup()
+        public AlternationTests()
         {
             A = Token("A");
             B = Token("B");
             C = Token("C");
         }
 
-        [Test]
+        [Fact]
         public void ChoosingBetweenZeroAlternativesAlwaysFails()
         {
             Choice<string>().FailsToParse(Tokenize("ABC"), "ABC");
         }
 
-        [Test]
+        [Fact]
         public void ChoosingBetweenOneAlternativeParserIsEquivalentToThatParser()
         {
             Choice(A).Parses(Tokenize("A")).IntoToken("A");
@@ -214,20 +211,20 @@ namespace Parsley
             Choice(A).FailsToParse(Tokenize("B"), "B").WithMessage("(1, 1): A expected");
         }
 
-        [Test]
+        [Fact]
         public void FirstParserCanSucceedWithoutExecutingOtherAlternatives()
         {
             Choice(A, NeverExecuted).Parses(Tokenize("A")).IntoToken("A");
         }
 
-        [Test]
+        [Fact]
         public void SubsequentParserCanSucceedWhenPreviousParsersFailWithoutConsumingInput()
         {
             Choice(B, A).Parses(Tokenize("A")).IntoToken("A");
             Choice(C, B, A).Parses(Tokenize("A")).IntoToken("A");
         }
 
-        [Test]
+        [Fact]
         public void SubsequentParserWillNotBeAttemptedWhenPreviousParserFailsAfterConsumingInput()
         {
             //As soon as something consumes input, it's failure and message win.
@@ -240,14 +237,14 @@ namespace Parsley
             Choice(C, AB, NeverExecuted).FailsToParse(Tokenize("A"), "").WithMessage("(1, 2): B expected");
         }
 
-        [Test]
+        [Fact]
         public void MergesErrorMessagesWhenParsersFailWithoutConsumingInput()
         {
             Choice(A, B).FailsToParse(Tokenize(""), "").WithMessage("(1, 1): A or B expected");
             Choice(A, B, C).FailsToParse(Tokenize(""), "").WithMessage("(1, 1): A, B or C expected");
         }
 
-        [Test]
+        [Fact]
         public void MergesPotentialErrorMessagesWhenParserSucceedsWithoutConsumingInput()
         {
             //Choice really shouldn't be used with parsers that can succeed without
@@ -272,18 +269,16 @@ namespace Parsley
         });
     }
 
-    [TestFixture]
     public class GrammarRuleNameInferenceTests : Grammar
     {
-        private GrammarRule<int> AlreadyNamedRule;
+        private readonly GrammarRule<int> AlreadyNamedRule;
         public static GrammarRule<object> PublicStaticRule;
         private static GrammarRule<string> PrivateStaticRule;
-        public GrammarRule<int> PublicInstanceRule;
-        private GrammarRule<int> PrivateInstanceRule;
-        private GrammarRule<int> NullRule;
+        public readonly GrammarRule<int> PublicInstanceRule;
+        private readonly GrammarRule<int> PrivateInstanceRule;
+        private readonly GrammarRule<int> NullRule;
 
-        [SetUp]
-        public void SetUp()
+        public GrammarRuleNameInferenceTests()
         {
             AlreadyNamedRule = new GrammarRule<int>("This name is not inferred.");
             PublicStaticRule = new GrammarRule<object>();
@@ -295,37 +290,37 @@ namespace Parsley
             InferGrammarRuleNames();
         }
 
-        [Test]
+        [Fact]
         public void WillNotInferNameWhenNameIsAlreadyProvided()
         {
             AlreadyNamedRule.Name.ShouldEqual("This name is not inferred.");
         }
 
-        [Test]
+        [Fact]
         public void InfersNamesOfPublicStaticGrammarRules()
         {
             PublicStaticRule.Name.ShouldEqual("PublicStaticRule");
         }
 
-        [Test]
+        [Fact]
         public void InfersNamesOfPrivateStaticGrammarRules()
         {
             PrivateStaticRule.Name.ShouldEqual("PrivateStaticRule");
         }
 
-        [Test]
+        [Fact]
         public void InfersNamesOfPublicInstanceGrammarRules()
         {
             PublicInstanceRule.Name.ShouldEqual("PublicInstanceRule");
         }
 
-        [Test]
+        [Fact]
         public void InfersNamesOfPrivateInstanceGrammarRules()
         {
             PrivateInstanceRule.Name.ShouldEqual("PrivateInstanceRule");
         }
 
-        [Test]
+        [Fact]
         public void SilentlyIgnoresNullRules()
         {
             NullRule.ShouldBeNull();

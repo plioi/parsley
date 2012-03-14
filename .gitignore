@@ -1,6 +1,8 @@
 _ReSharper.*
 *.ReSharper.user
+*.DotSettings.user
 *.suo
 bin
 obj
 build/
+src/packages/

@@ -1,18 +1,18 @@
-﻿using NUnit.Framework;
+﻿using Should;
+using Xunit;
 
 namespace Parsley
 {
-    [TestFixture]
     public class ErrorMessageTests
     {
-        [Test]
+        [Fact]
         public void CanIndicateGenericErrors()
         {
             var error = ErrorMessage.Unknown();
             error.ToString().ShouldEqual("Parse error.");
         }
 
-        [Test]
+        [Fact]
         public void CanIndicateSpecificExpectation()
         {
             var error = (ExpectedErrorMessage)ErrorMessage.Expected("statement");
@@ -20,7 +20,7 @@ namespace Parsley
             error.ToString().ShouldEqual("statement expected");
         }
 
-        [Test]
+        [Fact]
         public void CanIndicateErrorsWhichCausedBacktracking()
         {
             var position = new Position(3, 4);

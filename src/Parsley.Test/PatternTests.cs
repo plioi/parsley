@@ -1,11 +1,11 @@
-﻿using NUnit.Framework;
+﻿using Should;
+using Xunit;
 
 namespace Parsley
 {
-    [TestFixture]
     public class PatternTests
     {
-        [Test]
+        [Fact]
         public void CanMatchRegexStartingFromGivenCharacterPosition()
         {
             var pattern = new Pattern(@"[a-z]+");
@@ -19,7 +19,7 @@ namespace Parsley
             pattern.Match("123abc0", 4).Value.ShouldEqual("bc");
         }
 
-        [Test]
+        [Fact]
         public void CanMatchMultilineAndCommentedRegexes()
         {
             var pattern = new Pattern(
@@ -33,7 +33,7 @@ namespace Parsley
             pattern.Match("$23ab!", 3).Value.ShouldEqual("ab");
         }
 
-        [Test]
+        [Fact]
         public void HasStringRepresentation()
         {
             new Pattern(@"[a-zA-Z0-9]*").ToString().ShouldEqual(@"[a-zA-Z0-9]*");

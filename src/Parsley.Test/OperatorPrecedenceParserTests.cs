@@ -1,15 +1,14 @@
 ﻿using System.Collections.Generic;
-using NUnit.Framework;
+using Should;
+using Xunit;
 
 namespace Parsley
 {
-    [TestFixture]
     public class OperatorPrecedenceParserTests : Grammar
     {
-        private OperatorPrecedenceParser<Expression> expression;
+        private readonly OperatorPrecedenceParser<Expression> expression;
 
-        [SetUp]
-        public void SetUp()
+        public OperatorPrecedenceParserTests()
         {
             expression = new OperatorPrecedenceParser<Expression>();
 
@@ -32,14 +31,14 @@ namespace Parsley
                                  select new Form(callable, arguments));
         }
 
-        [Test]
+        [Fact]
         public void ParsesRegisteredTokensIntoCorrespondingAtoms()
         {
             Parses("1", "1");
             Parses("square", "square");
         }
 
-        [Test]
+        [Fact]
         public void ParsesUnitExpressionsStartedByRegisteredTokens()
         {
             Parses("(0)", "0");
@@ -47,28 +46,28 @@ namespace Parsley
             Parses("(1+4)/(2-3)*4", "(* (/ (+ 1 4) (- 2 3)) 4)");
         }
 
-        [Test]
+        [Fact]
         public void ParsesPrefixExpressionsStartedByRegisteredToken()
         {
             Parses("-1", "(- 1)");
             Parses("-(-1)", "(- (- 1))");
         }
 
-        [Test]
+        [Fact]
         public void ParsesPostfixExpressionsEndedByRegisteredToken()
         {
             Parses("1++", "(++ 1)");
             Parses("1++--", "(-- (++ 1))");
         }
 
-        [Test]
+        [Fact]
         public void ParsesExpressionsThatExtendTheLeftSideExpressionWhenTheRegisteredTokenIsEncountered()
         {
             Parses("square(1)", "(square 1)");
             Parses("square(1,2)", "(square 1 2)");
         }
 
-        [Test]
+        [Fact]
         public void ParsesBinaryOperationsRespectingPrecedenceAndAssociativity()
         {
             Parses("1+2", "(+ 1 2)");
@@ -93,7 +92,7 @@ namespace Parsley
             Parses("1^2+3^4", "(+ (^ 1 2) (^ 3 4))");
         }
 
-        [Test]
+        [Fact]
         public void ProvidesErrorAtAppropriatePositionWhenUnitParsersFail()
         {
             //Upon unit-parser failures, stop!
@@ -104,7 +103,7 @@ namespace Parsley
             expression.FailsToParse(Tokenize("(*"), "*").WithMessage("(1, 2): Parse error.");
         }
 
-        [Test]
+        [Fact]
         public void ProvidesErrorAtAppropriatePositionWhenExtendParsersFail()
         {
             //Upon extend-parser failures, stop!

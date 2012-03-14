@@ -1,31 +1,30 @@
-﻿using NUnit.Framework;
+﻿using Should;
+using Xunit;
 
 namespace Parsley
 {
-    [TestFixture]
     public class ParsedTests
     {
-        private Lexer unparsed;
+        private readonly Lexer unparsed;
 
-        [SetUp]
-        public void SetUp()
+        public ParsedTests()
         {
             unparsed = new CharLexer("0");
         }
 
-        [Test]
+        [Fact]
         public void HasAParsedValue()
         {
             new Parsed<string>("parsed", unparsed).Value.ShouldEqual("parsed");
         }
 
-        [Test]
+        [Fact]
         public void HasNoErrorMessageByDefault()
         {
             new Parsed<string>("x", unparsed).ErrorMessages.ShouldEqual(ErrorMessageList.Empty);
         }
 
-        [Test]
+        [Fact]
         public void CanIndicatePotentialErrors()
         {
             var potentialErrors = ErrorMessageList.Empty
@@ -35,13 +34,13 @@ namespace Parsley
             new Parsed<object>("x", unparsed, potentialErrors).ErrorMessages.ShouldEqual(potentialErrors);
         }
 
-        [Test]
+        [Fact]
         public void HasRemainingUnparsedTokens()
         {
             new Parsed<string>("parsed", unparsed).UnparsedTokens.ShouldEqual(unparsed);
         }
 
-        [Test]
+        [Fact]
         public void ReportsNonerrorState()
         {
             new Parsed<string>("parsed", unparsed).Success.ShouldBeTrue();

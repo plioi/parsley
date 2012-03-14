@@ -1,11 +1,11 @@
-﻿using NUnit.Framework;
+﻿using Should;
+using Xunit;
 
 namespace Parsley
 {
-    [TestFixture]
     public class GrammarRuleTests : Grammar
     {
-        [Test]
+        [Fact]
         public void CanDefineMutuallyRecursiveRules()
         {
             var tokens = new CharLexer("(A)");
@@ -20,7 +20,7 @@ namespace Parsley
             expression.Parses(tokens).IntoValue("A");
         }
 
-        [Test]
+        [Fact]
         public void HasAnOptionallyProvidedName()
         {
             var unnamed = new GrammarRule<string>();

@@ -1,24 +1,23 @@
 ﻿using System;
-using NUnit.Framework;
+using Should;
+using Xunit;
 
 namespace Parsley
 {
-    [TestFixture]
     public class TokenKindTests
     {
-        private TokenKind lower;
-        private TokenKind upper;
-        private Text abcDEF;
+        private readonly TokenKind lower;
+        private readonly TokenKind upper;
+        private readonly Text abcDEF;
 
-        [SetUp]
-        public void SetUp()
+        public TokenKindTests()
         {
             lower = new TokenKind("Lowercase", @"[a-z]+");
             upper = new TokenKind("Uppercase", @"[A-Z]+");
             abcDEF = new Text("abcDEF");
         }
 
-        [Test]
+        [Fact]
         public void ProducesNullTokenUponFailedPatternMatch()
         {
             Token token;
@@ -27,7 +26,7 @@ namespace Parsley
             token.ShouldBeNull();
         }
 
-        [Test]
+        [Fact]
         public void ProducesTokenUponSuccessfulPatternMatch()
         {
             Token token;
@@ -39,21 +38,21 @@ namespace Parsley
             token.ShouldBe(upper, "DEF", 1, 4);
         }
 
-        [Test]
+        [Fact]
         public void HasDescriptiveName()
         {
             lower.Name.ShouldEqual("Lowercase");
             upper.Name.ShouldEqual("Uppercase");
         }
 
-        [Test]
+        [Fact]
         public void UsesDescriptiveNameForToString()
         {
             lower.ToString().ShouldEqual("Lowercase");
             upper.ToString().ShouldEqual("Uppercase");
         }
 
-        [Test]
+        [Fact]
         public void ProvidesConvenienceSubclassForDefiningKeywords()
         {
             Token token;
@@ -77,7 +76,7 @@ namespace Parsley
             notJustLetters.ShouldThrow<ArgumentException>("Keywords may only contain letters.\r\nParameter name: word");
         }
 
-        [Test]
+        [Fact]
         public void ProvidesConvenienceSubclassForDefiningOperators()
         {
             Token token;

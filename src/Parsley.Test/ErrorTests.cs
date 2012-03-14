@@ -1,28 +1,28 @@
 ﻿using System;
-using NUnit.Framework;
+using Should;
+using Xunit;
 
 namespace Parsley
 {
-    [TestFixture]
     public class ErrorTests
     {
-        private Lexer x, endOfInput;
+        private readonly Lexer x;
+        private readonly Lexer endOfInput;
 
-        [SetUp]
-        public void SetUp()
+        public ErrorTests()
         {
             x = new Lexer(new Text("x"));
             endOfInput = new Lexer(new Text(""));
         }
 
-        [Test]
+        [Fact]
         public void CanIndicateErrorsAtTheCurrentPosition()
         {
             new Error<object>(endOfInput, ErrorMessage.Unknown()).ErrorMessages.ToString().ShouldEqual("Parse error.");
             new Error<object>(endOfInput, ErrorMessage.Expected("statement")).ErrorMessages.ToString().ShouldEqual("statement expected");
         }
 
-        [Test]
+        [Fact]
         public void CanIndicateMultipleErrorsAtTheCurrentPosition()
         {
             var errors = ErrorMessageList.Empty
@@ -32,21 +32,21 @@ namespace Parsley
             new Error<object>(endOfInput, errors).ErrorMessages.ToString().ShouldEqual("A or B expected");
         }
 
-        [Test]
-        [ExpectedException(typeof(MemberAccessException), ExpectedMessage = "(1, 1): Parse error.")]
+        [Fact]
         public void ThrowsWhenAttemptingToGetParsedValue()
         {
-            var value = new Error<object>(x, ErrorMessage.Unknown()).Value;
+            Func<object> inspectParsedValue = () => new Error<object>(x, ErrorMessage.Unknown()).Value;
+            inspectParsedValue.ShouldThrow<MemberAccessException>("(1, 1): Parse error.");
         }
 
-        [Test]
+        [Fact]
         public void HasRemainingUnparsedTokens()
         {
             new Error<object>(x, ErrorMessage.Unknown()).UnparsedTokens.ShouldEqual(x);
             new Error<object>(endOfInput, ErrorMessage.Unknown()).UnparsedTokens.ShouldEqual(endOfInput);
         }
 
-        [Test]
+        [Fact]
         public void ReportsErrorState()
         {
             new Error<object>(x, ErrorMessage.Unknown()).Success.ShouldBeFalse();

@@ -1,50 +1,49 @@
 ﻿using System.Linq;
-using NUnit.Framework;
+using Should;
+using Xunit;
 
 namespace Parsley
 {
-    [TestFixture]
     public class LexerTests
     {
-        private TokenKind lower;
-        private TokenKind upper;
+        private readonly TokenKind lower;
+        private readonly TokenKind upper;
 
-        [SetUp]
-        public void SetUp()
+        public LexerTests()
         {
             lower = new TokenKind("Lowercase", @"[a-z]+");
             upper = new TokenKind("Uppercase", @"[A-Z]+");
         }
 
-        [Test]
+        [Fact]
         public void ProvidesCurrentToken()
         {
             var lexer = new Lexer(new Text("ABCdef"), upper);
             lexer.CurrentToken.ShouldBe(upper, "ABC", 1, 1);
         }
 
-        [Test]
+        [Fact]
         public void AdvancesToTheNextToken()
         {
             var lexer = new Lexer(new Text("ABCdef"), upper, lower);
             lexer.Advance().CurrentToken.ShouldBe(lower, "def", 1, 4);
         }
 
-        [Test]
+        [Fact]
         public void ProvidesTokenAtEndOfInput()
         {
             var lexer = new Lexer(new Text(""));
             lexer.CurrentToken.ShouldBe(Lexer.EndOfInput, "", 1, 1);
         }
 
-        [Test]
+        [Fact]
         public void TryingToAdvanceBeyondEndOfInputResultsInNoMovement()
         {
             var lexer = new Lexer(new Text(""));
-            lexer.ShouldBeTheSameAs(lexer.Advance());
+            lexer.ShouldBeSameAs(lexer.Advance());
         }
 
-        [Test]
+        [Fact]
         public void UsesPrioritizedTokenMatchersToGetCurrentToken()
         {
             var lexer = new Lexer(new Text("ABCdefGHI"), lower, upper);
@@ -54,7 +53,7 @@ namespace Parsley
             lexer.Advance().Advance().Advance().CurrentToken.ShouldBe(Lexer.EndOfInput, "", 1, 10);
         }
 
-        [Test]
+        [Fact]
         public void CanBeEnumerated()
         {
             var tokens = new Lexer(new Text("ABCdefGHIjkl"), lower, upper).ToArray();
@@ -66,7 +65,7 @@ namespace Parsley
             tokens[4].ShouldBe(Lexer.EndOfInput, "", 1, 13);
         }
 
-        [Test]
+        [Fact]
         public void ProvidesTokenAtUnrecognizedInput()
         {
             var tokens = new Lexer(new Text("ABC!def"), upper, lower).ToArray();
@@ -76,7 +75,7 @@ namespace Parsley
             tokens[2].ShouldBe(Lexer.EndOfInput, "", 1, 8);
         }
 
-        [Test]
+        [Fact]
         public void SkipsPastSkippableTokens()
         {
             var space = new TokenKind("Space", @"\s", skippable: true);

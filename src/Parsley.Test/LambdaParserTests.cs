@@ -1,11 +1,10 @@
-using NUnit.Framework;
+using Xunit;
 
 namespace Parsley
 {
-    [TestFixture]
     public class LambdaParserTests
     {
-        [Test]
+        [Fact]
         public void CreatesParsersFromLambdas()
         {
             var succeeds = new LambdaParser<string>(tokens => new Parsed<string>("AA", tokens.Advance().Advance()));
