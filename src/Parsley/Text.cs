@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Parsley
@@ -49,6 +50,16 @@ namespace Parsley
         public Match Match(Pattern pattern)
         {
             return pattern.Match(source, index);
+        }
+
+        public string Match(Predicate<char> test)
+        {
+            int i = index;
+
+            while (i < source.Length && test(source[i]))
+                i++;
+
+            return Peek(i - index);
         }
 
         private int Column

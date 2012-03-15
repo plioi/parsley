@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using Should;
 using Xunit;
 
@@ -71,6 +72,34 @@ namespace Parsley
             abc123.Advance(6).Match(digits).Success.ShouldBeFalse();
             abc123.Advance(6).Match(letters).Success.ShouldBeFalse();
             abc123.Advance(6).Match(alphanumerics).Success.ShouldBeFalse();
+        }
+
+        [Fact]
+        public void CanMatchLeadingCharactersByPredicate()
+        {
+            Predicate<char> letters = Char.IsLetter;
+            Predicate<char> digits = Char.IsDigit;
+            Predicate<char> alphanumerics = Char.IsLetterOrDigit;
+
+            var empty = new Text("");
+            empty.Match(letters).ShouldEqual("");
+
+            var abc123 = new Text("abc123");
+            abc123.Match(digits).ShouldEqual("");
+            abc123.Match(letters).ShouldEqual("abc");
+            abc123.Match(alphanumerics).ShouldEqual("abc123");
+
+            abc123.Advance(2).Match(digits).ShouldEqual("");
+            abc123.Advance(2).Match(letters).ShouldEqual("c");
+            abc123.Advance(2).Match(alphanumerics).ShouldEqual("c123");
+
+            abc123.Advance(3).Match(digits).ShouldEqual("123");
+            abc123.Advance(3).Match(letters).ShouldEqual("");
+            abc123.Advance(3).Match(alphanumerics).ShouldEqual("123");
+
+            abc123.Advance(6).Match(digits).ShouldEqual("");
+            abc123.Advance(6).Match(letters).ShouldEqual("");
+            abc123.Advance(6).Match(alphanumerics).ShouldEqual("");
         }
 
         [Fact]
