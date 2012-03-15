@@ -48,17 +48,17 @@ namespace Parsley
 
     public class RegexTokenKind : TokenKind
     {
-        private readonly Pattern pattern;
+        private readonly TokenRegex regex;
 
         public RegexTokenKind(string name, string pattern, bool skippable = false)
             : base(name, skippable)
         {
-            this.pattern = new Pattern(pattern);
+            regex = new TokenRegex(pattern);
         }
 
         protected override MatchResult Match(Text text)
         {
-            return text.Match(pattern);
+            return text.Match(regex);
         }
     }
 

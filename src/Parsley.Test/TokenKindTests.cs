@@ -18,7 +18,7 @@ namespace Parsley
         }
 
         [Fact]
-        public void ProducesNullTokenUponFailedPatternMatch()
+        public void ProducesNullTokenUponFailedMatch()
         {
             Token token;
 
@@ -27,7 +27,7 @@ namespace Parsley
         }
 
         [Fact]
-        public void ProducesTokenUponSuccessfulPatternMatch()
+        public void ProducesTokenUponSuccessfulMatch()
         {
             Token token;
 

@@ -2,12 +2,12 @@
 
 namespace Parsley
 {
-    public class Pattern
+    public class TokenRegex
     {
         private readonly string pattern;
         private readonly Regex regex;
 
-        public Pattern(string pattern)
+        public TokenRegex(string pattern)
         {
             this.pattern = pattern;
             regex = new Regex(@"\G(

@@ -47,12 +47,12 @@ namespace Parsley
         }
 
         [Fact]
-        public void CanMatchLeadingCharactersByPattern()
+        public void CanMatchLeadingCharactersByTokenRegex()
         {
-            var end = new Pattern(@"$");
-            var letters = new Pattern(@"[a-z]+");
-            var digits = new Pattern(@"[0-9]+");
-            var alphanumerics = new Pattern(@"[a-z0-9]+");
+            var end = new TokenRegex(@"$");
+            var letters = new TokenRegex(@"[a-z]+");
+            var digits = new TokenRegex(@"[0-9]+");
+            var alphanumerics = new TokenRegex(@"[a-z0-9]+");
 
             var empty = new Text("");
             empty.Match(letters).ShouldFail();

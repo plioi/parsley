@@ -46,9 +46,9 @@ namespace Parsley
             get { return index >= source.Length; }
         }
 
-        public MatchResult Match(Pattern pattern)
+        public MatchResult Match(TokenRegex regex)
         {
-            return pattern.Match(source, index);
+            return regex.Match(source, index);
         }
 
         public MatchResult Match(Predicate<char> test)
