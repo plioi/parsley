@@ -11,8 +11,8 @@ namespace Parsley
 
         public LexerTests()
         {
-            lower = new RegexTokenKind("Lowercase", @"[a-z]+");
-            upper = new RegexTokenKind("Uppercase", @"[A-Z]+");
+            lower = new Pattern("Lowercase", @"[a-z]+");
+            upper = new Pattern("Uppercase", @"[A-Z]+");
         }
 
         [Fact]
@@ -78,7 +78,7 @@ namespace Parsley
         [Fact]
         public void SkipsPastSkippableTokens()
         {
-            var space = new RegexTokenKind("Space", @"\s", skippable: true);
+            var space = new Pattern("Space", @"\s", skippable: true);
 
             var tokens = new Lexer(new Text(" "), lower, upper, space).ToArray();
             tokens.Length.ShouldEqual(1);

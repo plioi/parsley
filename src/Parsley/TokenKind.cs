@@ -46,11 +46,11 @@ namespace Parsley
         }
     }
 
-    public class RegexTokenKind : TokenKind
+    public class Pattern : TokenKind
     {
         private readonly TokenRegex regex;
 
-        public RegexTokenKind(string name, string pattern, bool skippable = false)
+        public Pattern(string name, string pattern, bool skippable = false)
             : base(name, skippable)
         {
             regex = new TokenRegex(pattern);
@@ -62,7 +62,7 @@ namespace Parsley
         }
     }
 
-    public class Keyword : RegexTokenKind
+    public class Keyword : Pattern
     {
         public Keyword(string word)
             : base(word, word + @"\b")

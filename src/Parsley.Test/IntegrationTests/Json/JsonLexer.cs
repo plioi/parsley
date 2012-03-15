@@ -9,7 +9,7 @@ namespace Parsley.IntegrationTests.Json
                    Comma, OpenArray, CloseArray, OpenDictionary, CloseDictionary, Colon,
                    Number, Quotation) { }
 
-        private static readonly TokenKind Whitespace = new RegexTokenKind("whitespace", @"\s+", skippable: true);
+        private static readonly TokenKind Whitespace = new Pattern("whitespace", @"\s+", skippable: true);
         
         public static readonly Keyword @null = new Keyword("null");
         public static readonly Keyword @true = new Keyword("true");
@@ -21,7 +21,7 @@ namespace Parsley.IntegrationTests.Json
         public static readonly Operator CloseDictionary = new Operator("}");
         public static readonly Operator Colon = new Operator(":");
 
-        public static readonly TokenKind Quotation = new RegexTokenKind("string", @"
+        public static readonly TokenKind Quotation = new Pattern("string", @"
             # Open quote:
             ""
 
@@ -36,7 +36,7 @@ namespace Parsley.IntegrationTests.Json
             ""
         ");
 
-        public static readonly TokenKind Number = new RegexTokenKind("number", @"
+        public static readonly TokenKind Number = new Pattern("number", @"
             # Look-ahead to confirm the whole-number part is either 0 or starts with 1-9:
             (?=
                 0(?!\d)  |  [1-9]

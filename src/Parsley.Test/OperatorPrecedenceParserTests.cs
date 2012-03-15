@@ -128,8 +128,8 @@ namespace Parsley
 
         private class SampleLexer : Lexer
         {
-            public static readonly TokenKind Digit = new RegexTokenKind("Digit", @"[0-9]");
-            public static readonly TokenKind Name = new RegexTokenKind("Name", @"[a-z]+");
+            public static readonly TokenKind Digit = new Pattern("Digit", @"[0-9]");
+            public static readonly TokenKind Name = new Pattern("Name", @"[a-z]+");
             public static readonly TokenKind Increment = new Operator("++");
             public static readonly TokenKind Decrement = new Operator("--");
             public static readonly TokenKind Add = new Operator("+");

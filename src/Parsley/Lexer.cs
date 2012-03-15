@@ -7,8 +7,8 @@ namespace Parsley
 {
     public class Lexer : IEnumerable<Token>
     {
-        public static readonly TokenKind EndOfInput = new RegexTokenKind("end of input", @"$");
-        public static readonly TokenKind Unknown = new RegexTokenKind("Unknown", @".*");
+        public static readonly TokenKind EndOfInput = new Pattern("end of input", @"$");
+        public static readonly TokenKind Unknown = new Pattern("Unknown", @".*");
 
         private readonly Text text;
         private readonly List<TokenKind> kinds;
