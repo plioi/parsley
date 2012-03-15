@@ -12,8 +12,8 @@ namespace Parsley
 
         public TokenKindTests()
         {
-            lower = new TokenKind("Lowercase", @"[a-z]+");
-            upper = new TokenKind("Uppercase", @"[A-Z]+");
+            lower = new RegexTokenKind("Lowercase", @"[a-z]+");
+            upper = new RegexTokenKind("Uppercase", @"[A-Z]+");
             abcDEF = new Text("abcDEF");
         }
 

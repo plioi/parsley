@@ -1,25 +1,22 @@
 ﻿using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace Parsley
 {
-    public class TokenKind
+    public abstract class TokenKind
     {
         private readonly string name;
-        private readonly Pattern pattern;
         private readonly bool skippable;
 
-        public TokenKind(string name, string pattern, bool skippable = false)
+        protected TokenKind(string name, bool skippable = false)
         {
             this.name = name;
-            this.pattern = new Pattern(pattern);
             this.skippable = skippable;
         }
 
         public bool TryMatch(Text text, out Token token)
         {
-            var match = text.Match(pattern);
+            var match = Match(text);
 
             if (match.Success)
             {
@@ -30,6 +27,8 @@ namespace Parsley
             token = null;
             return false;
         }
+
+        protected abstract MatchResult Match(Text text);
 
         public string Name
         {
@@ -47,9 +46,26 @@ namespace Parsley
         }
     }
 
-    public class Keyword : TokenKind
+    public class RegexTokenKind : TokenKind
     {
-        public Keyword(string word) : base(word, word + @"\b")
+        private readonly Pattern pattern;
+
+        public RegexTokenKind(string name, string pattern, bool skippable = false)
+            : base(name, skippable)
+        {
+            this.pattern = new Pattern(pattern);
+        }
+
+        protected override MatchResult Match(Text text)
+        {
+            return text.Match(pattern);
+        }
+    }
+
+    public class Keyword : RegexTokenKind
+    {
+        public Keyword(string word)
+            : base(word, word + @"\b")
         {
             if (word.Any(ch => !Char.IsLetter(ch)))
                 throw new ArgumentException("Keywords may only contain letters.", "word");
@@ -58,6 +74,22 @@ namespace Parsley
 
     public class Operator : TokenKind
     {
-        public Operator(string symbol) : base(symbol, Regex.Escape(symbol)) { }
+        private readonly string symbol;
+
+        public Operator(string symbol)
+            : base(symbol)
+        {
+            this.symbol = symbol;
+        }
+
+        protected override MatchResult Match(Text text)
+        {
+            var peek = text.Peek(symbol.Length);
+
+            if (peek == symbol)
+                return MatchResult.Succeed(peek);
+
+            return MatchResult.Fail();
+        }
     }
 }

@@ -15,10 +15,14 @@ namespace Parsley
                                        )", RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace);
         }
 
-        public Match Match(string input, int index)
+        public MatchResult Match(string input, int index)
         {
             var match = regex.Match(input, index);
-            return new Match(match.Success, match.Value);
+
+            if (match.Success)
+                return MatchResult.Succeed(match.Value);
+
+            return MatchResult.Fail();
         }
 
         public override string ToString()

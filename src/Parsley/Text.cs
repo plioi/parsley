@@ -46,12 +46,12 @@ namespace Parsley
             get { return index >= source.Length; }
         }
 
-        public Match Match(Pattern pattern)
+        public MatchResult Match(Pattern pattern)
         {
             return pattern.Match(source, index);
         }
 
-        public Match Match(Predicate<char> test)
+        public MatchResult Match(Predicate<char> test)
         {
             int i = index;
 
@@ -59,7 +59,11 @@ namespace Parsley
                 i++;
 
             var value = Peek(i - index);
-            return new Match(value.Length > 0, value);
+
+            if (value.Length > 0)
+                return MatchResult.Succeed(value);
+
+            return MatchResult.Fail();
         }
 
         private int Column

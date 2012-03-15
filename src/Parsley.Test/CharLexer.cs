@@ -3,6 +3,6 @@
     public class CharLexer : Lexer
     {
         public CharLexer(string source)
-            : base(new Text(source), new TokenKind("Character", @".")) { }
+            : base(new Text(source), new RegexTokenKind("Character", @".")) { }
     }
 }

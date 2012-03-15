@@ -28,13 +28,13 @@ namespace Parsley
             action.ShouldThrow<TException>(expectedMessage);
         }
 
-        public static void ShouldSucceed(this Match actual, string expected)
+        public static void ShouldSucceed(this MatchResult actual, string expected)
         {
             actual.Success.ShouldBeTrue();
             actual.Value.ShouldEqual(expected);
         }
 
-        public static void ShouldFail(this Match actual)
+        public static void ShouldFail(this MatchResult actual)
         {
             actual.Success.ShouldBeFalse();
             actual.Value.ShouldEqual("");

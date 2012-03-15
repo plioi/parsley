@@ -13,9 +13,9 @@ namespace Parsley
 
         private class SampleLexer : Lexer
         {
-            public static readonly TokenKind Digit = new TokenKind("Digit", @"[0-9]");
-            public static readonly TokenKind Letter = new TokenKind("Letter", @"[a-zA-Z]");
-            public static readonly TokenKind Symbol = new TokenKind("Symbol", @".");
+            public static readonly TokenKind Digit = new RegexTokenKind("Digit", @"[0-9]");
+            public static readonly TokenKind Letter = new RegexTokenKind("Letter", @"[a-zA-Z]");
+            public static readonly TokenKind Symbol = new RegexTokenKind("Symbol", @".");
 
             public SampleLexer(string source)
                 : base(new Text(source), Digit, Letter, Symbol) { }
