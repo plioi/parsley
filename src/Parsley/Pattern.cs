@@ -17,7 +17,8 @@ namespace Parsley
 
         public Match Match(string input, int index)
         {
-            return regex.Match(input, index);
+            var match = regex.Match(input, index);
+            return new Match(match.Success, match.Value);
         }
 
         public override string ToString()

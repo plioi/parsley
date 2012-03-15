@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace Parsley
 {
@@ -52,14 +51,15 @@ namespace Parsley
             return pattern.Match(source, index);
         }
 
-        public string Match(Predicate<char> test)
+        public Match Match(Predicate<char> test)
         {
             int i = index;
 
             while (i < source.Length && test(source[i]))
                 i++;
 
-            return Peek(i - index);
+            var value = Peek(i - index);
+            return new Match(value.Length > 0, value);
         }
 
         private int Column

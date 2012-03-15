@@ -27,5 +27,17 @@ namespace Parsley
             Action action = () => shouldThrow();
             action.ShouldThrow<TException>(expectedMessage);
         }
+
+        public static void ShouldSucceed(this Match actual, string expected)
+        {
+            actual.Success.ShouldBeTrue();
+            actual.Value.ShouldEqual(expected);
+        }
+
+        public static void ShouldFail(this Match actual)
+        {
+            actual.Success.ShouldBeFalse();
+            actual.Value.ShouldEqual("");
+        }
     }
 }
