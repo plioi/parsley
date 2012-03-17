@@ -54,6 +54,7 @@
     <Compile Include="Parser.cs" />
     <Compile Include="ParserQuery.cs" />
     <Compile Include="ParsingAssertions.cs" />
+    <Compile Include="Stream.cs" />
     <Compile Include="TokenRegex.cs" />
     <Compile Include="Position.cs" />
     <Compile Include="Primitives\AttemptParser.cs" />
