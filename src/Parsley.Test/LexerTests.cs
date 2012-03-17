@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
 using Should;
 using Xunit;
 
@@ -56,7 +56,7 @@ namespace Parsley
         [Fact]
         public void CanBeEnumerated()
         {
-            var tokens = new Lexer(new Text("ABCdefGHIjkl"), lower, upper).ToArray();
+            var tokens = ToArray(new Lexer(new Text("ABCdefGHIjkl"), lower, upper));
             tokens.Length.ShouldEqual(5);
             tokens[0].ShouldBe(upper, "ABC", 1, 1);
             tokens[1].ShouldBe(lower, "def", 1, 4);
@@ -68,7 +68,7 @@ namespace Parsley
         [Fact]
         public void ProvidesTokenAtUnrecognizedInput()
         {
-            var tokens = new Lexer(new Text("ABC!def"), upper, lower).ToArray();
+            var tokens = ToArray(new Lexer(new Text("ABC!def"), upper, lower));
             tokens.Length.ShouldEqual(3);
             tokens[0].ShouldBe(upper, "ABC", 1, 1);
             tokens[1].ShouldBe(Lexer.Unknown, "!def", 1, 4);
@@ -80,17 +80,30 @@ namespace Parsley
         {
             var space = new Pattern("Space", @"\s", skippable: true);
 
-            var tokens = new Lexer(new Text(" "), lower, upper, space).ToArray();
+            var tokens = ToArray(new Lexer(new Text(" "), lower, upper, space));
             tokens.Length.ShouldEqual(1);
             tokens[0].ShouldBe(Lexer.EndOfInput, "", 1, 2);
 
-            tokens = new Lexer(new Text(" ABC  def   GHI    jkl"), lower, upper, space).ToArray();
+            tokens = ToArray(new Lexer(new Text(" ABC  def   GHI    jkl"), lower, upper, space));
             tokens.Length.ShouldEqual(5);
             tokens[0].ShouldBe(upper, "ABC", 1, 2);
             tokens[1].ShouldBe(lower, "def", 1, 7);
             tokens[2].ShouldBe(upper, "GHI", 1, 13);
             tokens[3].ShouldBe(lower, "jkl", 1, 20);
             tokens[4].ShouldBe(Lexer.EndOfInput, "", 1, 23);
+        }
+
+        private Token[] ToArray(Lexer lexer)
+        {
+            var tokens = new List<Token> { lexer.CurrentToken };
+
+            while (lexer.CurrentToken.Kind != Lexer.EndOfInput)
+            {
+                lexer = lexer.Advance();
+                tokens.Add(lexer.CurrentToken);
+            }
+
+            return tokens.ToArray();
         }
     }
 }
