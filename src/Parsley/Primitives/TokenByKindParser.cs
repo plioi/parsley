@@ -9,7 +9,7 @@ namespace Parsley.Primitives
             this.kind = kind;
         }
 
-        public Reply<Token> Parse(Lexer tokens)
+        public Reply<Token> Parse(TokenStream tokens)
         {
             if (tokens.Current.Kind == kind)
                 return new Parsed<Token>(tokens.Current, tokens.Advance());

@@ -1,8 +1,8 @@
 ﻿namespace Parsley
 {
-    public class CharLexer : Lexer
+    public class CharTokenStream : TokenStream
     {
-        public CharLexer(string source)
+        public CharTokenStream(string source)
             : base(new Text(source), new Pattern("Character", @".")) { }
     }
 }

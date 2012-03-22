@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Parsley
 {
-    public class Lexer : IEnumerable<Token>
+    public class TokenStream : IEnumerable<Token>
     {
         public static readonly TokenKind EndOfInput = new Pattern("end of input", @"$");
         public static readonly TokenKind Unknown = new Pattern("Unknown", @".*");
@@ -14,12 +14,12 @@ namespace Parsley
         private readonly List<TokenKind> kinds;
 
         private readonly Token current;
-        private readonly Lazy<Lexer> lazyAdvance;
+        private readonly Lazy<TokenStream> lazyAdvance;
 
-        public Lexer(Text text, params TokenKind[] kinds)
+        public TokenStream(Text text, params TokenKind[] kinds)
             : this(text, kinds.Concat(new[] { EndOfInput, Unknown }).ToList()) { }
 
-        private Lexer(Text text, List<TokenKind> kinds)
+        private TokenStream(Text text, List<TokenKind> kinds)
         {
             current = GetToken(text, kinds);
 
@@ -36,7 +36,7 @@ namespace Parsley
             this.text = text;
             this.kinds = kinds;
 
-            lazyAdvance = new Lazy<Lexer>(LazyAdvance);
+            lazyAdvance = new Lazy<TokenStream>(LazyAdvance);
         }
 
         private static Token GetToken(Text text, IEnumerable<TokenKind> kinds)
@@ -49,12 +49,12 @@ namespace Parsley
             return null; //EndOfInput and Unknown guarantee this is unreachable.
         }
 
-        private Lexer LazyAdvance()
+        private TokenStream LazyAdvance()
         {
             if (text.EndOfInput)
                 return this;
 
-            return new Lexer(text.Advance(Current.Literal.Length), kinds);
+            return new TokenStream(text.Advance(Current.Literal.Length), kinds);
         }
 
         public Token Current
@@ -62,7 +62,7 @@ namespace Parsley
             get { return current; }
         }
 
-        public Lexer Advance()
+        public TokenStream Advance()
         {
             return lazyAdvance.Value;
         }

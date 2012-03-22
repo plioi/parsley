@@ -5,11 +5,11 @@ namespace Parsley
 {
     public class ParsedTests
     {
-        private readonly Lexer unparsed;
+        private readonly TokenStream unparsed;
 
         public ParsedTests()
         {
-            unparsed = new CharLexer("0");
+            unparsed = new CharTokenStream("0");
         }
 
         [Fact]

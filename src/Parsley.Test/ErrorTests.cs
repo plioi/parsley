@@ -6,13 +6,13 @@ namespace Parsley
 {
     public class ErrorTests
     {
-        private readonly Lexer x;
-        private readonly Lexer endOfInput;
+        private readonly TokenStream x;
+        private readonly TokenStream endOfInput;
 
         public ErrorTests()
         {
-            x = new Lexer(new Text("x"));
-            endOfInput = new Lexer(new Text(""));
+            x = new TokenStream(new Text("x"));
+            endOfInput = new TokenStream(new Text(""));
         }
 
         [Fact]

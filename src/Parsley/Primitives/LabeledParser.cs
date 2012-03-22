@@ -11,7 +11,7 @@
             errors = ErrorMessageList.Empty.With(ErrorMessage.Expected(expectation));
         }
 
-        public Reply<T> Parse(Lexer tokens)
+        public Reply<T> Parse(TokenStream tokens)
         {
             var start = tokens.Position;
             var reply = parser.Parse(tokens);

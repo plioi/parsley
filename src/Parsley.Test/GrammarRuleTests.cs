@@ -8,7 +8,7 @@ namespace Parsley
         [Fact]
         public void CanDefineMutuallyRecursiveRules()
         {
-            var tokens = new CharLexer("(A)");
+            var tokens = new CharTokenStream("(A)");
             var expression = new GrammarRule<string>();
             var alpha = new GrammarRule<string>();
             var parenthesizedExpresion = new GrammarRule<string>();

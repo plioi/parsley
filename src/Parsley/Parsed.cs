@@ -4,10 +4,10 @@
     {
         private readonly ErrorMessageList potentialErrors;
 
-        public Parsed(T value, Lexer unparsedTokens)
+        public Parsed(T value, TokenStream unparsedTokens)
             :this(value, unparsedTokens, ErrorMessageList.Empty) { }
 
-        public Parsed(T value, Lexer unparsedTokens, ErrorMessageList potentialErrors)
+        public Parsed(T value, TokenStream unparsedTokens, ErrorMessageList potentialErrors)
         {
             Value = value;
             UnparsedTokens = unparsedTokens;
@@ -15,7 +15,7 @@
         }
 
         public T Value { get; private set; }
-        public Lexer UnparsedTokens { get; private set; }
+        public TokenStream UnparsedTokens { get; private set; }
         public bool Success { get { return true; } }
         public ErrorMessageList ErrorMessages { get { return potentialErrors; } }
     }

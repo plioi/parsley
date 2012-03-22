@@ -1,8 +1,8 @@
 namespace Parsley.IntegrationTests.Json
 {
-    public class JsonLexer : Lexer
+    public class JsonTokenStream : TokenStream
     {
-        public JsonLexer(string source)
+        public JsonTokenStream(string source)
             : base(new Text(source),
                    Whitespace,
                    @null, @true, @false,

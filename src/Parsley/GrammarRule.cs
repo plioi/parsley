@@ -4,7 +4,7 @@ namespace Parsley
 {
     public class GrammarRule<T> : Parser<T>
     {
-        private Func<Lexer, Reply<T>> parse;
+        private Func<TokenStream, Reply<T>> parse;
 
         public GrammarRule(string name = null)
         {
@@ -19,7 +19,7 @@ namespace Parsley
             set { parse = value.Parse; }
         }
 
-        public Reply<T> Parse(Lexer tokens)
+        public Reply<T> Parse(TokenStream tokens)
         {
             return parse(tokens);
         }

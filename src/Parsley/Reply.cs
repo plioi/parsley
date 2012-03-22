@@ -3,7 +3,7 @@
     public interface Reply<out T>
     {
         T Value { get; }
-        Lexer UnparsedTokens { get; }
+        TokenStream UnparsedTokens { get; }
         bool Success { get; }
         ErrorMessageList ErrorMessages { get; }
     }

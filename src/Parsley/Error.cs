@@ -6,10 +6,10 @@ namespace Parsley
     {
         private readonly ErrorMessageList errors;
 
-        public Error(Lexer unparsedTokens, ErrorMessage error)
+        public Error(TokenStream unparsedTokens, ErrorMessage error)
             : this(unparsedTokens,  ErrorMessageList.Empty.With(error)) { }
 
-        public Error(Lexer unparsedTokens, ErrorMessageList errors)
+        public Error(TokenStream unparsedTokens, ErrorMessageList errors)
         {
             UnparsedTokens = unparsedTokens;
 
@@ -25,7 +25,7 @@ namespace Parsley
             }
         }
 
-        public Lexer UnparsedTokens { get; private set; }
+        public TokenStream UnparsedTokens { get; private set; }
 
         public bool Success { get { return false; } }
 

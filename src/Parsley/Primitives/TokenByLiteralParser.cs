@@ -9,7 +9,7 @@ namespace Parsley.Primitives
             this.expectation = expectation;
         }
 
-        public Reply<Token> Parse(Lexer tokens)
+        public Reply<Token> Parse(TokenStream tokens)
         {
             if (tokens.Current.Literal == expectation)
                 return new Parsed<Token>(tokens.Current, tokens.Advance());

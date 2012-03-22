@@ -39,7 +39,7 @@ namespace Parsley
 
         public static Parser<Token> EndOfInput
         {
-            get { return Token(Lexer.EndOfInput); }
+            get { return Token(TokenStream.EndOfInput); }
         }
 
         public static Parser<Token> Token(TokenKind kind)

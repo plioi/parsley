@@ -64,7 +64,7 @@ namespace Parsley
                                                   select createBinaryNode(left, symbol, right));
         }
 
-        public Reply<T> Parse(Lexer tokens)
+        public Reply<T> Parse(TokenStream tokens)
         {
             return Parse(tokens, 0);
         }
@@ -74,7 +74,7 @@ namespace Parsley
             return new LambdaParser<T>(tokens => Parse(tokens, precedence));
         }
 
-        private Reply<T> Parse(Lexer tokens, int precedence)
+        private Reply<T> Parse(TokenStream tokens, int precedence)
         {
             Token token = tokens.Current;
 

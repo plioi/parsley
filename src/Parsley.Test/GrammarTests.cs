@@ -6,18 +6,18 @@ namespace Parsley
 {
     public class GrammarTests : Grammar
     {
-        private static Lexer Tokenize(string source)
+        private static TokenStream Tokenize(string source)
         {
-            return new SampleLexer(source);
+            return new SampleTokenStream(source);
         }
 
-        private class SampleLexer : Lexer
+        private class SampleTokenStream : TokenStream
         {
             public static readonly TokenKind Digit = new Pattern("Digit", @"[0-9]");
             public static readonly TokenKind Letter = new Pattern("Letter", @"[a-zA-Z]");
             public static readonly TokenKind Symbol = new Pattern("Symbol", @".");
 
-            public SampleLexer(string source)
+            public SampleTokenStream(string source)
                 : base(new Text(source), Digit, Letter, Symbol) { }
         }
 
@@ -51,11 +51,11 @@ namespace Parsley
         [Fact]
         public void CanDemandThatAGivenKindOfTokenAppearsNext()
         {
-            Token(SampleLexer.Letter).Parses(Tokenize("A")).IntoToken("A");
-            Token(SampleLexer.Letter).FailsToParse(Tokenize("0"), "0").WithMessage("(1, 1): Letter expected");
+            Token(SampleTokenStream.Letter).Parses(Tokenize("A")).IntoToken("A");
+            Token(SampleTokenStream.Letter).FailsToParse(Tokenize("0"), "0").WithMessage("(1, 1): Letter expected");
 
-            Token(SampleLexer.Digit).FailsToParse(Tokenize("A"), "A").WithMessage("(1, 1): Digit expected");
-            Token(SampleLexer.Digit).Parses(Tokenize("0")).IntoToken("0");
+            Token(SampleTokenStream.Digit).FailsToParse(Tokenize("A"), "A").WithMessage("(1, 1): Digit expected");
+            Token(SampleTokenStream.Digit).Parses(Tokenize("0")).IntoToken("0");
         }
 
         [Fact]
@@ -183,9 +183,9 @@ namespace Parsley
 
     public class AlternationTests : Grammar
     {
-        private static Lexer Tokenize(string source)
+        private static TokenStream Tokenize(string source)
         {
-            return new CharLexer(source);
+            return new CharTokenStream(source);
         }
 
         private readonly Parser<Token> A, B, C;

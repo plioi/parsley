@@ -6,7 +6,7 @@ namespace Parsley
 {
     public static class ParsingAssertions
     {
-        public static void ShouldYieldTokens(this Lexer tokens, TokenKind expectedKind, params string[] expectedLiterals)
+        public static void ShouldYieldTokens(this TokenStream tokens, TokenKind expectedKind, params string[] expectedLiterals)
         {
             foreach (var expectedLiteral in expectedLiterals)
             {
@@ -14,19 +14,19 @@ namespace Parsley
                 tokens = tokens.Advance();
             }
 
-            AssertEqual(Lexer.EndOfInput, tokens.Current.Kind);
+            AssertEqual(TokenStream.EndOfInput, tokens.Current.Kind);
         }
 
-        public static void ShouldYieldTokens(this Lexer tokens, params string[] expectedLiterals)
+        public static void ShouldYieldTokens(this TokenStream tokens, params string[] expectedLiterals)
         {
             foreach (var expectedLiteral in expectedLiterals)
             {
                 AssertTokenLiteralsEqual(expectedLiteral, tokens.Current.Literal);
-                AssertNotEqual(Lexer.Unknown, tokens.Current.Kind);
+                AssertNotEqual(TokenStream.Unknown, tokens.Current.Kind);
                 tokens = tokens.Advance();
             }
 
-            AssertEqual(Lexer.EndOfInput, tokens.Current.Kind);
+            AssertEqual(TokenStream.EndOfInput, tokens.Current.Kind);
         }
 
         public static void ShouldBe(this Token actual, TokenKind expectedKind, string expectedLiteral, int expectedLine, int expectedColumn)
@@ -45,7 +45,7 @@ namespace Parsley
             AssertTokenLiteralsEqual(expectedLiteral, actual.Literal);
         }
 
-        public static Reply<T> FailsToParse<T>(this Parser<T> parser, Lexer tokens, string expectedUnparsedSource)
+        public static Reply<T> FailsToParse<T>(this Parser<T> parser, TokenStream tokens, string expectedUnparsedSource)
         {
             return parser.Parse(tokens).Fails().WithUnparsedText(expectedUnparsedSource);
         }
@@ -78,12 +78,12 @@ namespace Parsley
             return reply;
         }
 
-        public static Reply<T> PartiallyParses<T>(this Parser<T> parser, Lexer tokens, string expectedUnparsedSource)
+        public static Reply<T> PartiallyParses<T>(this Parser<T> parser, TokenStream tokens, string expectedUnparsedSource)
         {
             return parser.Parse(tokens).Succeeds().WithUnparsedText(expectedUnparsedSource);
         }
 
-        public static Reply<T> Parses<T>(this Parser<T> parser, Lexer tokens)
+        public static Reply<T> Parses<T>(this Parser<T> parser, TokenStream tokens)
         {
             return parser.Parse(tokens).Succeeds().WithAllInputConsumed();
         }
@@ -110,7 +110,7 @@ namespace Parsley
         private static Reply<T> WithAllInputConsumed<T>(this Reply<T> reply)
         {
             var nextTokenKind = reply.UnparsedTokens.Current.Kind;
-            AssertEqual(Lexer.EndOfInput, nextTokenKind);
+            AssertEqual(TokenStream.EndOfInput, nextTokenKind);
             return reply.WithUnparsedText("");
         }
 

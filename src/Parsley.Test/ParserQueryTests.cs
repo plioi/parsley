@@ -7,9 +7,9 @@ namespace Parsley
     {
         private static readonly Parser<string> Next = new LambdaParser<string>(tokens => new Parsed<string>(tokens.Current.Literal, tokens.Advance()));
 
-        private static Lexer Tokenize(string source)
+        private static TokenStream Tokenize(string source)
         {
-            return new CharLexer(source);
+            return new CharTokenStream(source);
         }
 
         [Fact]

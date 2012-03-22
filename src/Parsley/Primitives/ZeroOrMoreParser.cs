@@ -12,7 +12,7 @@ namespace Parsley.Primitives
             this.item = item;
         }
 
-        public Reply<IEnumerable<T>> Parse(Lexer tokens)
+        public Reply<IEnumerable<T>> Parse(TokenStream tokens)
         {
             Position oldPosition = tokens.Position;
             var reply = item.Parse(tokens);

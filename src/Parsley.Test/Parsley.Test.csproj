@@ -47,18 +47,18 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssertionExtensions.cs" />
-    <Compile Include="CharLexer.cs" />
+    <Compile Include="CharTokenStream.cs" />
     <Compile Include="ErrorMessageListTests.cs" />
     <Compile Include="ErrorMessageTests.cs" />
     <Compile Include="ErrorTests.cs" />
     <Compile Include="GrammarRuleTests.cs" />
     <Compile Include="GrammarTests.cs" />
     <Compile Include="IntegrationTests\Json\JsonGrammarTests.cs" />
-    <Compile Include="IntegrationTests\Json\JsonLexer.cs" />
-    <Compile Include="IntegrationTests\Json\JsonLexerTests.cs" />
+    <Compile Include="IntegrationTests\Json\JsonTokenStream.cs" />
+    <Compile Include="IntegrationTests\Json\JsonTokenStreamTests.cs" />
     <Compile Include="IntegrationTests\Json\JsonGrammar.cs" />
     <Compile Include="LambdaParserTests.cs" />
-    <Compile Include="LexerTests.cs" />
+    <Compile Include="TokenStreamTests.cs" />
     <Compile Include="OperatorPrecedenceParserTests.cs" />
     <Compile Include="ParsedTests.cs" />
     <Compile Include="ParserQueryTests.cs" />

@@ -9,7 +9,7 @@ namespace Parsley.Primitives
             this.parse = parse;
         }
 
-        public Reply<T> Parse(Lexer tokens)
+        public Reply<T> Parse(TokenStream tokens)
         {
             var start = tokens.Position;
             var reply = parse.Parse(tokens);

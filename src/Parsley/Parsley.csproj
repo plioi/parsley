@@ -47,7 +47,7 @@
     <Compile Include="Grammar.cs" />
     <Compile Include="GrammarRule.cs" />
     <Compile Include="LambdaParser.cs" />
-    <Compile Include="Lexer.cs" />
+    <Compile Include="TokenStream.cs" />
     <Compile Include="MatchResult.cs" />
     <Compile Include="OperatorPrecedenceParser.cs" />
     <Compile Include="Parsed.cs" />
