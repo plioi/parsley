@@ -18,39 +18,39 @@ namespace Parsley
         [Fact]
         public void ProvidesCurrentToken()
         {
-            var lexer = new Lexer(new Text("ABCdef"), upper);
-            lexer.CurrentToken.ShouldBe(upper, "ABC", 1, 1);
+            var tokens = new Lexer(new Text("ABCdef"), upper);
+            tokens.Current.ShouldBe(upper, "ABC", 1, 1);
         }
 
         [Fact]
         public void AdvancesToTheNextToken()
         {
-            var lexer = new Lexer(new Text("ABCdef"), upper, lower);
-            lexer.Advance().CurrentToken.ShouldBe(lower, "def", 1, 4);
+            var tokens = new Lexer(new Text("ABCdef"), upper, lower);
+            tokens.Advance().Current.ShouldBe(lower, "def", 1, 4);
         }
 
         [Fact]
         public void ProvidesTokenAtEndOfInput()
         {
-            var lexer = new Lexer(new Text(""));
-            lexer.CurrentToken.ShouldBe(Lexer.EndOfInput, "", 1, 1);
+            var tokens = new Lexer(new Text(""));
+            tokens.Current.ShouldBe(Lexer.EndOfInput, "", 1, 1);
         }
 
         [Fact]
         public void TryingToAdvanceBeyondEndOfInputResultsInNoMovement()
         {
-            var lexer = new Lexer(new Text(""));
-            lexer.ShouldBeSameAs(lexer.Advance());
+            var tokens = new Lexer(new Text(""));
+            tokens.ShouldBeSameAs(tokens.Advance());
         }
 
         [Fact]
         public void UsesPrioritizedTokenMatchersToGetCurrentToken()
         {
-            var lexer = new Lexer(new Text("ABCdefGHI"), lower, upper);
-            lexer.CurrentToken.ShouldBe(upper, "ABC", 1, 1);
-            lexer.Advance().CurrentToken.ShouldBe(lower, "def", 1, 4);
-            lexer.Advance().Advance().CurrentToken.ShouldBe(upper, "GHI", 1, 7);
-            lexer.Advance().Advance().Advance().CurrentToken.ShouldBe(Lexer.EndOfInput, "", 1, 10);
+            var tokens = new Lexer(new Text("ABCdefGHI"), lower, upper);
+            tokens.Current.ShouldBe(upper, "ABC", 1, 1);
+            tokens.Advance().Current.ShouldBe(lower, "def", 1, 4);
+            tokens.Advance().Advance().Current.ShouldBe(upper, "GHI", 1, 7);
+            tokens.Advance().Advance().Advance().Current.ShouldBe(Lexer.EndOfInput, "", 1, 10);
         }
 
         [Fact]

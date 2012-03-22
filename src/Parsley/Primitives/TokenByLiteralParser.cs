@@ -11,8 +11,8 @@ namespace Parsley.Primitives
 
         public Reply<Token> Parse(Lexer tokens)
         {
-            if (tokens.CurrentToken.Literal == expectation)
-                return new Parsed<Token>(tokens.CurrentToken, tokens.Advance());
+            if (tokens.Current.Literal == expectation)
+                return new Parsed<Token>(tokens.Current, tokens.Advance());
 
             return new Error<Token>(tokens, ErrorMessage.Expected(expectation));
         }

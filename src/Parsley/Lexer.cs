@@ -13,7 +13,7 @@ namespace Parsley
         private readonly Text text;
         private readonly List<TokenKind> kinds;
 
-        private readonly Token currentToken;
+        private readonly Token current;
         private readonly Lazy<Lexer> lazyAdvance;
 
         public Lexer(Text text, params TokenKind[] kinds)
@@ -21,16 +21,16 @@ namespace Parsley
 
         private Lexer(Text text, List<TokenKind> kinds)
         {
-            currentToken = GetToken(text, kinds);
+            current = GetToken(text, kinds);
 
-            //After exiting this loop, currentToken will be the
+            //After exiting this loop, Current will be the
             //next unskippable token, and text will indicate
             //where that token starts.
-            while (currentToken.Kind.Skippable)
+            while (current.Kind.Skippable)
             {
-                text = text.Advance(currentToken.Literal.Length);
+                text = text.Advance(current.Literal.Length);
 
-                currentToken = GetToken(text, kinds);
+                current = GetToken(text, kinds);
             }
 
             this.text = text;
@@ -54,12 +54,12 @@ namespace Parsley
             if (text.EndOfInput)
                 return this;
 
-            return new Lexer(text.Advance(CurrentToken.Literal.Length), kinds);
+            return new Lexer(text.Advance(Current.Literal.Length), kinds);
         }
 
-        public Token CurrentToken
+        public Token Current
         {
-            get { return currentToken; }
+            get { return current; }
         }
 
         public Lexer Advance()
@@ -79,7 +79,7 @@ namespace Parsley
 
         public IEnumerator<Token> GetEnumerator()
         {
-            var current = CurrentToken;
+            var current = Current;
 
             yield return current;
 

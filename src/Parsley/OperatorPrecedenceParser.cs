@@ -76,7 +76,7 @@ namespace Parsley
 
         private Reply<T> Parse(Lexer tokens, int precedence)
         {
-            Token token = tokens.CurrentToken;
+            Token token = tokens.Current;
 
             if (!unitParsers.ContainsKey(token.Kind))
                 return new Error<T>(tokens, ErrorMessage.Unknown());
@@ -87,7 +87,7 @@ namespace Parsley
                 return reply;
 
             tokens = reply.UnparsedTokens;
-            token = tokens.CurrentToken;
+            token = tokens.Current;
 
             while (precedence < GetPrecedence(token))
             {
@@ -99,7 +99,7 @@ namespace Parsley
                     return reply;
 
                 tokens = reply.UnparsedTokens;
-                token = tokens.CurrentToken;
+                token = tokens.Current;
             }
 
             return reply;

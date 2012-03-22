@@ -6,27 +6,27 @@ namespace Parsley
 {
     public static class ParsingAssertions
     {
-        public static void ShouldYieldTokens(this Lexer lexer, TokenKind expectedKind, params string[] expectedLiterals)
+        public static void ShouldYieldTokens(this Lexer tokens, TokenKind expectedKind, params string[] expectedLiterals)
         {
             foreach (var expectedLiteral in expectedLiterals)
             {
-                lexer.CurrentToken.ShouldBe(expectedKind, expectedLiteral);
-                lexer = lexer.Advance();
+                tokens.Current.ShouldBe(expectedKind, expectedLiteral);
+                tokens = tokens.Advance();
             }
 
-            AssertEqual(Lexer.EndOfInput, lexer.CurrentToken.Kind);
+            AssertEqual(Lexer.EndOfInput, tokens.Current.Kind);
         }
 
-        public static void ShouldYieldTokens(this Lexer lexer, params string[] expectedLiterals)
+        public static void ShouldYieldTokens(this Lexer tokens, params string[] expectedLiterals)
         {
             foreach (var expectedLiteral in expectedLiterals)
             {
-                AssertTokenLiteralsEqual(expectedLiteral, lexer.CurrentToken.Literal);
-                AssertNotEqual(Lexer.Unknown, lexer.CurrentToken.Kind);
-                lexer = lexer.Advance();
+                AssertTokenLiteralsEqual(expectedLiteral, tokens.Current.Literal);
+                AssertNotEqual(Lexer.Unknown, tokens.Current.Kind);
+                tokens = tokens.Advance();
             }
 
-            AssertEqual(Lexer.EndOfInput, lexer.CurrentToken.Kind);
+            AssertEqual(Lexer.EndOfInput, tokens.Current.Kind);
         }
 
         public static void ShouldBe(this Token actual, TokenKind expectedKind, string expectedLiteral, int expectedLine, int expectedColumn)
@@ -109,7 +109,7 @@ namespace Parsley
 
         private static Reply<T> WithAllInputConsumed<T>(this Reply<T> reply)
         {
-            var nextTokenKind = reply.UnparsedTokens.CurrentToken.Kind;
+            var nextTokenKind = reply.UnparsedTokens.Current.Kind;
             AssertEqual(Lexer.EndOfInput, nextTokenKind);
             return reply.WithUnparsedText("");
         }
