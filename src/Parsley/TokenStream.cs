@@ -69,12 +69,7 @@ namespace Parsley
 
         public Position Position
         {
-            get { return text.Position; }
-        }
-
-        public override string ToString()
-        {
-            return text.ToString();
+            get { return Current.Position; }
         }
 
         public IEnumerator<Token> GetEnumerator()

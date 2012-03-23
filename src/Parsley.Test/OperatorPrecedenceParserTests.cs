@@ -100,7 +100,7 @@ namespace Parsley
             //The "(" unit-parser is invoked but fails.  The next token, "*", has
             //high precedence, but that should not provoke parsing to continue.
             
-            expression.FailsToParse(Tokenize("(*"), "*").WithMessage("(1, 2): Parse error.");
+            expression.FailsToParse(Tokenize("(*")).LeavingUnparsedTokens("*").WithMessage("(1, 2): Parse error.");
         }
 
         [Fact]
@@ -113,7 +113,7 @@ namespace Parsley
             //is invoked and immediately fails.  The next token, "*", has
             //high precedence, but that should not provoke parsing to continue.
 
-            expression.FailsToParse(Tokenize("2-*"), "*").WithMessage("(1, 3): Parse error.");
+            expression.FailsToParse(Tokenize("2-*")).LeavingUnparsedTokens("*").WithMessage("(1, 3): Parse error.");
         }
 
         private void Parses(string input, string expectedTree)

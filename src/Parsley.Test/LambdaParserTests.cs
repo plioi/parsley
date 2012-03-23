@@ -8,10 +8,10 @@ namespace Parsley
         public void CreatesParsersFromLambdas()
         {
             var succeeds = new LambdaParser<string>(tokens => new Parsed<string>("AA", tokens.Advance().Advance()));
-            succeeds.PartiallyParses(new CharTokenStream("AABB"), "BB").IntoValue("AA");
+            succeeds.PartiallyParses(new CharTokenStream("AABB")).LeavingUnparsedTokens("B", "B").IntoValue("AA");
 
             var fails = new LambdaParser<string>(tokens => new Error<string>(tokens, ErrorMessage.Unknown()));
-            fails.FailsToParse(new CharTokenStream("AABB"), "AABB").WithMessage("(1, 1): Parse error.");
+            fails.FailsToParse(new CharTokenStream("AABB")).LeavingUnparsedTokens("A", "A", "B", "B").WithMessage("(1, 1): Parse error.");
         }
     }
 }

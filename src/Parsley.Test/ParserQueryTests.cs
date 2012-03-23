@@ -17,7 +17,7 @@ namespace Parsley
         {
             var parser = 1.SucceedWithThisValue();
 
-            parser.PartiallyParses(Tokenize("input"), "input").IntoValue(1);
+            parser.PartiallyParses(Tokenize("input")).LeavingUnparsedTokens("i", "n", "p", "u", "t").IntoValue(1);
         }
 
         [Fact]
@@ -26,7 +26,7 @@ namespace Parsley
             var parser = from x in Next
                          select x.ToUpper();
 
-            parser.PartiallyParses(Tokenize("xy"), "y").IntoValue("X");
+            parser.PartiallyParses(Tokenize("xy")).LeavingUnparsedTokens("y").IntoValue("X");
         }
 
         [Fact]
@@ -37,7 +37,7 @@ namespace Parsley
                           from c in Next
                           select (a + b + c).ToUpper());
 
-            parser.PartiallyParses(Tokenize("abcdef"), "def").IntoValue("ABC");
+            parser.PartiallyParses(Tokenize("abcdef")).LeavingUnparsedTokens("d", "e", "f").IntoValue("ABC");
         }
 
         [Fact]
@@ -50,17 +50,17 @@ namespace Parsley
             (from _ in Fail
              from x in Next
              from y in Next
-             select Tuple.Create(x, y)).FailsToParse(source, "xy");
+             select Tuple.Create(x, y)).FailsToParse(source).LeavingUnparsedTokens("x", "y");
 
             (from x in Next
              from _ in Fail
              from y in Next
-             select Tuple.Create(x, y)).FailsToParse(source, "y");
+             select Tuple.Create(x, y)).FailsToParse(source).LeavingUnparsedTokens("y");
 
             (from x in Next
              from y in Next
              from _ in Fail
-             select Tuple.Create(x, y)).FailsToParse(source, "");
+             select Tuple.Create(x, y)).FailsToParse(source).AtEndOfInput();
         }
     }
 }

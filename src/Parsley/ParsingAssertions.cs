@@ -45,9 +45,9 @@ namespace Parsley
             AssertTokenLiteralsEqual(expectedLiteral, actual.Literal);
         }
 
-        public static Reply<T> FailsToParse<T>(this Parser<T> parser, TokenStream tokens, string expectedUnparsedSource)
+        public static Reply<T> FailsToParse<T>(this Parser<T> parser, TokenStream tokens)
         {
-            return parser.Parse(tokens).Fails().WithUnparsedText(expectedUnparsedSource);
+            return parser.Parse(tokens).Fails();
         }
 
         private static Reply<T> Fails<T>(this Reply<T> reply)
@@ -78,14 +78,14 @@ namespace Parsley
             return reply;
         }
 
-        public static Reply<T> PartiallyParses<T>(this Parser<T> parser, TokenStream tokens, string expectedUnparsedSource)
+        public static Reply<T> PartiallyParses<T>(this Parser<T> parser, TokenStream tokens)
         {
-            return parser.Parse(tokens).Succeeds().WithUnparsedText(expectedUnparsedSource);
+            return parser.Parse(tokens).Succeeds();
         }
 
         public static Reply<T> Parses<T>(this Parser<T> parser, TokenStream tokens)
         {
-            return parser.Parse(tokens).Succeeds().WithAllInputConsumed();
+            return parser.Parse(tokens).Succeeds().AtEndOfInput();
         }
 
         private static Reply<T> Succeeds<T>(this Reply<T> reply)
@@ -107,11 +107,34 @@ namespace Parsley
             return reply;
         }
 
-        private static Reply<T> WithAllInputConsumed<T>(this Reply<T> reply)
+        //TODO: Suspicious overlap with "IntoTokens".
+        public static Reply<T> LeavingUnparsedTokens<T>(this Reply<T> reply, params string[] expectedLiterals)
         {
+            var actualLiterals = reply.UnparsedTokens.Where(x => x.Kind != TokenStream.EndOfInput).Select(x => x.Literal).ToArray();
+
+            Action raiseError = () =>
+            {
+                throw new AssertionException("Parse resulted in unexpected remaining unparsed tokens.",
+                                             String.Join(", ", expectedLiterals),
+                                             String.Join(", ", actualLiterals));
+            };
+
+            if (actualLiterals.Length != expectedLiterals.Length)
+                raiseError();
+
+            for (int i = 0; i < actualLiterals.Length; i++)
+                if (actualLiterals[i] != expectedLiterals[i])
+                    raiseError();
+
+            return reply;
+        }
+
+        public static Reply<T> AtEndOfInput<T>(this Reply<T> reply)
+        {
+            //Can we just do the final return instead?
             var nextTokenKind = reply.UnparsedTokens.Current.Kind;
             AssertEqual(TokenStream.EndOfInput, nextTokenKind);
-            return reply.WithUnparsedText("");
+            return reply.LeavingUnparsedTokens(new string[] {});
         }
 
         public static Reply<T> IntoValue<T>(this Reply<T> reply, T expected)

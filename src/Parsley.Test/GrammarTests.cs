@@ -38,23 +38,23 @@ namespace Parsley
         [Fact]
         public void CanFailWithoutConsumingInput()
         {
-            Fail<string>().FailsToParse(Tokenize("ABC"), "ABC");
+            Fail<string>().FailsToParse(Tokenize("ABC")).LeavingUnparsedTokens("A", "B", "C");
         }
 
         [Fact]
         public void CanDetectTheEndOfInputWithoutAdvancing()
         {
             EndOfInput.Parses(Tokenize("")).IntoToken("");
-            EndOfInput.FailsToParse(Tokenize("!"), "!").WithMessage("(1, 1): end of input expected");
+            EndOfInput.FailsToParse(Tokenize("!")).LeavingUnparsedTokens("!").WithMessage("(1, 1): end of input expected");
         }
 
         [Fact]
         public void CanDemandThatAGivenKindOfTokenAppearsNext()
         {
             Token(SampleTokenStream.Letter).Parses(Tokenize("A")).IntoToken("A");
-            Token(SampleTokenStream.Letter).FailsToParse(Tokenize("0"), "0").WithMessage("(1, 1): Letter expected");
+            Token(SampleTokenStream.Letter).FailsToParse(Tokenize("0")).LeavingUnparsedTokens("0").WithMessage("(1, 1): Letter expected");
 
-            Token(SampleTokenStream.Digit).FailsToParse(Tokenize("A"), "A").WithMessage("(1, 1): Digit expected");
+            Token(SampleTokenStream.Digit).FailsToParse(Tokenize("A")).LeavingUnparsedTokens("A").WithMessage("(1, 1): Digit expected");
             Token(SampleTokenStream.Digit).Parses(Tokenize("0")).IntoToken("0");
         }
 
@@ -62,8 +62,8 @@ namespace Parsley
         public void CanDemandThatAGivenTokenLiteralAppearsNext()
         {
             Token("A").Parses(Tokenize("A")).IntoToken("A");
-            Token("A").PartiallyParses(Tokenize("A!"), "!").IntoToken("A");
-            Token("A").FailsToParse(Tokenize("B"), "B").WithMessage("(1, 1): A expected");
+            Token("A").PartiallyParses(Tokenize("A!")).LeavingUnparsedTokens("!").IntoToken("A");
+            Token("A").FailsToParse(Tokenize("B")).LeavingUnparsedTokens("B").WithMessage("(1, 1): A expected");
         }
 
         [Fact]
@@ -72,9 +72,9 @@ namespace Parsley
             var parser = ZeroOrMore(AB);
 
             parser.Parses(Tokenize("")).IntoTokens();
-            parser.PartiallyParses(Tokenize("AB!"), "!").IntoTokens("AB");
-            parser.PartiallyParses(Tokenize("ABAB!"), "!").IntoTokens("AB", "AB");
-            parser.FailsToParse(Tokenize("ABABA!"), "!").WithMessage("(1, 6): B expected");
+            parser.PartiallyParses(Tokenize("AB!")).LeavingUnparsedTokens("!").IntoTokens("AB");
+            parser.PartiallyParses(Tokenize("ABAB!")).LeavingUnparsedTokens("!").IntoTokens("AB", "AB");
+            parser.FailsToParse(Tokenize("ABABA!")).LeavingUnparsedTokens("!").WithMessage("(1, 6): B expected");
 
             Parser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
             Action infiniteLoop = () => ZeroOrMore(succeedWithoutConsuming).Parse(Tokenize(""));
@@ -86,10 +86,10 @@ namespace Parsley
         {
             var parser = OneOrMore(AB);
 
-            parser.FailsToParse(Tokenize(""), "").WithMessage("(1, 1): A expected");
-            parser.PartiallyParses(Tokenize("AB!"), "!").IntoTokens("AB");
-            parser.PartiallyParses(Tokenize("ABAB!"), "!").IntoTokens("AB", "AB");
-            parser.FailsToParse(Tokenize("ABABA!"), "!").WithMessage("(1, 6): B expected");
+            parser.FailsToParse(Tokenize("")).AtEndOfInput().WithMessage("(1, 1): A expected");
+            parser.PartiallyParses(Tokenize("AB!")).LeavingUnparsedTokens("!").IntoTokens("AB");
+            parser.PartiallyParses(Tokenize("ABAB!")).LeavingUnparsedTokens("!").IntoTokens("AB", "AB");
+            parser.FailsToParse(Tokenize("ABABA!")).LeavingUnparsedTokens("!").WithMessage("(1, 6): B expected");
 
             Parser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
             Action infiniteLoop = () => OneOrMore(succeedWithoutConsuming).Parse(Tokenize(""));
@@ -105,8 +105,8 @@ namespace Parsley
             parser.Parses(Tokenize("AB")).IntoTokens("AB");
             parser.Parses(Tokenize("AB,AB")).IntoTokens("AB", "AB");
             parser.Parses(Tokenize("AB,AB,AB")).IntoTokens("AB", "AB", "AB");
-            parser.FailsToParse(Tokenize("AB,"), "").WithMessage("(1, 4): A expected");
-            parser.FailsToParse(Tokenize("AB,A"), "").WithMessage("(1, 5): B expected");
+            parser.FailsToParse(Tokenize("AB,")).AtEndOfInput().WithMessage("(1, 4): A expected");
+            parser.FailsToParse(Tokenize("AB,A")).AtEndOfInput().WithMessage("(1, 5): B expected");
         }
 
         [Fact]
@@ -114,12 +114,12 @@ namespace Parsley
         {
             var parser = OneOrMore(AB, COMMA);
 
-            parser.FailsToParse(Tokenize(""), "").WithMessage("(1, 1): A expected");
+            parser.FailsToParse(Tokenize("")).AtEndOfInput().WithMessage("(1, 1): A expected");
             parser.Parses(Tokenize("AB")).IntoTokens("AB");
             parser.Parses(Tokenize("AB,AB")).IntoTokens("AB", "AB");
             parser.Parses(Tokenize("AB,AB,AB")).IntoTokens("AB", "AB", "AB");
-            parser.FailsToParse(Tokenize("AB,"), "").WithMessage("(1, 4): A expected");
-            parser.FailsToParse(Tokenize("AB,A"), "").WithMessage("(1, 5): B expected");
+            parser.FailsToParse(Tokenize("AB,")).AtEndOfInput().WithMessage("(1, 4): A expected");
+            parser.FailsToParse(Tokenize("AB,A")).AtEndOfInput().WithMessage("(1, 5): B expected");
         }
 
         [Fact]
@@ -127,21 +127,21 @@ namespace Parsley
         {
             var parser = Between(A, B, A);
 
-            parser.FailsToParse(Tokenize(""), "").WithMessage("(1, 1): A expected");
-            parser.FailsToParse(Tokenize("B"), "B").WithMessage("(1, 1): A expected");
-            parser.FailsToParse(Tokenize("A"), "").WithMessage("(1, 2): B expected");
-            parser.FailsToParse(Tokenize("AA"), "A").WithMessage("(1, 2): B expected");
-            parser.FailsToParse(Tokenize("AB"), "").WithMessage("(1, 3): A expected");
-            parser.FailsToParse(Tokenize("ABB"), "B").WithMessage("(1, 3): A expected");
+            parser.FailsToParse(Tokenize("")).AtEndOfInput().WithMessage("(1, 1): A expected");
+            parser.FailsToParse(Tokenize("B")).LeavingUnparsedTokens("B").WithMessage("(1, 1): A expected");
+            parser.FailsToParse(Tokenize("A")).AtEndOfInput().WithMessage("(1, 2): B expected");
+            parser.FailsToParse(Tokenize("AA")).LeavingUnparsedTokens("A").WithMessage("(1, 2): B expected");
+            parser.FailsToParse(Tokenize("AB")).AtEndOfInput().WithMessage("(1, 3): A expected");
+            parser.FailsToParse(Tokenize("ABB")).LeavingUnparsedTokens("B").WithMessage("(1, 3): A expected");
             parser.Parses(Tokenize("ABA")).IntoToken("B");
         }
 
         [Fact]
         public void ParsingAnOptionalRuleZeroOrOneTimes()
         {
-            Optional(AB).PartiallyParses(Tokenize("AB."), ".").IntoToken("AB");
-            Optional(AB).PartiallyParses(Tokenize("."), ".").IntoValue(token => token.ShouldBeNull());
-            Optional(AB).FailsToParse(Tokenize("AC."), "C.").WithMessage("(1, 2): B expected");
+            Optional(AB).PartiallyParses(Tokenize("AB.")).LeavingUnparsedTokens(".").IntoToken("AB");
+            Optional(AB).PartiallyParses(Tokenize(".")).LeavingUnparsedTokens(".").IntoValue(token => token.ShouldBeNull());
+            Optional(AB).FailsToParse(Tokenize("AC.")).LeavingUnparsedTokens("C", ".").WithMessage("(1, 2): B expected");
         }
 
         [Fact]
@@ -151,10 +151,10 @@ namespace Parsley
             Attempt(AB).Parses(Tokenize("AB")).IntoToken("AB");
 
             //When p fails without consuming input, Attempt(p) is the same as p.
-            Attempt(AB).FailsToParse(Tokenize("!"), "!").WithMessage("(1, 1): A expected");
+            Attempt(AB).FailsToParse(Tokenize("!")).LeavingUnparsedTokens("!").WithMessage("(1, 1): A expected");
 
             //When p fails after consuming input, Attempt(p) backtracks before reporting failure.
-            Attempt(AB).FailsToParse(Tokenize("A!"), "A!").WithMessage("(1, 1): [(1, 2): B expected]");
+            Attempt(AB).FailsToParse(Tokenize("A!")).LeavingUnparsedTokens("A", "!").WithMessage("(1, 1): [(1, 2): B expected]");
         }
 
         [Fact]
@@ -167,17 +167,17 @@ namespace Parsley
             labeled.Parses(Tokenize("AB")).IntoToken("AB").WithNoMessage();
 
             //When p fails after consuming input, Label(p) is the same as p.
-            AB.FailsToParse(Tokenize("A!"), "!").WithMessage("(1, 2): B expected");
-            labeled.FailsToParse(Tokenize("A!"), "!").WithMessage("(1, 2): B expected");
+            AB.FailsToParse(Tokenize("A!")).LeavingUnparsedTokens("!").WithMessage("(1, 2): B expected");
+            labeled.FailsToParse(Tokenize("A!")).LeavingUnparsedTokens("!").WithMessage("(1, 2): B expected");
 
             //When p succeeds but does not consume input, Label(p) still succeeds but the potential error is included.
             var succeedWithoutConsuming = new Token(null, null, "$").SucceedWithThisValue();
-            succeedWithoutConsuming.PartiallyParses(Tokenize("!"), "!").IntoToken("$").WithNoMessage();
-            Label(succeedWithoutConsuming, "nothing").PartiallyParses(Tokenize("!"), "!").IntoToken("$").WithMessage("(1, 1): nothing expected");
+            succeedWithoutConsuming.PartiallyParses(Tokenize("!")).IntoToken("$").LeavingUnparsedTokens("!").WithNoMessage();
+            Label(succeedWithoutConsuming, "nothing").PartiallyParses(Tokenize("!")).IntoToken("$").LeavingUnparsedTokens("!").WithMessage("(1, 1): nothing expected");
 
             //When p fails but does not consume input, Label(p) fails with the given expectation.
-            AB.FailsToParse(Tokenize("!"), "!").WithMessage("(1, 1): A expected");
-            labeled.FailsToParse(Tokenize("!"), "!").WithMessage("(1, 1): 'A' followed by 'B' expected");
+            AB.FailsToParse(Tokenize("!")).LeavingUnparsedTokens("!").WithMessage("(1, 1): A expected");
+            labeled.FailsToParse(Tokenize("!")).LeavingUnparsedTokens("!").WithMessage("(1, 1): 'A' followed by 'B' expected");
         }
     }
 
@@ -200,15 +200,15 @@ namespace Parsley
         [Fact]
         public void ChoosingBetweenZeroAlternativesAlwaysFails()
         {
-            Choice<string>().FailsToParse(Tokenize("ABC"), "ABC");
+            Choice<string>().FailsToParse(Tokenize("ABC")).LeavingUnparsedTokens("A", "B", "C");
         }
 
         [Fact]
         public void ChoosingBetweenOneAlternativeParserIsEquivalentToThatParser()
         {
             Choice(A).Parses(Tokenize("A")).IntoToken("A");
-            Choice(A).PartiallyParses(Tokenize("AB"), "B").IntoToken("A");
-            Choice(A).FailsToParse(Tokenize("B"), "B").WithMessage("(1, 1): A expected");
+            Choice(A).PartiallyParses(Tokenize("AB")).IntoToken("A").LeavingUnparsedTokens("B");
+            Choice(A).FailsToParse(Tokenize("B")).LeavingUnparsedTokens("B").WithMessage("(1, 1): A expected");
         }
 
         [Fact]
@@ -233,15 +233,15 @@ namespace Parsley
                      from b in B
                      select new Token(null, a.Position, a.Literal + b.Literal);
 
-            Choice(AB, NeverExecuted).FailsToParse(Tokenize("A"), "").WithMessage("(1, 2): B expected");
-            Choice(C, AB, NeverExecuted).FailsToParse(Tokenize("A"), "").WithMessage("(1, 2): B expected");
+            Choice(AB, NeverExecuted).FailsToParse(Tokenize("A")).AtEndOfInput().WithMessage("(1, 2): B expected");
+            Choice(C, AB, NeverExecuted).FailsToParse(Tokenize("A")).AtEndOfInput().WithMessage("(1, 2): B expected");
         }
 
         [Fact]
         public void MergesErrorMessagesWhenParsersFailWithoutConsumingInput()
         {
-            Choice(A, B).FailsToParse(Tokenize(""), "").WithMessage("(1, 1): A or B expected");
-            Choice(A, B, C).FailsToParse(Tokenize(""), "").WithMessage("(1, 1): A, B or C expected");
+            Choice(A, B).FailsToParse(Tokenize("")).AtEndOfInput().WithMessage("(1, 1): A or B expected");
+            Choice(A, B, C).FailsToParse(Tokenize("")).AtEndOfInput().WithMessage("(1, 1): A, B or C expected");
         }
 
         [Fact]
