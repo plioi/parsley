@@ -74,11 +74,11 @@ namespace Parsley
 
         public IEnumerator<Token> GetEnumerator()
         {
-            var current = Current;
+            var head = Current;
 
-            yield return current;
+            yield return head;
 
-            if (current.Kind != EndOfInput)
+            if (head.Kind != EndOfInput)
                 foreach (var token in Advance())
                     yield return token;
         }
