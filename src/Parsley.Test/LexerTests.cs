@@ -1,3 +1,4 @@
+using System.Linq;
 using Should;
 using Xunit;
 
@@ -15,42 +16,32 @@ namespace Parsley
         }
 
         [Fact]
-        public void ProvidesEmptyEnumeratorForEmptyText()
+        public void ProvidesEmptyEnumerableForEmptyText()
         {
-            var tokens = new Lexer().Tokenize(new Text(""));
-            
-            tokens.MoveNext().ShouldBeFalse();
+            var tokens = new Lexer().Tokenize(new Text("")).ToArray();
+
+            tokens.ShouldBeEmpty();
         }
 
         [Fact]
         public void UsesPrioritizedTokenMatchersToTokenize()
         {
-            var tokens = new Lexer(lower, upper).Tokenize(new Text("ABCdefGHI"));
+            var tokens = new Lexer(lower, upper).Tokenize(new Text("ABCdefGHI")).ToArray();
 
-            tokens.MoveNext().ShouldBeTrue();
-            tokens.Current.ShouldBe(upper, "ABC", 1, 1);
-
-            tokens.MoveNext().ShouldBeTrue();
-            tokens.Current.ShouldBe(lower, "def", 1, 4);
-            
-            tokens.MoveNext().ShouldBeTrue();
-            tokens.Current.ShouldBe(upper, "GHI", 1, 7);
-            
-            tokens.MoveNext().ShouldBeFalse();
+            tokens.Length.ShouldEqual(3);
+            tokens[0].ShouldBe(upper, "ABC", 1, 1);
+            tokens[1].ShouldBe(lower, "def", 1, 4);
+            tokens[2].ShouldBe(upper, "GHI", 1, 7);
         }
 
         [Fact]
         public void ProvidesTokenAtUnrecognizedInput()
         {
-            var tokens = new Lexer(upper, lower).Tokenize(new Text("ABC!def"));
+            var tokens = new Lexer(upper, lower).Tokenize(new Text("ABC!def")).ToArray();
 
-            tokens.MoveNext().ShouldBeTrue();
-            tokens.Current.ShouldBe(upper, "ABC", 1, 1);
-
-            tokens.MoveNext().ShouldBeTrue();
-            tokens.Current.ShouldBe(TokenKind.Unknown, "!def", 1, 4);
-
-            tokens.MoveNext().ShouldBeFalse();
+            tokens.Length.ShouldEqual(2);
+            tokens[0].ShouldBe(upper, "ABC", 1, 1);
+            tokens[1].ShouldBe(TokenKind.Unknown, "!def", 1, 4);
         }
 
         [Fact]
@@ -58,25 +49,14 @@ namespace Parsley
         {
             var space = new Pattern("Space", @"\s", skippable: true);
 
-            var tokens = new Lexer(lower, upper, space).Tokenize(new Text(" "));
-            tokens.MoveNext().ShouldBeFalse();
+            var tokens = new Lexer(lower, upper, space).Tokenize(new Text(" ")).ToArray();
+            tokens.ShouldBeEmpty();
 
-
-            tokens = new Lexer(lower, upper, space).Tokenize(new Text(" ABC  def   GHI    jkl  "));
-
-            tokens.MoveNext().ShouldBeTrue();
-            tokens.Current.ShouldBe(upper, "ABC", 1, 2);
-
-            tokens.MoveNext().ShouldBeTrue();
-            tokens.Current.ShouldBe(lower, "def", 1, 7);
-
-            tokens.MoveNext().ShouldBeTrue();
-            tokens.Current.ShouldBe(upper, "GHI", 1, 13);
-
-            tokens.MoveNext().ShouldBeTrue();
-            tokens.Current.ShouldBe(lower, "jkl", 1, 20);
-
-            tokens.MoveNext().ShouldBeFalse();
+            tokens = new Lexer(lower, upper, space).Tokenize(new Text(" ABC  def   GHI    jkl  ")).ToArray();
+            tokens[0].ShouldBe(upper, "ABC", 1, 2);
+            tokens[1].ShouldBe(lower, "def", 1, 7);
+            tokens[2].ShouldBe(upper, "GHI", 1, 13);
+            tokens[3].ShouldBe(lower, "jkl", 1, 20);
         }
     }
 }

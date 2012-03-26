@@ -9,8 +9,10 @@ namespace Parsley
         private readonly Token current;
         private readonly Lazy<TokenStream> rest;
 
-        public TokenStream(IEnumerator<Token> enumerator)
+        public TokenStream(IEnumerable<Token> tokens)
         {
+            var enumerator = tokens.GetEnumerator();
+
             current = enumerator.MoveNext()
                           ? enumerator.Current
                           : new Token(TokenKind.EndOfInput, new Position(1, 1), "");

@@ -13,7 +13,7 @@ namespace Parsley
             this.kinds.Add(TokenKind.Unknown);
         }
 
-        public IEnumerator<Token> Tokenize(Text text)
+        public IEnumerable<Token> Tokenize(Text text)
         {
             while (!text.EndOfInput)
             {

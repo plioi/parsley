@@ -16,17 +16,17 @@ namespace Parsley
             upper = new Pattern("Uppercase", @"[A-Z]+");
         }
 
-        private IEnumerator<Token> Empty()
+        private IEnumerable<Token> Empty()
         {
             yield break;
         }
 
-        private IEnumerator<Token> OneToken()
+        private IEnumerable<Token> OneToken()
         {
             yield return new Token(upper, new Position(1, 1), "ABC");
         }
 
-        private IEnumerator<Token> Tokens()
+        private IEnumerable<Token> Tokens()
         {
             yield return new Token(upper, new Position(1, 1), "ABC");
             yield return new Token(lower, new Position(1, 4), "def");
