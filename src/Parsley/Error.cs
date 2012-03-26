@@ -20,7 +20,7 @@ namespace Parsley
         {
             get
             {
-                Position position = UnparsedTokens.Position;
+                var position = UnparsedTokens.Position;
                 throw new MemberAccessException(String.Format("({0}, {1}): {2}", position.Line, position.Column, ErrorMessages));
             }
         }

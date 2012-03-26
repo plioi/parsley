@@ -76,7 +76,7 @@ namespace Parsley
 
         private Reply<T> Parse(TokenStream tokens, int precedence)
         {
-            Token token = tokens.Current;
+            var token = tokens.Current;
 
             if (!unitParsers.ContainsKey(token.Kind))
                 return new Error<T>(tokens, ErrorMessage.Unknown());

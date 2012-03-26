@@ -14,9 +14,9 @@ namespace Parsley.Primitives
 
         public Reply<IEnumerable<T>> Parse(TokenStream tokens)
         {
-            Position oldPosition = tokens.Position;
+            var oldPosition = tokens.Position;
             var reply = item.Parse(tokens);
-            Position newPosition = reply.UnparsedTokens.Position;
+            var newPosition = reply.UnparsedTokens.Position;
 
             var list = new List<T>();
 
