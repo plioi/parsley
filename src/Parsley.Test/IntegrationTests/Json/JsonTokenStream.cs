@@ -3,11 +3,10 @@ namespace Parsley.IntegrationTests.Json
     public class JsonTokenStream : TokenStream
     {
         public JsonTokenStream(string source)
-            : base(new Text(source),
-                   Whitespace,
-                   @null, @true, @false,
-                   Comma, OpenArray, CloseArray, OpenDictionary, CloseDictionary, Colon,
-                   Number, Quotation) { }
+            : base(new Lexer(Whitespace,
+                             @null, @true, @false,
+                             Comma, OpenArray, CloseArray, OpenDictionary, CloseDictionary, Colon,
+                             Number, Quotation).Tokenize(new Text(source))) { }
 
         private static readonly TokenKind Whitespace = new Pattern("whitespace", @"\s+", skippable: true);
         

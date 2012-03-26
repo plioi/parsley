@@ -3,6 +3,6 @@
     public class CharTokenStream : TokenStream
     {
         public CharTokenStream(string source)
-            : base(new Text(source), new Pattern("Character", @".")) { }
+            : base(new Lexer(new Pattern("Character", @".")).Tokenize(new Text(source))) { }
     }
 }

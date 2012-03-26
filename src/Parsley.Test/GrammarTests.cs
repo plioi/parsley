@@ -18,7 +18,7 @@ namespace Parsley
             public static readonly TokenKind Symbol = new Pattern("Symbol", @".");
 
             public SampleTokenStream(string source)
-                : base(new Text(source), Digit, Letter, Symbol) { }
+                : base(new Lexer(Digit, Letter, Symbol).Tokenize(new Text(source))) { }
         }
 
         private readonly Parser<Token> A, B, AB, COMMA;

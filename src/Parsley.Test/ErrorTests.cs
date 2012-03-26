@@ -11,8 +11,9 @@ namespace Parsley
 
         public ErrorTests()
         {
-            x = new TokenStream(new Text("x"));
-            endOfInput = new TokenStream(new Text(""));
+            var lexer = new Lexer();
+            x = new TokenStream(lexer.Tokenize(new Text("x")));
+            endOfInput = new TokenStream(lexer.Tokenize(new Text("")));
         }
 
         [Fact]

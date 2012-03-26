@@ -5,6 +5,9 @@ namespace Parsley
 {
     public abstract class TokenKind
     {
+        public static readonly TokenKind EndOfInput = new Pattern("end of input", @"$");
+        public static readonly TokenKind Unknown = new Pattern("Unknown", @".+");
+
         private readonly string name;
         private readonly bool skippable;
 

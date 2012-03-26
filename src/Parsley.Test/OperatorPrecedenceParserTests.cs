@@ -142,9 +142,9 @@ namespace Parsley
             public static readonly TokenKind Comma = new Operator(",");
 
             public SampleTokenStream(string source)
-                : base(new Text(source), Digit, Name, Increment, Decrement, Add,
-                                         Subtract, Multiply, Divide, Exponent,
-                                         LeftParen, RightParen, Comma) { }
+                : base(new Lexer(Digit, Name, Increment, Decrement, Add,
+                                 Subtract, Multiply, Divide, Exponent,
+                                 LeftParen, RightParen, Comma).Tokenize(new Text(source))) { }
         }
 
         private interface Expression

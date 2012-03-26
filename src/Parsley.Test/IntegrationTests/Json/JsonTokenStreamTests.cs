@@ -7,12 +7,12 @@ namespace Parsley.IntegrationTests.Json
         [Fact]
         public void RecognizesSkippableWhitespace()
         {
-            new JsonTokenStream(" ").ShouldYieldTokens(TokenStream.EndOfInput, "");
-            new JsonTokenStream("\t").ShouldYieldTokens(TokenStream.EndOfInput, "");
-            new JsonTokenStream("\n").ShouldYieldTokens(TokenStream.EndOfInput, "");
-            new JsonTokenStream("\r").ShouldYieldTokens(TokenStream.EndOfInput, "");
+            new JsonTokenStream(" ").ShouldYieldTokens(TokenKind.EndOfInput, "");
+            new JsonTokenStream("\t").ShouldYieldTokens(TokenKind.EndOfInput, "");
+            new JsonTokenStream("\n").ShouldYieldTokens(TokenKind.EndOfInput, "");
+            new JsonTokenStream("\r").ShouldYieldTokens(TokenKind.EndOfInput, "");
 
-            new JsonTokenStream(" \t\n\r").ShouldYieldTokens(TokenStream.EndOfInput, "");
+            new JsonTokenStream(" \t\n\r").ShouldYieldTokens(TokenKind.EndOfInput, "");
         }
 
         [Fact]

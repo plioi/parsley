@@ -14,7 +14,7 @@ namespace Parsley
                 tokens = tokens.Advance();
             }
 
-            AssertEqual(TokenStream.EndOfInput, tokens.Current.Kind);
+            AssertEqual(TokenKind.EndOfInput, tokens.Current.Kind);
         }
 
         public static void ShouldYieldTokens(this TokenStream tokens, params string[] expectedLiterals)
@@ -22,11 +22,11 @@ namespace Parsley
             foreach (var expectedLiteral in expectedLiterals)
             {
                 AssertTokenLiteralsEqual(expectedLiteral, tokens.Current.Literal);
-                AssertNotEqual(TokenStream.Unknown, tokens.Current.Kind);
+                AssertNotEqual(TokenKind.Unknown, tokens.Current.Kind);
                 tokens = tokens.Advance();
             }
 
-            AssertEqual(TokenStream.EndOfInput, tokens.Current.Kind);
+            AssertEqual(TokenKind.EndOfInput, tokens.Current.Kind);
         }
 
         public static void ShouldBe(this Token actual, TokenKind expectedKind, string expectedLiteral, int expectedLine, int expectedColumn)
@@ -96,21 +96,10 @@ namespace Parsley
             return reply;
         }
 
-        private static Reply<T> WithUnparsedText<T>(this Reply<T> reply, string expected)
-        {
-            var actual = reply.UnparsedTokens.ToString();
-            
-            if (actual != expected)
-                throw new AssertionException(string.Format("remaining unparsed text \"{0}\"", expected),
-                                             string.Format("remaining unparsed text \"{0}\"", actual));
-
-            return reply;
-        }
-
         //TODO: Suspicious overlap with "IntoTokens".
         public static Reply<T> LeavingUnparsedTokens<T>(this Reply<T> reply, params string[] expectedLiterals)
         {
-            var actualLiterals = reply.UnparsedTokens.Where(x => x.Kind != TokenStream.EndOfInput).Select(x => x.Literal).ToArray();
+            var actualLiterals = reply.UnparsedTokens.Where(x => x.Kind != TokenKind.EndOfInput).Select(x => x.Literal).ToArray();
 
             Action raiseError = () =>
             {
@@ -131,9 +120,9 @@ namespace Parsley
 
         public static Reply<T> AtEndOfInput<T>(this Reply<T> reply)
         {
-            //Can we just do the final return instead?
+            //TODO: Can we just do the final return instead?
             var nextTokenKind = reply.UnparsedTokens.Current.Kind;
-            AssertEqual(TokenStream.EndOfInput, nextTokenKind);
+            AssertEqual(TokenKind.EndOfInput, nextTokenKind);
             return reply.LeavingUnparsedTokens(new string[] {});
         }
 
