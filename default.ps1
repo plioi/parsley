@@ -1,6 +1,4 @@
 properties {
-    $projectName = "Parsley"
-    
     $projectConfig = "Release"
     $base_dir = resolve-path .\
     $source_dir = "$base_dir\src"
@@ -30,17 +28,17 @@ task CommonAssemblyInfo {
     {
         $version = $defaultVersion
     }
-    create-commonAssemblyInfo "$version" $projectName "$source_dir\CommonAssemblyInfo.cs"
+    create-commonAssemblyInfo "$version" "$source_dir\CommonAssemblyInfo.cs"
 }
 
 task Compile -depends Init, CommonAssemblyInfo {
-    msbuild /t:clean /v:q /nologo /p:Configuration=$projectConfig $source_dir\$projectName.sln
-    msbuild /t:build /v:q /nologo /p:Configuration=$projectConfig $source_dir\$projectName.sln
+    msbuild /t:clean /v:q /nologo /p:Configuration=$projectConfig $source_dir\Parsley.sln
+    msbuild /t:build /v:q /nologo /p:Configuration=$projectConfig $source_dir\Parsley.sln
 }
 
 task Test -depends Compile {
     exec {
-        & $base_dir\tools\xunit.runners.1.9.0.1566\xunit.console.clr4.exe "$unittest_dir\$projectName.Test.dll"
+        & $base_dir\tools\xunit.runners.1.9.0.1566\xunit.console.clr4.exe "$unittest_dir\Parsley.Test.dll"
     }
 }
 
@@ -72,7 +70,7 @@ function global:create_directory($directory_name)
     mkdir $directory_name  -ErrorAction SilentlyContinue  | out-null
 }
 
-function global:create-commonAssemblyInfo($version,$applicationName,$filename)
+function global:create-commonAssemblyInfo($version,$filename)
 {
     $date = Get-Date
 "using System;
@@ -93,7 +91,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion(""$version"")]
 [assembly: AssemblyFileVersion(""$version"")]
 [assembly: AssemblyCopyright(""Copyright Patrick Lioi 2011-" + $date.Year + """)]
-[assembly: AssemblyProduct(""$applicationName"")]
+[assembly: AssemblyProduct(""Parsley"")]
 [assembly: AssemblyConfiguration(""release"")]
 [assembly: AssemblyInformationalVersion(""$version"")]"  | out-file $filename -encoding "ASCII"    
 }
