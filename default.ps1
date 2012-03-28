@@ -8,7 +8,6 @@ properties {
     $build_dir = "$base_dir\build"
     $unittest_dir = "$base_dir\src\Parsley.Test\bin\$projectConfig"
     $package_dir = "$build_dir\package"	
-    $package_file = "$build_dir\" + $projectName +".zip"
 
     $defaultVersion = "1.0.0.0"
 }
@@ -51,15 +50,7 @@ task Package -depends Compile {
     copy_files "$source_dir\Parsley\bin\$projectConfig\" $package_dir
     Copy-Item "$base_dir\README.md" "$package_dir\README.txt"
 
-    zip_directory $package_dir $package_file 
-    write-host "Created deployment package: $package_file" -ForegroundColor Green
-}
-
-function global:zip_directory($directory,$file) {
-    delete_file $file
-    cd $directory
-    & "$base_dir\tools\7zip\7za.exe" a -mx=9 -r $file
-    cd $base_dir
+    write-host "Created deployment package: $package_dir" -ForegroundColor Green
 }
 
 function global:copy_files($source,$destination,$exclude=@()){    
