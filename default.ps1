@@ -2,12 +2,16 @@ properties {
     $projectConfig = "Release"
     $base_dir = resolve-path .\
     $source_dir = "$base_dir\src"
-	
     $build_dir = "$base_dir\build"
-    $unittest_dir = "$base_dir\src\Parsley.Test\bin\$projectConfig"
-    $package_dir = "$build_dir\package"	
+    $test_dir = "$base_dir\src\Parsley.Test\bin\$projectConfig"
+    $package_dir = "$base_dir\package"
 
-    $defaultVersion = "1.0.0.0"
+    $defaultVersion = "0.0.1"
+    if(-not $version)
+    {
+        $version = $defaultVersion
+    }
+    $buildNumber = $version + '.0'
 }
 
 $framework = '4.0'
@@ -20,15 +24,10 @@ task default -depends Compile, Test, Package
 
 task Init {
     delete_directory $build_dir
-    create_directory $build_dir
 }
 
 task CommonAssemblyInfo {
-    if(-not $version)
-    {
-        $version = $defaultVersion
-    }
-    create-commonAssemblyInfo "$version" "$source_dir\CommonAssemblyInfo.cs"
+    create-commonAssemblyInfo "$buildNumber" "$source_dir\CommonAssemblyInfo.cs"
 }
 
 task Compile -depends Init, CommonAssemblyInfo {
@@ -37,41 +36,34 @@ task Compile -depends Init, CommonAssemblyInfo {
 }
 
 task Test -depends Compile {
-    exec {
-        & $base_dir\tools\xunit.runners.1.9.0.1566\xunit.console.clr4.exe "$unittest_dir\Parsley.Test.dll"
-    }
+    exec { & $base_dir\tools\xunit.runners.1.9.0.1566\xunit.console.clr4.exe "$test_dir\Parsley.Test.dll" }
 }
 
 task Package -depends Compile {
     delete_directory $package_dir
-
     copy_files "$source_dir\Parsley\bin\$projectConfig\" $package_dir
-    Copy-Item "$base_dir\README.md" "$package_dir\README.txt"
-
-    write-host "Created deployment package: $package_dir" -ForegroundColor Green
+    
+    $nuspec_file = "$package_dir\Parsley.nuspec"
+    create-nuspec "$version" "$nuspec_file"
+    exec { & $source_dir\.nuget\NuGet.exe pack $nuspec_file }
+    move-item "*.nupkg" "$package_dir"
+    write-host "Created deployment package: $package_dir\Parsley.$version.nupkg" -ForegroundColor Green
 }
 
-function global:copy_files($source,$destination,$exclude=@()){    
+function global:copy_files($source,$destination,$exclude=@()) {    
     create_directory $destination
     Get-ChildItem $source -Recurse -Exclude $exclude | Copy-Item -Destination {Join-Path $destination $_.FullName.Substring($source.length)} 
 }
 
-function global:delete_file($file) {
-    if($file) { remove-item $file -force -ErrorAction SilentlyContinue | out-null } 
-}
-
-function global:delete_directory($directory_name)
-{
+function global:delete_directory($directory_name) {
     rd $directory_name -recurse -force  -ErrorAction SilentlyContinue | out-null
 }
 
-function global:create_directory($directory_name)
-{
+function global:create_directory($directory_name) {
     mkdir $directory_name  -ErrorAction SilentlyContinue  | out-null
 }
 
-function global:create-commonAssemblyInfo($version,$filename)
-{
+function global:create-commonAssemblyInfo($buildNumber,$filename) {
     $date = Get-Date
 "using System;
 using System.Reflection;
@@ -88,10 +80,31 @@ using System.Runtime.InteropServices;
 //------------------------------------------------------------------------------
 
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion(""$version"")]
-[assembly: AssemblyFileVersion(""$version"")]
+[assembly: AssemblyVersion(""$buildNumber"")]
+[assembly: AssemblyFileVersion(""$buildNumber"")]
 [assembly: AssemblyCopyright(""Copyright Patrick Lioi 2011-" + $date.Year + """)]
 [assembly: AssemblyProduct(""Parsley"")]
 [assembly: AssemblyConfiguration(""release"")]
-[assembly: AssemblyInformationalVersion(""$version"")]"  | out-file $filename -encoding "ASCII"    
+[assembly: AssemblyInformationalVersion(""$buildNumber"")]"  | out-file $filename -encoding "ASCII"    
+}
+
+function global:create-nuspec($version,$filename) {
+    "<?xml version=""1.0""?>
+<package xmlns=""http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd"">
+  <metadata>
+    <id>Parsley</id>
+    <version>$version</version>
+    <authors>Patrick Lioi</authors>
+    <owners>Patrick Lioi</owners>
+    <licenseUrl>https://github.com/plioi/parsley/blob/master/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/plioi/parsley</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>A text parsing library.</summary>
+    <description>Parsley is a monadic parser combinator library inspired by Haskell's Parsec library.  It can parse context-sensitive, infinite look-ahead grammars but it performs best on predictive LL[1] grammars.</description>
+  </metadata>
+  <files>
+    <file src=""$package_dir\*.dll"" target=""lib\net40"" />
+    <file src=""$package_dir\*.pdb"" target=""lib\net40"" />
+  </files>
+</package>" | out-file $filename -encoding "ASCII"
 }
