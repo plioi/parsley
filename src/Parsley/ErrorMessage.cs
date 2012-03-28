@@ -66,7 +66,7 @@ namespace Parsley
 
         public override string ToString()
         {
-            return String.Format("({0}, {1}): {2}", Position.Line, Position.Column, Errors);
+            return String.Format("{0}: {1}", Position, Errors);
         }
     }
 }

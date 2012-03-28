@@ -96,7 +96,6 @@ namespace Parsley
             return reply;
         }
 
-        //TODO: Suspicious overlap with "IntoTokens".
         public static Reply<T> LeavingUnparsedTokens<T>(this Reply<T> reply, params string[] expectedLiterals)
         {
             var actualLiterals = reply.UnparsedTokens.Where(x => x.Kind != TokenKind.EndOfInput).Select(x => x.Literal).ToArray();
@@ -120,7 +119,6 @@ namespace Parsley
 
         public static Reply<T> AtEndOfInput<T>(this Reply<T> reply)
         {
-            //TODO: Can we just do the final return instead?
             var nextTokenKind = reply.UnparsedTokens.Current.Kind;
             AssertEqual(TokenKind.EndOfInput, nextTokenKind);
             return reply.LeavingUnparsedTokens(new string[] {});
