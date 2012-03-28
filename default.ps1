@@ -74,6 +74,7 @@ function global:create_directory($directory_name)
 
 function global:create-commonAssemblyInfo($version,$applicationName,$filename)
 {
+    $date = Get-Date
 "using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -91,7 +92,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: AssemblyVersion(""$version"")]
 [assembly: AssemblyFileVersion(""$version"")]
-[assembly: AssemblyCopyright(""Copyright Patrick Lioi 2011"")]
+[assembly: AssemblyCopyright(""Copyright Patrick Lioi 2011-" + $date.Year + """)]
 [assembly: AssemblyProduct(""$applicationName"")]
 [assembly: AssemblyConfiguration(""release"")]
 [assembly: AssemblyInformationalVersion(""$version"")]"  | out-file $filename -encoding "ASCII"    
