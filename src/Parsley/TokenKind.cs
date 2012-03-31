@@ -92,7 +92,7 @@ namespace Parsley
             if (peek == symbol)
                 return MatchResult.Succeed(peek);
 
-            return MatchResult.Fail();
+            return MatchResult.Fail;
         }
     }
 
@@ -103,7 +103,7 @@ namespace Parsley
 
         protected override MatchResult Match(Text text)
         {
-            return MatchResult.Fail();
+            return MatchResult.Fail;
         }
     }
 }

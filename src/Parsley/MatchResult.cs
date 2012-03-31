@@ -2,14 +2,11 @@ namespace Parsley
 {
     public class MatchResult
     {
+        public static readonly MatchResult Fail = new MatchResult(false, "");
+
         public static MatchResult Succeed(string value)
         {
             return new MatchResult(true, value);
-        }
-
-        public static MatchResult Fail()
-        {
-            return new MatchResult(false, "");
         }
 
         private MatchResult(bool success, string value)

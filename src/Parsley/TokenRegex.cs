@@ -22,7 +22,7 @@ namespace Parsley
             if (match.Success)
                 return MatchResult.Succeed(match.Value);
 
-            return MatchResult.Fail();
+            return MatchResult.Fail;
         }
 
         public override string ToString()

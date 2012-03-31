@@ -63,7 +63,7 @@ namespace Parsley
             if (value.Length > 0)
                 return MatchResult.Succeed(value);
 
-            return MatchResult.Fail();
+            return MatchResult.Fail;
         }
 
         private int Column
