@@ -111,5 +111,19 @@ namespace Parsley
             doubleStar.TryMatch(new Text("**"), out token).ShouldBeTrue();
             token.ShouldBe(doubleStar, "**", 1, 1);
         }
+
+        [Fact]
+        public void ProvidesConvenienceSubclassForTokensThatDoNotMatchLiteralsFromTheInput()
+        {
+            Token token;
+
+            TokenKind.EndOfInput.ShouldBeType<Empty>();
+
+            TokenKind.EndOfInput.Name.ShouldEqual("end of input");
+            TokenKind.EndOfInput.Skippable.ShouldBeFalse();
+
+            TokenKind.EndOfInput.TryMatch(new Text(""), out token).ShouldBeFalse();
+            TokenKind.EndOfInput.TryMatch(new Text("foo"), out token).ShouldBeFalse();
+        }
     }
 }

@@ -5,7 +5,7 @@ namespace Parsley
 {
     public abstract class TokenKind
     {
-        public static readonly TokenKind EndOfInput = new Pattern("end of input", @"$");
+        public static readonly TokenKind EndOfInput = new Empty("end of input");
         public static readonly TokenKind Unknown = new Pattern("Unknown", @".+");
 
         private readonly string name;
@@ -92,6 +92,17 @@ namespace Parsley
             if (peek == symbol)
                 return MatchResult.Succeed(peek);
 
+            return MatchResult.Fail();
+        }
+    }
+
+    public class Empty : TokenKind
+    {
+        public Empty(string name)
+            : base(name) { }
+
+        protected override MatchResult Match(Text text)
+        {
             return MatchResult.Fail();
         }
     }
