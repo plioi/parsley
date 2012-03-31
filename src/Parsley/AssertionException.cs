@@ -2,7 +2,7 @@ using System;
 
 namespace Parsley
 {
-    public class AssertionException : Exception
+    internal class AssertionException : Exception
     {
         public AssertionException(object expected, object actual)
             : base(ExpectationDetails(expected, actual))
