@@ -21,7 +21,7 @@ namespace Parsley
             get
             {
                 var position = UnparsedTokens.Position;
-                throw new MemberAccessException(String.Format("({0}, {1}): {2}", position.Line, position.Column, ErrorMessages));
+                throw new MemberAccessException(String.Format("{0}: {1}", position, ErrorMessages));
             }
         }
 
