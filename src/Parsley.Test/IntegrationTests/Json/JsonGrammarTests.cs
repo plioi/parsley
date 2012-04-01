@@ -6,10 +6,15 @@ namespace Parsley.IntegrationTests.Json
 {
     public class JsonGrammarTests : JsonGrammar
     {
+        private static TokenStream Tokenize(string input)
+        {
+            return new TokenStream(new JsonLexer().Tokenize(new Text(input)));
+        }
+
         [Fact]
         public void ParsesTrueLiteral()
         {
-            var tokens = new JsonTokenStream("true");
+            var tokens = Tokenize("true");
 
             Json.Parses(tokens).IntoValue(value => ((bool)value).ShouldBeTrue());
         }
@@ -17,7 +22,7 @@ namespace Parsley.IntegrationTests.Json
         [Fact]
         public void ParsesFalseLiteral()
         {
-            var tokens = new JsonTokenStream("false");
+            var tokens = Tokenize("false");
 
             Json.Parses(tokens).IntoValue(value => ((bool)value).ShouldBeFalse());
         }
@@ -25,7 +30,7 @@ namespace Parsley.IntegrationTests.Json
         [Fact]
         public void ParsesNullLiteral()
         {
-            var tokens = new JsonTokenStream("null");
+            var tokens = Tokenize("null");
 
             Json.Parses(tokens).IntoValue(value => value.ShouldBeNull());
         }
@@ -33,7 +38,7 @@ namespace Parsley.IntegrationTests.Json
         [Fact]
         public void ParsesNumbers()
         {
-            var tokens = new JsonTokenStream("10.123E-11");
+            var tokens = Tokenize("10.123E-11");
 
             Json.Parses(tokens).IntoValue(value => value.ShouldEqual(10.123E-11m));
         }
@@ -41,8 +46,8 @@ namespace Parsley.IntegrationTests.Json
         [Fact]
         public void ParsesQuotations()
         {
-            var empty = new JsonTokenStream("\"\"");
-            var filled = new JsonTokenStream("\"abc \\\" \\\\ \\/ \\b \\f \\n \\r \\t \\u263a def\"");
+            var empty = Tokenize("\"\"");
+            var filled = Tokenize("\"abc \\\" \\\\ \\/ \\b \\f \\n \\r \\t \\u263a def\"");
             const string expected = "abc \" \\ / \b \f \n \r \t ☺ def";
 
             Json.Parses(empty).IntoValue(value => value.ShouldEqual(""));
@@ -52,8 +57,8 @@ namespace Parsley.IntegrationTests.Json
         [Fact]
         public void ParsesArrays()
         {
-            var empty = new JsonTokenStream("[]");
-            var filled = new JsonTokenStream("[0, 1, 2]");
+            var empty = Tokenize("[]");
+            var filled = Tokenize("[0, 1, 2]");
 
             Json.Parses(empty).IntoValue(value => ((object[])value).ShouldBeEmpty());
 
@@ -63,8 +68,8 @@ namespace Parsley.IntegrationTests.Json
         [Fact]
         public void ParsesDictionaries()
         {
-            var empty = new JsonTokenStream("{}");
-            var filled = new JsonTokenStream("{\"zero\" : 0, \"one\" : 1, \"two\" : 2}");
+            var empty = Tokenize("{}");
+            var filled = Tokenize("{\"zero\" : 0, \"one\" : 1, \"two\" : 2}");
 
             Json.Parses(empty).IntoValue(value => ((Dictionary<string, object>)value).Count.ShouldEqual(0));
 
@@ -95,7 +100,7 @@ namespace Parsley.IntegrationTests.Json
 
             ";
 
-            var tokens = new JsonTokenStream(complex);
+            var tokens = Tokenize(complex);
 
             Json.Parses(tokens).IntoValue(value =>
             {

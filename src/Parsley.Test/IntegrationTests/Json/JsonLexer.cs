@@ -1,12 +1,12 @@
 namespace Parsley.IntegrationTests.Json
 {
-    public class JsonTokenStream : TokenStream
+    public class JsonLexer : Lexer
     {
-        public JsonTokenStream(string source)
-            : base(new Lexer(Whitespace,
-                             @null, @true, @false,
-                             Comma, OpenArray, CloseArray, OpenDictionary, CloseDictionary, Colon,
-                             Number, Quotation).Tokenize(new Text(source))) { }
+        public JsonLexer()
+            : base(Whitespace,
+                   @null, @true, @false,
+                   Comma, OpenArray, CloseArray, OpenDictionary, CloseDictionary, Colon,
+                   Number, Quotation) { }
 
         private static readonly TokenKind Whitespace = new Pattern("whitespace", @"\s+", skippable: true);
         

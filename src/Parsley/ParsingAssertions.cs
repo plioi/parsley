@@ -6,32 +6,9 @@ namespace Parsley
 {
     public static class ParsingAssertions
     {
-        public static void ShouldYieldTokens(this TokenStream tokens, TokenKind expectedKind, params string[] expectedLiterals)
+        public static void ShouldEqual(this Token actual, TokenKind expectedKind, string expectedLiteral, int expectedLine, int expectedColumn)
         {
-            foreach (var expectedLiteral in expectedLiterals)
-            {
-                tokens.Current.ShouldBe(expectedKind, expectedLiteral);
-                tokens = tokens.Advance();
-            }
-
-            AssertEqual(TokenKind.EndOfInput, tokens.Current.Kind);
-        }
-
-        public static void ShouldYieldTokens(this TokenStream tokens, params string[] expectedLiterals)
-        {
-            foreach (var expectedLiteral in expectedLiterals)
-            {
-                AssertTokenLiteralsEqual(expectedLiteral, tokens.Current.Literal);
-                AssertNotEqual(TokenKind.Unknown, tokens.Current.Kind);
-                tokens = tokens.Advance();
-            }
-
-            AssertEqual(TokenKind.EndOfInput, tokens.Current.Kind);
-        }
-
-        public static void ShouldBe(this Token actual, TokenKind expectedKind, string expectedLiteral, int expectedLine, int expectedColumn)
-        {
-            actual.ShouldBe(expectedKind, expectedLiteral);
+            actual.ShouldEqual(expectedKind, expectedLiteral);
 
             var expectedPosition = new Position(expectedLine, expectedColumn);
             if (actual.Position != expectedPosition)
@@ -39,7 +16,7 @@ namespace Parsley
                                              "token at position " + actual.Position);
         }
 
-        public static void ShouldBe(this Token actual, TokenKind expectedKind, string expectedLiteral)
+        public static void ShouldEqual(this Token actual, TokenKind expectedKind, string expectedLiteral)
         {
             AssertEqual(expectedKind, actual.Kind);
             AssertTokenLiteralsEqual(expectedLiteral, actual.Literal);
@@ -47,11 +24,8 @@ namespace Parsley
 
         public static Reply<T> FailsToParse<T>(this Parser<T> parser, TokenStream tokens)
         {
-            return parser.Parse(tokens).Fails();
-        }
-
-        private static Reply<T> Fails<T>(this Reply<T> reply)
-        {
+            var reply = parser.Parse(tokens);
+            
             if (reply.Success)
                 throw new AssertionException("parser failure", "parser completed successfully");
 
@@ -142,7 +116,7 @@ namespace Parsley
 
         public static Reply<Token> IntoToken(this Reply<Token> reply, TokenKind expectedKind, string expectedLiteral)
         {
-            reply.Value.ShouldBe(expectedKind, expectedLiteral);
+            reply.Value.ShouldEqual(expectedKind, expectedLiteral);
 
             return reply;
         }
@@ -185,13 +159,6 @@ namespace Parsley
         {
             if (actual != expected)
                 throw new AssertionException(string.Format("<{0}> token", expected),
-                                             string.Format("<{0}> token", actual));
-        }
-
-        private static void AssertNotEqual(TokenKind expected, TokenKind actual)
-        {
-            if (actual == expected)
-                throw new AssertionException(string.Format("not <{0}> token", expected),
                                              string.Format("<{0}> token", actual));
         }
     }

@@ -21,20 +21,20 @@ namespace Parsley.IntegrationTests.Json
         static JsonGrammar()
         {
             True.Rule =
-                Constant(JsonTokenStream.@true, true);
+                Constant(JsonLexer.@true, true);
 
             False.Rule =
-                Constant(JsonTokenStream.@false, false);
+                Constant(JsonLexer.@false, false);
 
             Null.Rule =
-                Constant(JsonTokenStream.@null, null);
+                Constant(JsonLexer.@null, null);
 
             Number.Rule =
-                from number in Token(JsonTokenStream.Number)
+                from number in Token(JsonLexer.Number)
                 select (object) Decimal.Parse(number.Literal, NumberStyles.Any);
 
             Quotation.Rule =
-                from quotation in Token(JsonTokenStream.Quotation)
+                from quotation in Token(JsonLexer.Quotation)
                 select Unescape(quotation.Literal);
 
             Array.Rule =

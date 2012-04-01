@@ -32,10 +32,10 @@ namespace Parsley
             Token token;
 
             lower.TryMatch(abcDEF, out token).ShouldBeTrue();
-            token.ShouldBe(lower, "abc", 1, 1);
+            token.ShouldEqual(lower, "abc", 1, 1);
 
             upper.TryMatch(abcDEF.Advance(3), out token).ShouldBeTrue();
-            token.ShouldBe(upper, "DEF", 1, 4);
+            token.ShouldEqual(upper, "DEF", 1, 4);
         }
 
         [Fact]
@@ -64,10 +64,10 @@ namespace Parsley
             token.ShouldBeNull();
 
             foo.TryMatch(new Text("foo"), out token).ShouldBeTrue();
-            token.ShouldBe(foo, "foo", 1, 1);
+            token.ShouldEqual(foo, "foo", 1, 1);
 
             foo.TryMatch(new Text("foo bar"), out token).ShouldBeTrue();
-            token.ShouldBe(foo, "foo", 1, 1);
+            token.ShouldEqual(foo, "foo", 1, 1);
 
             foo.TryMatch(new Text("foobar"), out token).ShouldBeFalse();
             token.ShouldBeNull();
@@ -89,13 +89,13 @@ namespace Parsley
             token.ShouldBeNull();
 
             star.TryMatch(new Text("*"), out token).ShouldBeTrue();
-            token.ShouldBe(star, "*", 1, 1);
+            token.ShouldEqual(star, "*", 1, 1);
 
             star.TryMatch(new Text("* *"), out token).ShouldBeTrue();
-            token.ShouldBe(star, "*", 1, 1);
+            token.ShouldEqual(star, "*", 1, 1);
 
             star.TryMatch(new Text("**"), out token).ShouldBeTrue();
-            token.ShouldBe(star, "*", 1, 1);
+            token.ShouldEqual(star, "*", 1, 1);
 
             doubleStar.Name.ShouldEqual("**");
 
@@ -109,7 +109,7 @@ namespace Parsley
             token.ShouldBeNull();
 
             doubleStar.TryMatch(new Text("**"), out token).ShouldBeTrue();
-            token.ShouldBe(doubleStar, "**", 1, 1);
+            token.ShouldEqual(doubleStar, "**", 1, 1);
         }
 
         [Fact]

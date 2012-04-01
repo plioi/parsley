@@ -39,7 +39,7 @@ namespace Parsley
         {
             var tokens = new TokenStream(Empty());
 
-            tokens.Current.ShouldBe(TokenKind.EndOfInput, "", 1, 1);
+            tokens.Current.ShouldEqual(TokenKind.EndOfInput, "", 1, 1);
             tokens.Advance().ShouldBeSameAs(tokens);
         }
 
@@ -47,14 +47,14 @@ namespace Parsley
         public void ProvidesCurrentToken()
         {
             var tokens = new TokenStream(Tokens());
-            tokens.Current.ShouldBe(upper, "ABC", 1, 1);
+            tokens.Current.ShouldEqual(upper, "ABC", 1, 1);
         }
 
         [Fact]
         public void AdvancesToTheNextToken()
         {
             var tokens = new TokenStream(Tokens());
-            tokens.Advance().Current.ShouldBe(lower, "def", 1, 4);
+            tokens.Advance().Current.ShouldEqual(lower, "def", 1, 4);
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace Parsley
             var tokens = new TokenStream(OneToken());
             var end = tokens.Advance();
 
-            end.Current.ShouldBe(TokenKind.EndOfInput, "", 1, 4);
+            end.Current.ShouldEqual(TokenKind.EndOfInput, "", 1, 4);
             end.Advance().ShouldBeSameAs(end);
         }
 
@@ -81,22 +81,22 @@ namespace Parsley
             
             var first = tokens;
 
-            first.Current.ShouldBe(upper, "ABC", 1, 1);
+            first.Current.ShouldEqual(upper, "ABC", 1, 1);
 
             var second = first.Advance();
-            first.Current.ShouldBe(upper, "ABC", 1, 1);
-            second.Current.ShouldBe(lower, "def", 1, 4);
+            first.Current.ShouldEqual(upper, "ABC", 1, 1);
+            second.Current.ShouldEqual(lower, "def", 1, 4);
 
             var third = second.Advance();
-            first.Current.ShouldBe(upper, "ABC", 1, 1);
-            second.Current.ShouldBe(lower, "def", 1, 4);
-            third.Current.ShouldBe(upper, "GHI", 1, 7);
+            first.Current.ShouldEqual(upper, "ABC", 1, 1);
+            second.Current.ShouldEqual(lower, "def", 1, 4);
+            third.Current.ShouldEqual(upper, "GHI", 1, 7);
 
             var fourth = third.Advance();
-            first.Current.ShouldBe(upper, "ABC", 1, 1);
-            second.Current.ShouldBe(lower, "def", 1, 4);
-            third.Current.ShouldBe(upper, "GHI", 1, 7);
-            fourth.Current.ShouldBe(TokenKind.EndOfInput, "", 1, 10);
+            first.Current.ShouldEqual(upper, "ABC", 1, 1);
+            second.Current.ShouldEqual(lower, "def", 1, 4);
+            third.Current.ShouldEqual(upper, "GHI", 1, 7);
+            fourth.Current.ShouldEqual(TokenKind.EndOfInput, "", 1, 10);
 
             fourth.Advance().ShouldBeSameAs(fourth);
         }
@@ -106,10 +106,10 @@ namespace Parsley
         {
             var tokens = new TokenStream(Tokens());
 
-            tokens.Current.ShouldBe(upper, "ABC", 1, 1);
-            tokens.Advance().Current.ShouldBe(lower, "def", 1, 4);
-            tokens.Advance().Advance().Current.ShouldBe(upper, "GHI", 1, 7);
-            tokens.Advance().Advance().Advance().Current.ShouldBe(TokenKind.EndOfInput, "", 1, 10);
+            tokens.Current.ShouldEqual(upper, "ABC", 1, 1);
+            tokens.Advance().Current.ShouldEqual(lower, "def", 1, 4);
+            tokens.Advance().Advance().Current.ShouldEqual(upper, "GHI", 1, 7);
+            tokens.Advance().Advance().Advance().Current.ShouldEqual(TokenKind.EndOfInput, "", 1, 10);
 
             tokens.Advance().ShouldBeSameAs(tokens.Advance());
         }
@@ -137,10 +137,10 @@ namespace Parsley
         {
             var tokens = new TokenStream(Tokens()).ToArray();
             tokens.Length.ShouldEqual(4);
-            tokens[0].ShouldBe(upper, "ABC", 1, 1);
-            tokens[1].ShouldBe(lower, "def", 1, 4);
-            tokens[2].ShouldBe(upper, "GHI", 1, 7);
-            tokens[3].ShouldBe(TokenKind.EndOfInput, "", 1, 10);
+            tokens[0].ShouldEqual(upper, "ABC", 1, 1);
+            tokens[1].ShouldEqual(lower, "def", 1, 4);
+            tokens[2].ShouldEqual(upper, "GHI", 1, 7);
+            tokens[3].ShouldEqual(TokenKind.EndOfInput, "", 1, 10);
         }
     }
 }
