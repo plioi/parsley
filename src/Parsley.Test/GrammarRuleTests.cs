@@ -17,7 +17,7 @@ namespace Parsley
             alpha.Rule = from a in Token("A") select a.Literal;
             parenthesizedExpresion.Rule = Between(Token("("), expression, Token(")"));
 
-            expression.Parses(tokens).IntoValue("A");
+            expression.Parses(tokens).WithValue("A");
         }
 
         [Fact]

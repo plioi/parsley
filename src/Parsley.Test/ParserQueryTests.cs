@@ -19,7 +19,7 @@ namespace Parsley
         {
             var parser = 1.SucceedWithThisValue();
 
-            parser.PartiallyParses(Tokenize("input")).LeavingUnparsedTokens("i", "n", "p", "u", "t").IntoValue(1);
+            parser.PartiallyParses(Tokenize("input")).LeavingUnparsedTokens("i", "n", "p", "u", "t").WithValue(1);
         }
 
         [Fact]
@@ -28,7 +28,7 @@ namespace Parsley
             var parser = from x in Next
                          select x.ToUpper();
 
-            parser.PartiallyParses(Tokenize("xy")).LeavingUnparsedTokens("y").IntoValue("X");
+            parser.PartiallyParses(Tokenize("xy")).LeavingUnparsedTokens("y").WithValue("X");
         }
 
         [Fact]
@@ -39,7 +39,7 @@ namespace Parsley
                           from c in Next
                           select (a + b + c).ToUpper());
 
-            parser.PartiallyParses(Tokenize("abcdef")).LeavingUnparsedTokens("d", "e", "f").IntoValue("ABC");
+            parser.PartiallyParses(Tokenize("abcdef")).LeavingUnparsedTokens("d", "e", "f").WithValue("ABC");
         }
 
         [Fact]

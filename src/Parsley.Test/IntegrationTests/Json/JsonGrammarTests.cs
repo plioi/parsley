@@ -16,7 +16,7 @@ namespace Parsley.IntegrationTests.Json
         {
             var tokens = Tokenize("true");
 
-            Json.Parses(tokens).IntoValue(value => ((bool)value).ShouldBeTrue());
+            Json.Parses(tokens).WithValue(value => ((bool)value).ShouldBeTrue());
         }
 
         [Fact]
@@ -24,7 +24,7 @@ namespace Parsley.IntegrationTests.Json
         {
             var tokens = Tokenize("false");
 
-            Json.Parses(tokens).IntoValue(value => ((bool)value).ShouldBeFalse());
+            Json.Parses(tokens).WithValue(value => ((bool)value).ShouldBeFalse());
         }
 
         [Fact]
@@ -32,7 +32,7 @@ namespace Parsley.IntegrationTests.Json
         {
             var tokens = Tokenize("null");
 
-            Json.Parses(tokens).IntoValue(value => value.ShouldBeNull());
+            Json.Parses(tokens).WithValue(value => value.ShouldBeNull());
         }
 
         [Fact]
@@ -40,7 +40,7 @@ namespace Parsley.IntegrationTests.Json
         {
             var tokens = Tokenize("10.123E-11");
 
-            Json.Parses(tokens).IntoValue(value => value.ShouldEqual(10.123E-11m));
+            Json.Parses(tokens).WithValue(value => value.ShouldEqual(10.123E-11m));
         }
 
         [Fact]
@@ -50,8 +50,8 @@ namespace Parsley.IntegrationTests.Json
             var filled = Tokenize("\"abc \\\" \\\\ \\/ \\b \\f \\n \\r \\t \\u263a def\"");
             const string expected = "abc \" \\ / \b \f \n \r \t ☺ def";
 
-            Json.Parses(empty).IntoValue(value => value.ShouldEqual(""));
-            Json.Parses(filled).IntoValue(value => value.ShouldEqual(expected));
+            Json.Parses(empty).WithValue(value => value.ShouldEqual(""));
+            Json.Parses(filled).WithValue(value => value.ShouldEqual(expected));
         }
 
         [Fact]
@@ -60,9 +60,9 @@ namespace Parsley.IntegrationTests.Json
             var empty = Tokenize("[]");
             var filled = Tokenize("[0, 1, 2]");
 
-            Json.Parses(empty).IntoValue(value => ((object[])value).ShouldBeEmpty());
+            Json.Parses(empty).WithValue(value => ((object[])value).ShouldBeEmpty());
 
-            Json.Parses(filled).IntoValue(value => value.ShouldEqual(new[] { 0m, 1m, 2m }));
+            Json.Parses(filled).WithValue(value => value.ShouldEqual(new[] { 0m, 1m, 2m }));
         }
 
         [Fact]
@@ -71,9 +71,9 @@ namespace Parsley.IntegrationTests.Json
             var empty = Tokenize("{}");
             var filled = Tokenize("{\"zero\" : 0, \"one\" : 1, \"two\" : 2}");
 
-            Json.Parses(empty).IntoValue(value => ((Dictionary<string, object>)value).Count.ShouldEqual(0));
+            Json.Parses(empty).WithValue(value => ((Dictionary<string, object>)value).Count.ShouldEqual(0));
 
-            Json.Parses(filled).IntoValue(value =>
+            Json.Parses(filled).WithValue(value =>
             {
                 var dictionary = (Dictionary<string, object>) value;
                 dictionary["zero"].ShouldEqual(0m);
@@ -102,7 +102,7 @@ namespace Parsley.IntegrationTests.Json
 
             var tokens = Tokenize(complex);
 
-            Json.Parses(tokens).IntoValue(value =>
+            Json.Parses(tokens).WithValue(value =>
             {
                 var json = (Dictionary<string, object>)value;
                 json["numbers"].ShouldEqual(new[] {10m, 20m, 30m});

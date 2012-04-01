@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Parsley
 {
@@ -106,7 +105,7 @@ namespace Parsley
             return reply.LeavingUnparsedTokens(new string[] {});
         }
 
-        public static Reply<T> IntoValue<T>(this Reply<T> reply, T expected)
+        public static Reply<T> WithValue<T>(this Reply<T> reply, T expected)
         {
             if (!Equals(expected, reply.Value))
                 throw new AssertionException(string.Format("parsed value: {0}", expected),
@@ -115,43 +114,9 @@ namespace Parsley
             return reply;
         }
 
-        public static Reply<T> IntoValue<T>(this Reply<T> reply, Action<T> assertParsedValue)
+        public static Reply<T> WithValue<T>(this Reply<T> reply, Action<T> assertParsedValue)
         {
             assertParsedValue(reply.Value);
-
-            return reply;
-        }
-
-        public static Reply<Token> IntoToken(this Reply<Token> reply, TokenKind expectedKind, string expectedLiteral)
-        {
-            reply.Value.ShouldEqual(expectedKind, expectedLiteral);
-
-            return reply;
-        }
-
-        public static Reply<Token> IntoToken(this Reply<Token> reply, string expectedLiteral)
-        {
-            AssertTokenLiteralsEqual(expectedLiteral, reply.Value.Literal);
-            return reply;
-        }
-
-        public static Reply<IEnumerable<Token>> IntoTokens(this Reply<IEnumerable<Token>> reply, params string[] expectedLiterals)
-        {
-            var actualLiterals = reply.Value.Select(x => x.Literal).ToArray();
-
-            Action raiseError = () =>
-            {
-                throw new AssertionException("Parse resulted in unexpected token literals.",
-                                             String.Join(", ", expectedLiterals),
-                                             String.Join(", ", actualLiterals));
-            };
-
-            if (actualLiterals.Length != expectedLiterals.Length)
-                raiseError();
-
-            for (int i = 0; i < actualLiterals.Length; i++)
-                if (actualLiterals[i] != expectedLiterals[i])
-                    raiseError();
 
             return reply;
         }

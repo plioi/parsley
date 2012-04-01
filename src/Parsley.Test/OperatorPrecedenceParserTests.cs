@@ -118,7 +118,7 @@ namespace Parsley
 
         private void Parses(string input, string expectedTree)
         {
-            expression.Parses(Tokenize(input)).IntoValue(e => e.ToString().ShouldEqual(expectedTree));
+            expression.Parses(Tokenize(input)).WithValue(e => e.ToString().ShouldEqual(expectedTree));
         }
 
         private static IEnumerable<Token> Tokenize(string input)
