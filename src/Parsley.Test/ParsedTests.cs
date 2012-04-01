@@ -9,7 +9,7 @@ namespace Parsley
 
         public ParsedTests()
         {
-            unparsed = new TokenStream(new CharLexer().Tokenize(new Text("0")));
+            unparsed = new TokenStream(new CharLexer().Tokenize("0"));
         }
 
         [Fact]

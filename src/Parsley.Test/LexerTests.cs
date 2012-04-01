@@ -19,7 +19,7 @@ namespace Parsley
 
         private IEnumerable<Token> Tokenize(string input)
         {
-            return new Lexer(lower, upper, space).Tokenize(new Text(input));
+            return new Lexer(lower, upper, space).Tokenize(input);
         }
 
         [Fact]

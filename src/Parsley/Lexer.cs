@@ -13,8 +13,9 @@ namespace Parsley
             this.kinds.Add(TokenKind.Unknown);
         }
 
-        public IEnumerable<Token> Tokenize(Text text)
+        public IEnumerable<Token> Tokenize(string input)
         {
+            var text = new Text(input);
             while (!text.EndOfInput)
             {
                 var current = GetToken(text);

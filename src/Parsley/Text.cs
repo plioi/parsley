@@ -6,28 +6,28 @@ namespace Parsley
     public class Text
     {
         private readonly int index;
-        private readonly string source;
+        private readonly string input;
         private readonly int line;
 
-        public Text(string source)
-            : this(NormalizeLineEndings(source), 0, 1) { }
+        public Text(string input)
+            : this(NormalizeLineEndings(input), 0, 1) { }
 
-        private Text(string source, int index, int line)
+        private Text(string input, int index, int line)
         {
-            this.source = source;
+            this.input = input;
             this.index = index;
 
-            if (index > source.Length)
-                this.index = source.Length;
+            if (index > input.Length)
+                this.index = input.Length;
 
             this.line = line;
         }
 
         public string Peek(int characters)
         {
-            return index + characters >= source.Length
-                       ? source.Substring(index)
-                       : source.Substring(index, characters);
+            return index + characters >= input.Length
+                       ? input.Substring(index)
+                       : input.Substring(index, characters);
         }
 
         public Text Advance(int characters)
@@ -38,24 +38,24 @@ namespace Parsley
             int newIndex = index + characters;
             int newLineNumber = line + Peek(characters).Count(ch => ch == '\n');
             
-            return new Text(source, newIndex, newLineNumber);
+            return new Text(input, newIndex, newLineNumber);
         }
 
         public bool EndOfInput
         {
-            get { return index >= source.Length; }
+            get { return index >= input.Length; }
         }
 
         public MatchResult Match(TokenRegex regex)
         {
-            return regex.Match(source, index);
+            return regex.Match(input, index);
         }
 
         public MatchResult Match(Predicate<char> test)
         {
             int i = index;
 
-            while (i < source.Length && test(source[i]))
+            while (i < input.Length && test(input[i]))
                 i++;
 
             var value = Peek(i - index);
@@ -73,7 +73,7 @@ namespace Parsley
                 if (index == 0)
                     return 1;
 
-                int indexOfPreviousNewLine = source.LastIndexOf('\n', index - 1);
+                int indexOfPreviousNewLine = input.LastIndexOf('\n', index - 1);
                 return index - indexOfPreviousNewLine;
             }
         }
@@ -85,12 +85,12 @@ namespace Parsley
 
         public override string ToString()
         {
-            return source.Substring(index);
+            return input.Substring(index);
         }
 
-        private static string NormalizeLineEndings(string source)
+        private static string NormalizeLineEndings(string input)
         {
-            return source.Replace("\r\n", "\n").Replace('\r', '\n');
+            return input.Replace("\r\n", "\n").Replace('\r', '\n');
         }
     }
 }

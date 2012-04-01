@@ -7,9 +7,9 @@ namespace Parsley
 {
     public class GrammarTests : Grammar
     {
-        private static IEnumerable<Token> Tokenize(string source)
+        private static IEnumerable<Token> Tokenize(string input)
         {
-            return new SampleLexer().Tokenize(new Text(source));
+            return new SampleLexer().Tokenize(input);
         }
 
         private class SampleLexer : Lexer
@@ -184,9 +184,9 @@ namespace Parsley
 
     public class AlternationTests : Grammar
     {
-        private static IEnumerable<Token> Tokenize(string source)
+        private static IEnumerable<Token> Tokenize(string input)
         {
-            return new CharLexer().Tokenize(new Text(source));
+            return new CharLexer().Tokenize(input);
         }
 
         private readonly Parser<Token> A, B, C;

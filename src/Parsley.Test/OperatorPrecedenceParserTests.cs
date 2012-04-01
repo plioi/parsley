@@ -121,9 +121,9 @@ namespace Parsley
             expression.Parses(Tokenize(input)).IntoValue(e => e.ToString().ShouldEqual(expectedTree));
         }
 
-        private static IEnumerable<Token> Tokenize(string source)
+        private static IEnumerable<Token> Tokenize(string input)
         {
-            return new SampleLexer().Tokenize(new Text(source));
+            return new SampleLexer().Tokenize(input);
         }
 
         private class SampleLexer : Lexer

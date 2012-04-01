@@ -9,7 +9,7 @@ namespace Parsley.IntegrationTests.Json
     {
         private static IEnumerable<Token> Tokenize(string input)
         {
-            return new JsonLexer().Tokenize(new Text(input));
+            return new JsonLexer().Tokenize(input);
         }
 
         [Fact]
