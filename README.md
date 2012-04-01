@@ -5,6 +5,12 @@ Parsley is a monadic parser combinator library inspired by Haskell's [Parsec](ht
 
 Unlike Parsec/FParsec, Parsley provides separate lexer/parser phases.  The lexer phase is usually performed with a prioritized list of regex patterns, and parser grammars are expressed in terms of the tokens produced by the lexer.
 
+## Installation
+
+First, [install NuGet](http://docs.nuget.org/docs/start-here/installing-nuget). Then, install Parsley from the package manager console:
+
+    PM> Install-Package Parsley
+
 ## Lexer Phase (Tokenization)
 
 Strings being parsed are represented with a `Text` instance, which tracks the original string as well as the current parsing position:
