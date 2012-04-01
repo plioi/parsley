@@ -16,7 +16,7 @@ namespace Parsley.IntegrationTests.Json
         {
             var tokens = Tokenize("true");
 
-            Json.Parses(tokens).WithValue(value => ((bool)value).ShouldBeTrue());
+            Json.Parses(tokens).WithValue(true);
         }
 
         [Fact]
@@ -24,7 +24,7 @@ namespace Parsley.IntegrationTests.Json
         {
             var tokens = Tokenize("false");
 
-            Json.Parses(tokens).WithValue(value => ((bool)value).ShouldBeFalse());
+            Json.Parses(tokens).WithValue(false);
         }
 
         [Fact]
@@ -40,7 +40,7 @@ namespace Parsley.IntegrationTests.Json
         {
             var tokens = Tokenize("10.123E-11");
 
-            Json.Parses(tokens).WithValue(value => value.ShouldEqual(10.123E-11m));
+            Json.Parses(tokens).WithValue(10.123E-11m);
         }
 
         [Fact]
@@ -50,8 +50,8 @@ namespace Parsley.IntegrationTests.Json
             var filled = Tokenize("\"abc \\\" \\\\ \\/ \\b \\f \\n \\r \\t \\u263a def\"");
             const string expected = "abc \" \\ / \b \f \n \r \t ☺ def";
 
-            Json.Parses(empty).WithValue(value => value.ShouldEqual(""));
-            Json.Parses(filled).WithValue(value => value.ShouldEqual(expected));
+            Json.Parses(empty).WithValue("");
+            Json.Parses(filled).WithValue(expected);
         }
 
         [Fact]
