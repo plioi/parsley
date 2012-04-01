@@ -30,18 +30,6 @@ namespace Parsley
             action.ShouldThrow<TException>(expectedMessage);
         }
 
-        public static void ShouldSucceed(this MatchResult actual, string expected)
-        {
-            actual.Success.ShouldBeTrue();
-            actual.Value.ShouldEqual(expected);
-        }
-
-        public static void ShouldFail(this MatchResult actual)
-        {
-            actual.Success.ShouldBeFalse();
-            actual.Value.ShouldEqual("");
-        }
-
         public static void ShouldList<T>(this IEnumerable<T> actual, params Action<T>[] itemExpectations)
         {
             var array = actual.ToArray();
