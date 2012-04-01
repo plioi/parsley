@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Parsley
 {
-    public class TokenStream : IEnumerable<Token>
+    public class TokenStream
     {
         private readonly Token current;
         private readonly Lazy<TokenStream> rest;
@@ -58,22 +57,6 @@ namespace Parsley
             var endPosition = new Position(Position.Line, Position.Column + Current.Literal.Length);
 
             return new TokenStream(new Token(TokenKind.EndOfInput, endPosition, ""));
-        }
-
-        public IEnumerator<Token> GetEnumerator()
-        {
-            var head = Current;
-
-            yield return head;
-
-            if (head.Kind != TokenKind.EndOfInput)
-                foreach (var token in Advance())
-                    yield return token;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

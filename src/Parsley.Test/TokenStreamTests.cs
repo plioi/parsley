@@ -131,16 +131,5 @@ namespace Parsley
             tokens.Advance().Advance().Advance().Position.Line.ShouldEqual(1);
             tokens.Advance().Advance().Advance().Position.Column.ShouldEqual(10);
         }
-
-        [Fact]
-        public void CanBeEnumerated()
-        {
-            var tokens = new TokenStream(Tokens()).ToArray();
-            tokens.Length.ShouldEqual(4);
-            tokens[0].ShouldEqual(upper, "ABC", 1, 1);
-            tokens[1].ShouldEqual(lower, "def", 1, 4);
-            tokens[2].ShouldEqual(upper, "GHI", 1, 7);
-            tokens[3].ShouldEqual(TokenKind.EndOfInput, "", 1, 10);
-        }
     }
 }

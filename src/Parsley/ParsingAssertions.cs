@@ -72,7 +72,15 @@ namespace Parsley
 
         public static Reply<T> LeavingUnparsedTokens<T>(this Reply<T> reply, params string[] expectedLiterals)
         {
-            var actualLiterals = reply.UnparsedTokens.Where(x => x.Kind != TokenKind.EndOfInput).Select(x => x.Literal).ToArray();
+            var stream = reply.UnparsedTokens;
+
+            var actualLiterals = new List<string>();
+
+            while (stream.Current.Kind != TokenKind.EndOfInput)
+            {
+                actualLiterals.Add(stream.Current.Literal);
+                stream = stream.Advance();
+            }
 
             Action raiseError = () =>
             {
@@ -81,10 +89,10 @@ namespace Parsley
                                              String.Join(", ", actualLiterals));
             };
 
-            if (actualLiterals.Length != expectedLiterals.Length)
+            if (actualLiterals.Count != expectedLiterals.Length)
                 raiseError();
 
-            for (int i = 0; i < actualLiterals.Length; i++)
+            for (int i = 0; i < actualLiterals.Count; i++)
                 if (actualLiterals[i] != expectedLiterals[i])
                     raiseError();
 
