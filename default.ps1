@@ -6,7 +6,7 @@ properties {
     $test_dir = "$base_dir\src\Parsley.Test\bin\$projectConfig"
     $package_dir = "$base_dir\package"
 
-    $defaultVersion = "0.0.1"
+    $defaultVersion = "0.0.2"
     if(-not $version)
     {
         $version = $defaultVersion
@@ -45,9 +45,7 @@ task Package -depends Compile {
     
     $nuspec_file = "$package_dir\Parsley.nuspec"
     create-nuspec "$version" "$nuspec_file"
-    exec { & $source_dir\.nuget\NuGet.exe pack $nuspec_file }
-    move-item "*.nupkg" "$package_dir"
-    write-host "Created deployment package: $package_dir\Parsley.$version.nupkg" -ForegroundColor Green
+    exec { & $source_dir\.nuget\NuGet.exe pack $nuspec_file -Symbols -OutputDirectory $package_dir }
 }
 
 function global:copy_files($source,$destination,$exclude=@()) {    
@@ -105,6 +103,7 @@ function global:create-nuspec($version,$filename) {
   <files>
     <file src=""$package_dir\*.dll"" target=""lib\net40"" />
     <file src=""$package_dir\*.pdb"" target=""lib\net40"" />
+    <file src=""$source_dir\**\*.cs"" target=""src"" />
   </files>
 </package>" | out-file $filename -encoding "ASCII"
 }
