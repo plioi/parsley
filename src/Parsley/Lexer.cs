@@ -13,11 +13,6 @@ namespace Parsley
             this.kinds.Add(TokenKind.Unknown);
         }
 
-        public IEnumerable<Token> Tokenize(string text)
-        {
-            return Tokenize(new Text(text));//TODO: Should we phase out the Text overload so consumer doesn't have to care about Text ever?
-        }
-
         public IEnumerable<Token> Tokenize(Text text)
         {
             while (!text.EndOfInput)

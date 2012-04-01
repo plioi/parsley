@@ -6,9 +6,9 @@ namespace Parsley.IntegrationTests.Json
 {
     public class JsonGrammarTests : JsonGrammar
     {
-        private static TokenStream Tokenize(string input)
+        private static IEnumerable<Token> Tokenize(string input)
         {
-            return new TokenStream(new JsonLexer().Tokenize(new Text(input)));
+            return new JsonLexer().Tokenize(new Text(input));
         }
 
         [Fact]

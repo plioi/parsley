@@ -22,9 +22,9 @@ namespace Parsley
             AssertTokenLiteralsEqual(expectedLiteral, actual.Literal);
         }
 
-        public static Reply<T> FailsToParse<T>(this Parser<T> parser, TokenStream tokens)
+        public static Reply<T> FailsToParse<T>(this Parser<T> parser, IEnumerable<Token> tokens)
         {
-            var reply = parser.Parse(tokens);
+            var reply = parser.Parse(new TokenStream(tokens));
             
             if (reply.Success)
                 throw new AssertionException("parser failure", "parser completed successfully");
@@ -52,14 +52,14 @@ namespace Parsley
             return reply;
         }
 
-        public static Reply<T> PartiallyParses<T>(this Parser<T> parser, TokenStream tokens)
+        public static Reply<T> PartiallyParses<T>(this Parser<T> parser, IEnumerable<Token> tokens)
         {
-            return parser.Parse(tokens).Succeeds();
+            return parser.Parse(new TokenStream(tokens)).Succeeds();
         }
 
-        public static Reply<T> Parses<T>(this Parser<T> parser, TokenStream tokens)
+        public static Reply<T> Parses<T>(this Parser<T> parser, IEnumerable<Token> tokens)
         {
-            return parser.Parse(tokens).Succeeds().AtEndOfInput();
+            return parser.Parse(new TokenStream(tokens)).Succeeds().AtEndOfInput();
         }
 
         private static Reply<T> Succeeds<T>(this Reply<T> reply)

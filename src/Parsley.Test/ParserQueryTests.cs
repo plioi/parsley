@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace Parsley
@@ -7,9 +9,9 @@ namespace Parsley
     {
         private static readonly Parser<string> Next = new LambdaParser<string>(tokens => new Parsed<string>(tokens.Current.Literal, tokens.Advance()));
 
-        private static TokenStream Tokenize(string source)
+        private static IEnumerable<Token> Tokenize(string source)
         {
-            return new CharTokenStream(source);
+            return new CharLexer().Tokenize(new Text(source));
         }
 
         [Fact]
@@ -45,22 +47,22 @@ namespace Parsley
         {
             Parser<string> Fail = Grammar.Fail<string>();
 
-            var source = Tokenize("xy");
+            var tokens = Tokenize("xy").ToArray();
 
             (from _ in Fail
              from x in Next
              from y in Next
-             select Tuple.Create(x, y)).FailsToParse(source).LeavingUnparsedTokens("x", "y");
+             select Tuple.Create(x, y)).FailsToParse(tokens).LeavingUnparsedTokens("x", "y");
 
             (from x in Next
              from _ in Fail
              from y in Next
-             select Tuple.Create(x, y)).FailsToParse(source).LeavingUnparsedTokens("y");
+             select Tuple.Create(x, y)).FailsToParse(tokens).LeavingUnparsedTokens("y");
 
             (from x in Next
              from y in Next
              from _ in Fail
-             select Tuple.Create(x, y)).FailsToParse(source).AtEndOfInput();
+             select Tuple.Create(x, y)).FailsToParse(tokens).AtEndOfInput();
         }
     }
 }

@@ -12,21 +12,21 @@ namespace Parsley
         {
             expression = new OperatorPrecedenceParser<Expression>();
 
-            expression.Atom(SampleTokenStream.Digit, token => new Constant(int.Parse(token.Literal)));
-            expression.Atom(SampleTokenStream.Name, token => new Identifier(token.Literal));
+            expression.Atom(SampleLexer.Digit, token => new Constant(int.Parse(token.Literal)));
+            expression.Atom(SampleLexer.Name, token => new Identifier(token.Literal));
 
-            expression.Unit(SampleTokenStream.LeftParen, Between(Token("("), expression, Token(")")));
+            expression.Unit(SampleLexer.LeftParen, Between(Token("("), expression, Token(")")));
 
-            expression.Binary(SampleTokenStream.Add, 3, (left, symbol, right) => new Form(symbol, left, right));
-            expression.Binary(SampleTokenStream.Subtract, 3, (left, symbol, right) => new Form(symbol, left, right));
-            expression.Binary(SampleTokenStream.Multiply, 4, (left, symbol, right) => new Form(symbol, left, right));
-            expression.Binary(SampleTokenStream.Divide, 4, (left, symbol, right) => new Form(symbol, left, right));
-            expression.Binary(SampleTokenStream.Exponent, 5, (left, symbol, right) => new Form(symbol, left, right), Associativity.Right);
-            expression.Prefix(SampleTokenStream.Subtract, 6, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
-            expression.Postfix(SampleTokenStream.Increment, 7, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
-            expression.Postfix(SampleTokenStream.Decrement, 7, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
+            expression.Binary(SampleLexer.Add, 3, (left, symbol, right) => new Form(symbol, left, right));
+            expression.Binary(SampleLexer.Subtract, 3, (left, symbol, right) => new Form(symbol, left, right));
+            expression.Binary(SampleLexer.Multiply, 4, (left, symbol, right) => new Form(symbol, left, right));
+            expression.Binary(SampleLexer.Divide, 4, (left, symbol, right) => new Form(symbol, left, right));
+            expression.Binary(SampleLexer.Exponent, 5, (left, symbol, right) => new Form(symbol, left, right), Associativity.Right);
+            expression.Prefix(SampleLexer.Subtract, 6, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
+            expression.Postfix(SampleLexer.Increment, 7, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
+            expression.Postfix(SampleLexer.Decrement, 7, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
 
-            expression.Extend(SampleTokenStream.LeftParen, 8, callable =>
+            expression.Extend(SampleLexer.LeftParen, 8, callable =>
                                  from arguments in Between(Token("("), ZeroOrMore(expression, Token(",")), Token(")"))
                                  select new Form(callable, arguments));
         }
@@ -121,12 +121,12 @@ namespace Parsley
             expression.Parses(Tokenize(input)).IntoValue(e => e.ToString().ShouldEqual(expectedTree));
         }
 
-        private static TokenStream Tokenize(string source)
+        private static IEnumerable<Token> Tokenize(string source)
         {
-            return new SampleTokenStream(source);
+            return new SampleLexer().Tokenize(new Text(source));
         }
 
-        private class SampleTokenStream : TokenStream
+        private class SampleLexer : Lexer
         {
             public static readonly TokenKind Digit = new Pattern("Digit", @"[0-9]");
             public static readonly TokenKind Name = new Pattern("Name", @"[a-z]+");
@@ -141,10 +141,10 @@ namespace Parsley
             public static readonly TokenKind RightParen = new Operator(")");
             public static readonly TokenKind Comma = new Operator(",");
 
-            public SampleTokenStream(string source)
-                : base(new Lexer(Digit, Name, Increment, Decrement, Add,
-                                 Subtract, Multiply, Divide, Exponent,
-                                 LeftParen, RightParen, Comma).Tokenize(new Text(source))) { }
+            public SampleLexer()
+                : base(Digit, Name, Increment, Decrement, Add,
+                       Subtract, Multiply, Divide, Exponent,
+                       LeftParen, RightParen, Comma) { }
         }
 
         private interface Expression

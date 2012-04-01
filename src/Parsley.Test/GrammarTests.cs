@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Should;
 using Xunit;
 
@@ -6,19 +7,19 @@ namespace Parsley
 {
     public class GrammarTests : Grammar
     {
-        private static TokenStream Tokenize(string source)
+        private static IEnumerable<Token> Tokenize(string source)
         {
-            return new SampleTokenStream(source);
+            return new SampleLexer().Tokenize(new Text(source));
         }
 
-        private class SampleTokenStream : TokenStream
+        private class SampleLexer : Lexer
         {
             public static readonly TokenKind Digit = new Pattern("Digit", @"[0-9]");
             public static readonly TokenKind Letter = new Pattern("Letter", @"[a-zA-Z]");
             public static readonly TokenKind Symbol = new Pattern("Symbol", @".");
 
-            public SampleTokenStream(string source)
-                : base(new Lexer(Digit, Letter, Symbol).Tokenize(new Text(source))) { }
+            public SampleLexer()
+                : base(Digit, Letter, Symbol) { }
         }
 
         private readonly Parser<Token> A, B, AB, COMMA;
@@ -51,11 +52,11 @@ namespace Parsley
         [Fact]
         public void CanDemandThatAGivenKindOfTokenAppearsNext()
         {
-            Token(SampleTokenStream.Letter).Parses(Tokenize("A")).IntoToken("A");
-            Token(SampleTokenStream.Letter).FailsToParse(Tokenize("0")).LeavingUnparsedTokens("0").WithMessage("(1, 1): Letter expected");
+            Token(SampleLexer.Letter).Parses(Tokenize("A")).IntoToken("A");
+            Token(SampleLexer.Letter).FailsToParse(Tokenize("0")).LeavingUnparsedTokens("0").WithMessage("(1, 1): Letter expected");
 
-            Token(SampleTokenStream.Digit).FailsToParse(Tokenize("A")).LeavingUnparsedTokens("A").WithMessage("(1, 1): Digit expected");
-            Token(SampleTokenStream.Digit).Parses(Tokenize("0")).IntoToken("0");
+            Token(SampleLexer.Digit).FailsToParse(Tokenize("A")).LeavingUnparsedTokens("A").WithMessage("(1, 1): Digit expected");
+            Token(SampleLexer.Digit).Parses(Tokenize("0")).IntoToken("0");
         }
 
         [Fact]
@@ -77,7 +78,7 @@ namespace Parsley
             parser.FailsToParse(Tokenize("ABABA!")).LeavingUnparsedTokens("!").WithMessage("(1, 6): B expected");
 
             Parser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
-            Action infiniteLoop = () => ZeroOrMore(succeedWithoutConsuming).Parse(Tokenize(""));
+            Action infiniteLoop = () => ZeroOrMore(succeedWithoutConsuming).Parse(new TokenStream(Tokenize("")));
             infiniteLoop.ShouldThrow<Exception>("Parser encountered a potential infinite loop.");
         }
 
@@ -92,7 +93,7 @@ namespace Parsley
             parser.FailsToParse(Tokenize("ABABA!")).LeavingUnparsedTokens("!").WithMessage("(1, 6): B expected");
 
             Parser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
-            Action infiniteLoop = () => OneOrMore(succeedWithoutConsuming).Parse(Tokenize(""));
+            Action infiniteLoop = () => OneOrMore(succeedWithoutConsuming).Parse(new TokenStream(Tokenize("")));
             infiniteLoop.ShouldThrow<Exception>("Parser encountered a potential infinite loop.");
         }
 
@@ -183,9 +184,9 @@ namespace Parsley
 
     public class AlternationTests : Grammar
     {
-        private static TokenStream Tokenize(string source)
+        private static IEnumerable<Token> Tokenize(string source)
         {
-            return new CharTokenStream(source);
+            return new CharLexer().Tokenize(new Text(source));
         }
 
         private readonly Parser<Token> A, B, C;
