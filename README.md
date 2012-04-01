@@ -1,12 +1,11 @@
-Introduction
-============
+![Parsley](https://github.com/plioi/parsley/raw/master/parsley.png)
+# Parsley
 
-Parsley (https://github.com/plioi/parsley) is a monadic parser combinator library inspired by Haskell's Parsec (http://www.haskell.org/haskellwiki/Parsec) and F#'s FParsec (http://www.quanttec.com/fparsec/).  It can parse context-sensitive, infinite look-ahead grammars but it performs best on predictive (LL[1]) grammars.
+Parsley is a monadic parser combinator library inspired by Haskell's [Parsec](http://www.haskell.org/haskellwiki/Parsec) and F#'s [FParsec](http://www.quanttec.com/fparsec/).  It can parse context-sensitive, infinite look-ahead grammars but it performs best on predictive (LL[1]) grammars.
 
 Unlike Parsec/FParsec, Parsley provides separate lexer/parser phases.  The lexer phase is usually performed with a prioritized list of regex patterns, and parser grammars are expressed in terms of the tokens produced by the lexer.
 
-Lexer Phase (Tokenization)
-==========================
+## Lexer Phase (Tokenization)
 
 Strings being parsed are represented with a `Text` instance, which tracks the original string as well as the current parsing position:
 
@@ -25,8 +24,7 @@ Above, the array `tokens` will contain 6 `Token` objects. Each `Token` contains 
 
 The collection of `Token` produced by the lexer phase is wrapped in a `TokenStream`, which allows the rest of the system to traverse the collection of tokens in an immutable fashion.
 
-Parser Functions
-================
+## Parser Functions
 
 A parser of thingies is a method that consumes a `TokenStream` and produces a parsed-thingy:
 
@@ -37,12 +35,11 @@ A parser of thingies is a method that consumes a `TokenStream` and produces a pa
 
 A `Reply<T>` describes whether or not the parser succeeded, the parsed-thingy (on success), a possibly-empty error message list, and a reference to a `TokenStream` representing the remaining unparsed tokens.
 
-Grammars
-========
+## Grammars
 
 Grammars should inherit from `Grammar` to take advantage of several `Parser` primitives.  Grammars should define each grammar rule in terms of these primitives, ultimately exposing the start rule as some `Parser<T>`.  Grammar rule bodies may consist of LINQ queries, which allow you to glue together other grammar rules in sequence:
 
-See /src/Parsley.Test/IntegrationTests for a sample JSON grammar.
+See the integration tests for a [sample JSON grammar](https://github.com/plioi/parsley/tree/master/src/Parsley.Test/IntegrationTests/Json).
 
 Finally, we can put all these pieces together to parse some text:
 
