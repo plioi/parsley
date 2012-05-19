@@ -6,7 +6,7 @@ properties {
     $test_dir = "$base_dir\src\Parsley.Test\bin\$projectConfig"
     $package_dir = "$base_dir\package"
 
-    $defaultVersion = "0.0.2"
+    $defaultVersion = "0.0.3"
     if(-not $version)
     {
         $version = $defaultVersion
@@ -96,6 +96,7 @@ function global:create-nuspec($version,$filename) {
     <owners>Patrick Lioi</owners>
     <licenseUrl>https://github.com/plioi/parsley/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/plioi/parsley</projectUrl>
+    <iconUrl>https://github.com/plioi/parsley/raw/master/parsley.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>A text parsing library.</summary>
     <description>Parsley is a monadic parser combinator library inspired by Haskell's Parsec library.  It can parse context-sensitive, infinite look-ahead grammars but it performs best on predictive LL[1] grammars.</description>
