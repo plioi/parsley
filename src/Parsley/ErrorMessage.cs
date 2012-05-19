@@ -20,6 +20,24 @@ namespace Parsley
         }
     }
 
+    public class UndefinedGrammarRuleErrorMessage : ErrorMessage
+    {
+        private readonly string grammarRuleName;
+
+        internal UndefinedGrammarRuleErrorMessage(string grammarRuleName)
+        {
+            this.grammarRuleName = grammarRuleName;
+        }
+
+        public override string ToString()
+        {
+            if (grammarRuleName == null)
+                return "An anonymous GrammarRule has not been initialized.  Try setting the Rule property.";
+
+            return String.Format("GrammarRule '{0}' has not been initialized.  Try setting the Rule property.", grammarRuleName);
+        }
+    }
+
     public class UnknownErrorMessage : ErrorMessage
     {
         internal UnknownErrorMessage() { }

@@ -9,7 +9,7 @@ namespace Parsley
         public GrammarRule(string name = null)
         {
             Name = name;
-            parse = null;
+            parse = tokens => new Error<T>(tokens, new UndefinedGrammarRuleErrorMessage(Name));
         }
 
         public string Name { get; internal set; }
