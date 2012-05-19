@@ -84,7 +84,12 @@ namespace Parsley
         private static Reply<T> Succeeds<T>(this Reply<T> reply)
         {
             if (!reply.Success)
-                throw new AssertionException(reply.ErrorMessages.ToString(), "parser success", "parser failed");
+            {
+                var message = "Position: " + reply.UnparsedTokens.Position
+                              + Environment.NewLine
+                              + "Error Message: " + reply.ErrorMessages;
+                throw new AssertionException(message, "parser success", "parser failed");
+            }
 
             return reply;
         }
