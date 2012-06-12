@@ -20,9 +20,9 @@ Strings being parsed are represented with a `Text` instance, which tracks the or
 The lexer phase is implemented by anything that produces an `IEnumerable<Token>`.  The default implementation, `Lexer`, builds the series of tokens when given a prioritized series of `TokenKind` token recognizers.  The most common `TokenKind` implementation is `Pattern`, which recognizes tokens via regex patterns.  `TokenKinds` can be skippable, if you want them to be recognized but discarded:
 
         var text = new Text("1 2 3 a b c");
-        var lexer = new Lexer(new Patter("letter", @"[a-z]"),
+        var lexer = new Lexer(new Pattern("letter", @"[a-z]"),
                               new Pattern("number", @"[0-9]+"),
-                              new Pattern("whitespace", @"\s+", skippable: true);
+                              new Pattern("whitespace", @"\s+", skippable: true));
 
         Token[] tokens = lexer.ToArray();
 
