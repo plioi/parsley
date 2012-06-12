@@ -22,7 +22,7 @@ The lexer phase is implemented by anything that produces an `IEnumerable<Token>`
         var text = new Text("1 2 3 a b c");
         var lexer = new Lexer(new Pattern("letter", @"[a-z]"),
                               new Pattern("number", @"[0-9]+"),
-                              new Pattern("whitespace", @"\s+", skippable: true);
+                              new Pattern("whitespace", @"\s+", skippable: true));
 
         Token[] tokens = lexer.ToArray();
 
