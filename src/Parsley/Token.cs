@@ -12,5 +12,10 @@
             Position = position;
             Literal = value;
         }
+
+        public override string ToString()
+        {
+            return string.Format("Kind: {0}, Position: {1}, Literal: {2}", Kind, Position, Literal);
+        }
     }
 }
