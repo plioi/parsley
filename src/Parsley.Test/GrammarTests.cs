@@ -99,7 +99,7 @@ namespace Parsley
 
             Parser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
             Action infiniteLoop = () => ZeroOrMore(succeedWithoutConsuming).Parse(new TokenStream(Tokenize("")));
-            infiniteLoop.ShouldThrow<Exception>("Parser encountered a potential infinite loop.");
+            infiniteLoop.ShouldThrow<Exception>("Parser encountered a potential infinite loop at position (1, 1).");
         }
 
         [Fact]
@@ -123,7 +123,7 @@ namespace Parsley
 
             Parser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
             Action infiniteLoop = () => OneOrMore(succeedWithoutConsuming).Parse(new TokenStream(Tokenize("")));
-            infiniteLoop.ShouldThrow<Exception>("Parser encountered a potential infinite loop.");
+            infiniteLoop.ShouldThrow<Exception>("Parser encountered a potential infinite loop at position (1, 1).");
         }
 
         [Fact]
