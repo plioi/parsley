@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Parsley
 {
@@ -53,10 +54,15 @@ namespace Parsley
     {
         private readonly TokenRegex regex;
 
-        public Pattern(string name, string pattern, bool skippable = false)
+        public Pattern(string name, string pattern, params RegexOptions[] regexOptions)
+            : this(name, pattern, false, regexOptions)
+        {
+        }
+
+        public Pattern(string name, string pattern, bool skippable, params RegexOptions[] regexOptions)
             : base(name, skippable)
         {
-            regex = new TokenRegex(pattern);
+            regex = new TokenRegex(pattern, regexOptions);
         }
 
         protected override MatchResult Match(Text text)

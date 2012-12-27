@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using Should;
 using Xunit;
 
@@ -8,12 +9,14 @@ namespace Parsley
     {
         private readonly TokenKind lower;
         private readonly TokenKind upper;
+        private readonly TokenKind caseInsensitive;
         private readonly Text abcDEF;
 
         public TokenKindTests()
         {
             lower = new Pattern("Lowercase", @"[a-z]+");
             upper = new Pattern("Uppercase", @"[A-Z]+");
+            caseInsensitive = new Pattern("Case Insensitive", @"[a-z]+", RegexOptions.IgnoreCase);
             abcDEF = new Text("abcDEF");
         }
 
@@ -36,6 +39,9 @@ namespace Parsley
 
             upper.TryMatch(abcDEF.Advance(3), out token).ShouldBeTrue();
             token.ShouldEqual(upper, "DEF", 1, 4);
+
+            caseInsensitive.TryMatch(abcDEF, out token).ShouldBeTrue();
+            token.ShouldEqual(caseInsensitive, "abcDEF", 1, 1);
         }
 
         [Fact]
@@ -43,6 +49,7 @@ namespace Parsley
         {
             lower.Name.ShouldEqual("Lowercase");
             upper.Name.ShouldEqual("Uppercase");
+            caseInsensitive.Name.ShouldEqual("Case Insensitive");
         }
 
         [Fact]
@@ -50,6 +57,7 @@ namespace Parsley
         {
             lower.ToString().ShouldEqual("Lowercase");
             upper.ToString().ShouldEqual("Uppercase");
+            caseInsensitive.ToString().ShouldEqual("Case Insensitive");
         }
 
         [Fact]

@@ -7,12 +7,17 @@ namespace Parsley
         private readonly string pattern;
         private readonly Regex regex;
 
-        public TokenRegex(string pattern)
+        public TokenRegex(string pattern, params RegexOptions[] regexOptions)
         {
+            var options = RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace;
+
+            foreach (var additionalOption in regexOptions)
+                options |= additionalOption;
+
             this.pattern = pattern;
             regex = new Regex(@"\G(
                                        " + pattern + @"
-                                       )", RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace);
+                                       )", options);
         }
 
         public MatchResult Match(string input, int index)

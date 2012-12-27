@@ -1,4 +1,5 @@
-﻿using Should;
+﻿using System.Text.RegularExpressions;
+using Should;
 using Xunit;
 
 namespace Parsley
@@ -31,6 +32,20 @@ namespace Parsley
             regex.Match("$23ab!", 0).Success.ShouldBeFalse();
             regex.Match("$23ab!", 1).Value.ShouldEqual("23");
             regex.Match("$23ab!", 3).Value.ShouldEqual("ab");
+        }
+
+        [Fact]
+        public void SupportsOptionalRegexOptions()
+        {
+            var regex = new TokenRegex(@"[a-z]+", RegexOptions.IgnoreCase);
+
+            regex.Match("123aBc0", 0).Success.ShouldBeFalse();
+
+            regex.Match("123aBc0", 3).Success.ShouldBeTrue();
+            regex.Match("123aBc0", 3).Value.ShouldEqual("aBc");
+
+            regex.Match("123aBc0", 4).Success.ShouldBeTrue();
+            regex.Match("123aBc0", 4).Value.ShouldEqual("Bc");
         }
 
         [Fact]
