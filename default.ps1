@@ -6,7 +6,7 @@ properties {
     $test_dir = "$base_dir\src\Parsley.Test\bin\$projectConfig"
     $package_dir = "$base_dir\package"
 
-    $defaultVersion = "0.0.3"
+    $defaultVersion = "0.0.4"
     if(-not $version)
     {
         $version = $defaultVersion
