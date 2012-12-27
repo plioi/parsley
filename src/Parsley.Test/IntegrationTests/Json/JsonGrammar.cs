@@ -9,6 +9,7 @@ namespace Parsley.IntegrationTests.Json
     public class JsonGrammar : Grammar
     {
         public static readonly GrammarRule<object> Json = new GrammarRule<object>();
+        private static readonly GrammarRule<object> JsonValue = new GrammarRule<object>(); 
         private static readonly GrammarRule<object> True = new GrammarRule<object>();
         private static readonly GrammarRule<object> False = new GrammarRule<object>(); 
         private static readonly GrammarRule<object> Null = new GrammarRule<object>();
@@ -38,21 +39,24 @@ namespace Parsley.IntegrationTests.Json
                 select Unescape(quotation.Literal);
 
             Array.Rule =
-                from items in Between(Token("["), ZeroOrMore(Json, Token(",")), Token("]"))
+                from items in Between(Token("["), ZeroOrMore(JsonValue, Token(",")), Token("]"))
                 select items.ToArray();
 
             Pair.Rule =
                 from key in Quotation
                 from colon in Token(":")
-                from value in Json
+                from value in JsonValue
                 select new KeyValuePair<string, object>(key, value);
 
             Dictionary.Rule =
                 from pairs in Between(Token("{"), ZeroOrMore(Pair, Token(",")), Token("}"))
                 select ToDictionary(pairs);
 
-            Json.Rule =
-                Choice(True, False, Null, Number, Quotation, Dictionary, Array);
+            JsonValue.Rule = Choice(True, False, Null, Number, Quotation, Dictionary, Array);
+
+            Json.Rule = from jsonValue in JsonValue
+                        from end in EndOfInput
+                        select jsonValue;
         }
 
         private static Parser<object> Constant(TokenKind kind, object constant)
