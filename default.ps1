@@ -18,6 +18,10 @@ task Package -depends Test {
     rd .\package -recurse -force -ErrorAction SilentlyContinue | out-null
     mkdir .\package -ErrorAction SilentlyContinue | out-null
     exec { & $src\.nuget\NuGet.exe pack $src\$project\$project.csproj -Symbols -Prop Configuration=$configuration -OutputDirectory .\package }
+
+    write-host
+    write-host "To publish these packages, issue the following command:"
+    write-host "   nuget push .\package\$project.$version.nupkg"
 }
 
 task Test -depends Compile {
