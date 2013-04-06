@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Should;
-using Xunit;
 
 namespace Parsley
 {
@@ -22,13 +21,11 @@ namespace Parsley
             return new Lexer(lower, upper, space).Tokenize(input);
         }
 
-        [Fact]
         public void ProvidesEmptyEnumerableForEmptyText()
         {
             Tokenize("").ShouldBeEmpty();
         }
 
-        [Fact]
         public void UsesPrioritizedTokenMatchersToTokenize()
         {
             Tokenize("ABCdefGHI")
@@ -37,7 +34,6 @@ namespace Parsley
                             t => t.ShouldEqual(upper, "GHI", 1, 7));
         }
 
-        [Fact]
         public void ProvidesTokenAtUnrecognizedInput()
         {
             Tokenize("ABC!def")
@@ -45,7 +41,6 @@ namespace Parsley
                             t => t.ShouldEqual(TokenKind.Unknown, "!def", 1, 4));
         }
 
-        [Fact]
         public void SkipsPastSkippableTokens()
         {
             Tokenize(" ").ShouldBeEmpty();

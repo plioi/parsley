@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Should;
-using Xunit;
 
 namespace Parsley
 {
@@ -34,7 +32,6 @@ namespace Parsley
             yield return new Token(TokenKind.EndOfInput, new Position(1, 10), "");
         }
 
-        [Fact]
         public void ProvidesEndOfInputTokenWhenGivenEmptyEnumerator()
         {
             var tokens = new TokenStream(Empty());
@@ -43,21 +40,18 @@ namespace Parsley
             tokens.Advance().ShouldBeSameAs(tokens);
         }
 
-        [Fact]
         public void ProvidesCurrentToken()
         {
             var tokens = new TokenStream(Tokens());
             tokens.Current.ShouldEqual(upper, "ABC", 1, 1);
         }
 
-        [Fact]
         public void AdvancesToTheNextToken()
         {
             var tokens = new TokenStream(Tokens());
             tokens.Advance().Current.ShouldEqual(lower, "def", 1, 4);
         }
 
-        [Fact]
         public void ProvidesEndOfInputTokenAfterEnumeratorIsExhausted()
         {
             var tokens = new TokenStream(OneToken());
@@ -67,14 +61,12 @@ namespace Parsley
             end.Advance().ShouldBeSameAs(end);
         }
 
-        [Fact]
         public void TryingToAdvanceBeyondEndOfInputResultsInNoMovement()
         {
             var tokens = new TokenStream(Empty());
             tokens.ShouldBeSameAs(tokens.Advance());
         }
 
-        [Fact]
         public void DoesNotChangeStateAsUnderlyingEnumeratorIsTraversed()
         {
             var tokens = new TokenStream(Tokens());
@@ -101,7 +93,6 @@ namespace Parsley
             fourth.Advance().ShouldBeSameAs(fourth);
         }
 
-        [Fact]
         public void AllowsRepeatableTraversalWhileTraversingUnderlyingEnumeratorItemsAtMostOnce()
         {
             var tokens = new TokenStream(Tokens());
@@ -114,7 +105,6 @@ namespace Parsley
             tokens.Advance().ShouldBeSameAs(tokens.Advance());
         }
 
-        [Fact]
         public void ProvidesPositionOfCurrentToken()
         {
             var tokens = new TokenStream(Tokens());

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Xunit;
 
 namespace Parsley
 {
@@ -14,7 +13,6 @@ namespace Parsley
             return new CharLexer().Tokenize(input);
         }
 
-        [Fact]
         public void CanBuildParserWhichSimulatesSuccessfulParsingOfGivenValueWithoutConsumingInput()
         {
             var parser = 1.SucceedWithThisValue();
@@ -22,7 +20,6 @@ namespace Parsley
             parser.PartiallyParses(Tokenize("input")).LeavingUnparsedTokens("i", "n", "p", "u", "t").WithValue(1);
         }
 
-        [Fact]
         public void CanBuildParserFromSingleSimplerParser()
         {
             var parser = from x in Next
@@ -31,7 +28,6 @@ namespace Parsley
             parser.PartiallyParses(Tokenize("xy")).LeavingUnparsedTokens("y").WithValue("X");
         }
 
-        [Fact]
         public void CanBuildParserFromOrderedSequenceOfSimplerParsers()
         {
             var parser = (from a in Next
@@ -42,7 +38,6 @@ namespace Parsley
             parser.PartiallyParses(Tokenize("abcdef")).LeavingUnparsedTokens("d", "e", "f").WithValue("ABC");
         }
 
-        [Fact]
         public void PropogatesErrorsWithoutRunningRemainingParsers()
         {
             Parser<string> Fail = Grammar.Fail<string>();

@@ -1,12 +1,10 @@
 ﻿using System.Linq;
 using Should;
-using Xunit;
 
 namespace Parsley
 {
     public class GrammarRuleTests : Grammar
     {
-        [Fact]
         public void CanDefineMutuallyRecursiveRules()
         {
             var tokens = new CharLexer().Tokenize("(A)");
@@ -21,7 +19,6 @@ namespace Parsley
             expression.Parses(tokens).WithValue("A");
         }
 
-        [Fact]
         public void HasAnOptionallyProvidedName()
         {
             var unnamed = new GrammarRule<string>();
@@ -31,7 +28,6 @@ namespace Parsley
             named.Name.ShouldEqual("Named");
         }
 
-        [Fact]
         public void ProvidesAdviceWhenRuleIsUsedBeforeBeingInitialized()
         {
             var tokens = new CharLexer().Tokenize("123").ToArray();

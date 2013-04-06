@@ -1,23 +1,19 @@
 ﻿using Should;
-using Xunit;
 
 namespace Parsley
 {
     public class ErrorMessageListTests
     {
-        [Fact]
         public void ShouldProvideSharedEmptyInstance()
         {
             ErrorMessageList.Empty.ShouldBeSameAs(ErrorMessageList.Empty);
         }
 
-        [Fact]
         public void CanBeEmpty()
         {
             ErrorMessageList.Empty.ToString().ShouldEqual("");
         }
 
-        [Fact]
         public void CreatesNewCollectionWhenAddingItems()
         {
             ErrorMessageList list = ErrorMessageList.Empty.With(ErrorMessage.Expected("expectation"));
@@ -26,7 +22,6 @@ namespace Parsley
             list.ShouldNotBeSameAs(ErrorMessageList.Empty);
         }
 
-        [Fact]
         public void CanIncludeUnknownErrors()
         {
             ErrorMessageList.Empty
@@ -34,7 +29,6 @@ namespace Parsley
                 .ToString().ShouldEqual("Parse error.");
         }
 
-        [Fact]
         public void CanIncludeMultipleExpectations()
         {
             ErrorMessageList.Empty
@@ -56,7 +50,6 @@ namespace Parsley
                 .ToString().ShouldEqual("A, B, C or D expected");
         }
 
-        [Fact]
         public void OmitsDuplicateExpectationsFromExpectationLists()
         {
             ErrorMessageList.Empty
@@ -71,7 +64,6 @@ namespace Parsley
                 .ToString().ShouldEqual("A, B or C expected");
         }
 
-        [Fact]
         public void CanIncludeBacktrackErrors()
         {
             var deepBacktrack = ErrorMessage.Backtrack(new Position(3, 4),
@@ -106,7 +98,6 @@ namespace Parsley
                 .ToString().ShouldEqual("G or H expected [(1, 2): E or F expected] [(2, 3): C or D expected [(3, 4): A or B expected]]");
         }
 
-        [Fact]
         public void CanMergeTwoLists()
         {
             var first = ErrorMessageList.Empty
@@ -125,7 +116,6 @@ namespace Parsley
                 .ToString().ShouldEqual("A, B, C, D or E expected");
         }
 
-        [Fact]
         public void OmitsUnknownErrorsWhenAdditionalErrorsExist()
         {
             ErrorMessageList.Empty

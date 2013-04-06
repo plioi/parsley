@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Should;
-using Xunit;
 
 namespace Parsley.IntegrationTests.Json
 {
@@ -12,7 +11,6 @@ namespace Parsley.IntegrationTests.Json
             return new JsonLexer().Tokenize(input);
         }
 
-        [Fact]
         public void RecognizesSkippableWhitespace()
         {
             Tokenize(" ").ShouldBeEmpty();
@@ -22,7 +20,6 @@ namespace Parsley.IntegrationTests.Json
             Tokenize(" \t\n\r").ShouldBeEmpty();
         }
 
-        [Fact]
         public void RecognizesKeywords()
         {
             Tokenize("null").Single().ShouldEqual(JsonLexer.@null, "null");
@@ -35,7 +32,6 @@ namespace Parsley.IntegrationTests.Json
                             t => t.ShouldEqual(JsonLexer.@false, "false", 1, 11));
         }
 
-        [Fact]
         public void RecognizesOperators()
         {
             Tokenize(",").Single().ShouldEqual(JsonLexer.Comma, ",");
@@ -54,7 +50,6 @@ namespace Parsley.IntegrationTests.Json
                             t => t.ShouldEqual(JsonLexer.Colon, ":", 1, 6));
         }
 
-        [Fact]
         public void RecognizesQuotations()
         {
             Tokenize("\"\"").Single().ShouldEqual(JsonLexer.Quotation, "\"\"");
@@ -76,7 +71,6 @@ namespace Parsley.IntegrationTests.Json
                             t => t.ShouldEqual(JsonLexer.Quotation, "\" c \"", 1, 13));
         }
 
-        [Fact]
         public void RecognizesNumbers()
         {
             Tokenize("0").Single().ShouldEqual(JsonLexer.Number, "0");

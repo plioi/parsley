@@ -7,7 +7,7 @@ namespace Parsley
 {
     public abstract class Grammar
     {
-        public void InferGrammarRuleNames()
+        protected void InferGrammarRuleNames()
         {
             const BindingFlags fieldBindingFlags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 

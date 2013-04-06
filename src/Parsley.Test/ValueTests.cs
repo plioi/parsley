@@ -1,18 +1,15 @@
 ﻿using Should;
-using Xunit;
 
 namespace Parsley
 {
     public class ValueTests
     {
-        [Fact]
         public void AnInstanceShouldAlwaysReturnTheSameHashCode()
         {
             var o = new Sample(1, "A");
             o.GetHashCode().ShouldEqual(o.GetHashCode());
         }
 
-        [Fact]
         public void HashCodesOfEquivalentObjectsShouldBeEqual()
         {
             var a = new Sample(1, "A");
@@ -20,7 +17,6 @@ namespace Parsley
             a.GetHashCode().ShouldEqual(b.GetHashCode());
         }
 
-        [Fact]
         public void HashCodesOfNonEquivalentObjectsShouldUsuallyBeDifferent()
         {
             var a = new Sample(0, "A");
@@ -31,19 +27,16 @@ namespace Parsley
             b.GetHashCode().ShouldNotEqual(c.GetHashCode());
         }
 
-        [Fact]
         public void HashCodesShouldBeSafeFromNullFields()
         {
             new Sample(0, null).GetHashCode();
         }
 
-        [Fact]
         public void HashCodesShouldBeSafeFromNumericOverflow()
         {
             new Sample(int.MaxValue, "A").GetHashCode();
         }
 
-        [Fact]
         public void IsEquatableByComparingImmutableFields()
         {
             var nil = (Sample)null;
@@ -54,7 +47,6 @@ namespace Parsley
             new Sample(0, null).Equals(new Sample(0, "A")).ShouldBeFalse();
         }
 
-        [Fact]
         public void OverridesObjectEquals()
         {
             object nil = null;
@@ -65,7 +57,6 @@ namespace Parsley
             new Sample(0, null).Equals((object)new Sample(0, "A")).ShouldBeFalse();
         }
 
-        [Fact]
         public void OverloadsEqualityOperators()
         {
             var a = new Sample(0, "A");

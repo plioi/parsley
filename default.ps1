@@ -25,8 +25,8 @@ task Package -depends Test {
 }
 
 task Test -depends Compile {
-    $xunitRunner = join-path $src "packages\xunit.runners.1.9.1\tools\xunit.console.clr4.exe"
-    exec { & $xunitRunner $src\$project.Test\bin\$configuration\$project.Test.dll }
+    $fixieRunner = join-path $src "packages\Fixie.0.0.1.24\lib\net45\Fixie.Console.exe"
+    exec { & $fixieRunner $src\$project.Test\bin\$configuration\$project.Test.dll }
 }
 
 task Compile -depends CommonAssemblyInfo {
