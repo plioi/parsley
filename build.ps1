@@ -43,22 +43,7 @@ task Test -depends Compile {
         if ($projectName.EndsWith("Test"))
         {
             $testAssembly = "$($project.Directory)\bin\$configuration\$projectName.dll"
-            if ($runningUnderCI) {
-                & $testRunner $testAssembly --xUnitXml TestResults.xml
-                $testsFailed = $false
-                if ($lastexitcode -ne 0) {
-                    $testsFailed = $true
-                }
-
-                $wc = New-Object 'System.Net.WebClient'
-                $wc.UploadFile("https://ci.appveyor.com/api/testresults/xunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestResults.xml))
-
-                if ($testsFailed) {
-                    throw ("Tests failed.")
-                }
-            } else {
-                exec { & $testRunner $testAssembly }
-            }
+            exec { & $testRunner $testAssembly }
         }
     }
 }
