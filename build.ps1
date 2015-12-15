@@ -1,4 +1,4 @@
-Framework '4.0'
+Framework '4.5.2'
 
 properties {
     $project = "Parsley"
