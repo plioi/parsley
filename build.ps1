@@ -1,7 +1,6 @@
 Framework '4.5.2'
 
 properties {
-    $project = "Parsley"
     $birthYear = 2011
     $maintainers = "Patrick Lioi"
     $description = "A monadic parser combinator library inspired by Haskell's Parsec library."
@@ -17,21 +16,21 @@ task default -depends Test
 task Package -depends Test {
     rd .\package -recurse -force -ErrorAction SilentlyContinue | out-null
     mkdir .\package -ErrorAction SilentlyContinue | out-null
-    exec { & $src\.nuget\NuGet.exe pack $src\$project\$project.csproj -Symbols -Prop Configuration=$configuration -OutputDirectory .\package }
+    exec { & $src\.nuget\NuGet.exe pack $src\Parsley\Parsley.csproj -Symbols -Prop Configuration=$configuration -OutputDirectory .\package }
 
     write-host
     write-host "To publish these packages, issue the following command:"
-    write-host "   nuget push .\package\$project.$version.nupkg"
+    write-host "   nuget push .\package\Parsley.$version.nupkg"
 }
 
 task Test -depends Compile {
     $fixieRunner = join-path $src "packages\Fixie.0.0.1.218\lib\net45\Fixie.Console.exe"
-    exec { & $fixieRunner $src\$project.Test\bin\$configuration\$project.Test.dll }
+    exec { & $fixieRunner $src\Parsley.Test\bin\$configuration\Parsley.Test.dll }
 }
 
 task Compile -depends CommonAssemblyInfo {
-  exec { msbuild /t:clean /v:q /nologo /p:Configuration=$configuration $src\$project.sln }
-  exec { msbuild /t:build /v:q /nologo /p:Configuration=$configuration $src\$project.sln }
+  exec { msbuild /t:clean /v:q /nologo /p:Configuration=$configuration $src\Parsley.sln }
+  exec { msbuild /t:build /v:q /nologo /p:Configuration=$configuration $src\Parsley.sln }
 }
 
 task CommonAssemblyInfo {
@@ -44,7 +43,7 @@ task CommonAssemblyInfo {
 using System.Runtime.InteropServices;
 
 [assembly: ComVisible(false)]
-[assembly: AssemblyProduct(""$project"")]
+[assembly: AssemblyProduct(""Parsley"")]
 [assembly: AssemblyVersion(""$version"")]
 [assembly: AssemblyFileVersion(""$version"")]
 [assembly: AssemblyCopyright(""$copyright"")]
