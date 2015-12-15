@@ -25,8 +25,25 @@ task Package -depends Test {
 }
 
 task Test -depends Compile {
-    $fixieRunner = join-path $src "packages\Fixie.0.0.1.218\lib\net45\Fixie.Console.exe"
-    exec { & $fixieRunner $src\Parsley.Test\bin\$configuration\Parsley.Test.dll }
+    $testRunners = @(gci $src\packages -rec -filter Fixie.Console.exe)
+
+    if ($testRunners.Length -ne 1)
+    {
+        throw "Expected to find 1 Fixie.Console.exe, but found $($testRunners.Length)."
+    }
+
+    $testRunner = $testRunners[0].FullName
+
+    foreach ($project in $projects)
+    {
+        $projectName = [System.IO.Path]::GetFileNameWithoutExtension($project)
+
+        if ($projectName.EndsWith("Test"))
+        {
+            $testAssembly = "$($project.Directory)\bin\$configuration\$projectName.dll"
+            exec { & $testRunner $testAssembly }
+        }
+    }
 }
 
 task Compile -depends AssemblyInfo, License {
