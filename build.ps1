@@ -10,6 +10,7 @@ properties {
     $build = if ($env:build_number -ne $NULL) { $env:build_number } else { '0' }
     $version = [IO.File]::ReadAllText('.\VERSION.txt') + '.' + $build
     $projects = @(gci $src -rec -filter *.csproj)
+    $runningUnderCI = $env:APPVEYOR -eq "True"
 }
 
 task default -depends Test
@@ -41,7 +42,14 @@ task Test -depends Compile {
         if ($projectName.EndsWith("Test"))
         {
             $testAssembly = "$($project.Directory)\bin\$configuration\$projectName.dll"
-            exec { & $testRunner $testAssembly }
+            if ($runningUnderCI) {
+                exec { & $testRunner $testAssembly --xUnitXml TestResults.xml }
+
+                $wc = New-Object 'System.Net.WebClient'
+                $wc.UploadFile("https://ci.appveyor.com/api/testresults/xunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestResults.xml))
+            } else {
+                exec { & $testRunner $testAssembly }
+            }
         }
     }
 }
