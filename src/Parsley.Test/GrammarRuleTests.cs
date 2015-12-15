@@ -22,7 +22,7 @@ namespace Parsley
         public void HasAnOptionallyProvidedName()
         {
             var unnamed = new GrammarRule<string>();
-            var named = new GrammarRule<string>("Named<BUG>");
+            var named = new GrammarRule<string>("Named");
 
             unnamed.Name.ShouldBeNull();
             named.Name.ShouldEqual("Named");
