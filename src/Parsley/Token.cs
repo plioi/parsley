@@ -2,9 +2,9 @@
 {
     public class Token
     {
-        public TokenKind Kind { get; private set; }
-        public Position Position { get; private set; }
-        public string Literal { get; private set; }
+        public TokenKind Kind { get; }
+        public Position Position { get; }
+        public string Literal { get; }
 
         public Token(TokenKind kind, Position position, string value)
         {
@@ -15,7 +15,7 @@
 
         public override string ToString()
         {
-            return string.Format("Kind: {0}, Position: {1}, Literal: {2}", Kind, Position, Literal);
+            return $"Kind: {Kind}, Position: {Position}, Literal: {Literal}";
         }
     }
 }

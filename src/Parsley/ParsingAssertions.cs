@@ -57,8 +57,7 @@ namespace Parsley
             var actual = position + ": " + reply.ErrorMessages;
             
             if (actual != expectedMessage)
-                throw new AssertionException(string.Format("message at {0}", expectedMessage),
-                                             string.Format("message at {0}", actual));
+                throw new AssertionException($"message at {expectedMessage}", $"message at {actual}");
 
             return reply;
         }
@@ -133,8 +132,7 @@ namespace Parsley
         public static Reply<T> WithValue<T>(this Reply<T> reply, T expected)
         {
             if (!Equals(expected, reply.Value))
-                throw new AssertionException(string.Format("parsed value: {0}", expected),
-                                             string.Format("parsed value: {0}", reply.Value));
+                throw new AssertionException($"parsed value: {expected}", $"parsed value: {reply.Value}");
 
             return reply;
         }
@@ -149,15 +147,13 @@ namespace Parsley
         private static void AssertTokenLiteralsEqual(string expected, string actual)
         {
             if (actual != expected)
-                throw new AssertionException(string.Format("token with literal \"{0}\"", expected),
-                                             string.Format("token with literal \"{0}\"", actual));
+                throw new AssertionException($"token with literal \"{expected}\"", $"token with literal \"{actual}\"");
         }
 
         private static void AssertEqual(TokenKind expected, TokenKind actual)
         {
             if (actual != expected)
-                throw new AssertionException(string.Format("<{0}> token", expected),
-                                             string.Format("<{0}> token", actual));
+                throw new AssertionException($"<{expected}> token", $"<{actual}> token");
         }
     }
 }

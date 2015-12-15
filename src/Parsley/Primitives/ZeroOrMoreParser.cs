@@ -23,7 +23,7 @@ namespace Parsley.Primitives
             while (reply.Success)
             {
                 if (oldPosition == newPosition)
-                    throw new Exception(string.Format("Parser encountered a potential infinite loop at position {0}.", newPosition));
+                    throw new Exception($"Parser encountered a potential infinite loop at position {newPosition}.");
 
                 list.Add(reply.Value);
                 oldPosition = newPosition;
