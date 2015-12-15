@@ -19,7 +19,7 @@ namespace Parsley.IntegrationTests.Json
 
         public void ParsesFalseLiteral()
         {
-            var tokens = Tokenize("false");
+            var tokens = Tokenize("false<BUG>");
 
             Json.Parses(tokens).WithValue(false);
         }
