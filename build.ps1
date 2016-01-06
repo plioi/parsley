@@ -8,10 +8,7 @@ properties {
     $src = resolve-path '.\src'
     $tools = resolve-path '.\tools'
     $projects = @(gci $src -rec -filter *.csproj)
-
-    $runningUnderCI = $env:APPVEYOR -eq "True"
-    $build = if ($runningUnderCI) { $env:APPVEYOR_BUILD_NUMBER } else { '0' }
-    $version = [IO.File]::ReadAllText('.\VERSION.txt') + '.' + $build
+    $version = [IO.File]::ReadAllText('.\VERSION.txt')
 }
 
 task default -depends Test
@@ -54,6 +51,11 @@ task Compile -depends AssemblyInfo, License {
 }
 
 task AssemblyInfo {
+    $assemblyVersion = $version
+    if ($assemblyVersion.Contains("-")) {
+        $assemblyVersion = $assemblyVersion.Substring(0, $assemblyVersion.IndexOf("-"))
+    }
+
     $copyright = get-copyright
 
     foreach ($project in $projects) {
@@ -70,8 +72,9 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: AssemblyProduct("Parsley")]
 [assembly: AssemblyTitle("$projectName")]
-[assembly: AssemblyVersion("$version")]
-[assembly: AssemblyFileVersion("$version")]
+[assembly: AssemblyVersion("$assemblyVersion")]
+[assembly: AssemblyFileVersion("$assemblyVersion")]
+[assembly: AssemblyInformationalVersion("$version")]
 [assembly: AssemblyCopyright("$copyright")]
 [assembly: AssemblyCompany("$maintainers")]
 [assembly: AssemblyConfiguration("$configuration")]
@@ -98,7 +101,7 @@ function get-copyright {
     $date = Get-Date
     $year = $date.Year
     $copyrightSpan = if ($year -eq $birthYear) { $year } else { "$birthYear-$year" }
-    return "Copyright © $copyrightSpan $maintainers"
+    return "Copyright Â© $copyrightSpan $maintainers"
 }
 
 function regenerate-file($path, $newContent) {
