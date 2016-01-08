@@ -20,7 +20,7 @@ task Package -depends Test {
 
     write-host
     write-host "To publish these packages, issue the following command:"
-    write-host "   nuget push .\package\Parsley.$version.nupkg"
+    write-host "   tools\NuGet push .\package\Parsley.$version.nupkg"
 }
 
 task Test -depends Compile {
