@@ -15,10 +15,6 @@ namespace Parsley
         }
 
         private static string ExpectationDetails(object expected, object actual)
-        {
-            return string.Format(Environment.NewLine + "Expected: {0}" +
-                                 Environment.NewLine + "But was:  {1}",
-                                 expected, actual);
-        }
+            => $"{Environment.NewLine}Expected: {expected}{Environment.NewLine}But was:  {actual}";
     }
 }

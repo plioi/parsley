@@ -93,10 +93,7 @@ namespace Parsley
                 this.s = s;
             }
 
-            protected override object[] ImmutableFields()
-            {
-                return new object[] { i, s };
-            }
+            protected override object[] ImmutableFields() => new object[] { i, s };
         }
     }
 }

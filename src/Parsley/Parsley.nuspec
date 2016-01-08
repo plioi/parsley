@@ -10,6 +10,6 @@
     <projectUrl>https://github.com/plioi/parsley</projectUrl>
     <iconUrl>https://github.com/plioi/parsley/raw/master/parsley.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>$description$</description>
+    <description>A monadic parser combinator library inspired by Haskell's Parsec library.</description>
   </metadata>
 </package>

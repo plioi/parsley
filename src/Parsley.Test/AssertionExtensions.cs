@@ -21,7 +21,7 @@ namespace Parsley
                 threw = true;
             }
 
-            threw.ShouldBeTrue(String.Format("Expected {0}.", typeof (TException).Name));
+            threw.ShouldBeTrue($"Expected {typeof (TException).Name}.");
         }
 
         public static void ShouldThrow<TException>(this Func<object> shouldThrow, string expectedMessage) where TException : Exception

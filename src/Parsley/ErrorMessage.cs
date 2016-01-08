@@ -1,23 +1,15 @@
-﻿using System;
-
-namespace Parsley
+﻿namespace Parsley
 {
     public abstract class ErrorMessage
     {
         public static ErrorMessage Unknown()
-        {
-            return new UnknownErrorMessage();
-        }
+            => new UnknownErrorMessage();
 
         public static ErrorMessage Expected(string expectation)
-        {
-            return new ExpectedErrorMessage(expectation);
-        }
+            => new ExpectedErrorMessage(expectation);
 
         public static ErrorMessage Backtrack(Position position, ErrorMessageList errors)
-        {
-            return new BacktrackErrorMessage(position, errors);
-        }
+            => new BacktrackErrorMessage(position, errors);
     }
 
     public class UndefinedGrammarRuleErrorMessage : ErrorMessage
@@ -34,7 +26,7 @@ namespace Parsley
             if (grammarRuleName == null)
                 return "An anonymous GrammarRule has not been initialized.  Try setting the Rule property.";
 
-            return String.Format("GrammarRule '{0}' has not been initialized.  Try setting the Rule property.", grammarRuleName);
+            return $"GrammarRule '{grammarRuleName}' has not been initialized.  Try setting the Rule property.";
         }
     }
 
@@ -43,9 +35,7 @@ namespace Parsley
         internal UnknownErrorMessage() { }
 
         public override string ToString()
-        {
-            return "Parse error.";
-        }
+            => "Parse error.";
     }
 
     /// <summary>
@@ -58,12 +48,10 @@ namespace Parsley
             Expectation = expectation;
         }
 
-        public string Expectation { get; private set; }
+        public string Expectation { get; }
 
         public override string ToString()
-        {
-            return Expectation + " expected";
-        }
+            => Expectation + " expected";
     }
 
     /// <summary>
@@ -79,12 +67,10 @@ namespace Parsley
             Errors = errors;
         }
 
-        public Position Position { get; set; }
-        public ErrorMessageList Errors { get; set; }
+        public Position Position { get; }
+        public ErrorMessageList Errors { get; }
 
         public override string ToString()
-        {
-            return String.Format("{0}: {1}", Position, Errors);
-        }
+            => $"{Position}: {Errors}";
     }
 }

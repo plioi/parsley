@@ -2,8 +2,8 @@
 {
     public class Position : Value<Position>
     {
-        public int Line { get; private set; }
-        public int Column { get; private set; }
+        public int Line { get; }
+        public int Column { get; }
 
         public Position(int line, int column)
         {
@@ -18,7 +18,7 @@
 
         public override string  ToString()
         {
-            return string.Format("({0}, {1})", Line, Column);
+            return $"({Line}, {Column})";
         }
     }
 }

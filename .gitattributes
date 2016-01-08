@@ -1,58 +1,17 @@
-*.doc  diff=astextplain
-*.DOC	diff=astextplain
-*.docx	diff=astextplain
-*.DOCX	diff=astextplain
-*.dot	diff=astextplain
-*.DOT	diff=astextplain
-*.pdf	diff=astextplain
-*.PDF	diff=astextplain
-*.rtf	diff=astextplain
-*.RTF	diff=astextplain
-
-*.jpg  	binary
-*.png 	binary
-*.gif 	binary
-
-*.cs text diff=csharp 
-*.vb text
-*.c text
-*.cpp text
-*.cxx text
-*.h text
-*.hxx text
-*.py text
-*.rb text
-*.java text
-*.html text
-*.htm text
-*.css text
-*.scss text
-*.sass text
-*.less text
-*.js text
-*.lisp text
-*.clj text
-*.sql text
-*.php text
-*.lua text
-*.m text
-*.asm text
-*.erl text
-*.fs text
-*.fsx text
-*.hs text
 *.txt text
 *.md text
-*.config text
-*.Config text
-*.xml text
-*.xslt text
-*.ps1 text
-*.bat text
 
+*.cmd text
+*.ps1 text
+
+*.sln text eol=crlf merge=union
+*.csproj text merge=union
+*.cs text diff=csharp
+*.nuspec text
+
+*.Config text
+*.config text
 *.targets text
-*.csproj text merge=union 
-*.vbproj text merge=union 
-*.fsproj text merge=union 
-*.dbproj text merge=union 
-*.sln text eol=crlf merge=union 
+
+*.exe binary
+*.dll binary
