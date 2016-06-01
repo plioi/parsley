@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using Should;
+using Xunit;
 
 namespace Parsley
 {
     public class OperatorPrecedenceParserTests : Grammar
     {
-        private readonly OperatorPrecedenceParser<Expression> expression;
+        readonly OperatorPrecedenceParser<Expression> expression;
 
         public OperatorPrecedenceParserTests()
         {
@@ -30,12 +31,14 @@ namespace Parsley
                                  select new Form(callable, arguments));
         }
 
+        [Fact]
         public void ParsesRegisteredTokensIntoCorrespondingAtoms()
         {
             Parses("1", "1");
             Parses("square", "square");
         }
 
+        [Fact]
         public void ParsesUnitExpressionsStartedByRegisteredTokens()
         {
             Parses("(0)", "0");
@@ -43,24 +46,28 @@ namespace Parsley
             Parses("(1+4)/(2-3)*4", "(* (/ (+ 1 4) (- 2 3)) 4)");
         }
 
+        [Fact]
         public void ParsesPrefixExpressionsStartedByRegisteredToken()
         {
             Parses("-1", "(- 1)");
             Parses("-(-1)", "(- (- 1))");
         }
 
+        [Fact]
         public void ParsesPostfixExpressionsEndedByRegisteredToken()
         {
             Parses("1++", "(++ 1)");
             Parses("1++--", "(-- (++ 1))");
         }
 
+        [Fact]
         public void ParsesExpressionsThatExtendTheLeftSideExpressionWhenTheRegisteredTokenIsEncountered()
         {
             Parses("square(1)", "(square 1)");
             Parses("square(1,2)", "(square 1 2)");
         }
 
+        [Fact]
         public void ParsesBinaryOperationsRespectingPrecedenceAndAssociativity()
         {
             Parses("1+2", "(+ 1 2)");
@@ -85,6 +92,7 @@ namespace Parsley
             Parses("1^2+3^4", "(+ (^ 1 2) (^ 3 4))");
         }
 
+        [Fact]
         public void ProvidesErrorAtAppropriatePositionWhenUnitParsersFail()
         {
             //Upon unit-parser failures, stop!
@@ -95,6 +103,7 @@ namespace Parsley
             expression.FailsToParse(Tokenize("(*")).LeavingUnparsedTokens("*").WithMessage("(1, 2): Parse error.");
         }
 
+        [Fact]
         public void ProvidesErrorAtAppropriatePositionWhenExtendParsersFail()
         {
             //Upon extend-parser failures, stop!
@@ -107,17 +116,17 @@ namespace Parsley
             expression.FailsToParse(Tokenize("2-*")).LeavingUnparsedTokens("*").WithMessage("(1, 3): Parse error.");
         }
 
-        private void Parses(string input, string expectedTree)
+        void Parses(string input, string expectedTree)
         {
             expression.Parses(Tokenize(input)).WithValue(e => e.ToString().ShouldEqual(expectedTree));
         }
 
-        private static IEnumerable<Token> Tokenize(string input)
+        static IEnumerable<Token> Tokenize(string input)
         {
             return new SampleLexer().Tokenize(input);
         }
 
-        private class SampleLexer : Lexer
+        class SampleLexer : Lexer
         {
             public static readonly TokenKind Digit = new Pattern("Digit", @"[0-9]");
             public static readonly TokenKind Name = new Pattern("Name", @"[a-z]+");
@@ -138,13 +147,13 @@ namespace Parsley
                        LeftParen, RightParen, Comma) { }
         }
 
-        private interface Expression
+        interface Expression
         {
         }
 
-        private class Constant : Expression
+        class Constant : Expression
         {
-            private readonly int value;
+            readonly int value;
 
             public Constant(int value)
             {
@@ -157,9 +166,9 @@ namespace Parsley
             }
         }
 
-        private class Identifier : Expression
+        class Identifier : Expression
         {
-            private readonly string identifier;
+            readonly string identifier;
 
             public Identifier(string identifier)
             {
@@ -172,10 +181,10 @@ namespace Parsley
             }
         }
 
-        private class Form : Expression
+        class Form : Expression
         {
-            private readonly Expression head;
-            private readonly IEnumerable<Expression> expressions;
+            readonly Expression head;
+            readonly IEnumerable<Expression> expressions;
 
             public Form(Token head, params Expression[] expressions)
                 : this(new Identifier(head.Literal), expressions) { }

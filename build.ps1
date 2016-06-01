@@ -24,11 +24,11 @@ task Package -depends Test {
 }
 
 task Test -depends Compile {
-    $testRunners = @(gci $src\packages -rec -filter Fixie.Console.exe)
+    $testRunners = @(gci $src\packages -rec -filter xunit.console.exe)
 
     if ($testRunners.Length -ne 1)
     {
-        throw "Expected to find 1 Fixie.Console.exe, but found $($testRunners.Length)."
+        throw "Expected to find 1 xunit.console.exe, but found $($testRunners.Length)."
     }
 
     $testRunner = $testRunners[0].FullName

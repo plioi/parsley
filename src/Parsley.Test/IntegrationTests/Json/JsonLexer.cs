@@ -8,7 +8,7 @@ namespace Parsley.IntegrationTests.Json
                    Comma, OpenArray, CloseArray, OpenDictionary, CloseDictionary, Colon,
                    Number, Quotation) { }
 
-        private static readonly TokenKind Whitespace = new Pattern("whitespace", @"\s+", skippable: true);
+        static readonly TokenKind Whitespace = new Pattern("whitespace", @"\s+", skippable: true);
         
         public static readonly Keyword @null = new Keyword("null");
         public static readonly Keyword @true = new Keyword("true");

@@ -1,16 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using Should;
+using Xunit;
 
 namespace Parsley.IntegrationTests.Json
 {
     public class JsonLexerTests
     {
-        private static IEnumerable<Token> Tokenize(string input)
-        {
-            return new JsonLexer().Tokenize(input);
-        }
+        static IEnumerable<Token> Tokenize(string input) => new JsonLexer().Tokenize(input);
 
+        [Fact]
         public void RecognizesSkippableWhitespace()
         {
             Tokenize(" ").ShouldBeEmpty();
@@ -20,6 +19,7 @@ namespace Parsley.IntegrationTests.Json
             Tokenize(" \t\n\r").ShouldBeEmpty();
         }
 
+        [Fact]
         public void RecognizesKeywords()
         {
             Tokenize("null").Single().ShouldEqual(JsonLexer.@null, "null");
@@ -28,10 +28,11 @@ namespace Parsley.IntegrationTests.Json
 
             Tokenize("null true false")
                 .ShouldList(t => t.ShouldEqual(JsonLexer.@null, "null", 1, 1),
-                            t => t.ShouldEqual(JsonLexer.@true, "true", 1, 6),
-                            t => t.ShouldEqual(JsonLexer.@false, "false", 1, 11));
+                    t => t.ShouldEqual(JsonLexer.@true, "true", 1, 6),
+                    t => t.ShouldEqual(JsonLexer.@false, "false", 1, 11));
         }
 
+        [Fact]
         public void RecognizesOperators()
         {
             Tokenize(",").Single().ShouldEqual(JsonLexer.Comma, ",");
@@ -43,13 +44,14 @@ namespace Parsley.IntegrationTests.Json
 
             Tokenize(",[]{}:")
                 .ShouldList(t => t.ShouldEqual(JsonLexer.Comma, ",", 1, 1),
-                            t => t.ShouldEqual(JsonLexer.OpenArray, "[", 1, 2),
-                            t => t.ShouldEqual(JsonLexer.CloseArray, "]", 1, 3),
-                            t => t.ShouldEqual(JsonLexer.OpenDictionary, "{", 1, 4),
-                            t => t.ShouldEqual(JsonLexer.CloseDictionary, "}", 1, 5),
-                            t => t.ShouldEqual(JsonLexer.Colon, ":", 1, 6));
+                    t => t.ShouldEqual(JsonLexer.OpenArray, "[", 1, 2),
+                    t => t.ShouldEqual(JsonLexer.CloseArray, "]", 1, 3),
+                    t => t.ShouldEqual(JsonLexer.OpenDictionary, "{", 1, 4),
+                    t => t.ShouldEqual(JsonLexer.CloseDictionary, "}", 1, 5),
+                    t => t.ShouldEqual(JsonLexer.Colon, ":", 1, 6));
         }
 
+        [Fact]
         public void RecognizesQuotations()
         {
             Tokenize("\"\"").Single().ShouldEqual(JsonLexer.Quotation, "\"\"");
@@ -67,10 +69,11 @@ namespace Parsley.IntegrationTests.Json
 
             Tokenize("\" a \" \" b \" \" c \"")
                 .ShouldList(t => t.ShouldEqual(JsonLexer.Quotation, "\" a \"", 1, 1),
-                            t => t.ShouldEqual(JsonLexer.Quotation, "\" b \"", 1, 7),
-                            t => t.ShouldEqual(JsonLexer.Quotation, "\" c \"", 1, 13));
+                    t => t.ShouldEqual(JsonLexer.Quotation, "\" b \"", 1, 7),
+                    t => t.ShouldEqual(JsonLexer.Quotation, "\" c \"", 1, 13));
         }
 
+        [Fact]
         public void RecognizesNumbers()
         {
             Tokenize("0").Single().ShouldEqual(JsonLexer.Number, "0");
@@ -89,9 +92,9 @@ namespace Parsley.IntegrationTests.Json
 
             Tokenize("0 12 3e4 5E+67")
                 .ShouldList(t => t.ShouldEqual(JsonLexer.Number, "0", 1, 1),
-                            t => t.ShouldEqual(JsonLexer.Number, "12", 1, 3),
-                            t => t.ShouldEqual(JsonLexer.Number, "3e4", 1, 6),
-                            t => t.ShouldEqual(JsonLexer.Number, "5E+67", 1, 10));
+                    t => t.ShouldEqual(JsonLexer.Number, "12", 1, 3),
+                    t => t.ShouldEqual(JsonLexer.Number, "3e4", 1, 6),
+                    t => t.ShouldEqual(JsonLexer.Number, "5E+67", 1, 10));
         }
     }
 }

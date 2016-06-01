@@ -9,15 +9,15 @@ namespace Parsley.IntegrationTests.Json
     public class JsonGrammar : Grammar
     {
         public static readonly GrammarRule<object> Json = new GrammarRule<object>();
-        private static readonly GrammarRule<object> JsonValue = new GrammarRule<object>(); 
-        private static readonly GrammarRule<object> True = new GrammarRule<object>();
-        private static readonly GrammarRule<object> False = new GrammarRule<object>(); 
-        private static readonly GrammarRule<object> Null = new GrammarRule<object>();
-        private static readonly GrammarRule<object> Number = new GrammarRule<object>();
-        private static readonly GrammarRule<string> Quotation = new GrammarRule<string>();
-        private static readonly GrammarRule<object[]> Array = new GrammarRule<object[]>();
-        private static readonly GrammarRule<KeyValuePair<string, object>> Pair = new GrammarRule<KeyValuePair<string, object>>();
-        private static readonly GrammarRule<Dictionary<string, object>> Dictionary = new GrammarRule<Dictionary<string, object>>();
+        static readonly GrammarRule<object> JsonValue = new GrammarRule<object>();
+        static readonly GrammarRule<object> True = new GrammarRule<object>();
+        static readonly GrammarRule<object> False = new GrammarRule<object>();
+        static readonly GrammarRule<object> Null = new GrammarRule<object>();
+        static readonly GrammarRule<object> Number = new GrammarRule<object>();
+        static readonly GrammarRule<string> Quotation = new GrammarRule<string>();
+        static readonly GrammarRule<object[]> Array = new GrammarRule<object[]>();
+        static readonly GrammarRule<KeyValuePair<string, object>> Pair = new GrammarRule<KeyValuePair<string, object>>();
+        static readonly GrammarRule<Dictionary<string, object>> Dictionary = new GrammarRule<Dictionary<string, object>>();
 
         static JsonGrammar()
         {
@@ -59,13 +59,13 @@ namespace Parsley.IntegrationTests.Json
                         select jsonValue;
         }
 
-        private static Parser<object> Constant(TokenKind kind, object constant)
+        static Parser<object> Constant(TokenKind kind, object constant)
         {
             return from _ in Token(kind)
                    select constant;
         }
 
-        private static string Unescape(string quotation)
+        static string Unescape(string quotation)
         {
             string result = quotation.Substring(1, quotation.Length - 2); //Remove leading and trailing quotation marks
 
@@ -85,7 +85,7 @@ namespace Parsley.IntegrationTests.Json
             return result;
         }
 
-        private static Dictionary<string, object> ToDictionary(IEnumerable<KeyValuePair<string, object>> pairs)
+        static Dictionary<string, object> ToDictionary(IEnumerable<KeyValuePair<string, object>> pairs)
         {
             var result = new Dictionary<string, object>();
 

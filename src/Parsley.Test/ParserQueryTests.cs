@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Xunit;
 
 namespace Parsley
 {
     public class ParserQueryTests
     {
-        private static readonly Parser<string> Next = new LambdaParser<string>(tokens => new Parsed<string>(tokens.Current.Literal, tokens.Advance()));
+        static readonly Parser<string> Next = new LambdaParser<string>(tokens => new Parsed<string>(tokens.Current.Literal, tokens.Advance()));
 
-        private static IEnumerable<Token> Tokenize(string input)
-        {
-            return new CharLexer().Tokenize(input);
-        }
+        static IEnumerable<Token> Tokenize(string input) => new CharLexer().Tokenize(input);
 
+        [Fact]
         public void CanBuildParserWhichSimulatesSuccessfulParsingOfGivenValueWithoutConsumingInput()
         {
             var parser = 1.SucceedWithThisValue();
@@ -20,6 +19,7 @@ namespace Parsley
             parser.PartiallyParses(Tokenize("input")).LeavingUnparsedTokens("i", "n", "p", "u", "t").WithValue(1);
         }
 
+        [Fact]
         public void CanBuildParserFromSingleSimplerParser()
         {
             var parser = from x in Next
@@ -28,6 +28,7 @@ namespace Parsley
             parser.PartiallyParses(Tokenize("xy")).LeavingUnparsedTokens("y").WithValue("X");
         }
 
+        [Fact]
         public void CanBuildParserFromOrderedSequenceOfSimplerParsers()
         {
             var parser = (from a in Next
@@ -38,6 +39,7 @@ namespace Parsley
             parser.PartiallyParses(Tokenize("abcdef")).LeavingUnparsedTokens("d", "e", "f").WithValue("ABC");
         }
 
+        [Fact]
         public void PropogatesErrorsWithoutRunningRemainingParsers()
         {
             Parser<string> Fail = Grammar.Fail<string>();

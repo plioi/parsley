@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using Should;
+using Xunit;
 
 namespace Parsley
 {
     public class TokenStreamTests
     {
-        private readonly TokenKind lower;
-        private readonly TokenKind upper;
+        readonly TokenKind lower;
+        readonly TokenKind upper;
 
         public TokenStreamTests()
         {
@@ -14,17 +15,17 @@ namespace Parsley
             upper = new Pattern("Uppercase", @"[A-Z]+");
         }
 
-        private IEnumerable<Token> Empty()
+        IEnumerable<Token> Empty()
         {
             yield break;
         }
 
-        private IEnumerable<Token> OneToken()
+        IEnumerable<Token> OneToken()
         {
             yield return new Token(upper, new Position(1, 1), "ABC");
         }
 
-        private IEnumerable<Token> Tokens()
+        IEnumerable<Token> Tokens()
         {
             yield return new Token(upper, new Position(1, 1), "ABC");
             yield return new Token(lower, new Position(1, 4), "def");
@@ -32,6 +33,7 @@ namespace Parsley
             yield return new Token(TokenKind.EndOfInput, new Position(1, 10), "");
         }
 
+        [Fact]
         public void ProvidesEndOfInputTokenWhenGivenEmptyEnumerator()
         {
             var tokens = new TokenStream(Empty());
@@ -40,18 +42,21 @@ namespace Parsley
             tokens.Advance().ShouldBeSameAs(tokens);
         }
 
+        [Fact]
         public void ProvidesCurrentToken()
         {
             var tokens = new TokenStream(Tokens());
             tokens.Current.ShouldEqual(upper, "ABC", 1, 1);
         }
 
+        [Fact]
         public void AdvancesToTheNextToken()
         {
             var tokens = new TokenStream(Tokens());
             tokens.Advance().Current.ShouldEqual(lower, "def", 1, 4);
         }
 
+        [Fact]
         public void ProvidesEndOfInputTokenAfterEnumeratorIsExhausted()
         {
             var tokens = new TokenStream(OneToken());
@@ -61,12 +66,14 @@ namespace Parsley
             end.Advance().ShouldBeSameAs(end);
         }
 
+        [Fact]
         public void TryingToAdvanceBeyondEndOfInputResultsInNoMovement()
         {
             var tokens = new TokenStream(Empty());
             tokens.ShouldBeSameAs(tokens.Advance());
         }
 
+        [Fact]
         public void DoesNotChangeStateAsUnderlyingEnumeratorIsTraversed()
         {
             var tokens = new TokenStream(Tokens());
@@ -93,6 +100,7 @@ namespace Parsley
             fourth.Advance().ShouldBeSameAs(fourth);
         }
 
+        [Fact]
         public void AllowsRepeatableTraversalWhileTraversingUnderlyingEnumeratorItemsAtMostOnce()
         {
             var tokens = new TokenStream(Tokens());
@@ -105,6 +113,7 @@ namespace Parsley
             tokens.Advance().ShouldBeSameAs(tokens.Advance());
         }
 
+        [Fact]
         public void ProvidesPositionOfCurrentToken()
         {
             var tokens = new TokenStream(Tokens());

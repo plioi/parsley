@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using Should;
+using Xunit;
 
 namespace Parsley
 {
     public class TokenKindTests
     {
-        private readonly TokenKind lower;
-        private readonly TokenKind upper;
-        private readonly TokenKind caseInsensitive;
-        private readonly Text abcDEF;
+        readonly TokenKind lower;
+        readonly TokenKind upper;
+        readonly TokenKind caseInsensitive;
+        readonly Text abcDEF;
 
         public TokenKindTests()
         {
@@ -19,6 +20,7 @@ namespace Parsley
             abcDEF = new Text("abcDEF");
         }
 
+        [Fact]
         public void ProducesNullTokenUponFailedMatch()
         {
             Token token;
@@ -27,6 +29,7 @@ namespace Parsley
             token.ShouldBeNull();
         }
 
+        [Fact]
         public void ProducesTokenUponSuccessfulMatch()
         {
             Token token;
@@ -41,6 +44,7 @@ namespace Parsley
             token.ShouldEqual(caseInsensitive, "abcDEF", 1, 1);
         }
 
+        [Fact]
         public void HasDescriptiveName()
         {
             lower.Name.ShouldEqual("Lowercase");
@@ -48,6 +52,7 @@ namespace Parsley
             caseInsensitive.Name.ShouldEqual("Case Insensitive");
         }
 
+        [Fact]
         public void UsesDescriptiveNameForToString()
         {
             lower.ToString().ShouldEqual("Lowercase");
@@ -55,6 +60,7 @@ namespace Parsley
             caseInsensitive.ToString().ShouldEqual("Case Insensitive");
         }
 
+        [Fact]
         public void ProvidesConvenienceSubclassForDefiningKeywords()
         {
             Token token;
@@ -78,6 +84,7 @@ namespace Parsley
             notJustLetters.ShouldThrow<ArgumentException>("Keywords may only contain letters.\r\nParameter name: word");
         }
 
+        [Fact]
         public void ProvidesConvenienceSubclassForDefiningOperators()
         {
             Token token;
@@ -113,6 +120,7 @@ namespace Parsley
             token.ShouldEqual(doubleStar, "**", 1, 1);
         }
 
+        [Fact]
         public void ProvidesConvenienceSubclassForTokensThatDoNotMatchLiteralsFromTheInput()
         {
             Token token;

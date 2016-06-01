@@ -1,15 +1,14 @@
 ﻿using System.Collections.Generic;
 using Should;
+using Xunit;
 
 namespace Parsley.IntegrationTests.Json
 {
     public class JsonGrammarTests : JsonGrammar
     {
-        private static IEnumerable<Token> Tokenize(string input)
-        {
-            return new JsonLexer().Tokenize(input);
-        }
+        static IEnumerable<Token> Tokenize(string input) => new JsonLexer().Tokenize(input);
 
+        [Fact]
         public void ParsesTrueLiteral()
         {
             var tokens = Tokenize("true");
@@ -17,6 +16,7 @@ namespace Parsley.IntegrationTests.Json
             Json.Parses(tokens).WithValue(true);
         }
 
+        [Fact]
         public void ParsesFalseLiteral()
         {
             var tokens = Tokenize("false");
@@ -24,6 +24,7 @@ namespace Parsley.IntegrationTests.Json
             Json.Parses(tokens).WithValue(false);
         }
 
+        [Fact]
         public void ParsesNullLiteral()
         {
             var tokens = Tokenize("null");
@@ -31,6 +32,7 @@ namespace Parsley.IntegrationTests.Json
             Json.Parses(tokens).WithValue(value => value.ShouldBeNull());
         }
 
+        [Fact]
         public void ParsesNumbers()
         {
             var tokens = Tokenize("10.123E-11");
@@ -38,6 +40,7 @@ namespace Parsley.IntegrationTests.Json
             Json.Parses(tokens).WithValue(10.123E-11m);
         }
 
+        [Fact]
         public void ParsesQuotations()
         {
             var empty = Tokenize("\"\"");
@@ -48,6 +51,7 @@ namespace Parsley.IntegrationTests.Json
             Json.Parses(filled).WithValue(expected);
         }
 
+        [Fact]
         public void ParsesArrays()
         {
             var empty = Tokenize("[]");
@@ -58,6 +62,7 @@ namespace Parsley.IntegrationTests.Json
             Json.Parses(filled).WithValue(value => value.ShouldEqual(new[] { 0m, 1m, 2m }));
         }
 
+        [Fact]
         public void ParsesDictionaries()
         {
             var empty = Tokenize("{}");
@@ -74,6 +79,7 @@ namespace Parsley.IntegrationTests.Json
             });
         }
 
+        [Fact]
         public void ParsesComplexJsonValues()
         {
             const string complex = @"
@@ -106,6 +112,7 @@ namespace Parsley.IntegrationTests.Json
             });
         }
 
+        [Fact]
         public void RequiresEndOfInputAfterFirstValidJsonValue()
         {
             Json.FailsToParse(Tokenize("true $garbage$")).LeavingUnparsedTokens("$garbage$").WithMessage("(1, 6): end of input expected");

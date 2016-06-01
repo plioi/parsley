@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using Should;
+using Xunit;
 
 namespace Parsley
 {
     public class LexerTests
     {
-        private readonly TokenKind lower;
-        private readonly TokenKind upper;
-        private readonly TokenKind space;
+        readonly TokenKind lower;
+        readonly TokenKind upper;
+        readonly TokenKind space;
 
         public LexerTests()
         {
@@ -16,16 +17,18 @@ namespace Parsley
             space = new Pattern("Space", @"\s", skippable: true);
         }
 
-        private IEnumerable<Token> Tokenize(string input)
+        IEnumerable<Token> Tokenize(string input)
         {
             return new Lexer(lower, upper, space).Tokenize(input);
         }
 
+        [Fact]
         public void ProvidesEmptyEnumerableForEmptyText()
         {
             Tokenize("").ShouldBeEmpty();
         }
 
+        [Fact]
         public void UsesPrioritizedTokenMatchersToTokenize()
         {
             Tokenize("ABCdefGHI")
@@ -34,6 +37,7 @@ namespace Parsley
                             t => t.ShouldEqual(upper, "GHI", 1, 7));
         }
 
+        [Fact]
         public void ProvidesTokenAtUnrecognizedInput()
         {
             Tokenize("ABC!def")
@@ -41,6 +45,7 @@ namespace Parsley
                             t => t.ShouldEqual(TokenKind.Unknown, "!def", 1, 4));
         }
 
+        [Fact]
         public void SkipsPastSkippableTokens()
         {
             Tokenize(" ").ShouldBeEmpty();
