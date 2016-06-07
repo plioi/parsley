@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text.RegularExpressions;
-
-namespace Parsley.IntegrationTests.Json
+﻿namespace Parsley.IntegrationTests.Json
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+    using System.Text.RegularExpressions;
+
     public class JsonGrammar : Grammar
     {
         public static readonly GrammarRule<object> Json = new GrammarRule<object>();

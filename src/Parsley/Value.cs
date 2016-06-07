@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Parsley
+﻿namespace Parsley
 {
+    using System;
+
     public abstract class Value<T> : IEquatable<T> where T : Value<T>
     {
         protected abstract object[] ImmutableFields();

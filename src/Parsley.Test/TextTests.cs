@@ -1,10 +1,10 @@
-﻿using System;
-using System.Text;
-using Should;
-using Xunit;
-
-namespace Parsley
+﻿namespace Parsley
 {
+    using System;
+    using System.Text;
+    using Should;
+    using Xunit;
+
     public class TextTests
     {
         [Fact]

@@ -1,9 +1,9 @@
-﻿using System;
-using Should;
-using Xunit;
-
-namespace Parsley
+﻿namespace Parsley
 {
+    using System;
+    using Should;
+    using Xunit;
+
     public class ErrorTests
     {
         readonly TokenStream x;

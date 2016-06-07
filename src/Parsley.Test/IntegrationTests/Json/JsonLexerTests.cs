@@ -1,10 +1,10 @@
-using System.Collections.Generic;
-using System.Linq;
-using Should;
-using Xunit;
-
 namespace Parsley.IntegrationTests.Json
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using Should;
+    using Xunit;
+
     public class JsonLexerTests
     {
         static IEnumerable<Token> Tokenize(string input) => new JsonLexer().Tokenize(input);

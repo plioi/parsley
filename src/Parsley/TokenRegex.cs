@@ -1,7 +1,7 @@
-﻿using System.Text.RegularExpressions;
-
-namespace Parsley
+﻿namespace Parsley
 {
+    using System.Text.RegularExpressions;
+
     public class TokenRegex
     {
         private readonly string pattern;

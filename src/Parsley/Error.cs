@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Parsley
+﻿namespace Parsley
 {
+    using System;
+
     public class Error<T> : Reply<T>
     {
         public Error(TokenStream unparsedTokens, ErrorMessage error)

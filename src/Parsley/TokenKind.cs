@@ -1,9 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text.RegularExpressions;
-
-namespace Parsley
+﻿namespace Parsley
 {
+    using System;
+    using System.Linq;
+    using System.Text.RegularExpressions;
+
     public abstract class TokenKind
     {
         public static readonly TokenKind EndOfInput = new Empty("end of input");

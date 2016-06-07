@@ -1,8 +1,8 @@
-﻿using System;
-using System.Linq;
-
-namespace Parsley
+﻿namespace Parsley
 {
+    using System;
+    using System.Linq;
+
     public class Text
     {
         private readonly int index;

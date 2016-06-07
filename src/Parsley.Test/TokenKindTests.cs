@@ -1,10 +1,10 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using Should;
-using Xunit;
-
-namespace Parsley
+﻿namespace Parsley
 {
+    using System;
+    using System.Text.RegularExpressions;
+    using Should;
+    using Xunit;
+
     public class TokenKindTests
     {
         readonly TokenKind lower;

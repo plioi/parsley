@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Parsley
+﻿namespace Parsley
 {
+    using System;
+    using System.Collections.Generic;
+
     public class TokenStream
     {
         private readonly Token current;

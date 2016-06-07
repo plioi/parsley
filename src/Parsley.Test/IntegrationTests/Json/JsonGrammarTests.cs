@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using Should;
-using Xunit;
-
-namespace Parsley.IntegrationTests.Json
+﻿namespace Parsley.IntegrationTests.Json
 {
+    using System.Collections.Generic;
+    using Should;
+    using Xunit;
+
     public class JsonGrammarTests : JsonGrammar
     {
         static IEnumerable<Token> Tokenize(string input) => new JsonLexer().Tokenize(input);

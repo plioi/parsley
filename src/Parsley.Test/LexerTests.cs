@@ -1,9 +1,9 @@
-using System.Collections.Generic;
-using Should;
-using Xunit;
-
 namespace Parsley
 {
+    using System.Collections.Generic;
+    using Should;
+    using Xunit;
+
     public class LexerTests
     {
         readonly TokenKind lower;

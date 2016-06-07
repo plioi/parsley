@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Should;
-using Xunit;
-
-namespace Parsley
+﻿namespace Parsley
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Should;
+    using Xunit;
+
     public class GrammarTests : Grammar
     {
         static IEnumerable<Token> Tokenize(string input) => new SampleLexer().Tokenize(input);

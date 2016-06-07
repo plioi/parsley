@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Parsley.Primitives;
-
-namespace Parsley
+﻿namespace Parsley
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using Primitives;
+
     public abstract class Grammar
     {
         protected void InferGrammarRuleNames()

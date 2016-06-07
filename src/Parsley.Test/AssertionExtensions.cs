@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Should;
-
-namespace Parsley
+﻿namespace Parsley
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Should;
+
     public static class AssertionExtensions
     {
         public static void ShouldThrow<TException>(this Action shouldThrow, string expectedMessage) where TException : Exception

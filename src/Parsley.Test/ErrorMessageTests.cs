@@ -1,8 +1,8 @@
-﻿using Should;
-using Xunit;
-
-namespace Parsley
+﻿namespace Parsley
 {
+    using Should;
+    using Xunit;
+
     public class ErrorMessageTests
     {
         [Fact]

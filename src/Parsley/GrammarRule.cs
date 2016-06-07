@@ -1,7 +1,7 @@
-using System;
-
 namespace Parsley
 {
+    using System;
+
     public class GrammarRule<T> : Parser<T>
     {
         private Func<TokenStream, Reply<T>> parse;

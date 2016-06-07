@@ -1,7 +1,7 @@
-using Xunit;
-
 namespace Parsley
 {
+    using Xunit;
+
     public class LambdaParserTests
     {
         [Fact]

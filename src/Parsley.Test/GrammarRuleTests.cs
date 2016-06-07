@@ -1,9 +1,9 @@
-﻿using System.Linq;
-using Should;
-using Xunit;
-
-namespace Parsley
+﻿namespace Parsley
 {
+    using System.Linq;
+    using Should;
+    using Xunit;
+
     public class GrammarRuleTests : Grammar
     {
         [Fact]

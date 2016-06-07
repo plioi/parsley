@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using Should;
-using Xunit;
-
-namespace Parsley
+﻿namespace Parsley
 {
+    using System.Collections.Generic;
+    using Should;
+    using Xunit;
+
     public class OperatorPrecedenceParserTests : Grammar
     {
         readonly OperatorPrecedenceParser<Expression> expression;

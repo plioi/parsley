@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Parsley
+﻿namespace Parsley
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     public class ErrorMessageList
     {
         public static readonly ErrorMessageList Empty = new ErrorMessageList();

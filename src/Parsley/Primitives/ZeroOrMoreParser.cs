@@ -1,8 +1,8 @@
-using System;
-using System.Collections.Generic;
-
 namespace Parsley.Primitives
 {
+    using System;
+    using System.Collections.Generic;
+
     internal class ZeroOrMoreParser<T> : Parser<IEnumerable<T>>
     {
         private readonly Parser<T> item;
