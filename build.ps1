@@ -8,7 +8,7 @@ properties {
     $src = resolve-path '.\src'
     $tools = resolve-path '.\tools'
     $projects = @(gci $src -rec -filter *.csproj)
-    $version = [IO.File]::ReadAllText('.\VERSION.txt')
+    $version = '0.0.7'
 }
 
 task default -depends Test
