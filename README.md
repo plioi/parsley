@@ -1,4 +1,3 @@
-![Parsley](https://github.com/plioi/parsley/raw/master/parsley.png)
 # Parsley
 
 Parsley is a monadic parser combinator library inspired by Haskell's [Parsec](http://www.haskell.org/haskellwiki/Parsec) and F#'s [FParsec](http://www.quanttec.com/fparsec/).  It can parse context-sensitive, infinite look-ahead grammars but it performs best on predictive (LL[1]) grammars.
