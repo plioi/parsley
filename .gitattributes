@@ -7,11 +7,8 @@
 *.sln text eol=crlf merge=union
 *.csproj text merge=union
 *.cs text diff=csharp
-*.nuspec text
-
-*.Config text
 *.config text
-*.targets text
+*.nuspec text
 
 *.exe binary
 *.dll binary
