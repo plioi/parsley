@@ -5,26 +5,24 @@ properties {
     $maintainers = "Patrick Lioi"
 
     $configuration = 'Release'
-    $src = resolve-path '.\src'
-    $tools = resolve-path '.\tools'
-    $projects = @(gci $src -rec -filter *.csproj)
+    $projects = @(gci src -rec -filter *.csproj)
     $version = '0.0.7'
 }
 
 task default -depends Test
 
 task Package -depends Test {
-    rd .\package -recurse -force -ErrorAction SilentlyContinue | out-null
-    mkdir .\package -ErrorAction SilentlyContinue | out-null
-    exec { & $tools\NuGet.exe pack $src\Parsley\Parsley.csproj -Symbols -Prop Configuration=$configuration -OutputDirectory .\package }
+    rd package -recurse -force -ErrorAction SilentlyContinue | out-null
+    mkdir package -ErrorAction SilentlyContinue | out-null
+    exec { & tools\NuGet.exe pack src\Parsley\Parsley.csproj -Symbols -Prop Configuration=$configuration -OutputDirectory package }
 
     write-host
     write-host "To publish these packages, issue the following command:"
-    write-host "   tools\NuGet push .\package\Parsley.$version.nupkg"
+    write-host "   tools\NuGet push package\Parsley.$version.nupkg"
 }
 
 task Test -depends Compile {
-    $testRunners = @(gci $src\packages -rec -filter xunit.console.exe)
+    $testRunners = @(gci src\packages -rec -filter xunit.console.exe)
 
     if ($testRunners.Length -ne 1)
     {
@@ -46,8 +44,8 @@ task Test -depends Compile {
 }
 
 task Compile -depends AssemblyInfo, License {
-  exec { msbuild /t:clean /v:q /nologo /p:Configuration=$configuration $src\Parsley.sln }
-  exec { msbuild /t:build /v:q /nologo /p:Configuration=$configuration $src\Parsley.sln }
+  exec { msbuild /t:clean /v:q /nologo /p:Configuration=$configuration src\Parsley.sln }
+  exec { msbuild /t:build /v:q /nologo /p:Configuration=$configuration src\Parsley.sln }
 }
 
 task AssemblyInfo {
