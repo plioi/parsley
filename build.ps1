@@ -21,7 +21,11 @@ task Package -depends Test {
     write-host "   tools\NuGet push package\Parsley.$version.nupkg"
 }
 
-task Test -depends Compile {
+task Test {
+    generate-assembly-info
+    generate-license
+    compile-solution
+
     $testRunners = @(gci src\packages -rec -filter xunit.console.exe)
 
     if ($testRunners.Length -ne 1)
@@ -43,12 +47,12 @@ task Test -depends Compile {
     }
 }
 
-task Compile -depends AssemblyInfo, License {
+function compile-solution {
   exec { msbuild /t:clean /v:q /nologo /p:Configuration=$configuration src\Parsley.sln }
   exec { msbuild /t:build /v:q /nologo /p:Configuration=$configuration src\Parsley.sln }
 }
 
-task AssemblyInfo {
+function generate-assembly-info {
     $assemblyVersion = $version
     if ($assemblyVersion.Contains("-")) {
         $assemblyVersion = $assemblyVersion.Substring(0, $assemblyVersion.IndexOf("-"))
@@ -80,7 +84,7 @@ using System.Runtime.InteropServices;
     }
 }
 
-task License {
+function generate-license {
     $copyright = get-copyright
 
     regenerate-file "LICENSE.txt" @"
