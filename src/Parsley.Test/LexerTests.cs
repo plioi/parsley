@@ -1,7 +1,7 @@
 namespace Parsley
 {
     using System.Collections.Generic;
-    using Should;
+    using Shouldly;
     using Xunit;
 
     public class LexerTests
@@ -32,17 +32,17 @@ namespace Parsley
         public void UsesPrioritizedTokenMatchersToTokenize()
         {
             Tokenize("ABCdefGHI")
-                .ShouldList(t => t.ShouldEqual(upper, "ABC", 1, 1),
-                            t => t.ShouldEqual(lower, "def", 1, 4),
-                            t => t.ShouldEqual(upper, "GHI", 1, 7));
+                .ShouldList(t => t.ShouldBe(upper, "ABC", 1, 1),
+                            t => t.ShouldBe(lower, "def", 1, 4),
+                            t => t.ShouldBe(upper, "GHI", 1, 7));
         }
 
         [Fact]
         public void ProvidesTokenAtUnrecognizedInput()
         {
             Tokenize("ABC!def")
-                .ShouldList(t => t.ShouldEqual(upper, "ABC", 1, 1),
-                            t => t.ShouldEqual(TokenKind.Unknown, "!def", 1, 4));
+                .ShouldList(t => t.ShouldBe(upper, "ABC", 1, 1),
+                            t => t.ShouldBe(TokenKind.Unknown, "!def", 1, 4));
         }
 
         [Fact]
@@ -51,10 +51,10 @@ namespace Parsley
             Tokenize(" ").ShouldBeEmpty();
 
             Tokenize(" ABC  def   GHI    jkl  ")
-                .ShouldList(t => t.ShouldEqual(upper, "ABC", 1, 2),
-                            t => t.ShouldEqual(lower, "def", 1, 7),
-                            t => t.ShouldEqual(upper, "GHI", 1, 13),
-                            t => t.ShouldEqual(lower, "jkl", 1, 20));
+                .ShouldList(t => t.ShouldBe(upper, "ABC", 1, 2),
+                            t => t.ShouldBe(lower, "def", 1, 7),
+                            t => t.ShouldBe(upper, "GHI", 1, 13),
+                            t => t.ShouldBe(lower, "jkl", 1, 20));
         }
     }
 }

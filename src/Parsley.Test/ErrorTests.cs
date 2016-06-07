@@ -1,7 +1,7 @@
 ﻿namespace Parsley
 {
     using System;
-    using Should;
+    using Shouldly;
     using Xunit;
 
     public class ErrorTests
@@ -19,8 +19,8 @@
         [Fact]
         public void CanIndicateErrorsAtTheCurrentPosition()
         {
-            new Error<object>(endOfInput, ErrorMessage.Unknown()).ErrorMessages.ToString().ShouldEqual("Parse error.");
-            new Error<object>(endOfInput, ErrorMessage.Expected("statement")).ErrorMessages.ToString().ShouldEqual("statement expected");
+            new Error<object>(endOfInput, ErrorMessage.Unknown()).ErrorMessages.ToString().ShouldBe("Parse error.");
+            new Error<object>(endOfInput, ErrorMessage.Expected("statement")).ErrorMessages.ToString().ShouldBe("statement expected");
         }
 
         [Fact]
@@ -30,7 +30,7 @@
                 .With(ErrorMessage.Expected("A"))
                 .With(ErrorMessage.Expected("B"));
 
-            new Error<object>(endOfInput, errors).ErrorMessages.ToString().ShouldEqual("A or B expected");
+            new Error<object>(endOfInput, errors).ErrorMessages.ToString().ShouldBe("A or B expected");
         }
 
         [Fact]
@@ -43,8 +43,8 @@
         [Fact]
         public void HasRemainingUnparsedTokens()
         {
-            new Error<object>(x, ErrorMessage.Unknown()).UnparsedTokens.ShouldEqual(x);
-            new Error<object>(endOfInput, ErrorMessage.Unknown()).UnparsedTokens.ShouldEqual(endOfInput);
+            new Error<object>(x, ErrorMessage.Unknown()).UnparsedTokens.ShouldBe(x);
+            new Error<object>(endOfInput, ErrorMessage.Unknown()).UnparsedTokens.ShouldBe(endOfInput);
         }
 
         [Fact]

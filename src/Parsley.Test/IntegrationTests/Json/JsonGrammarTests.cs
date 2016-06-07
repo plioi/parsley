@@ -1,7 +1,7 @@
 ﻿namespace Parsley.IntegrationTests.Json
 {
     using System.Collections.Generic;
-    using Should;
+    using Shouldly;
     using Xunit;
 
     public class JsonGrammarTests : JsonGrammar
@@ -59,7 +59,7 @@
 
             Json.Parses(empty).WithValue(value => ((object[])value).ShouldBeEmpty());
 
-            Json.Parses(filled).WithValue(value => value.ShouldEqual(new[] { 0m, 1m, 2m }));
+            Json.Parses(filled).WithValue(value => value.ShouldBe(new[] { 0m, 1m, 2m }));
         }
 
         [Fact]
@@ -68,14 +68,14 @@
             var empty = Tokenize("{}");
             var filled = Tokenize("{\"zero\" : 0, \"one\" : 1, \"two\" : 2}");
 
-            Json.Parses(empty).WithValue(value => ((Dictionary<string, object>)value).Count.ShouldEqual(0));
+            Json.Parses(empty).WithValue(value => ((Dictionary<string, object>)value).Count.ShouldBe(0));
 
             Json.Parses(filled).WithValue(value =>
             {
                 var dictionary = (Dictionary<string, object>) value;
-                dictionary["zero"].ShouldEqual(0m);
-                dictionary["one"].ShouldEqual(1m);
-                dictionary["two"].ShouldEqual(2m);
+                dictionary["zero"].ShouldBe(0m);
+                dictionary["one"].ShouldBe(1m);
+                dictionary["two"].ShouldBe(2m);
             });
         }
 
@@ -102,13 +102,13 @@
             Json.Parses(tokens).WithValue(value =>
             {
                 var json = (Dictionary<string, object>)value;
-                json["numbers"].ShouldEqual(new[] {10m, 20m, 30m});
+                json["numbers"].ShouldBe(new[] {10m, 20m, 30m});
 
                 var window = (Dictionary<string, object>) json["window"];
-                window["title"].ShouldEqual("Sample Widget");
+                window["title"].ShouldBe("Sample Widget");
                 window["parent"].ShouldBeNull();
-                window["maximized"].ShouldEqual(true);
-                window["transparent"].ShouldEqual(false);
+                window["maximized"].ShouldBe(true);
+                window["transparent"].ShouldBe(false);
             });
         }
 

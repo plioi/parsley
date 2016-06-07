@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Should;
+    using Shouldly;
 
     public static class AssertionExtensions
     {
@@ -17,7 +17,7 @@
             }
             catch (TException ex)
             {
-                ex.Message.ShouldEqual(expectedMessage);
+                ex.Message.ShouldBe(expectedMessage);
                 threw = true;
             }
 
@@ -34,7 +34,7 @@
         {
             var array = actual.ToArray();
 
-            array.Length.ShouldEqual(itemExpectations.Length);
+            array.Length.ShouldBe(itemExpectations.Length);
 
             for (int i = 0; i < array.Length; i++)
                 itemExpectations[i](array[i]);

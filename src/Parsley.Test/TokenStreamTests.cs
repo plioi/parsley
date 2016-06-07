@@ -1,7 +1,7 @@
 ﻿namespace Parsley
 {
     using System.Collections.Generic;
-    using Should;
+    using Shouldly;
     using Xunit;
 
     public class TokenStreamTests
@@ -38,7 +38,7 @@
         {
             var tokens = new TokenStream(Empty());
 
-            tokens.Current.ShouldEqual(TokenKind.EndOfInput, "", 1, 1);
+            tokens.Current.ShouldBe(TokenKind.EndOfInput, "", 1, 1);
             tokens.Advance().ShouldBeSameAs(tokens);
         }
 
@@ -46,14 +46,14 @@
         public void ProvidesCurrentToken()
         {
             var tokens = new TokenStream(Tokens());
-            tokens.Current.ShouldEqual(upper, "ABC", 1, 1);
+            tokens.Current.ShouldBe(upper, "ABC", 1, 1);
         }
 
         [Fact]
         public void AdvancesToTheNextToken()
         {
             var tokens = new TokenStream(Tokens());
-            tokens.Advance().Current.ShouldEqual(lower, "def", 1, 4);
+            tokens.Advance().Current.ShouldBe(lower, "def", 1, 4);
         }
 
         [Fact]
@@ -62,7 +62,7 @@
             var tokens = new TokenStream(OneToken());
             var end = tokens.Advance();
 
-            end.Current.ShouldEqual(TokenKind.EndOfInput, "", 1, 4);
+            end.Current.ShouldBe(TokenKind.EndOfInput, "", 1, 4);
             end.Advance().ShouldBeSameAs(end);
         }
 
@@ -80,22 +80,22 @@
             
             var first = tokens;
 
-            first.Current.ShouldEqual(upper, "ABC", 1, 1);
+            first.Current.ShouldBe(upper, "ABC", 1, 1);
 
             var second = first.Advance();
-            first.Current.ShouldEqual(upper, "ABC", 1, 1);
-            second.Current.ShouldEqual(lower, "def", 1, 4);
+            first.Current.ShouldBe(upper, "ABC", 1, 1);
+            second.Current.ShouldBe(lower, "def", 1, 4);
 
             var third = second.Advance();
-            first.Current.ShouldEqual(upper, "ABC", 1, 1);
-            second.Current.ShouldEqual(lower, "def", 1, 4);
-            third.Current.ShouldEqual(upper, "GHI", 1, 7);
+            first.Current.ShouldBe(upper, "ABC", 1, 1);
+            second.Current.ShouldBe(lower, "def", 1, 4);
+            third.Current.ShouldBe(upper, "GHI", 1, 7);
 
             var fourth = third.Advance();
-            first.Current.ShouldEqual(upper, "ABC", 1, 1);
-            second.Current.ShouldEqual(lower, "def", 1, 4);
-            third.Current.ShouldEqual(upper, "GHI", 1, 7);
-            fourth.Current.ShouldEqual(TokenKind.EndOfInput, "", 1, 10);
+            first.Current.ShouldBe(upper, "ABC", 1, 1);
+            second.Current.ShouldBe(lower, "def", 1, 4);
+            third.Current.ShouldBe(upper, "GHI", 1, 7);
+            fourth.Current.ShouldBe(TokenKind.EndOfInput, "", 1, 10);
 
             fourth.Advance().ShouldBeSameAs(fourth);
         }
@@ -105,10 +105,10 @@
         {
             var tokens = new TokenStream(Tokens());
 
-            tokens.Current.ShouldEqual(upper, "ABC", 1, 1);
-            tokens.Advance().Current.ShouldEqual(lower, "def", 1, 4);
-            tokens.Advance().Advance().Current.ShouldEqual(upper, "GHI", 1, 7);
-            tokens.Advance().Advance().Advance().Current.ShouldEqual(TokenKind.EndOfInput, "", 1, 10);
+            tokens.Current.ShouldBe(upper, "ABC", 1, 1);
+            tokens.Advance().Current.ShouldBe(lower, "def", 1, 4);
+            tokens.Advance().Advance().Current.ShouldBe(upper, "GHI", 1, 7);
+            tokens.Advance().Advance().Advance().Current.ShouldBe(TokenKind.EndOfInput, "", 1, 10);
 
             tokens.Advance().ShouldBeSameAs(tokens.Advance());
         }
@@ -118,17 +118,17 @@
         {
             var tokens = new TokenStream(Tokens());
             
-            tokens.Position.Line.ShouldEqual(1);
-            tokens.Position.Column.ShouldEqual(1);
+            tokens.Position.Line.ShouldBe(1);
+            tokens.Position.Column.ShouldBe(1);
 
-            tokens.Advance().Position.Line.ShouldEqual(1);
-            tokens.Advance().Position.Column.ShouldEqual(4);
+            tokens.Advance().Position.Line.ShouldBe(1);
+            tokens.Advance().Position.Column.ShouldBe(4);
 
-            tokens.Advance().Advance().Position.Line.ShouldEqual(1);
-            tokens.Advance().Advance().Position.Column.ShouldEqual(7);
+            tokens.Advance().Advance().Position.Line.ShouldBe(1);
+            tokens.Advance().Advance().Position.Column.ShouldBe(7);
 
-            tokens.Advance().Advance().Advance().Position.Line.ShouldEqual(1);
-            tokens.Advance().Advance().Advance().Position.Column.ShouldEqual(10);
+            tokens.Advance().Advance().Advance().Position.Line.ShouldBe(1);
+            tokens.Advance().Advance().Advance().Position.Column.ShouldBe(10);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿namespace Parsley
 {
     using System.Collections.Generic;
-    using Should;
+    using Shouldly;
     using Xunit;
 
     public class OperatorPrecedenceParserTests : Grammar
@@ -118,7 +118,7 @@
 
         void Parses(string input, string expectedTree)
         {
-            expression.Parses(Tokenize(input)).WithValue(e => e.ToString().ShouldEqual(expectedTree));
+            expression.Parses(Tokenize(input)).WithValue(e => e.ToString().ShouldBe(expectedTree));
         }
 
         static IEnumerable<Token> Tokenize(string input)

@@ -1,6 +1,6 @@
 ﻿namespace Parsley
 {
-    using Should;
+    using Shouldly;
     using Xunit;
 
     public class ParsedTests
@@ -15,13 +15,13 @@
         [Fact]
         public void HasAParsedValue()
         {
-            new Parsed<string>("parsed", unparsed).Value.ShouldEqual("parsed");
+            new Parsed<string>("parsed", unparsed).Value.ShouldBe("parsed");
         }
 
         [Fact]
         public void HasNoErrorMessageByDefault()
         {
-            new Parsed<string>("x", unparsed).ErrorMessages.ShouldEqual(ErrorMessageList.Empty);
+            new Parsed<string>("x", unparsed).ErrorMessages.ShouldBe(ErrorMessageList.Empty);
         }
 
         [Fact]
@@ -31,13 +31,13 @@
                 .With(ErrorMessage.Expected("A"))
                 .With(ErrorMessage.Expected("B"));
 
-            new Parsed<object>("x", unparsed, potentialErrors).ErrorMessages.ShouldEqual(potentialErrors);
+            new Parsed<object>("x", unparsed, potentialErrors).ErrorMessages.ShouldBe(potentialErrors);
         }
 
         [Fact]
         public void HasRemainingUnparsedTokens()
         {
-            new Parsed<string>("parsed", unparsed).UnparsedTokens.ShouldEqual(unparsed);
+            new Parsed<string>("parsed", unparsed).UnparsedTokens.ShouldBe(unparsed);
         }
 
         [Fact]

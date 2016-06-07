@@ -1,6 +1,6 @@
 ﻿namespace Parsley
 {
-    using Should;
+    using Shouldly;
     using Xunit;
 
     public class ValueTests
@@ -9,7 +9,7 @@
         public void AnInstanceShouldAlwaysReturnTheSameHashCode()
         {
             var o = new Sample(1, "A");
-            o.GetHashCode().ShouldEqual(o.GetHashCode());
+            o.GetHashCode().ShouldBe(o.GetHashCode());
         }
 
         [Fact]
@@ -17,7 +17,7 @@
         {
             var a = new Sample(1, "A");
             var b = new Sample(1, "A");
-            a.GetHashCode().ShouldEqual(b.GetHashCode());
+            a.GetHashCode().ShouldBe(b.GetHashCode());
         }
 
         [Fact]
@@ -26,9 +26,9 @@
             var a = new Sample(0, "A");
             var b = new Sample(1, "A");
             var c = new Sample(0, "B");
-            a.GetHashCode().ShouldNotEqual(b.GetHashCode());
-            a.GetHashCode().ShouldNotEqual(c.GetHashCode());
-            b.GetHashCode().ShouldNotEqual(c.GetHashCode());
+            a.GetHashCode().ShouldNotBe(b.GetHashCode());
+            a.GetHashCode().ShouldNotBe(c.GetHashCode());
+            b.GetHashCode().ShouldNotBe(c.GetHashCode());
         }
 
         [Fact]

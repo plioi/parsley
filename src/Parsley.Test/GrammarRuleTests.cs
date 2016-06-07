@@ -1,7 +1,7 @@
 ﻿namespace Parsley
 {
     using System.Linq;
-    using Should;
+    using Shouldly;
     using Xunit;
 
     public class GrammarRuleTests : Grammar
@@ -28,7 +28,7 @@
             var named = new GrammarRule<string>("Named");
 
             unnamed.Name.ShouldBeNull();
-            named.Name.ShouldEqual("Named");
+            named.Name.ShouldBe("Named");
         }
 
         [Fact]

@@ -1,6 +1,6 @@
 ﻿namespace Parsley
 {
-    using Should;
+    using Shouldly;
     using Xunit;
 
     public class ErrorMessageTests
@@ -9,15 +9,15 @@
         public void CanIndicateGenericErrors()
         {
             var error = ErrorMessage.Unknown();
-            error.ToString().ShouldEqual("Parse error.");
+            error.ToString().ShouldBe("Parse error.");
         }
 
         [Fact]
         public void CanIndicateSpecificExpectation()
         {
             var error = (ExpectedErrorMessage)ErrorMessage.Expected("statement");
-            error.Expectation.ShouldEqual("statement");
-            error.ToString().ShouldEqual("statement expected");
+            error.Expectation.ShouldBe("statement");
+            error.ToString().ShouldBe("statement expected");
         }
 
         [Fact]
@@ -29,9 +29,9 @@
                 .With(ErrorMessage.Expected("b"));
 
             var error = (BacktrackErrorMessage) ErrorMessage.Backtrack(position, errors);
-            error.Position.ShouldEqual(position);
-            error.Errors.ShouldEqual(errors);
-            error.ToString().ShouldEqual("(3, 4): a or b expected");
+            error.Position.ShouldBe(position);
+            error.Errors.ShouldBe(errors);
+            error.ToString().ShouldBe("(3, 4): a or b expected");
         }
     }
 }

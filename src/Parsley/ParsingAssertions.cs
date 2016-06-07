@@ -25,9 +25,9 @@
                 throw new AssertionException(expected, actual.Value);
         }
 
-        public static void ShouldEqual(this Token actual, TokenKind expectedKind, string expectedLiteral, int expectedLine, int expectedColumn)
+        public static void ShouldBe(this Token actual, TokenKind expectedKind, string expectedLiteral, int expectedLine, int expectedColumn)
         {
-            actual.ShouldEqual(expectedKind, expectedLiteral);
+            actual.ShouldBe(expectedKind, expectedLiteral);
 
             var expectedPosition = new Position(expectedLine, expectedColumn);
             if (actual.Position != expectedPosition)
@@ -35,7 +35,7 @@
                                              "token at position " + actual.Position);
         }
 
-        public static void ShouldEqual(this Token actual, TokenKind expectedKind, string expectedLiteral)
+        public static void ShouldBe(this Token actual, TokenKind expectedKind, string expectedLiteral)
         {
             AssertEqual(expectedKind, actual.Kind);
             AssertTokenLiteralsEqual(expectedLiteral, actual.Literal);

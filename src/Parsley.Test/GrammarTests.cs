@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Should;
+    using Shouldly;
     using Xunit;
 
     public class GrammarTests : Grammar
@@ -36,7 +36,7 @@
 
         static Action<Token> Literal(string expectedLiteral)
         {
-            return t => t.Literal.ShouldEqual(expectedLiteral);
+            return t => t.Literal.ShouldBe(expectedLiteral);
         }
 
         static Action<IEnumerable<Token>> Literals(params string[] expectedLiterals)
@@ -231,7 +231,7 @@
 
         static Action<Token> Literal(string expectedLiteral)
         {
-            return t => t.Literal.ShouldEqual(expectedLiteral);
+            return t => t.Literal.ShouldBe(expectedLiteral);
         }
 
         [Fact]
@@ -291,13 +291,13 @@
             Parser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
 
             var reply = Choice(A, succeedWithoutConsuming).Parses(Tokenize(""));
-            reply.ErrorMessages.ToString().ShouldEqual("A expected");
+            reply.ErrorMessages.ToString().ShouldBe("A expected");
 
             reply = Choice(A, B, succeedWithoutConsuming).Parses(Tokenize(""));
-            reply.ErrorMessages.ToString().ShouldEqual("A or B expected");
+            reply.ErrorMessages.ToString().ShouldBe("A or B expected");
 
             reply = Choice(A, succeedWithoutConsuming, B).Parses(Tokenize(""));
-            reply.ErrorMessages.ToString().ShouldEqual("A expected");
+            reply.ErrorMessages.ToString().ShouldBe("A expected");
         }
 
         static readonly Parser<Token> NeverExecuted = new LambdaParser<Token>(tokens =>
@@ -330,31 +330,31 @@
         [Fact]
         public void WillNotInferNameWhenNameIsAlreadyProvided()
         {
-            AlreadyNamedRule.Name.ShouldEqual("This name is not inferred.");
+            AlreadyNamedRule.Name.ShouldBe("This name is not inferred.");
         }
 
         [Fact]
         public void InfersNamesOfPublicStaticGrammarRules()
         {
-            PublicStaticRule.Name.ShouldEqual("PublicStaticRule");
+            PublicStaticRule.Name.ShouldBe("PublicStaticRule");
         }
 
         [Fact]
         public void InfersNamesOfPrivateStaticGrammarRules()
         {
-            PrivateStaticRule.Name.ShouldEqual("PrivateStaticRule");
+            PrivateStaticRule.Name.ShouldBe("PrivateStaticRule");
         }
 
         [Fact]
         public void InfersNamesOfPublicInstanceGrammarRules()
         {
-            PublicInstanceRule.Name.ShouldEqual("PublicInstanceRule");
+            PublicInstanceRule.Name.ShouldBe("PublicInstanceRule");
         }
 
         [Fact]
         public void InfersNamesOfPrivateInstanceGrammarRules()
         {
-            PrivateInstanceRule.Name.ShouldEqual("PrivateInstanceRule");
+            PrivateInstanceRule.Name.ShouldBe("PrivateInstanceRule");
         }
 
         [Fact]

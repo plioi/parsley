@@ -2,7 +2,7 @@
 {
     using System;
     using System.Text.RegularExpressions;
-    using Should;
+    using Shouldly;
     using Xunit;
 
     public class TokenKindTests
@@ -35,29 +35,29 @@
             Token token;
 
             lower.TryMatch(abcDEF, out token).ShouldBeTrue();
-            token.ShouldEqual(lower, "abc", 1, 1);
+            token.ShouldBe(lower, "abc", 1, 1);
 
             upper.TryMatch(abcDEF.Advance(3), out token).ShouldBeTrue();
-            token.ShouldEqual(upper, "DEF", 1, 4);
+            token.ShouldBe(upper, "DEF", 1, 4);
 
             caseInsensitive.TryMatch(abcDEF, out token).ShouldBeTrue();
-            token.ShouldEqual(caseInsensitive, "abcDEF", 1, 1);
+            token.ShouldBe(caseInsensitive, "abcDEF", 1, 1);
         }
 
         [Fact]
         public void HasDescriptiveName()
         {
-            lower.Name.ShouldEqual("Lowercase");
-            upper.Name.ShouldEqual("Uppercase");
-            caseInsensitive.Name.ShouldEqual("Case Insensitive");
+            lower.Name.ShouldBe("Lowercase");
+            upper.Name.ShouldBe("Uppercase");
+            caseInsensitive.Name.ShouldBe("Case Insensitive");
         }
 
         [Fact]
         public void UsesDescriptiveNameForToString()
         {
-            lower.ToString().ShouldEqual("Lowercase");
-            upper.ToString().ShouldEqual("Uppercase");
-            caseInsensitive.ToString().ShouldEqual("Case Insensitive");
+            lower.ToString().ShouldBe("Lowercase");
+            upper.ToString().ShouldBe("Uppercase");
+            caseInsensitive.ToString().ShouldBe("Case Insensitive");
         }
 
         [Fact]
@@ -66,16 +66,16 @@
             Token token;
             var foo = new Keyword("foo");
 
-            foo.Name.ShouldEqual("foo");
+            foo.Name.ShouldBe("foo");
 
             foo.TryMatch(new Text("bar"), out token).ShouldBeFalse();
             token.ShouldBeNull();
 
             foo.TryMatch(new Text("foo"), out token).ShouldBeTrue();
-            token.ShouldEqual(foo, "foo", 1, 1);
+            token.ShouldBe(foo, "foo", 1, 1);
 
             foo.TryMatch(new Text("foo bar"), out token).ShouldBeTrue();
-            token.ShouldEqual(foo, "foo", 1, 1);
+            token.ShouldBe(foo, "foo", 1, 1);
 
             foo.TryMatch(new Text("foobar"), out token).ShouldBeFalse();
             token.ShouldBeNull();
@@ -91,21 +91,21 @@
             var star = new Operator("*");
             var doubleStar = new Operator("**");
 
-            star.Name.ShouldEqual("*");
+            star.Name.ShouldBe("*");
 
             star.TryMatch(new Text("a"), out token).ShouldBeFalse();
             token.ShouldBeNull();
 
             star.TryMatch(new Text("*"), out token).ShouldBeTrue();
-            token.ShouldEqual(star, "*", 1, 1);
+            token.ShouldBe(star, "*", 1, 1);
 
             star.TryMatch(new Text("* *"), out token).ShouldBeTrue();
-            token.ShouldEqual(star, "*", 1, 1);
+            token.ShouldBe(star, "*", 1, 1);
 
             star.TryMatch(new Text("**"), out token).ShouldBeTrue();
-            token.ShouldEqual(star, "*", 1, 1);
+            token.ShouldBe(star, "*", 1, 1);
 
-            doubleStar.Name.ShouldEqual("**");
+            doubleStar.Name.ShouldBe("**");
 
             doubleStar.TryMatch(new Text("a"), out token).ShouldBeFalse();
             token.ShouldBeNull();
@@ -117,7 +117,7 @@
             token.ShouldBeNull();
 
             doubleStar.TryMatch(new Text("**"), out token).ShouldBeTrue();
-            token.ShouldEqual(doubleStar, "**", 1, 1);
+            token.ShouldBe(doubleStar, "**", 1, 1);
         }
 
         [Fact]
@@ -125,9 +125,9 @@
         {
             Token token;
 
-            TokenKind.EndOfInput.ShouldBeType<Empty>();
+            TokenKind.EndOfInput.ShouldBeOfType<Empty>();
 
-            TokenKind.EndOfInput.Name.ShouldEqual("end of input");
+            TokenKind.EndOfInput.Name.ShouldBe("end of input");
             TokenKind.EndOfInput.Skippable.ShouldBeFalse();
 
             TokenKind.EndOfInput.TryMatch(new Text(""), out token).ShouldBeFalse();

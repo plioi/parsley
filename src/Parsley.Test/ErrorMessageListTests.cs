@@ -1,6 +1,6 @@
 ﻿namespace Parsley
 {
-    using Should;
+    using Shouldly;
     using Xunit;
 
     public class ErrorMessageListTests
@@ -14,7 +14,7 @@
         [Fact]
         public void CanBeEmpty()
         {
-            ErrorMessageList.Empty.ToString().ShouldEqual("");
+            ErrorMessageList.Empty.ToString().ShouldBe("");
         }
 
         [Fact]
@@ -22,7 +22,7 @@
         {
             ErrorMessageList list = ErrorMessageList.Empty.With(ErrorMessage.Expected("expectation"));
 
-            list.ToString().ShouldEqual("expectation expected");
+            list.ToString().ShouldBe("expectation expected");
             list.ShouldNotBeSameAs(ErrorMessageList.Empty);
         }
 
@@ -31,7 +31,7 @@
         {
             ErrorMessageList.Empty
                 .With(ErrorMessage.Unknown())
-                .ToString().ShouldEqual("Parse error.");
+                .ToString().ShouldBe("Parse error.");
         }
 
         [Fact]
@@ -40,20 +40,20 @@
             ErrorMessageList.Empty
                 .With(ErrorMessage.Expected("A"))
                 .With(ErrorMessage.Expected("B"))
-                .ToString().ShouldEqual("A or B expected");
+                .ToString().ShouldBe("A or B expected");
 
             ErrorMessageList.Empty
                 .With(ErrorMessage.Expected("A"))
                 .With(ErrorMessage.Expected("B"))
                 .With(ErrorMessage.Expected("C"))
-                .ToString().ShouldEqual("A, B or C expected");
+                .ToString().ShouldBe("A, B or C expected");
 
             ErrorMessageList.Empty
                 .With(ErrorMessage.Expected("A"))
                 .With(ErrorMessage.Expected("B"))
                 .With(ErrorMessage.Expected("C"))
                 .With(ErrorMessage.Expected("D"))
-                .ToString().ShouldEqual("A, B, C or D expected");
+                .ToString().ShouldBe("A, B, C or D expected");
         }
 
         [Fact]
@@ -68,7 +68,7 @@
                 .With(ErrorMessage.Expected("C"))
                 .With(ErrorMessage.Expected("C"))
                 .With(ErrorMessage.Expected("A"))
-                .ToString().ShouldEqual("A, B or C expected");
+                .ToString().ShouldBe("A, B or C expected");
         }
 
         [Fact]
@@ -92,18 +92,18 @@
 
             ErrorMessageList.Empty
                 .With(deepBacktrack)
-                .ToString().ShouldEqual("[(3, 4): A or B expected]");
+                .ToString().ShouldBe("[(3, 4): A or B expected]");
 
             ErrorMessageList.Empty
                 .With(shallowBacktrack)
-                .ToString().ShouldEqual("[(2, 3): C or D expected [(3, 4): A or B expected]]");
+                .ToString().ShouldBe("[(2, 3): C or D expected [(3, 4): A or B expected]]");
 
             ErrorMessageList.Empty
                 .With(ErrorMessage.Expected("G"))
                 .With(ErrorMessage.Expected("H"))
                 .With(shallowBacktrack)
                 .With(unrelatedBacktrack)
-                .ToString().ShouldEqual("G or H expected [(1, 2): E or F expected] [(2, 3): C or D expected [(3, 4): A or B expected]]");
+                .ToString().ShouldBe("G or H expected [(1, 2): E or F expected] [(2, 3): C or D expected [(3, 4): A or B expected]]");
         }
 
         [Fact]
@@ -122,7 +122,7 @@
                 .With(ErrorMessage.Expected("E"));
 
             first.Merge(second)
-                .ToString().ShouldEqual("A, B, C, D or E expected");
+                .ToString().ShouldBe("A, B, C, D or E expected");
         }
 
         [Fact]
@@ -133,7 +133,7 @@
                 .With(ErrorMessage.Expected("B"))
                 .With(ErrorMessage.Unknown())
                 .With(ErrorMessage.Expected("C"))
-                .ToString().ShouldEqual("A, B or C expected");
+                .ToString().ShouldBe("A, B or C expected");
         }
     }
 }
