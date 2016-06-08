@@ -1,4 +1,4 @@
-namespace Parsley.IntegrationTests.Json
+namespace Parsley.Tests.IntegrationTests.Json
 {
     using System.Collections.Generic;
     using System.Linq;

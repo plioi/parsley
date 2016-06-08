@@ -1,4 +1,4 @@
-﻿namespace Parsley
+﻿namespace Parsley.Tests
 {
     public class CharLexer : Lexer
     {

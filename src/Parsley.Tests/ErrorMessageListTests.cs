@@ -1,4 +1,4 @@
-﻿namespace Parsley
+﻿namespace Parsley.Tests
 {
     using Shouldly;
     using Xunit;

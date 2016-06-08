@@ -1,4 +1,4 @@
-﻿namespace Parsley
+﻿namespace Parsley.Tests
 {
     using System;
     using Shouldly;
