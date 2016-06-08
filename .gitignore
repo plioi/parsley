@@ -1,7 +1,2 @@
 bin/
 obj/
-/package/
-/src/.vs/
-/src/packages/
-*.DotSettings.user
-*.csproj.user
