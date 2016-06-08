@@ -83,10 +83,6 @@ function AssemblyInfo {
     foreach ($project in $projects) {
         $projectName = [System.IO.Path]::GetFileNameWithoutExtension($project)
 
-        if ($projectName -eq "Build") {
-            continue;
-        }
-
         regenerate-file "$($project.DirectoryName)\Properties\AssemblyInfo.cs" @"
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -175,7 +171,7 @@ function get-msbuild-path {
 
 function step($block) {
     $name = $block.ToString().Trim()
-    write-host $name -fore CYAN
+    write-host "Executing $name" -fore CYAN
     $sw = [Diagnostics.Stopwatch]::StartNew()
     &$block
     $sw.Stop()
