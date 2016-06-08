@@ -119,7 +119,7 @@ function get-copyright {
     $date = Get-Date
     $year = $date.Year
     $copyrightSpan = if ($year -eq $birthYear) { $year } else { "$birthYear-$year" }
-    return "Copyright Â© $copyrightSpan $maintainers"
+    return "Copyright © $copyrightSpan $maintainers"
 }
 
 function regenerate-file($path, $newContent) {

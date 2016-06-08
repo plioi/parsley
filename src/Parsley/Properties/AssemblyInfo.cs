@@ -7,6 +7,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("0.0.7")]
 [assembly: AssemblyFileVersion("0.0.7")]
 [assembly: AssemblyInformationalVersion("0.0.7")]
-[assembly: AssemblyCopyright("Copyright Â© 2011-2016 Patrick Lioi")]
+[assembly: AssemblyCopyright("Copyright © 2011-2016 Patrick Lioi")]
 [assembly: AssemblyCompany("Patrick Lioi")]
 [assembly: AssemblyConfiguration("Release")]
