@@ -1,56 +1,77 @@
-Framework '4.5.2'
+param([string]$target)
 
-properties {
-    $birthYear = 2011
-    $maintainers = "Patrick Lioi"
+$birthYear = 2011
+$maintainers = "Patrick Lioi"
+$configuration = 'Release'
+$version = '0.0.7'
 
-    $configuration = 'Release'
-    $src = resolve-path '.\src'
-    $tools = resolve-path '.\tools'
-    $projects = @(gci $src -rec -filter *.csproj)
-    $version = '0.0.7'
+function main {
+    try {
+        step { Restore }
+        step { AssemblyInfo }
+        step { License }
+        step { Compile }
+        step { Test }
+
+        if ($target -eq "package") {
+            step { Package }
+        }
+
+        write-host
+        write-host "Build Succeeded!" -fore GREEN
+        write-host
+        summarize-steps
+        exit 0
+    } catch [Exception] {
+        write-host
+        write-host $_.Exception.Message -fore RED
+        write-host
+        write-host "Build Failed!" -fore RED
+        exit 1
+    }
 }
 
-task default -depends Test
+function Restore {
+    tools\NuGet.exe restore src\Parsley.sln -source "https://nuget.org/api/v2/" -RequireConsent -o "src\packages"
+}
 
-task Package -depends Test {
-    rd .\package -recurse -force -ErrorAction SilentlyContinue | out-null
-    mkdir .\package -ErrorAction SilentlyContinue | out-null
-    exec { & $tools\NuGet.exe pack $src\Parsley\Parsley.csproj -Symbols -Prop Configuration=$configuration -OutputDirectory .\package }
+function Package {
+    rd package -recurse -force -ErrorAction SilentlyContinue | out-null
+    mkdir package -ErrorAction SilentlyContinue | out-null
+    exec { & tools\NuGet.exe pack src\Parsley\Parsley.csproj -Symbols -Prop Configuration=$configuration -OutputDirectory package }
 
     write-host
     write-host "To publish these packages, issue the following command:"
-    write-host "   tools\NuGet push .\package\Parsley.$version.nupkg"
+    write-host "   tools\NuGet push package\Parsley.$version.nupkg"
 }
 
-task Test -depends Compile {
-    $testRunners = @(gci $src\packages -rec -filter xunit.console.exe)
+function Test {
+    $testRunners = @(gci src\packages -rec -filter xunit.console.exe)
 
-    if ($testRunners.Length -ne 1)
-    {
+    if ($testRunners.Length -ne 1) {
         throw "Expected to find 1 xunit.console.exe, but found $($testRunners.Length)."
     }
 
     $testRunner = $testRunners[0].FullName
 
-    foreach ($project in $projects)
-    {
+    $projects = @(gci src -rec -filter *.csproj)
+    foreach ($project in $projects) {
         $projectName = [System.IO.Path]::GetFileNameWithoutExtension($project)
 
-        if ($projectName.EndsWith("Test"))
-        {
+        if ($projectName.EndsWith("Test")) {
             $testAssembly = "$($project.Directory)\bin\$configuration\$projectName.dll"
             exec { & $testRunner $testAssembly }
         }
     }
 }
 
-task Compile -depends AssemblyInfo, License {
-  exec { msbuild /t:clean /v:q /nologo /p:Configuration=$configuration $src\Parsley.sln }
-  exec { msbuild /t:build /v:q /nologo /p:Configuration=$configuration $src\Parsley.sln }
+function Compile {
+    Set-Alias msbuild (get-msbuild-path)
+    exec { msbuild /t:clean /v:q /nologo /p:Configuration=$configuration src\Parsley.sln }
+    exec { msbuild /t:build /v:q /nologo /p:Configuration=$configuration src\Parsley.sln }
 }
 
-task AssemblyInfo {
+function AssemblyInfo {
     $assemblyVersion = $version
     if ($assemblyVersion.Contains("-")) {
         $assemblyVersion = $assemblyVersion.Substring(0, $assemblyVersion.IndexOf("-"))
@@ -58,12 +79,9 @@ task AssemblyInfo {
 
     $copyright = get-copyright
 
+    $projects = @(gci src -rec -filter *.csproj)
     foreach ($project in $projects) {
         $projectName = [System.IO.Path]::GetFileNameWithoutExtension($project)
-
-        if ($projectName -eq "Build") {
-            continue;
-        }
 
         regenerate-file "$($project.DirectoryName)\Properties\AssemblyInfo.cs" @"
 using System.Reflection;
@@ -82,7 +100,7 @@ using System.Runtime.InteropServices;
     }
 }
 
-task License {
+function License {
     $copyright = get-copyright
 
     regenerate-file "LICENSE.txt" @"
@@ -101,7 +119,7 @@ function get-copyright {
     $date = Get-Date
     $year = $date.Year
     $copyrightSpan = if ($year -eq $birthYear) { $year } else { "$birthYear-$year" }
-    return "Copyright Â© $copyrightSpan $maintainers"
+    return "Copyright © $copyrightSpan $maintainers"
 }
 
 function regenerate-file($path, $newContent) {
@@ -113,3 +131,63 @@ function regenerate-file($path, $newContent) {
         [System.IO.File]::WriteAllText($path, $newContent, [System.Text.Encoding]::UTF8)
     }
 }
+
+function exec($cmd) {
+    $global:lastexitcode = 0
+    & $cmd
+    if ($lastexitcode -ne 0) {
+        throw "Error executing command:$cmd"
+    }
+}
+
+function get-msbuild-path {
+    [cmdletbinding()]
+    param(
+        [Parameter(Position=0)]
+        [ValidateSet('32bit','64bit')]
+        [string]$bitness = '32bit'
+    )
+    process{
+
+        # Find the highest installed version of msbuild.exe.
+
+        $regLocalKey = $null
+
+        if($bitness -eq '32bit') {
+            $regLocalKey = [Microsoft.Win32.RegistryKey]::OpenBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine,[Microsoft.Win32.RegistryView]::Registry32)
+        } else {
+            $regLocalKey = [Microsoft.Win32.RegistryKey]::OpenBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine,[Microsoft.Win32.RegistryView]::Registry64)
+        }
+
+        $versionKeyName = $regLocalKey.OpenSubKey('SOFTWARE\Microsoft\MSBuild\ToolsVersions\').GetSubKeyNames() | Sort-Object {[double]$_} -Descending
+
+        $keyToReturn = ('SOFTWARE\Microsoft\MSBuild\ToolsVersions\{0}' -f $versionKeyName)
+
+        $path = ( '{0}msbuild.exe' -f $regLocalKey.OpenSubKey($keyToReturn).GetValue('MSBuildToolsPath'))
+
+        return $path
+    }
+}
+
+function step($block) {
+    $name = $block.ToString().Trim()
+    write-host "Executing $name" -fore CYAN
+    $sw = [Diagnostics.Stopwatch]::StartNew()
+    &$block
+    $sw.Stop()
+
+    if (!$script:timings) {
+        $script:timings = @()
+    }
+
+    $script:timings += new-object PSObject -property @{
+        Name = $name;
+        Duration = $sw.Elapsed
+    }
+}
+
+function summarize-steps {
+    $script:timings | format-table -autoSize -property Name,Duration | out-string -stream | where-object { $_ }
+}
+
+main
