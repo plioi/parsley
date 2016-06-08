@@ -7,6 +7,7 @@ $version = '0.0.7'
 
 function main {
     try {
+        step { Restore }
         step { AssemblyInfo }
         step { License }
         step { Compile }
@@ -28,6 +29,10 @@ function main {
         write-host "Build Failed!" -fore RED
         exit 1
     }
+}
+
+function Restore {
+    tools\NuGet.exe restore src\Parsley.sln -source "https://nuget.org/api/v2/" -RequireConsent -o "src\packages"
 }
 
 function Package {
