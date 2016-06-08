@@ -58,7 +58,7 @@ function Test {
     foreach ($project in $projects) {
         $projectName = [System.IO.Path]::GetFileNameWithoutExtension($project)
 
-        if ($projectName.EndsWith("Test")) {
+        if ($projectName.EndsWith("Tests")) {
             $testAssembly = "$($project.Directory)\bin\$configuration\$projectName.dll"
             exec { & $testRunner $testAssembly }
         }

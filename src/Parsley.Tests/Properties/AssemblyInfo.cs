@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 [assembly: ComVisible(false)]
 [assembly: AssemblyProduct("Parsley")]
-[assembly: AssemblyTitle("Parsley.Test")]
+[assembly: AssemblyTitle("Parsley.Tests")]
 [assembly: AssemblyVersion("0.0.7")]
 [assembly: AssemblyFileVersion("0.0.7")]
 [assembly: AssemblyInformationalVersion("0.0.7")]
