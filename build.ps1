@@ -1,17 +1,36 @@
-Framework '4.5.2'
+param([string]$target)
 
-properties {
-    $birthYear = 2011
-    $maintainers = "Patrick Lioi"
+$birthYear = 2011
+$maintainers = "Patrick Lioi"
+$configuration = 'Release'
+$version = '0.0.7'
 
-    $configuration = 'Release'
-    $projects = @(gci src -rec -filter *.csproj)
-    $version = '0.0.7'
+function main {
+    try {
+        step { AssemblyInfo }
+        step { License }
+        step { Compile }
+        step { Test }
+
+        if ($target -eq "package") {
+            step { Package }
+        }
+
+        write-host
+        write-host "Build Succeeded!" -fore GREEN
+        write-host
+        summarize-steps
+        exit 0
+    } catch [Exception] {
+        write-host
+        write-host $_.Exception.Message -fore RED
+        write-host
+        write-host "Build Failed!" -fore RED
+        exit 1
+    }
 }
 
-task default -depends Test
-
-task Package -depends Test {
+function Package {
     rd package -recurse -force -ErrorAction SilentlyContinue | out-null
     mkdir package -ErrorAction SilentlyContinue | out-null
     exec { & tools\NuGet.exe pack src\Parsley\Parsley.csproj -Symbols -Prop Configuration=$configuration -OutputDirectory package }
@@ -21,39 +40,33 @@ task Package -depends Test {
     write-host "   tools\NuGet push package\Parsley.$version.nupkg"
 }
 
-task Test {
-    generate-assembly-info
-    generate-license
-    compile-solution
-
+function Test {
     $testRunners = @(gci src\packages -rec -filter xunit.console.exe)
 
-    if ($testRunners.Length -ne 1)
-    {
+    if ($testRunners.Length -ne 1) {
         throw "Expected to find 1 xunit.console.exe, but found $($testRunners.Length)."
     }
 
     $testRunner = $testRunners[0].FullName
 
-    foreach ($project in $projects)
-    {
+    $projects = @(gci src -rec -filter *.csproj)
+    foreach ($project in $projects) {
         $projectName = [System.IO.Path]::GetFileNameWithoutExtension($project)
 
-        if ($projectName.EndsWith("Test"))
-        {
+        if ($projectName.EndsWith("Test")) {
             $testAssembly = "$($project.Directory)\bin\$configuration\$projectName.dll"
             exec { & $testRunner $testAssembly }
         }
     }
 }
 
-function compile-solution {
+function Compile {
     Set-Alias msbuild (get-msbuild-path)
     exec { msbuild /t:clean /v:q /nologo /p:Configuration=$configuration src\Parsley.sln }
     exec { msbuild /t:build /v:q /nologo /p:Configuration=$configuration src\Parsley.sln }
 }
 
-function generate-assembly-info {
+function AssemblyInfo {
     $assemblyVersion = $version
     if ($assemblyVersion.Contains("-")) {
         $assemblyVersion = $assemblyVersion.Substring(0, $assemblyVersion.IndexOf("-"))
@@ -61,6 +74,7 @@ function generate-assembly-info {
 
     $copyright = get-copyright
 
+    $projects = @(gci src -rec -filter *.csproj)
     foreach ($project in $projects) {
         $projectName = [System.IO.Path]::GetFileNameWithoutExtension($project)
 
@@ -85,7 +99,7 @@ using System.Runtime.InteropServices;
     }
 }
 
-function generate-license {
+function License {
     $copyright = get-copyright
 
     regenerate-file "LICENSE.txt" @"
@@ -138,7 +152,7 @@ function get-msbuild-path {
 
         $regLocalKey = $null
 
-        if($bitness -eq '32bit'){
+        if($bitness -eq '32bit') {
             $regLocalKey = [Microsoft.Win32.RegistryKey]::OpenBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine,[Microsoft.Win32.RegistryView]::Registry32)
         } else {
             $regLocalKey = [Microsoft.Win32.RegistryKey]::OpenBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine,[Microsoft.Win32.RegistryView]::Registry64)
@@ -153,3 +167,26 @@ function get-msbuild-path {
         return $path
     }
 }
+
+function step($block) {
+    $name = $block.ToString().Trim()
+    write-host $name -fore CYAN
+    $sw = [Diagnostics.Stopwatch]::StartNew()
+    &$block
+    $sw.Stop()
+
+    if (!$script:timings) {
+        $script:timings = @()
+    }
+
+    $script:timings += new-object PSObject -property @{
+        Name = $name;
+        Duration = $sw.Elapsed
+    }
+}
+
+function summarize-steps {
+    $script:timings | format-table -autoSize -property Name,Duration | out-string -stream | where-object { $_ }
+}
+
+main
