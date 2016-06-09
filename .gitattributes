@@ -2,3 +2,5 @@
 *.xproj text
 *.cs text diff=csharp
 *.json text
+*.txt text
+*.md text
