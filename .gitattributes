@@ -6,3 +6,4 @@
 *.md text
 *.cmd text
 *.ps1 text
+*.config text
