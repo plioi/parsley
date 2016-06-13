@@ -4,3 +4,5 @@
 *.json text
 *.txt text
 *.md text
+*.cmd text
+*.ps1 text
