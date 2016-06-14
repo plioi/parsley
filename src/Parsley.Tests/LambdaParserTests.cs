@@ -1,6 +1,7 @@
 namespace Parsley.Tests
 {
     using Xunit;
+    using ErrorMessage = Parsley.ErrorMessage;
 
     public class LambdaParserTests
     {

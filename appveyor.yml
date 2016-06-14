@@ -1,0 +1,24 @@
+version: '{build}'
+pull_requests:
+  do_not_increment_build_number: true
+branches:
+  only:
+  - master
+init:
+- cmd: git config --global core.autocrlf true
+cache: '%USERPROFILE%\.nuget\packages -> **\project.json'
+nuget:
+  disable_publish_on_pr: true
+build_script:
+- ps: .\build.ps1
+test: off
+artifacts:
+- path: .\artifacts\**\*.nupkg
+  name: NuGet
+deploy:
+- provider: NuGet
+  api_key:
+    secure: uZjEAcNGvpxiTjzUDui5CRQcbr9187WEhqUlPxFpDa7VxU3+n4OY+9uQ73cRSYtK
+  on:
+    branch: master
+    appveyor_repo_tag: true

@@ -76,7 +76,7 @@
         public Keyword(string word)
             : base(word, word + @"\b")
         {
-            if (word.Any(ch => !Char.IsLetter(ch)))
+            if (word.Cast<char>().Any(ch => !Char.IsLetter(ch)))
                 throw new ArgumentException("Keywords may only contain letters.", "word");
         }
     }
