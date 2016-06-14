@@ -9,13 +9,11 @@
     {
         protected void InferGrammarRuleNames()
         {
-            const BindingFlags fieldBindingFlags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
-
             var grammarRules =
                 GetType()
-                    .GetFields(fieldBindingFlags)
+                    .GetRuntimeFields()
                     .Where(rule =>
-                           rule.FieldType.IsGenericType &&
+                           rule.FieldType.GetTypeInfo().IsGenericType &&
                            rule.FieldType.GetGenericTypeDefinition() == typeof (GrammarRule<>));
 
             foreach (var rule in grammarRules)
@@ -23,7 +21,7 @@
                 var value = rule.GetValue(this);
                 if (value != null)
                 {
-                    var nameProperty = value.GetType().GetProperty("Name");
+                    var nameProperty = value.GetType().GetRuntimeProperty("Name");
                     var name = nameProperty.GetValue(value, null);
 
                     if (name as string == null)
