@@ -1,7 +1,6 @@
+/artifacts
 bin/
 obj/
-/package/
-/src/.vs/
-/src/packages/
-*.DotSettings.user
-*.csproj.user
+/.vs/
+*.xproj.user
+project.lock.json

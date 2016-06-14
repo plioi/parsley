@@ -2,6 +2,7 @@
 {
     using Shouldly;
     using Xunit;
+    using ErrorMessage = Parsley.ErrorMessage;
 
     public class ErrorMessageTests
     {
