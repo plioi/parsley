@@ -10,7 +10,12 @@ cache: '%USERPROFILE%\.nuget\packages -> **\project.json'
 nuget:
   disable_publish_on_pr: true
 build_script:
-- ps: .\build.ps1
+- ps: >-
+    if ($env:APPVEYOR_REPO_TAG_NAME -ne $NULL) {
+        .\build.cmd package $env:APPVEYOR_BUILD_NUMBER
+    } else {
+        .\build.cmd
+    }
 test: off
 artifacts:
 - path: .\artifacts\**\*.nupkg

@@ -1,3 +1,3 @@
 @echo off
-
-powershell -NoProfile -ExecutionPolicy Bypass -Command "& '.\build.ps1' %*;"
+dotnet restore --verbosity Warning src/Build
+dotnet run --project src/Build -- %*
