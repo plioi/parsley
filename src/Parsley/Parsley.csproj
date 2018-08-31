@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>A monadic parser combinator library inspired by Haskell's Parsec library.</Description>
+    <Copyright>Copyright © 2011-2016</Copyright>
+    <AssemblyTitle>Parsley</AssemblyTitle>
+    <VersionPrefix>0.0.7-beta</VersionPrefix>
+    <Authors>Patrick Lioi</Authors>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <AssemblyName>Parsley</AssemblyName>
+    <PackageId>Parsley</PackageId>
+    <PackageProjectUrl>https://github.com/plioi/parsley</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/plioi/parsley/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/plioi/parsley</RepositoryUrl>
+  </PropertyGroup>
+</Project>
