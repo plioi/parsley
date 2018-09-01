@@ -20,7 +20,7 @@
                 : base(Digit, Letter, Symbol) { }
         }
 
-        readonly Parser<Token> A, B, AB, COMMA;
+        readonly IParser<Token> A, B, AB, COMMA;
 
         public GrammarTests()
         {
@@ -94,7 +94,7 @@
                 .LeavingUnparsedTokens("!")
                 .WithMessage("(1, 6): B expected");
 
-            Parser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
+            IParser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
             Action infiniteLoop = () => ZeroOrMore(succeedWithoutConsuming).Parse(new TokenStream(Tokenize("")));
             infiniteLoop.ShouldThrow<Exception>("Parser encountered a potential infinite loop at position (1, 1).");
         }
@@ -118,7 +118,7 @@
                 .LeavingUnparsedTokens("!")
                 .WithMessage("(1, 6): B expected");
 
-            Parser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
+            IParser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
             Action infiniteLoop = () => OneOrMore(succeedWithoutConsuming).Parse(new TokenStream(Tokenize("")));
             infiniteLoop.ShouldThrow<Exception>("Parser encountered a potential infinite loop at position (1, 1).");
         }
@@ -220,7 +220,7 @@
     {
         static IEnumerable<Token> Tokenize(string input) => new CharLexer().Tokenize(input);
 
-        readonly Parser<Token> A, B, C;
+        readonly IParser<Token> A, B, C;
 
         public AlternationTests()
         {
@@ -288,7 +288,7 @@
             //consuming input.  These tests simply describe the behavior under that
             //unusual situation.
 
-            Parser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
+            IParser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
 
             var reply = Choice(A, succeedWithoutConsuming).Parses(Tokenize(""));
             reply.ErrorMessages.ToString().ShouldBe("A expected");
@@ -300,7 +300,7 @@
             reply.ErrorMessages.ToString().ShouldBe("A expected");
         }
 
-        static readonly Parser<Token> NeverExecuted = new LambdaParser<Token>(tokens =>
+        static readonly IParser<Token> NeverExecuted = new LambdaParser<Token>(tokens =>
         {
             throw new Exception("Parser 'NeverExecuted' should not have been executed.");
         });

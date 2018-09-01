@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2003
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C902614B-5143-4941-9B54-EDB3404B8BF3}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parsley", "src\Parsley\Parsley.csproj", "{121D2CB4-D984-4675-BA0E-781248CA36DF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parsley.Tests", "src\Parsley.Tests\Parsley.Tests.csproj", "{FB144879-FDFA-4A8E-9604-BC730C5AA33E}"

@@ -62,7 +62,7 @@
                         select jsonValue;
         }
 
-        static Parser<object> Constant(TokenKind kind, object constant)
+        static IParser<object> Constant(TokenKind kind, object constant)
         {
             return from _ in Token(kind)
                    select constant;

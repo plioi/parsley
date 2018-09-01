@@ -34,15 +34,9 @@
 
         protected abstract MatchResult Match(Text text);
 
-        public string Name
-        {
-            get { return name; }
-        }
+        public string Name => name;
 
-        public bool Skippable
-        {
-            get { return skippable;}
-        }
+        public bool Skippable => skippable;
 
         public override string ToString()
         {
@@ -76,7 +70,7 @@
         public Keyword(string word)
             : base(word, word + @"\b")
         {
-            if (word.Cast<char>().Any(ch => !Char.IsLetter(ch)))
+            if (word.Cast<char>().Any(ch => !char.IsLetter(ch)))
                 throw new ArgumentException("Keywords may only contain letters.", "word");
         }
     }

@@ -2,26 +2,26 @@
 {
     using System.Collections.Generic;
 
-    public delegate Parser<T> ExtendParserBuilder<T>(T left);
+    public delegate IParser<T> ExtendParserBuilder<T>(T left);
     public delegate T AtomNodeBuilder<out T>(Token atom);
     public delegate T UnaryNodeBuilder<T>(Token symbol, T operand);
     public delegate T BinaryNodeBuilder<T>(T left, Token symbol, T right);
     public enum Associativity { Left, Right }
 
-    public class OperatorPrecedenceParser<T> : Grammar, Parser<T>
+    public class OperatorPrecedenceParser<T> : Grammar, IParser<T>
     {
-        private readonly IDictionary<TokenKind, Parser<T>> unitParsers;
+        private readonly IDictionary<TokenKind, IParser<T>> unitParsers;
         private readonly IDictionary<TokenKind, ExtendParserBuilder<T>> extendParsers;
         private readonly IDictionary<TokenKind, int> extendParserPrecedence;
 
         public OperatorPrecedenceParser()
         {
-            unitParsers = new Dictionary<TokenKind, Parser<T>>();
+            unitParsers = new Dictionary<TokenKind, IParser<T>>();
             extendParsers = new Dictionary<TokenKind, ExtendParserBuilder<T>>();
             extendParserPrecedence = new Dictionary<TokenKind, int>();
         }
 
-        public void Unit(TokenKind kind, Parser<T> unitParser)
+        public void Unit(TokenKind kind, IParser<T> unitParser)
         {
             unitParsers[kind] = unitParser;
         }
@@ -69,7 +69,7 @@
             return Parse(tokens, 0);
         }
 
-        private Parser<T> OperandAtPrecedenceLevel(int precedence)
+        private IParser<T> OperandAtPrecedenceLevel(int precedence)
         {
             return new LambdaParser<T>(tokens => Parse(tokens, precedence));
         }

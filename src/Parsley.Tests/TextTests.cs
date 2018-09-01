@@ -79,9 +79,9 @@
         [Fact]
         public void CanMatchLeadingCharactersByPredicate()
         {
-            Predicate<char> letters = Char.IsLetter;
-            Predicate<char> digits = Char.IsDigit;
-            Predicate<char> alphanumerics = Char.IsLetterOrDigit;
+            Predicate<char> letters = char.IsLetter;
+            Predicate<char> digits = char.IsDigit;
+            Predicate<char> alphanumerics = char.IsLetterOrDigit;
 
             var empty = new Text("");
             empty.Match(letters).ShouldFail();
