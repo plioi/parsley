@@ -1,6 +1,5 @@
 ﻿namespace Parsley
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -66,13 +65,13 @@
             {
                 var suffixes = Separators(expectationErrors.Count - 1).Concat(new[] { " expected" });
 
-                parts.Add(String.Join("", expectationErrors.Zip(suffixes, (error, suffix) => error + suffix)));
+                parts.Add(string.Join("", expectationErrors.Zip(suffixes, (error, suffix) => error + suffix)));
             }
 
             if (backtrackErrors.Any())
-                parts.Add(String.Join(" ", backtrackErrors.Select(backtrack => String.Format("[{0}]", backtrack))));
+                parts.Add(string.Join(" ", backtrackErrors.Select(backtrack => string.Format("[{0}]", backtrack))));
 
-            return String.Join(" ", parts);
+            return string.Join(" ", parts);
         }
 
         private static IEnumerable<string> Separators(int count)

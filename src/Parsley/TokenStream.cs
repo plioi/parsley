@@ -31,20 +31,14 @@
             rest = new Lazy<TokenStream>(() => this);
         }
 
-        public Token Current
-        {
-            get { return current; }
-        }
+        public Token Current => current;
 
         public TokenStream Advance()
         {
             return rest.Value;
         }
 
-        public Position Position
-        {
-            get { return Current.Position; }
-        }
+        public Position Position => Current.Position;
 
         private TokenStream LazyAdvance(IEnumerator<Token> enumerator)
         {

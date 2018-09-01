@@ -1,6 +1,6 @@
 namespace Parsley.Primitives
 {
-    internal class TokenByLiteralParser : Parser<Token>
+    internal class TokenByLiteralParser : IParser<Token>
     {
         private readonly string expectation;
 

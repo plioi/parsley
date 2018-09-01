@@ -9,43 +9,33 @@
     {
         protected void InferGrammarRuleNames()
         {
-            var grammarRules =
+            var ruleNames =
                 GetType()
                     .GetRuntimeFields()
-                    .Where(rule =>
-                           rule.FieldType.GetTypeInfo().IsGenericType &&
-                           rule.FieldType.GetGenericTypeDefinition() == typeof (GrammarRule<>));
+                    .Where(grammarRuleField => grammarRuleField.FieldType.BaseType == typeof(GrammarRule))
+                    .Select(grammarRuleField => new { Rule = (GrammarRule)grammarRuleField.GetValue(this), grammarRuleField.Name })
+                    .Where(ruleName => ruleName.Rule != null);
 
-            foreach (var rule in grammarRules)
+            foreach (var ruleName in ruleNames)
             {
-                var value = rule.GetValue(this);
-                if (value != null)
-                {
-                    var nameProperty = value.GetType().GetRuntimeProperty("Name");
-                    var name = nameProperty.GetValue(value, null);
-
-                    if (name as string == null)
-                        nameProperty.SetValue(value, rule.Name, null);
-                }
+                if (ruleName.Rule.Name == null)
+                    ruleName.Rule.Name = ruleName.Name;
             }
         }
 
-        public static Parser<T> Fail<T>()
+        public static IParser<T> Fail<T>()
         {
             return new FailingParser<T>();
         }
 
-        public static Parser<Token> EndOfInput
-        {
-            get { return Token(TokenKind.EndOfInput); }
-        }
+        public static IParser<Token> EndOfInput => Token(TokenKind.EndOfInput);
 
-        public static Parser<Token> Token(TokenKind kind)
+        public static IParser<Token> Token(TokenKind kind)
         {
             return new TokenByKindParser(kind);
         }
 
-        public static Parser<Token> Token(string expectation)
+        public static IParser<Token> Token(string expectation)
         {
             return new TokenByLiteralParser(expectation);
         }
@@ -56,7 +46,7 @@
         /// end of the sequence, p must fail without consuming input, otherwise the
         /// sequence will fail with the error reported by p.
         /// </summary>
-        public static Parser<IEnumerable<T>> ZeroOrMore<T>(Parser<T> item)
+        public static IParser<IEnumerable<T>> ZeroOrMore<T>(IParser<T> item)
         {
             return new ZeroOrMoreParser<T>(item);
         }
@@ -64,7 +54,7 @@
         /// <summary>
         /// OneOrMore(p) behaves like ZeroOrMore(p), except that p must succeed at least one time.
         /// </summary>
-        public static Parser<IEnumerable<T>> OneOrMore<T>(Parser<T> item)
+        public static IParser<IEnumerable<T>> OneOrMore<T>(IParser<T> item)
         {
             return from first in item
                    from rest in ZeroOrMore(item)
@@ -75,7 +65,7 @@
         /// ZeroOrMore(p, s) parses zero or more occurrences of p separated by occurrences of s,
         /// returning the list of values returned by successful applications of p.
         /// </summary>
-        public static Parser<IEnumerable<T>> ZeroOrMore<T, S>(Parser<T> item, Parser<S> separator)
+        public static IParser<IEnumerable<T>> ZeroOrMore<T, S>(IParser<T> item, IParser<S> separator)
         {
             return Choice(OneOrMore(item, separator), Zero<T>());
         }
@@ -83,7 +73,7 @@
         /// <summary>
         /// OneOrMore(p, s) behaves like ZeroOrMore(p, s), except that p must succeed at least one time.
         /// </summary>
-        public static Parser<IEnumerable<T>> OneOrMore<T, S>(Parser<T> item, Parser<S> separator)
+        public static IParser<IEnumerable<T>> OneOrMore<T, S>(IParser<T> item, IParser<S> separator)
         {
             return from first in item
                    from rest in ZeroOrMore(from sep in separator
@@ -96,9 +86,9 @@
         /// Between(left, goal, right) parses its arguments in order.  If all three
         /// parsers succeed, the result of the goal parser is returned.
         /// </summary>
-        public static Parser<TGoal> Between<TLeft, TGoal, TRight>(Parser<TLeft> left, 
-                                                                  Parser<TGoal> goal, 
-                                                                  Parser<TRight> right)
+        public static IParser<TGoal> Between<TLeft, TGoal, TRight>(IParser<TLeft> left, 
+                                                                  IParser<TGoal> goal, 
+                                                                  IParser<TRight> right)
         {
             return from L in left
                    from G in goal
@@ -110,7 +100,7 @@
         /// Optional(p) is equivalent to p whenever p succeeds or when p fails after consuming input.
         /// If p fails without consuming input, Optional(p) succeeds.
         /// </summary>
-        public static Parser<T> Optional<T>(Parser<T> parser)
+        public static IParser<T> Optional<T>(IParser<T> parser)
         {
             var nothing = default(T).SucceedWithThisValue();
             return Choice(parser, nothing);
@@ -121,7 +111,7 @@
         /// that it hasn't consumed any input when an error occurs. This combinator
         /// is used whenever arbitrary look ahead is needed.
         /// </summary>
-        public static Parser<T> Attempt<T>(Parser<T> parse)
+        public static IParser<T> Attempt<T>(IParser<T> parse)
         {
             return new AttemptParser<T>(parse);
         }
@@ -144,7 +134,7 @@
         /// implementation of the parser combinators and the generation
         /// of good error messages.
         /// </summary>
-        public static Parser<T> Choice<T>(params Parser<T>[] parsers)
+        public static IParser<T> Choice<T>(params IParser<T>[] parsers)
         {
             if (parsers.Length == 0)
                 return Fail<T>();
@@ -157,7 +147,7 @@
         /// When parser p does not consume any input, Label(p, e) is the same
         /// as p, except any messages are replaced with expectation e.
         /// </summary>
-        public static Parser<T> Label<T>(Parser<T> parser, string expectation)
+        public static IParser<T> Label<T>(IParser<T> parser, string expectation)
         {
             return new LabeledParser<T>(parser, expectation);
         }
@@ -170,7 +160,7 @@
                 yield return item;
         }
 
-        private static Parser<IEnumerable<T>> Zero<T>()
+        private static IParser<IEnumerable<T>> Zero<T>()
         {
             return Enumerable.Empty<T>().SucceedWithThisValue();
         }

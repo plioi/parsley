@@ -3,11 +3,11 @@ namespace Parsley.Primitives
     using System;
     using System.Collections.Generic;
 
-    internal class ZeroOrMoreParser<T> : Parser<IEnumerable<T>>
+    internal class ZeroOrMoreParser<T> : IParser<IEnumerable<T>>
     {
-        private readonly Parser<T> item;
+        private readonly IParser<T> item;
 
-        public ZeroOrMoreParser(Parser<T> item)
+        public ZeroOrMoreParser(IParser<T> item)
         {
             this.item = item;
         }

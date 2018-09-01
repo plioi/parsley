@@ -41,10 +41,7 @@
             return new Text(input, newIndex, newLineNumber);
         }
 
-        public bool EndOfInput
-        {
-            get { return index >= input.Length; }
-        }
+        public bool EndOfInput => index >= input.Length;
 
         public MatchResult Match(TokenRegex regex)
         {
@@ -78,10 +75,7 @@
             }
         }
 
-        public Position Position
-        {
-            get { return new Position(line, Column); }
-        }
+        public Position Position => new Position(line, Column);
 
         public override string ToString()
         {

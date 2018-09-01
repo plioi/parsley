@@ -41,7 +41,7 @@
             AssertTokenLiteralsEqual(expectedLiteral, actual.Literal);
         }
 
-        public static Reply<T> FailsToParse<T>(this Parser<T> parser, IEnumerable<Token> tokens)
+        public static Reply<T> FailsToParse<T>(this IParser<T> parser, IEnumerable<Token> tokens)
         {
             var reply = parser.Parse(new TokenStream(tokens));
             
@@ -70,12 +70,12 @@
             return reply;
         }
 
-        public static Reply<T> PartiallyParses<T>(this Parser<T> parser, IEnumerable<Token> tokens)
+        public static Reply<T> PartiallyParses<T>(this IParser<T> parser, IEnumerable<Token> tokens)
         {
             return parser.Parse(new TokenStream(tokens)).Succeeds();
         }
 
-        public static Reply<T> Parses<T>(this Parser<T> parser, IEnumerable<Token> tokens)
+        public static Reply<T> Parses<T>(this IParser<T> parser, IEnumerable<Token> tokens)
         {
             return parser.Parse(new TokenStream(tokens)).Succeeds().AtEndOfInput();
         }
@@ -108,8 +108,8 @@
             Action raiseError = () =>
             {
                 throw new AssertionException("Parse resulted in unexpected remaining unparsed tokens.",
-                                             String.Join(", ", expectedLiterals),
-                                             String.Join(", ", actualLiterals));
+                                             string.Join(", ", expectedLiterals),
+                                             string.Join(", ", actualLiterals));
             };
 
             if (actualLiterals.Count != expectedLiterals.Length)
