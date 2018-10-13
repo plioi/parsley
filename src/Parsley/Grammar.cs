@@ -90,10 +90,10 @@
                                                                   IParser<TGoal> goal, 
                                                                   IParser<TRight> right)
         {
-            return from L in left
-                   from G in goal
-                   from R in right
-                   select G;
+            return from l in left
+                   from g in goal
+                   from r in right
+                   select g;
         }
 
         /// <summary>
@@ -150,6 +150,12 @@
         public static IParser<T> Label<T>(IParser<T> parser, string expectation)
         {
             return new LabeledParser<T>(parser, expectation);
+        }
+
+        public static IParser<T> Constant<T>(TokenKind kind, T constant)
+        {
+            return from _ in Token(kind)
+                select constant;
         }
 
         private static IEnumerable<T> List<T>(T first, IEnumerable<T> rest)

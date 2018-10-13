@@ -16,22 +16,18 @@
         static readonly GrammarRule<object[]> Array = new GrammarRule<object[]>();
         static readonly GrammarRule<KeyValuePair<string, object>> Pair = new GrammarRule<KeyValuePair<string, object>>();
         static readonly GrammarRule<Dictionary<string, object>> Dictionary = new GrammarRule<Dictionary<string, object>>();
-
-        static readonly GrammarRule<object> JsonValue = new GrammarRule<object>
-        {
-            Rule = Choice(True, False, Null, Number, Quotation, Dictionary, Array)
-        };
+        static readonly GrammarRule<object> JsonValue = new GrammarRule<object>();
 
         static JsonGrammar()
         {
             True.Rule =
-                Constant(JsonLexer.@true, true);
+                Constant<object>(JsonLexer.@true, true);
 
             False.Rule =
-                Constant(JsonLexer.@false, false);
+                Constant<object>(JsonLexer.@false, false);
 
             Null.Rule =
-                Constant(JsonLexer.@null, null);
+                Constant<object>(JsonLexer.@null, null);
 
             Number.Rule =
                 from number in Token(JsonLexer.Number)
@@ -58,14 +54,8 @@
             JsonValue.Rule = Choice(True, False, Null, Number, Quotation, Dictionary, Array);
 
             Json.Rule = from jsonValue in JsonValue
-                        from end in EndOfInput
-                        select jsonValue;
-        }
-
-        static IParser<object> Constant(TokenKind kind, object constant)
-        {
-            return from _ in Token(kind)
-                   select constant;
+                from end in EndOfInput
+                select jsonValue;
         }
 
         static string Unescape(string quotation)

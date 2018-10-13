@@ -81,7 +81,8 @@
             token.ShouldBeNull();
 
             Action notJustLetters = () => new Keyword(" oops ");
-            notJustLetters.ShouldThrow<ArgumentException>("Keywords may only contain letters.\r\nParameter name: word");
+
+            notJustLetters.ShouldThrow<ArgumentException>("Keywords may only contain letters.\r\nParameter name: keyword");
         }
 
         [Fact]

@@ -30,16 +30,5 @@
             unnamed.Name.ShouldBeNull();
             named.Name.ShouldBe("Named");
         }
-
-        [Fact]
-        public void ProvidesAdviceWhenRuleIsUsedBeforeBeingInitialized()
-        {
-            var tokens = new CharLexer().Tokenize("123").ToArray();
-            var numeric = new GrammarRule<string>();
-            var alpha = new GrammarRule<string>("Alpha");
-
-            numeric.FailsToParse(tokens).WithMessage("(1, 1): An anonymous GrammarRule has not been initialized.  Try setting the Rule property.");
-            alpha.FailsToParse(tokens).WithMessage("(1, 1): GrammarRule 'Alpha' has not been initialized.  Try setting the Rule property.");
-        }
     }
 }

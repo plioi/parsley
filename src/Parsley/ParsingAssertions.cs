@@ -105,19 +105,17 @@
                 stream = stream.Advance();
             }
 
-            Action raiseError = () =>
+            void RaiseError()
             {
-                throw new AssertionException("Parse resulted in unexpected remaining unparsed tokens.",
-                                             string.Join(", ", expectedLiterals),
-                                             string.Join(", ", actualLiterals));
-            };
+                throw new AssertionException("Parse resulted in unexpected remaining unparsed tokens.", string.Join(", ", expectedLiterals), string.Join(", ", actualLiterals));
+            }
 
             if (actualLiterals.Count != expectedLiterals.Length)
-                raiseError();
+                RaiseError();
 
             for (int i = 0; i < actualLiterals.Count; i++)
                 if (actualLiterals[i] != expectedLiterals[i])
-                    raiseError();
+                    RaiseError();
 
             return reply;
         }
