@@ -4,8 +4,8 @@
 
     public class TokenRegex
     {
-        private readonly string pattern;
-        private readonly Regex regex;
+        private readonly string _pattern;
+        private readonly Regex _regex;
 
         public TokenRegex(string pattern, params RegexOptions[] regexOptions)
         {
@@ -14,15 +14,15 @@
             foreach (var additionalOption in regexOptions)
                 options |= additionalOption;
 
-            this.pattern = pattern;
-            regex = new Regex(@"\G(
+            _pattern = pattern;
+            _regex = new Regex(@"\G(
                                        " + pattern + @"
                                        )", options);
         }
 
         public MatchResult Match(string input, int index)
         {
-            var match = regex.Match(input, index);
+            var match = _regex.Match(input, index);
 
             if (match.Success)
                 return MatchResult.Succeed(match.Value);
@@ -32,7 +32,7 @@
 
         public override string ToString()
         {
-            return pattern;
+            return _pattern;
         }
     }
 }

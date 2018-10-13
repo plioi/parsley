@@ -9,13 +9,10 @@
         public static readonly TokenKind EndOfInput = new Empty("end of input");
         public static readonly TokenKind Unknown = new Pattern("Unknown", @".+");
 
-        private readonly string name;
-        private readonly bool skippable;
-
         protected TokenKind(string name, bool skippable = false)
         {
-            this.name = name;
-            this.skippable = skippable;
+            this.Name = name;
+            Skippable = skippable;
         }
 
         public bool TryMatch(Text text, out Token token)
@@ -34,19 +31,19 @@
 
         protected abstract MatchResult Match(Text text);
 
-        public string Name => name;
+        public string Name { get; }
 
-        public bool Skippable => skippable;
+        public bool Skippable { get; }
 
         public override string ToString()
         {
-            return name;
+            return Name;
         }
     }
 
     public class Pattern : TokenKind
     {
-        private readonly TokenRegex regex;
+        private readonly TokenRegex _regex;
 
         public Pattern(string name, string pattern, params RegexOptions[] regexOptions)
             : this(name, pattern, false, regexOptions)
@@ -56,40 +53,40 @@
         public Pattern(string name, string pattern, bool skippable, params RegexOptions[] regexOptions)
             : base(name, skippable)
         {
-            regex = new TokenRegex(pattern, regexOptions);
+            _regex = new TokenRegex(pattern, regexOptions);
         }
 
         protected override MatchResult Match(Text text)
         {
-            return text.Match(regex);
+            return text.Match(_regex);
         }
     }
 
     public class Keyword : Pattern
     {
-        public Keyword(string word)
-            : base(word, word + @"\b")
+        public Keyword(string keyword)
+            : base(keyword, keyword + @"\b")
         {
-            if (word.Cast<char>().Any(ch => !char.IsLetter(ch)))
-                throw new ArgumentException("Keywords may only contain letters.", "word");
+            if (keyword.Any(ch => !char.IsLetter(ch)))
+                throw new ArgumentException("Keywords may only contain letters.", nameof(keyword));
         }
     }
 
     public class Operator : TokenKind
     {
-        private readonly string symbol;
+        private readonly string _symbol;
 
         public Operator(string symbol)
             : base(symbol)
         {
-            this.symbol = symbol;
+            _symbol = symbol;
         }
 
         protected override MatchResult Match(Text text)
         {
-            var peek = text.Peek(symbol.Length);
+            var peek = text.Peek(_symbol.Length);
 
-            if (peek == symbol)
+            if (peek == _symbol)
                 return MatchResult.Succeed(peek);
 
             return MatchResult.Fail;

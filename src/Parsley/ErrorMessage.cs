@@ -12,24 +12,6 @@
             => new BacktrackErrorMessage(position, errors);
     }
 
-    public class UndefinedGrammarRuleErrorMessage : ErrorMessage
-    {
-        private readonly string grammarRuleName;
-
-        internal UndefinedGrammarRuleErrorMessage(string grammarRuleName)
-        {
-            this.grammarRuleName = grammarRuleName;
-        }
-
-        public override string ToString()
-        {
-            if (grammarRuleName == null)
-                return "An anonymous GrammarRule has not been initialized.  Try setting the Rule property.";
-
-            return $"GrammarRule '{grammarRuleName}' has not been initialized.  Try setting the Rule property.";
-        }
-    }
-
     public class UnknownErrorMessage : ErrorMessage
     {
         internal UnknownErrorMessage() { }
