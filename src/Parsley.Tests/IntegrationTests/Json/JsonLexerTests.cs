@@ -22,14 +22,14 @@ namespace Parsley.Tests.IntegrationTests.Json
         [Fact]
         public void RecognizesKeywords()
         {
-            Tokenize("null").Single().ShouldBe(JsonLexer.@null, "null");
-            Tokenize("true").Single().ShouldBe(JsonLexer.@true, "true");
-            Tokenize("false").Single().ShouldBe(JsonLexer.@false, "false");
+            Tokenize("null").Single().ShouldBe(JsonLexer.Null, "null");
+            Tokenize("true").Single().ShouldBe(JsonLexer.True, "true");
+            Tokenize("false").Single().ShouldBe(JsonLexer.False, "false");
 
             Tokenize("null true false")
-                .ShouldList(t => t.ShouldBe(JsonLexer.@null, "null", 1, 1),
-                    t => t.ShouldBe(JsonLexer.@true, "true", 1, 6),
-                    t => t.ShouldBe(JsonLexer.@false, "false", 1, 11));
+                .ShouldList(t => t.ShouldBe(JsonLexer.Null, "null", 1, 1),
+                    t => t.ShouldBe(JsonLexer.True, "true", 1, 6),
+                    t => t.ShouldBe(JsonLexer.False, "false", 1, 11));
         }
 
         [Fact]

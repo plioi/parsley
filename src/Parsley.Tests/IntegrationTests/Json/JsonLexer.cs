@@ -4,15 +4,16 @@ namespace Parsley.Tests.IntegrationTests.Json
     {
         public JsonLexer()
             : base(Whitespace,
-                   @null, @true, @false,
+                   Null, True, False,
                    Comma, OpenArray, CloseArray, OpenDictionary, CloseDictionary, Colon,
-                   Number, Quotation) { }
+                   Number, Quotation)
+        {}
 
         static readonly TokenKind Whitespace = new Pattern("whitespace", @"\s+", skippable: true);
         
-        public static readonly Keyword @null = new Keyword("null");
-        public static readonly Keyword @true = new Keyword("true");
-        public static readonly Keyword @false = new Keyword("false");
+        public static readonly Keyword Null = new Keyword("null");
+        public static readonly Keyword True = new Keyword("true");
+        public static readonly Keyword False = new Keyword("false");
         public static readonly Operator Comma = new Operator(",");
         public static readonly Operator OpenArray = new Operator("[");
         public static readonly Operator CloseArray = new Operator("]");

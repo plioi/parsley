@@ -1,26 +1,34 @@
+using System;
+
 namespace Parsley.Primitives
 {
     internal class ChoiceParser<T> : IParser<T>
     {
-        private readonly IParser<T>[] parsers;
+        private readonly IParser<T>[] _parsers;
 
         public ChoiceParser(IParser<T>[] parsers)
         {
-            this.parsers = parsers;
+            if (parsers == null)
+                throw new ArgumentNullException(nameof(parsers));
+
+            if (parsers.Length == 0)
+                throw new ArgumentOutOfRangeException(nameof(parsers), "There should be at least one parser.");
+
+            _parsers = parsers;
         }
 
         public Reply<T> Parse(TokenStream tokens)
         {
             var start = tokens.Position;
-            var reply = parsers[0].Parse(tokens);
+            var reply = _parsers[0].Parse(tokens);
             var newPosition = reply.UnparsedTokens.Position;
 
             var errors = ErrorMessageList.Empty;
             var i = 1;
-            while (!reply.Success && (start == newPosition) && i < parsers.Length)
+            while (!reply.Success && (start == newPosition) && i < _parsers.Length)
             {
                 errors = errors.Merge(reply.ErrorMessages);
-                reply = parsers[i].Parse(tokens);
+                reply = _parsers[i].Parse(tokens);
                 newPosition = reply.UnparsedTokens.Position;
                 i++;
             }
