@@ -21,13 +21,13 @@
         static JsonGrammar()
         {
             True.Rule =
-                Constant<object>(JsonLexer.@true, true);
+                Constant<object>(JsonLexer.True, true);
 
             False.Rule =
-                Constant<object>(JsonLexer.@false, false);
+                Constant<object>(JsonLexer.False, false);
 
             Null.Rule =
-                Constant<object>(JsonLexer.@null, null);
+                Constant<object>(JsonLexer.Null, null);
 
             Number.Rule =
                 from number in Token(JsonLexer.Number)

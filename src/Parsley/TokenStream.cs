@@ -5,37 +5,36 @@
 
     public class TokenStream
     {
-        private readonly Token current;
-        private readonly Lazy<TokenStream> rest;
+        private readonly Lazy<TokenStream> _rest;
 
         public TokenStream(IEnumerable<Token> tokens)
         {
             var enumerator = tokens.GetEnumerator();
 
-            current = enumerator.MoveNext()
+            Current = enumerator.MoveNext()
                           ? enumerator.Current
                           : new Token(TokenKind.EndOfInput, new Position(1, 1), "");
 
-            rest = new Lazy<TokenStream>(() => LazyAdvance(enumerator));
+            _rest = new Lazy<TokenStream>(() => LazyAdvance(enumerator));
         }
 
         private TokenStream(Token current, IEnumerator<Token> enumerator)
         {
-            this.current = current;
-            rest = new Lazy<TokenStream>(() => LazyAdvance(enumerator));
+            Current = current;
+            _rest = new Lazy<TokenStream>(() => LazyAdvance(enumerator));
         }
 
         private TokenStream(Token current)
         {
-            this.current = current;
-            rest = new Lazy<TokenStream>(() => this);
+            Current = current;
+            _rest = new Lazy<TokenStream>(() => this);
         }
 
-        public Token Current => current;
+        public Token Current { get; }
 
         public TokenStream Advance()
         {
-            return rest.Value;
+            return _rest.Value;
         }
 
         public Position Position => Current.Position;

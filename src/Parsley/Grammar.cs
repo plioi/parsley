@@ -1,10 +1,10 @@
-﻿namespace Parsley
-{
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-    using Primitives;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Parsley.Primitives;
 
+namespace Parsley
+{
     public abstract class Grammar
     {
         protected void InferGrammarRuleNames()
@@ -136,9 +136,6 @@
         /// </summary>
         public static IParser<T> Choice<T>(params IParser<T>[] parsers)
         {
-            if (parsers.Length == 0)
-                return Fail<T>();
-
             return new ChoiceParser<T>(parsers);
         }
 

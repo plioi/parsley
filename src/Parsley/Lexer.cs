@@ -5,15 +5,15 @@ namespace Parsley
 
     public class Lexer
     {
-        private readonly List<TokenKind> kinds;
+        private readonly List<TokenKind> _kinds;
 
         public Lexer(params TokenKind[] kinds)
         {
-            this.kinds = kinds.ToList();
-            this.kinds.Add(TokenKind.Unknown);
+            _kinds = kinds.ToList();
+            _kinds.Add(TokenKind.Unknown);
         }
 
-        public IEnumerable<Token> Tokenize(string input)
+        public virtual IEnumerable<Token> Tokenize(string input)
         {
             var text = new Text(input);
             while (!text.EndOfInput)
@@ -42,7 +42,7 @@ namespace Parsley
         private Token GetToken(Text text)
         {
             Token token;
-            foreach (var kind in kinds)
+            foreach (var kind in _kinds)
                 if (kind.TryMatch(text, out token))
                     return token;
 

@@ -237,7 +237,16 @@
         [Fact]
         public void ChoosingBetweenZeroAlternativesAlwaysFails()
         {
-            Choice<string>().FailsToParse(Tokenize("ABC")).LeavingUnparsedTokens("A", "B", "C");
+            try
+            {
+                Choice<string>().Parse(new TokenStream(Tokenize("ABC")));
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return;
+            }
+
+            throw new Exception("Should've thrown an ArgumentOutOfRangeException");
         }
 
         [Fact]
@@ -300,10 +309,8 @@
             reply.ErrorMessages.ToString().ShouldBe("A expected");
         }
 
-        static readonly IParser<Token> NeverExecuted = new LambdaParser<Token>(tokens =>
-        {
-            throw new Exception("Parser 'NeverExecuted' should not have been executed.");
-        });
+        static readonly IParser<Token> NeverExecuted = new LambdaParser<Token>(
+            tokens => throw new Exception("Parser 'NeverExecuted' should not have been executed."));
     }
 
     public class GrammarRuleNameInferenceTests : Grammar

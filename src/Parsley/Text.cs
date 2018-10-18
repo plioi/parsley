@@ -36,7 +36,7 @@
                 return this;
 
             int newIndex = index + characters;
-            int newLineNumber = line + Peek(characters).Cast<char>().Count(ch => ch == '\n');
+            int newLineNumber = line + Peek(characters).Count(ch => ch == '\n');
             
             return new Text(input, newIndex, newLineNumber);
         }
