@@ -1,55 +1,23 @@
+using System;
+
 namespace Parsley
 {
-    using System;
-
     public static class ParserQuery
     {
         /// <summary>
-        /// Converts any value into a parser that always succeeds with the given value in its reply.
-        /// </summary>
-        /// <remarks>
-        /// In monadic terms, this is the 'Unit' function.
-        /// </remarks>
-        /// <typeparam name="T">The type of the value to treat as a parse result.</typeparam>
-        /// <param name="value">The value to treat as a parse result.</param>
-        public static IParser<T> SucceedWithThisValue<T>(this T value)
-        {
-            return new LambdaParser<T>(tokens => new Parsed<T>(value, tokens));
-        }
-
-        /// <summary>
         /// Allows LINQ syntax to construct a new parser from a simpler parser, using a single 'from' clause.
         /// </summary>
-        public static IParser<U> Select<T, U>(this IParser<T> parser, Func<T, U> constructResult)
+        public static IParser<TResult> Select<TInterim, TResult>(this IParser<TInterim> parser, Func<TInterim, TResult> resultContinuation)
         {
-            return parser.Bind(t => constructResult(t).SucceedWithThisValue());
+            return new MonadicBindParser<TInterim, TResult>(parser, resultContinuation);
         }
 
         /// <summary>
         /// Allows LINQ syntax to contruct a new parser from an ordered sequence of simpler parsers, using multiple 'from' clauses.
         /// </summary>
-        public static IParser<V> SelectMany<T, U, V>(this IParser<T> parser, Func<T, IParser<U>> k, Func<T, U, V> s)
+        public static IParser<TResult> SelectMany<T1, T2, TResult>(this IParser<T1> parser, Func<T1, IParser<T2>> value1ToParser2Continuation, Func<T1, T2, TResult> resultContinuation)
         {
-            return parser.Bind(x => k(x).Bind(y => s(x, y).SucceedWithThisValue()));
-        }
-
-        /// <summary>
-        /// Extend a parser such that, after executing, the remaining input is processed by the next parser in the chain.
-        /// </summary>
-        /// <remarks>
-        /// In monadic terms, this is the 'Bind' function.
-        /// </remarks>
-        private static IParser<U> Bind<T, U>(this IParser<T> parser, Func<T, IParser<U>> constructNextParser)
-        {
-            return new LambdaParser<U>(tokens =>
-            {
-                var reply = parser.Parse(tokens);
-
-                if (reply.Success)
-                    return constructNextParser(reply.Value).Parse(reply.UnparsedTokens);
-
-                return new Error<U>(reply.UnparsedTokens, reply.ErrorMessages);
-            });
+            return new MonadicBindParser<T1, T2, TResult>(parser, value1ToParser2Continuation, resultContinuation);
         }
     }
 }

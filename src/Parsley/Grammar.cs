@@ -65,9 +65,9 @@ namespace Parsley
         /// ZeroOrMore(p, s) parses zero or more occurrences of p separated by occurrences of s,
         /// returning the list of values returned by successful applications of p.
         /// </summary>
-        public static IParser<IEnumerable<T>> ZeroOrMore<T, S>(IParser<T> item, IParser<S> separator)
+        public static IParser<IEnumerable<TItem>> ZeroOrMore<TItem, TSeparator>(IParser<TItem> item, IParser<TSeparator> separator)
         {
-            return Choice(OneOrMore(item, separator), Zero<T>());
+            return Choice(OneOrMore(item, separator), new MonadicUnitParser<IEnumerable<TItem>>(Enumerable.Empty<TItem>()));
         }
 
         /// <summary>
@@ -102,8 +102,7 @@ namespace Parsley
         /// </summary>
         public static IParser<T> Optional<T>(IParser<T> parser)
         {
-            var nothing = default(T).SucceedWithThisValue();
-            return Choice(parser, nothing);
+            return Choice(parser, new MonadicUnitParser<T>(default(T)));
         }
 
         /// <summary>
@@ -161,11 +160,6 @@ namespace Parsley
 
             foreach (T item in rest)
                 yield return item;
-        }
-
-        private static IParser<IEnumerable<T>> Zero<T>()
-        {
-            return Enumerable.Empty<T>().SucceedWithThisValue();
         }
     }
 }
