@@ -2,19 +2,24 @@ namespace Parsley.Primitives
 {
     internal class TokenByKindParser : IParser<Token>
     {
-        private readonly TokenKind kind;
+        private readonly TokenKind _kind;
 
         public TokenByKindParser(TokenKind kind)
         {
-            this.kind = kind;
+            _kind = kind;
         }
 
         public Reply<Token> Parse(TokenStream tokens)
         {
-            if (tokens.Current.Kind == kind)
+            if (tokens.Current.Kind == _kind)
                 return new Parsed<Token>(tokens.Current, tokens.Advance());
 
-            return new Error<Token>(tokens, ErrorMessage.Expected(kind.Name));
+            return new Error<Token>(tokens, ErrorMessage.Expected(_kind.Name));
+        }
+
+        public override string ToString()
+        {
+            return $"<token {_kind}>";
         }
     }
 }

@@ -14,7 +14,7 @@
         [Fact]
         public void CanBuildParserWhichSimulatesSuccessfulParsingOfGivenValueWithoutConsumingInput()
         {
-            var parser = 1.SucceedWithThisValue();
+            var parser = new MonadicUnitParser<int>(1);
 
             parser.PartiallyParses(Tokenize("input")).LeavingUnparsedTokens("i", "n", "p", "u", "t").WithValue(1);
         }
@@ -40,25 +40,25 @@
         }
 
         [Fact]
-        public void PropogatesErrorsWithoutRunningRemainingParsers()
+        public void PropagatesErrorsWithoutRunningRemainingParsers()
         {
-            IParser<string> Fail = Grammar.Fail<string>();
+            IParser<string> fail = Grammar.Fail<string>();
 
             var tokens = Tokenize("xy").ToArray();
 
-            (from _ in Fail
+            (from _ in fail
              from x in Next
              from y in Next
              select Tuple.Create(x, y)).FailsToParse(tokens).LeavingUnparsedTokens("x", "y");
 
             (from x in Next
-             from _ in Fail
+             from _ in fail
              from y in Next
              select Tuple.Create(x, y)).FailsToParse(tokens).LeavingUnparsedTokens("y");
 
             (from x in Next
              from y in Next
-             from _ in Fail
+             from _ in fail
              select Tuple.Create(x, y)).FailsToParse(tokens).AtEndOfInput();
         }
     }
