@@ -11,9 +11,6 @@
 
         private readonly T _value;
 
-        public override string ToString()
-        {
-            return $"<unit {_value}>";
-        }
+        public override string ToString() => $"<unit {_value}>";
     }
 }

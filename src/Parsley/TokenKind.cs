@@ -1,17 +1,17 @@
-﻿namespace Parsley
-{
-    using System;
-    using System.Linq;
-    using System.Text.RegularExpressions;
+﻿using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 
+namespace Parsley
+{
     public abstract class TokenKind
     {
         public static readonly TokenKind EndOfInput = new Empty("end of input");
-        public static readonly TokenKind Unknown = new Pattern("Unknown", @".+");
+        public static readonly TokenKind Unknown = new Pattern("unknown", @".+");
 
         protected TokenKind(string name, bool skippable = false)
         {
-            this.Name = name;
+            Name = name;
             Skippable = skippable;
         }
 
