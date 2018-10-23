@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Parsley.Primitives;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Parsley.Primitives;
 
 namespace Parsley
 {
@@ -150,8 +150,7 @@ namespace Parsley
 
         public static IParser<T> Constant<T>(TokenKind kind, T constant)
         {
-            return from _ in Token(kind)
-                select constant;
+            return new ConstantParser<T>(kind, constant);
         }
 
         private static IEnumerable<T> List<T>(T first, IEnumerable<T> rest)

@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace Parsley.Primitives
 {
@@ -35,13 +36,24 @@ namespace Parsley.Primitives
             if (start == newPosition)
             {
                 errors = errors.Merge(reply.ErrorMessages);
+
                 if (reply.Success)
-                    reply = new Parsed<T>(reply.Value, reply.UnparsedTokens, errors);
-                else
-                    reply = new Error<T>(reply.UnparsedTokens, errors);
+                    return new Parsed<T>(reply.Value, reply.UnparsedTokens, errors);
+
+                return new Error<T>(reply.UnparsedTokens, errors);
             }
 
             return reply;
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder("<choice ");
+
+            sb.AppendJoin<IParser<T>>(" or ", _parsers);
+            sb.Append(">");
+
+            return sb.ToString();
         }
     }
 }
