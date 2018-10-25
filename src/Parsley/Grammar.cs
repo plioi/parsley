@@ -48,7 +48,7 @@ namespace Parsley
         /// </summary>
         public static IParser<IEnumerable<T>> ZeroOrMore<T>(IParser<T> item)
         {
-            return new ZeroOrMoreParser<T>(item);
+            return new QuantifiedParser<T, T>(item, QuantificationRule.AtLeastNTimes, 0);
         }
 
         /// <summary>
@@ -56,9 +56,7 @@ namespace Parsley
         /// </summary>
         public static IParser<IEnumerable<T>> OneOrMore<T>(IParser<T> item)
         {
-            return from first in item
-                   from rest in ZeroOrMore(item)
-                   select List(first, rest);
+            return new QuantifiedParser<T, T>(item, QuantificationRule.AtLeastNTimes, 1);
         }
 
         /// <summary>
@@ -67,7 +65,7 @@ namespace Parsley
         /// </summary>
         public static IParser<IEnumerable<TItem>> ZeroOrMore<TItem, TSeparator>(IParser<TItem> item, IParser<TSeparator> separator)
         {
-            return Choice(OneOrMore(item, separator), new MonadicUnitParser<IEnumerable<TItem>>(Enumerable.Empty<TItem>()));
+            return new QuantifiedParser<TItem, TSeparator>(item, QuantificationRule.AtLeastNTimes, 0, -1, separator);
         }
 
         /// <summary>
@@ -75,11 +73,7 @@ namespace Parsley
         /// </summary>
         public static IParser<IEnumerable<T>> OneOrMore<T, S>(IParser<T> item, IParser<S> separator)
         {
-            return from first in item
-                   from rest in ZeroOrMore(from sep in separator
-                                           from next in item
-                                           select next)
-                   select List(first, rest);
+            return new QuantifiedParser<T, S>(item, QuantificationRule.AtLeastNTimes, 1, -1, separator);
         }
 
         /// <summary>
@@ -151,14 +145,6 @@ namespace Parsley
         public static IParser<T> Constant<T>(TokenKind kind, T constant)
         {
             return new ConstantParser<T>(kind, constant);
-        }
-
-        private static IEnumerable<T> List<T>(T first, IEnumerable<T> rest)
-        {
-            yield return first;
-
-            foreach (T item in rest)
-                yield return item;
         }
     }
 }

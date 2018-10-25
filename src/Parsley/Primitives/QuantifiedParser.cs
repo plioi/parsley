@@ -3,48 +3,54 @@ using System.Collections.Generic;
 
 namespace Parsley.Primitives
 {
-    public class QuantifiedParser<T> : IParser<IEnumerable<T>>
+    public enum QuantificationRule
     {
-        private readonly IParser<T> _item;
-        private readonly Rule _rule;
+        AtLeastNTimes,
+        ExactlyNTimes,
+        FromNtoMTimes,
+        NoMoreThanNTimes
+    }
+
+    public class QuantifiedParser<TItem, TSeparator> : IParser<IEnumerable<TItem>>
+    {
+        private readonly IParser<TItem> _item;
+        private readonly QuantificationRule _quantificationRule;
         private readonly int _nTimes;
         private readonly int _mTimes;
-
-        public enum Rule
-        {
-            AtLeastNTimes,
-            ExactlyNTimes,
-            FromNtoMTimes,
-            NoMoreThanNTimes
-        }
-
-        public QuantifiedParser(IParser<T> item, Rule rule, int nTimes, int mTimes = -1)
+        private readonly IParser<TSeparator> _itemSeparator;
+        
+        public QuantifiedParser(IParser<TItem> item, QuantificationRule quantificationRule, int nTimes, int mTimes = -1, IParser<TSeparator> itemSeparator = null)
         {
             _item = item ?? throw new ArgumentNullException(nameof(item));
 
             if (nTimes < 0)
                 throw new ArgumentOutOfRangeException(nameof(nTimes), "should be non-negative");
 
-            switch (rule)
+            switch (quantificationRule)
             {
-                case Rule.ExactlyNTimes:
-                case Rule.AtLeastNTimes:
+                case QuantificationRule.ExactlyNTimes:
+                case QuantificationRule.AtLeastNTimes:
                     if (mTimes != -1)
                         throw new ArgumentOutOfRangeException(nameof(mTimes), "this value is not used in this mode and should be left -1");
                     break;
-                case Rule.FromNtoMTimes:
+                case QuantificationRule.FromNtoMTimes:
                     if (nTimes > mTimes)
                         throw new ArgumentOutOfRangeException(nameof(mTimes), "should not be less than nTimes");
                     break;
             }
 
-            _rule = rule;
+            if (item == itemSeparator)
+                throw new ArgumentException("parser for the item and the separator cannot be the same one", nameof(itemSeparator));
+
+            _quantificationRule = quantificationRule;
 
             _nTimes = nTimes;
             _mTimes = mTimes;
+
+            _itemSeparator = itemSeparator;
         }
 
-        public Reply<IEnumerable<T>> Parse(TokenStream tokens)
+        public Reply<IEnumerable<TItem>> Parse(TokenStream tokens)
         {
             var oldPosition = tokens.Position;
             var reply = _item.Parse(tokens);
@@ -52,95 +58,122 @@ namespace Parsley.Primitives
 
             var times = 0;
 
-            var list = new List<T>();
+            var list = new List<TItem>();
+
+            var separatorParserIsPresent = _itemSeparator != null;
+            var separatorWasParsed = false;
 
             while (reply.Success)
             {
                 if (oldPosition == newPosition)
-                    throw new Exception($"Parser encountered a potential infinite loop at position {newPosition}.");
+                    throw new Exception($"Item parser {_item} encountered a potential infinite loop at position {newPosition}.");
 
                 ++times;
 
-                switch (_rule)
+                switch (_quantificationRule)
                 {
-                    case Rule.ExactlyNTimes:
+                    case QuantificationRule.ExactlyNTimes:
                         if (times > _nTimes)
-                            return new Error<IEnumerable<T>>(
+                            return new Error<IEnumerable<TItem>>(
                                 reply.UnparsedTokens,
-                                ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occured more than exactly {_nTimes} times"))
+                                ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occurring no more than exactly {_nTimes} times"))
                             );
                         break;
-                    case Rule.FromNtoMTimes:
+                    case QuantificationRule.FromNtoMTimes:
                         if (times > _mTimes)
-                            return new Error<IEnumerable<T>>(
+                            return new Error<IEnumerable<TItem>>(
                                 reply.UnparsedTokens,
-                                ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occured more than between {_nTimes} and {_mTimes} times"))
+                                ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occurring no more than between {_nTimes} and {_mTimes} times"))
                             );
                         break;
-                    case Rule.NoMoreThanNTimes:
+                    case QuantificationRule.NoMoreThanNTimes:
                         if (times > _nTimes)
-                            return new Error<IEnumerable<T>>(
+                            return new Error<IEnumerable<TItem>>(
                                 reply.UnparsedTokens,
-                                ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occured more than {_nTimes} times"))
+                                ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occurring no more than {_nTimes} times"))
                             );
                         break;
                 }
 
                 list.Add(reply.Value);
 
+                var unparsedTokens = reply.UnparsedTokens;
+
+                if (separatorParserIsPresent)
+                {
+                    var o = newPosition;
+
+                    var r = _itemSeparator.Parse(reply.UnparsedTokens);
+
+                    unparsedTokens = r.UnparsedTokens;
+                    newPosition = unparsedTokens.Position;
+
+                    if (r.Success && o == newPosition)
+                        throw new Exception($"Separator parser {_itemSeparator} encountered a potential infinite loop at position {newPosition}.");
+
+                    separatorWasParsed = r.Success;
+                }
+
                 oldPosition = newPosition;
-                reply = _item.Parse(reply.UnparsedTokens);
+
+                if (separatorParserIsPresent && !separatorWasParsed)
+                    break;
+
+                reply = _item.Parse(unparsedTokens);
+
+                if (!reply.Success && separatorParserIsPresent)
+                    return new Error<IEnumerable<TItem>>(reply.UnparsedTokens, reply.ErrorMessages);
+
                 newPosition = reply.UnparsedTokens.Position;
             }
 
-            //The item parser finally failed.
+            //The item parser finally failed or the separator parser parsed the next separator, but there was no item following it
+            if (oldPosition != newPosition || separatorParserIsPresent && separatorWasParsed)
+                return new Error<IEnumerable<TItem>>(reply.UnparsedTokens, reply.ErrorMessages);
 
-            if (oldPosition != newPosition)
-                return new Error<IEnumerable<T>>(reply.UnparsedTokens, reply.ErrorMessages);
-
-            switch (_rule)
+            switch (_quantificationRule)
             {
-                case Rule.AtLeastNTimes:
+                case QuantificationRule.AtLeastNTimes:
                     if (times < _nTimes)
-                        return new Error<IEnumerable<T>>(
+                        return new Error<IEnumerable<TItem>>(
                             reply.UnparsedTokens,
-                            ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occured less than at least {_nTimes} times"))
+                            ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occurring {_nTimes}+ times"))
                         );
                     break;
-                case Rule.ExactlyNTimes:
+                case QuantificationRule.ExactlyNTimes:
                     if (times != _nTimes)
-                        return new Error<IEnumerable<T>>(
+                        return new Error<IEnumerable<TItem>>(
                             reply.UnparsedTokens,
                             ErrorMessageList.Empty.With(ErrorMessage.Expected(
-                                string.Format("{0} occured {1} than exactly {2} times", _item, times > _nTimes ? "more" : "less", _nTimes))
+                                string.Format("{0} occurring no {1} than exactly {2} times", _item, times > _nTimes ? "more" : "less", _nTimes))
                         ));
                     break;
-                case Rule.FromNtoMTimes:
+                case QuantificationRule.FromNtoMTimes:
                     if (times < _nTimes)
-                        return new Error<IEnumerable<T>>(
+                        return new Error<IEnumerable<TItem>>(
                             reply.UnparsedTokens,
-                            ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occured less than between {_nTimes} and {_mTimes} times"))
+                            ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occurring no less than between {_nTimes} and {_mTimes} times"))
                         );
                     break;
-                case Rule.NoMoreThanNTimes:
+                case QuantificationRule.NoMoreThanNTimes:
                     if (times > _nTimes)
-                        return new Error<IEnumerable<T>>(
+                        return new Error<IEnumerable<TItem>>(
                             reply.UnparsedTokens,
-                            ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occured more than {_nTimes} times"))
+                            ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occurring no more than {_nTimes} times"))
                         );
                     break;
             }
 
-            return new Parsed<IEnumerable<T>>(list, reply.UnparsedTokens, reply.ErrorMessages);
+            return new Parsed<IEnumerable<TItem>>(list, reply.UnparsedTokens, reply.ErrorMessages);
         }
 
         public override string ToString()
         {
-            switch (_rule)
+            switch (_quantificationRule)
             {
-                case Rule.FromNtoMTimes:
+                case QuantificationRule.FromNtoMTimes:
                     return $"<[{_nTimes} to {_mTimes} times {_item}>";
-                case Rule.ExactlyNTimes:
+                case QuantificationRule.ExactlyNTimes:
                     return $"<[{_nTimes} times {_item}>";
             }
 
