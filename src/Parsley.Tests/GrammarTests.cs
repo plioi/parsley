@@ -1,4 +1,6 @@
-﻿namespace Parsley.Tests
+﻿using Parsley.Primitives;
+
+namespace Parsley.Tests
 {
     using System;
     using System.Collections.Generic;
@@ -94,9 +96,9 @@
                 .LeavingUnparsedTokens("!")
                 .WithMessage("(1, 6): B expected");
 
-            IParser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
+            IParser<Token> succeedWithoutConsuming = new TokenByLiteralParser("");
             Action infiniteLoop = () => ZeroOrMore(succeedWithoutConsuming).Parse(new TokenStream(Tokenize("")));
-            infiniteLoop.ShouldThrow<Exception>("Parser encountered a potential infinite loop at position (1, 1).");
+            infiniteLoop.ShouldThrow<Exception>("Item parser <literal > encountered a potential infinite loop at position (1, 1).");
         }
 
         [Fact]
@@ -104,7 +106,7 @@
         {
             var parser = OneOrMore(AB);
 
-            parser.FailsToParse(Tokenize("")).AtEndOfInput().WithMessage("(1, 1): A expected");
+            parser.FailsToParse(Tokenize("")).AtEndOfInput().WithMessage("(1, 1): <bind <literal A> to a => value(Parsley.Tests.GrammarTests).B to (a, b) => new Token(null, a.Position, (a.Literal + b.Literal))> occurring 1+ times expected");
 
             parser.PartiallyParses(Tokenize("AB!"))
                 .LeavingUnparsedTokens("!")
@@ -120,7 +122,7 @@
 
             IParser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
             Action infiniteLoop = () => OneOrMore(succeedWithoutConsuming).Parse(new TokenStream(Tokenize("")));
-            infiniteLoop.ShouldThrow<Exception>("Parser encountered a potential infinite loop at position (1, 1).");
+            infiniteLoop.ShouldThrow<Exception>("Item parser Parsley.LambdaParser`1[Parsley.Token] encountered a potential infinite loop at position (1, 1).");
         }
 
         [Fact]
@@ -141,7 +143,7 @@
         {
             var parser = OneOrMore(AB, COMMA);
 
-            parser.FailsToParse(Tokenize("")).AtEndOfInput().WithMessage("(1, 1): A expected");
+            parser.FailsToParse(Tokenize("")).AtEndOfInput().WithMessage("(1, 1): <bind <literal A> to a => value(Parsley.Tests.GrammarTests).B to (a, b) => new Token(null, a.Position, (a.Literal + b.Literal))> occurring 1+ times expected");
             parser.Parses(Tokenize("AB")).WithValue(Literals("AB"));
             parser.Parses(Tokenize("AB,AB")).WithValue(Literals("AB", "AB"));
             parser.Parses(Tokenize("AB,AB,AB")).WithValue(Literals("AB", "AB", "AB"));

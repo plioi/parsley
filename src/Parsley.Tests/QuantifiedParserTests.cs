@@ -17,7 +17,7 @@ namespace Parsley.Tests
         {
             for (int n = 0; n < 10; ++n)
             {
-                var parser = new QuantifiedParser<Token>(AsteriscParser, QuantifiedParser<Token>.Rule.AtLeastNTimes, n);
+                var parser = new QuantifiedParser<Token, Token>(AsteriscParser, QuantificationRule.AtLeastNTimes, n);
 
                 for (var i = n; i < n + 15; ++i)
                     parser.Parse(AsteriscStream(i)).Success.ShouldBe(true);
@@ -32,7 +32,7 @@ namespace Parsley.Tests
         {
             for (int n = 0; n < 15; ++n)
             {
-                var parser = new QuantifiedParser<Token>(AsteriscParser, QuantifiedParser<Token>.Rule.ExactlyNTimes, n);
+                var parser = new QuantifiedParser<Token, Token>(AsteriscParser, QuantificationRule.ExactlyNTimes, n);
 
                 for (var i = n - 1; i >= 0; --i)
                     parser.Parse(AsteriscStream(i)).Success.ShouldBe(false);
@@ -50,7 +50,7 @@ namespace Parsley.Tests
             for (int n = 0; n < 15; ++n)
                 for (int m = n; m < n + 10; ++m)
                 {
-                    var parser = new QuantifiedParser<Token>(AsteriscParser, QuantifiedParser<Token>.Rule.FromNtoMTimes, n, m);
+                    var parser = new QuantifiedParser<Token, Token>(AsteriscParser, QuantificationRule.FromNtoMTimes, n, m);
 
                     for (var i = 0; i < n; ++i)
                         parser.Parse(AsteriscStream(i)).Success.ShouldBe(false);
@@ -68,7 +68,7 @@ namespace Parsley.Tests
         {
             for (int n = 0; n < 15; ++n)
             {
-                var parser = new QuantifiedParser<Token>(AsteriscParser, QuantifiedParser<Token>.Rule.NoMoreThanNTimes, n);
+                var parser = new QuantifiedParser<Token, Token>(AsteriscParser, QuantificationRule.NoMoreThanNTimes, n);
 
                 for (var i = 0; i <= n ; ++i)
                     parser.Parse(AsteriscStream(i)).Success.ShouldBe(true);
