@@ -94,9 +94,9 @@ namespace Parsley
         /// Optional(p) is equivalent to p whenever p succeeds or when p fails after consuming input.
         /// If p fails without consuming input, Optional(p) succeeds.
         /// </summary>
-        public static IParser<T> Optional<T>(IParser<T> parser)
+        public static IParser<T> Optional<T>(IParser<T> parser, T defaultValue = default(T))
         {
-            return Choice(parser, new MonadicUnitParser<T>(default(T)));
+            return new OptionalParser<T>(parser, defaultValue);
         }
 
         /// <summary>

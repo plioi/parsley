@@ -171,6 +171,10 @@ namespace Parsley.Tests
             Optional(AB).PartiallyParses(Tokenize("AB.")).LeavingUnparsedTokens(".").WithValue(Literal("AB"));
             Optional(AB).PartiallyParses(Tokenize(".")).LeavingUnparsedTokens(".").WithValue(token => token.ShouldBeNull());
             Optional(AB).FailsToParse(Tokenize("AC.")).LeavingUnparsedTokens("C", ".").WithMessage("(1, 2): B expected");
+
+            var defaultToken = new Token(null, new Position(0,0), "nothing in here");
+
+            Optional(AB, defaultToken).PartiallyParses(Tokenize(".")).LeavingUnparsedTokens(".").WithValue(defaultToken);
         }
 
         [Fact]
