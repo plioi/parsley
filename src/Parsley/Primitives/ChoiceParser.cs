@@ -48,9 +48,9 @@ namespace Parsley.Primitives
 
         public override string ToString()
         {
-            var sb = new StringBuilder("<choice ");
+            var sb = new StringBuilder("<CHOICE ");
 
-            sb.AppendJoin<IParser<T>>(" or ", _parsers);
+            sb.AppendJoin<IParser<T>>(" OR ", _parsers);
             sb.Append(">");
 
             return sb.ToString();

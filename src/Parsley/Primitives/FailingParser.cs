@@ -7,7 +7,7 @@ namespace Parsley.Primitives
 
         public override string ToString()
         {
-            return "<fail>";
+            return "<FAIL>";
         }
     }
 }

@@ -2,17 +2,17 @@ namespace Parsley.Primitives
 {
     internal class AttemptParser<T> : IParser<T>
     {
-        private readonly IParser<T> parse;
+        private readonly IParser<T> _parse;
 
         public AttemptParser(IParser<T> parse)
         {
-            this.parse = parse;
+            _parse = parse;
         }
 
         public Reply<T> Parse(TokenStream tokens)
         {
             var start = tokens.Position;
-            var reply = parse.Parse(tokens);
+            var reply = _parse.Parse(tokens);
             var newPosition = reply.UnparsedTokens.Position;
 
             if (reply.Success || start == newPosition)

@@ -172,12 +172,12 @@ namespace Parsley.Primitives
             switch (_quantificationRule)
             {
                 case QuantificationRule.FromNtoMTimes:
-                    return $"<[{_nTimes} to {_mTimes} times {_item}>";
+                    return $"<[{_nTimes} TO {_mTimes} TIMES {_item}>";
                 case QuantificationRule.ExactlyNTimes:
-                    return $"<[{_nTimes} times {_item}>";
+                    return $"<[{_nTimes} TIMES {_item}>";
             }
 
-            return $"<{_nTimes}+ times {_item}>";
+            return $"<{_nTimes}+ TIMES {_item}>";
         }
     }
 }

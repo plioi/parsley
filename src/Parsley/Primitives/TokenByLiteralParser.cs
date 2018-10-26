@@ -19,7 +19,7 @@ namespace Parsley.Primitives
 
         public override string ToString()
         {
-            return $"<literal {_expectation}>";
+            return $"<L {_expectation}>";
         }
     }
 }

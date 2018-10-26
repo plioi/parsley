@@ -84,10 +84,7 @@ namespace Parsley
                                                                   IParser<TGoal> goal, 
                                                                   IParser<TRight> right)
         {
-            return from l in left
-                   from g in goal
-                   from r in right
-                   select g;
+            return new BetweenParser<TLeft, TGoal, TRight>(left, goal, right);
         }
 
         /// <summary>

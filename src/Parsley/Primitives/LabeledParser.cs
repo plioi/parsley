@@ -26,6 +26,6 @@
             return new Error<T>(reply.UnparsedTokens, _errors);
         }
 
-        public override string ToString() => $"<label {_parser} with {_errors}";
+        public override string ToString() => $"<LABEL {_parser} WITH {_errors}";
     }
 }

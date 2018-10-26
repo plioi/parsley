@@ -13,6 +13,11 @@
             ErrorMessages = errors;
         }
 
+        public static Error<T> From<TOther>(Reply<TOther> r)
+        {
+            return new Error<T>(r.UnparsedTokens, r.ErrorMessages);
+        }
+
         public T Value
         {
             get
