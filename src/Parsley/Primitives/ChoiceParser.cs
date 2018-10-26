@@ -20,20 +20,20 @@ namespace Parsley.Primitives
 
         public Reply<T> Parse(TokenStream tokens)
         {
-            var start = tokens.Position;
+            var oldPosition = tokens.Position;
             var reply = _parsers[0].Parse(tokens);
             var newPosition = reply.UnparsedTokens.Position;
 
             var errors = ErrorMessageList.Empty;
             var i = 1;
-            while (!reply.Success && (start == newPosition) && i < _parsers.Length)
+            while (!reply.Success && (oldPosition == newPosition) && i < _parsers.Length)
             {
                 errors = errors.Merge(reply.ErrorMessages);
                 reply = _parsers[i].Parse(tokens);
                 newPosition = reply.UnparsedTokens.Position;
                 i++;
             }
-            if (start == newPosition)
+            if (oldPosition == newPosition)
             {
                 errors = errors.Merge(reply.ErrorMessages);
 
