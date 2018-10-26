@@ -19,6 +19,6 @@
             return new Error<T>(tokens, ErrorMessage.Expected(_kind.Name));
         }
 
-        public override string ToString() => $"<const {_kind} returns {_value}>";
+        public override string ToString() => $"<CONST {_kind} RETURNS {_value}>";
     }
 }
