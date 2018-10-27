@@ -15,5 +15,7 @@ namespace Parsley
         {
             return _parse(tokens);
         }
+
+        public string Name => ToString();
     }
 }

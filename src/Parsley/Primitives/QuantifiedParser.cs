@@ -5,37 +5,37 @@ namespace Parsley.Primitives
 {
     public enum QuantificationRule
     {
-        AtLeastNTimes,
-        ExactlyNTimes,
-        FromNtoMTimes,
-        NoMoreThanNTimes
+        NOrMore,
+        ExactlyN,
+        NOrLess,
+        NtoM
     }
 
     public class QuantifiedParser<TItem, TSeparator> : IParser<IEnumerable<TItem>>
     {
         private readonly IParser<TItem> _item;
         private readonly QuantificationRule _quantificationRule;
-        private readonly int _nTimes;
-        private readonly int _mTimes;
+        private readonly int _n;
+        private readonly int _m;
         private readonly IParser<TSeparator> _itemSeparator;
         
-        public QuantifiedParser(IParser<TItem> item, QuantificationRule quantificationRule, int nTimes, int mTimes = -1, IParser<TSeparator> itemSeparator = null)
+        public QuantifiedParser(IParser<TItem> item, QuantificationRule quantificationRule, int n, int m = -1, IParser<TSeparator> itemSeparator = null)
         {
             _item = item ?? throw new ArgumentNullException(nameof(item));
 
-            if (nTimes < 0)
-                throw new ArgumentOutOfRangeException(nameof(nTimes), "should be non-negative");
+            if (n < 0)
+                throw new ArgumentOutOfRangeException(nameof(n), "should be non-negative");
 
             switch (quantificationRule)
             {
-                case QuantificationRule.ExactlyNTimes:
-                case QuantificationRule.AtLeastNTimes:
-                    if (mTimes != -1)
-                        throw new ArgumentOutOfRangeException(nameof(mTimes), "this value is not used in this mode and should be left -1");
+                case QuantificationRule.ExactlyN:
+                case QuantificationRule.NOrMore:
+                    if (m != -1)
+                        throw new ArgumentOutOfRangeException(nameof(m), "this value is not used in this mode and should be left -1");
                     break;
-                case QuantificationRule.FromNtoMTimes:
-                    if (nTimes > mTimes)
-                        throw new ArgumentOutOfRangeException(nameof(mTimes), "should not be less than nTimes");
+                case QuantificationRule.NtoM:
+                    if (n > m)
+                        throw new ArgumentOutOfRangeException(nameof(m), "should not be less than nTimes");
                     break;
             }
 
@@ -44,8 +44,8 @@ namespace Parsley.Primitives
 
             _quantificationRule = quantificationRule;
 
-            _nTimes = nTimes;
-            _mTimes = mTimes;
+            _n = n;
+            _m = m;
 
             _itemSeparator = itemSeparator;
         }
@@ -72,25 +72,25 @@ namespace Parsley.Primitives
 
                 switch (_quantificationRule)
                 {
-                    case QuantificationRule.ExactlyNTimes:
-                        if (times > _nTimes)
+                    case QuantificationRule.ExactlyN:
+                        if (times > _n)
                             return new Error<IEnumerable<TItem>>(
                                 reply.UnparsedTokens,
-                                ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occurring no more than exactly {_nTimes} times"))
+                                ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occurring no more than exactly {_n} times"))
                             );
                         break;
-                    case QuantificationRule.FromNtoMTimes:
-                        if (times > _mTimes)
+                    case QuantificationRule.NtoM:
+                        if (times > _m)
                             return new Error<IEnumerable<TItem>>(
                                 reply.UnparsedTokens,
-                                ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occurring no more than between {_nTimes} and {_mTimes} times"))
+                                ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occurring no more than between {_n} and {_m} times"))
                             );
                         break;
-                    case QuantificationRule.NoMoreThanNTimes:
-                        if (times > _nTimes)
+                    case QuantificationRule.NOrLess:
+                        if (times > _n)
                             return new Error<IEnumerable<TItem>>(
                                 reply.UnparsedTokens,
-                                ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occurring no more than {_nTimes} times"))
+                                ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occurring no more than {_n} times"))
                             );
                         break;
                 }
@@ -133,33 +133,33 @@ namespace Parsley.Primitives
 
             switch (_quantificationRule)
             {
-                case QuantificationRule.AtLeastNTimes:
-                    if (times < _nTimes)
+                case QuantificationRule.NOrMore:
+                    if (times < _n)
                         return new Error<IEnumerable<TItem>>(
                             reply.UnparsedTokens,
-                            ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occurring {_nTimes}+ times"))
+                            ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occurring {_n}+ times"))
                         );
                     break;
-                case QuantificationRule.ExactlyNTimes:
-                    if (times != _nTimes)
+                case QuantificationRule.ExactlyN:
+                    if (times != _n)
                         return new Error<IEnumerable<TItem>>(
                             reply.UnparsedTokens,
                             ErrorMessageList.Empty.With(ErrorMessage.Expected(
-                                string.Format("{0} occurring no {1} than exactly {2} times", _item, times > _nTimes ? "more" : "less", _nTimes))
+                                string.Format("{0} occurring no {1} than exactly {2} times", _item, times > _n ? "more" : "less", _n))
                         ));
                     break;
-                case QuantificationRule.FromNtoMTimes:
-                    if (times < _nTimes)
+                case QuantificationRule.NtoM:
+                    if (times < _n)
                         return new Error<IEnumerable<TItem>>(
                             reply.UnparsedTokens,
-                            ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occurring no less than between {_nTimes} and {_mTimes} times"))
+                            ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occurring no less than between {_n} and {_m} times"))
                         );
                     break;
-                case QuantificationRule.NoMoreThanNTimes:
-                    if (times > _nTimes)
+                case QuantificationRule.NOrLess:
+                    if (times > _n)
                         return new Error<IEnumerable<TItem>>(
                             reply.UnparsedTokens,
-                            ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occurring no more than {_nTimes} times"))
+                            ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occurring no more than {_n} times"))
                         );
                     break;
             }
@@ -171,13 +171,15 @@ namespace Parsley.Primitives
         {
             switch (_quantificationRule)
             {
-                case QuantificationRule.FromNtoMTimes:
-                    return $"<[{_nTimes} TO {_mTimes} TIMES {_item}>";
-                case QuantificationRule.ExactlyNTimes:
-                    return $"<[{_nTimes} TIMES {_item}>";
+                case QuantificationRule.NtoM:
+                    return $"<[{_n} TO {_m} TIMES {_item.Name}>";
+                case QuantificationRule.ExactlyN:
+                    return $"<[{_n} TIMES {_item.Name}>";
             }
 
-            return $"<{_nTimes}+ TIMES {_item}>";
+            return $"<{_n}+ TIMES {_item.Name}>";
         }
+
+        public string Name => ToString();
     }
 }

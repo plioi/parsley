@@ -17,9 +17,7 @@ namespace Parsley.Primitives
             return new Error<Token>(tokens, ErrorMessage.Expected(_expectation));
         }
 
-        public override string ToString()
-        {
-            return $"<L {_expectation}>";
-        }
+        public override string ToString() => $"<L {_expectation}>";
+        public string Name => ToString();
     }
 }

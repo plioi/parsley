@@ -23,9 +23,9 @@ namespace Parsley
             }
         }
 
-        public static IParser<T> Fail<T>()
+        public static IParser<TItem> Fail<TItem>()
         {
-            return new FailingParser<T>();
+            return new FailingParser<TItem>();
         }
 
         public static IParser<Token> EndOfInput => Token(TokenKind.EndOfInput);
@@ -46,17 +46,17 @@ namespace Parsley
         /// end of the sequence, p must fail without consuming input, otherwise the
         /// sequence will fail with the error reported by p.
         /// </summary>
-        public static IParser<IEnumerable<T>> ZeroOrMore<T>(IParser<T> item)
+        public static IParser<IEnumerable<TItem>> ZeroOrMore<TItem>(IParser<TItem> item)
         {
-            return new QuantifiedParser<T, T>(item, QuantificationRule.AtLeastNTimes, 0);
+            return new QuantifiedParser<TItem, TItem>(item, QuantificationRule.NOrMore, 0);
         }
 
         /// <summary>
         /// OneOrMore(p) behaves like ZeroOrMore(p), except that p must succeed at least one time.
         /// </summary>
-        public static IParser<IEnumerable<T>> OneOrMore<T>(IParser<T> item)
+        public static IParser<IEnumerable<TItem>> OneOrMore<TItem>(IParser<TItem> item)
         {
-            return new QuantifiedParser<T, T>(item, QuantificationRule.AtLeastNTimes, 1);
+            return new QuantifiedParser<TItem, TItem>(item, QuantificationRule.NOrMore, 1);
         }
 
         /// <summary>
@@ -65,35 +65,53 @@ namespace Parsley
         /// </summary>
         public static IParser<IEnumerable<TItem>> ZeroOrMore<TItem, TSeparator>(IParser<TItem> item, IParser<TSeparator> separator)
         {
-            return new QuantifiedParser<TItem, TSeparator>(item, QuantificationRule.AtLeastNTimes, 0, -1, separator);
+            return new QuantifiedParser<TItem, TSeparator>(item, QuantificationRule.NOrMore, 0, -1, separator);
         }
 
         /// <summary>
         /// OneOrMore(p, s) behaves like ZeroOrMore(p, s), except that p must succeed at least one time.
         /// </summary>
-        public static IParser<IEnumerable<T>> OneOrMore<T, S>(IParser<T> item, IParser<S> separator)
+        public static IParser<IEnumerable<TItem>> OneOrMore<TItem, TSeparator>(IParser<TItem> item, IParser<TSeparator> separator)
         {
-            return new QuantifiedParser<T, S>(item, QuantificationRule.AtLeastNTimes, 1, -1, separator);
+            return new QuantifiedParser<TItem, TSeparator>(item, QuantificationRule.NOrMore, 1, -1, separator);
+        }
+
+        public static IParser<IEnumerable<TItem>> NOrMore<TItem, TSeparator>(int n, IParser<TItem> item, IParser<TSeparator> separator)
+        {
+            return new QuantifiedParser<TItem, TSeparator>(item, QuantificationRule.NOrMore, n, -1, separator);
+        }
+
+        public static IParser<IEnumerable<TItem>> NOrLess<TItem, TSeparator>(int n, IParser<TItem> item, IParser<TSeparator> separator)
+        {
+            return new QuantifiedParser<TItem, TSeparator>(item, QuantificationRule.NOrLess, n, -1, separator);
+        }
+
+        public static IParser<IEnumerable<TItem>> NToMTimes<TItem, TSeparator>(int n, int m, IParser<TItem> item, IParser<TSeparator> separator)
+        {
+            return new QuantifiedParser<TItem, TSeparator>(item, QuantificationRule.NtoM, n, m, separator);
+        }
+
+        public static IParser<IEnumerable<TItem>> NTimesExactly<TItem, TSeparator>(int n, IParser<TItem> item, IParser<TSeparator> separator)
+        {
+            return new QuantifiedParser<TItem, TSeparator>(item, QuantificationRule.ExactlyN, n, -1, separator);
         }
 
         /// <summary>
         /// Between(left, goal, right) parses its arguments in order.  If all three
         /// parsers succeed, the result of the goal parser is returned.
         /// </summary>
-        public static IParser<TGoal> Between<TLeft, TGoal, TRight>(IParser<TLeft> left, 
-                                                                  IParser<TGoal> goal, 
-                                                                  IParser<TRight> right)
+        public static IParser<TItem> Between<TLeft, TItem, TRight>(IParser<TLeft> left, IParser<TItem> item, IParser<TRight> right)
         {
-            return new BetweenParser<TLeft, TGoal, TRight>(left, goal, right);
+            return new BetweenParser<TLeft, TItem, TRight>(left, item, right);
         }
 
         /// <summary>
         /// Optional(p) is equivalent to p whenever p succeeds or when p fails after consuming input.
         /// If p fails without consuming input, Optional(p) succeeds.
         /// </summary>
-        public static IParser<T> Optional<T>(IParser<T> parser, T defaultValue = default(T))
+        public static IParser<TItem> Optional<TItem>(IParser<TItem> parser, TItem defaultValue = default(TItem))
         {
-            return new OptionalParser<T>(parser, defaultValue);
+            return new OptionalParser<TItem>(parser, defaultValue);
         }
 
         /// <summary>
@@ -101,9 +119,9 @@ namespace Parsley
         /// that it hasn't consumed any input when an error occurs. This combinator
         /// is used whenever arbitrary look ahead is needed.
         /// </summary>
-        public static IParser<T> Attempt<T>(IParser<T> parse)
+        public static IParser<TItem> Attempt<TItem>(IParser<TItem> parse)
         {
-            return new AttemptParser<T>(parse);
+            return new AttemptParser<TItem>(parse);
         }
 
         /// <summary>
@@ -124,9 +142,9 @@ namespace Parsley
         /// implementation of the parser combinators and the generation
         /// of good error messages.
         /// </summary>
-        public static IParser<T> Choice<T>(params IParser<T>[] parsers)
+        public static IParser<TItem> Choice<TItem>(params IParser<TItem>[] parsers)
         {
-            return new ChoiceParser<T>(parsers);
+            return new ChoiceParser<TItem>(parsers);
         }
 
         /// <summary>
@@ -134,14 +152,14 @@ namespace Parsley
         /// When parser p does not consume any input, Label(p, e) is the same
         /// as p, except any messages are replaced with expectation e.
         /// </summary>
-        public static IParser<T> Label<T>(IParser<T> parser, string expectation)
+        public static IParser<TItem> Label<TItem>(IParser<TItem> parser, string expectation)
         {
-            return new LabeledParser<T>(parser, expectation);
+            return new LabeledParser<TItem>(parser, expectation);
         }
 
-        public static IParser<T> Constant<T>(TokenKind kind, T constant)
+        public static IParser<TItem> Constant<TItem>(TokenKind kind, TItem constant)
         {
-            return new ConstantParser<T>(kind, constant);
+            return new ConstantParser<TItem>(kind, constant);
         }
     }
 }

@@ -1,9 +1,10 @@
 using System;
+using System.Linq;
 using System.Text;
 
 namespace Parsley.Primitives
 {
-    internal class ChoiceParser<T> : IParser<T>
+    public class ChoiceParser<T> : IParser<T>
     {
         private readonly IParser<T>[] _parsers;
 
@@ -26,7 +27,7 @@ namespace Parsley.Primitives
 
             var errors = ErrorMessageList.Empty;
             var i = 1;
-            while (!reply.Success && (oldPosition == newPosition) && i < _parsers.Length)
+            while (!reply.Success && oldPosition == newPosition && i < _parsers.Length)
             {
                 errors = errors.Merge(reply.ErrorMessages);
                 reply = _parsers[i].Parse(tokens);
@@ -50,10 +51,12 @@ namespace Parsley.Primitives
         {
             var sb = new StringBuilder("<CHOICE ");
 
-            sb.AppendJoin<IParser<T>>(" OR ", _parsers);
+            sb.AppendJoin(" OR ", _parsers.Select(p => p.Name));
             sb.Append(">");
 
             return sb.ToString();
         }
+
+        public string Name => ToString();
     }
 }
