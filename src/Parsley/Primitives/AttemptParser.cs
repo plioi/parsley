@@ -1,6 +1,6 @@
 namespace Parsley.Primitives
 {
-    internal class AttemptParser<T> : IParser<T>
+    public class AttemptParser<T> : IParser<T>
     {
         private readonly IParser<T> _parse;
 
@@ -8,6 +8,8 @@ namespace Parsley.Primitives
         {
             _parse = parse;
         }
+
+        public string Name => $"<ATTEMPT {_parse.Name}>";
 
         public Reply<T> Parse(TokenStream tokens)
         {

@@ -5,9 +5,8 @@ namespace Parsley.Primitives
         public Reply<T> Parse(TokenStream tokens)
             => new Error<T>(tokens, ErrorMessage.Unknown());
 
-        public override string ToString()
-        {
-            return "<FAIL>";
-        }
+        public override string ToString() => "<FAIL>";
+
+        public string Name => ToString();
     }
 }

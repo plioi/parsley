@@ -33,11 +33,13 @@ namespace Parsley.Primitives
 
         public override string ToString()
         {
-            return $"<({_left}|{_item}|{_right})>";
+            return Name;
         }
 
         private readonly IParser<TLeft> _left;
         private readonly IParser<TItem> _item;
         private readonly IParser<TRight> _right;
+
+        public string Name => $"<({_left.Name}|{_item.Name}|{_right.Name})>";
     }
 }

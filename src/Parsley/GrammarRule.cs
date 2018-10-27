@@ -6,7 +6,7 @@ namespace Parsley
     {
         public string Name { get; internal set; }
 
-        protected GrammarRule(string name = "")
+        protected GrammarRule(string name)
         {
             Name = name;
         }
@@ -14,31 +14,37 @@ namespace Parsley
 
     public class GrammarRule<T> : GrammarRule, IParser<T>
     {
-        private Func<TokenStream, Reply<T>> _parse;
+        private IParser<T> _parser;
 
         public GrammarRule(string name = null)
             : base(name)
         {
-            _parse = ParseNotInitialized;
         }
 
         public IParser<T> Rule
         {
+            get => _parser;
+
             set
             {
-                if (_parse != ParseNotInitialized)
-                    throw new InvalidOperationException("Rule is already initialized.");
+                if (_parser != null)
+                    throw new InvalidOperationException($"Rule {Name} is already initialized with {_parser.Name}.");
 
-               _parse = value.Parse;
+                _parser = value ?? throw new ArgumentNullException(nameof(value));
+
+                if (Name == null)
+                    Name = _parser.Name;
             }
         }
 
         public Reply<T> Parse(TokenStream tokens)
         {
-            return _parse(tokens);
+            if (_parser == null)
+                throw new InvalidOperationException($"Rule {Name} is not initialized.");
+
+            return _parser.Parse(tokens);
         }
 
-        private Reply<T> ParseNotInitialized(TokenStream _)
-            => throw new InvalidOperationException($"Rule {Name} is not initialized.");
+        public override string ToString() => Name ?? _parser?.Name;
     }
 }

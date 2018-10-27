@@ -113,5 +113,7 @@
 
             return 0;
         }
+
+        public string Name => ToString();
     }
 }

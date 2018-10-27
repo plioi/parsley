@@ -28,10 +28,8 @@ namespace Parsley
         private readonly Expression<Func<TInterim, TResult>> _resultContinuation;
         private readonly Func<TInterim, TResult> _resultContinuationCompiled;
 
-        public override string ToString()
-        {
-            return $"<bind {_parser} to {_resultContinuation}>";
-        }
+        public override string ToString() => $"<bind {_parser.Name} to {_resultContinuation}>";
+        public string Name => ToString();
     }
 
     public class MonadicBindParser<T1, T2, TResult> : IParser<TResult>
@@ -79,5 +77,6 @@ namespace Parsley
         }
 
         public override string ToString() => $"<bind {_parser1} to {_parser2Continuation} to {_resultContinuation}>";
+        public string Name => ToString();
     }
 }

@@ -25,11 +25,9 @@ namespace Parsley.Primitives
             return reply;
         }
 
-        public override string ToString()
-        {
-            return $"<OPTIONAL {_parser} WITH DEFAULT {_defaultValue}>";
-        }
-
+        public override string ToString() => $"<OPTIONAL {_parser.Name} WITH DEFAULT {_defaultValue}>";
+        public string Name => ToString();
+        
         private readonly IParser<TItem> _parser;
         private readonly TItem _defaultValue;
     }
