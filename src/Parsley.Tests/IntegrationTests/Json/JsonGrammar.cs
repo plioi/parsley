@@ -42,10 +42,7 @@
                 select items.ToArray();
 
             Pair.Rule =
-                from key in Quotation
-                from colon in Token(JsonLexer.Colon)
-                from value in JsonValue
-                select new KeyValuePair<string, object>(key, value);
+                NameValuePair(Quotation, Token(JsonLexer.Colon), JsonValue);
 
             Dictionary.Rule =
                 from pairs in Between(Token(JsonLexer.OpenDictionary), ZeroOrMore(Pair, Token(JsonLexer.Comma)), Token(JsonLexer.CloseDictionary))

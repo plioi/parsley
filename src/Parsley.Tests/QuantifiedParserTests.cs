@@ -13,7 +13,7 @@ namespace Parsley.Tests
         private static readonly IParser<Token> AsteriscParser = Grammar.Token(AsteriscToken);
 
         [Fact]
-        public void AtLeastNTimes()
+        public void NOrMore()
         {
             for (int n = 0; n < 10; ++n)
             {
@@ -28,7 +28,7 @@ namespace Parsley.Tests
         }
 
         [Fact]
-        public void ExactlyNTimes()
+        public void ExactlyN()
         {
             for (int n = 0; n < 15; ++n)
             {
@@ -45,7 +45,7 @@ namespace Parsley.Tests
         }
 
         [Fact]
-        public void FromNtoMTimes()
+        public void NtoM()
         {
             for (int n = 0; n < 15; ++n)
                 for (int m = n; m < n + 10; ++m)
@@ -64,7 +64,7 @@ namespace Parsley.Tests
         }
 
         [Fact]
-        public void NoMoreThanNTimes()
+        public void NOrLess()
         {
             for (int n = 0; n < 15; ++n)
             {
