@@ -1,4 +1,4 @@
-﻿using Parsley.Primitives;
+﻿using Parsley.Parsers;
 
 namespace Parsley.Tests
 {
@@ -122,7 +122,7 @@ namespace Parsley.Tests
 
             IParser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
             Action infiniteLoop = () => OneOrMore(succeedWithoutConsuming).Parse(new TokenStream(Tokenize("")));
-            infiniteLoop.ShouldThrow<Exception>("Item parser Parsley.LambdaParser`1[Parsley.Token] encountered a potential infinite loop at position (1, 1).");
+            infiniteLoop.ShouldThrow<Exception>("Item parser Parsley.Parsers.LambdaParser`1[Parsley.Token] encountered a potential infinite loop at position (1, 1).");
         }
 
         [Fact]

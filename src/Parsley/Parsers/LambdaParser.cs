@@ -1,6 +1,6 @@
 using System;
 
-namespace Parsley
+namespace Parsley.Parsers
 {
     public class LambdaParser<T> : IParser<T>
     {
