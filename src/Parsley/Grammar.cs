@@ -29,14 +29,14 @@ namespace Parsley
         /// end of the sequence, p must fail without consuming input, otherwise the
         /// sequence will fail with the error reported by p.
         /// </summary>
-        public static IParser<IEnumerable<TItem>> ZeroOrMore<TItem>(IParser<TItem> item)
+        public static IParser<IList<TItem>> ZeroOrMore<TItem>(IParser<TItem> item)
 
             => new QuantifiedParser<TItem, TItem>(item, QuantificationRule.NOrMore, 0);
 
         /// <summary>
         /// OneOrMore(p) behaves like ZeroOrMore(p), except that p must succeed at least one time.
         /// </summary>
-        public static IParser<IEnumerable<TItem>> OneOrMore<TItem>(IParser<TItem> item)
+        public static IParser<IList<TItem>> OneOrMore<TItem>(IParser<TItem> item)
 
             => new QuantifiedParser<TItem, TItem>(item, QuantificationRule.NOrMore, 1);
 
@@ -44,30 +44,30 @@ namespace Parsley
         /// ZeroOrMore(p, s) parses zero or more occurrences of p separated by occurrences of s,
         /// returning the list of values returned by successful applications of p.
         /// </summary>
-        public static IParser<IEnumerable<TItem>> ZeroOrMore<TItem, TSeparator>(IParser<TItem> item, IParser<TSeparator> separator)
+        public static IParser<IList<TItem>> ZeroOrMore<TItem, TSeparator>(IParser<TItem> item, IParser<TSeparator> separator)
 
             => new QuantifiedParser<TItem, TSeparator>(item, QuantificationRule.NOrMore, 0, -1, separator);
 
         /// <summary>
         /// OneOrMore(p, s) behaves like ZeroOrMore(p, s), except that p must succeed at least one time.
         /// </summary>
-        public static IParser<IEnumerable<TItem>> OneOrMore<TItem, TSeparator>(IParser<TItem> item, IParser<TSeparator> separator)
+        public static IParser<IList<TItem>> OneOrMore<TItem, TSeparator>(IParser<TItem> item, IParser<TSeparator> separator)
             
             => new QuantifiedParser<TItem, TSeparator>(item, QuantificationRule.NOrMore, 1, -1, separator);
 
-        public static IParser<IEnumerable<TItem>> NOrMore<TItem, TSeparator>(int n, IParser<TItem> item, IParser<TSeparator> separator)
+        public static IParser<IList<TItem>> NOrMore<TItem, TSeparator>(int n, IParser<TItem> item, IParser<TSeparator> separator)
 
             => new QuantifiedParser<TItem, TSeparator>(item, QuantificationRule.NOrMore, n, -1, separator);
 
-        public static IParser<IEnumerable<TItem>> NOrLess<TItem, TSeparator>(int n, IParser<TItem> item, IParser<TSeparator> separator)
+        public static IParser<IList<TItem>> NOrLess<TItem, TSeparator>(int n, IParser<TItem> item, IParser<TSeparator> separator)
 
             => new QuantifiedParser<TItem, TSeparator>(item, QuantificationRule.NOrLess, n, -1, separator);
 
-        public static IParser<IEnumerable<TItem>> NToMTimes<TItem, TSeparator>(int n, int m, IParser<TItem> item, IParser<TSeparator> separator)
+        public static IParser<IList<TItem>> NToMTimes<TItem, TSeparator>(int n, int m, IParser<TItem> item, IParser<TSeparator> separator)
             
             => new QuantifiedParser<TItem, TSeparator>(item, QuantificationRule.NtoM, n, m, separator);
 
-        public static IParser<IEnumerable<TItem>> NTimesExactly<TItem, TSeparator>(int n, IParser<TItem> item, IParser<TSeparator> separator)
+        public static IParser<IList<TItem>> NTimesExactly<TItem, TSeparator>(int n, IParser<TItem> item, IParser<TSeparator> separator)
 
             => new QuantifiedParser<TItem, TSeparator>(item, QuantificationRule.ExactlyN, n, -1, separator);
 

@@ -1,10 +1,9 @@
-﻿namespace Parsley.Tests.IntegrationTests.Json
-{
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
-    using System.Text.RegularExpressions;
+﻿using System.Collections.Generic;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
+namespace Parsley.Tests.IntegrationTests.Json
+{
     public class JsonGrammar : Grammar
     {
         public static readonly GrammarRule<object> Json = new GrammarRule<object>();
@@ -13,7 +12,7 @@
         static readonly GrammarRule<object> Null = new GrammarRule<object>();
         static readonly GrammarRule<object> Number = new GrammarRule<object>();
         static readonly GrammarRule<string> Quotation = new GrammarRule<string>();
-        static readonly GrammarRule<object[]> Array = new GrammarRule<object[]>();
+        static readonly GrammarRule<IList<object>> Array = new GrammarRule<IList<object>>();
         static readonly GrammarRule<KeyValuePair<string, object>> Pair = new GrammarRule<KeyValuePair<string, object>>();
         static readonly GrammarRule<Dictionary<string, object>> Dictionary = new GrammarRule<Dictionary<string, object>>();
         static readonly GrammarRule<object> JsonValue = new GrammarRule<object>();
@@ -38,8 +37,8 @@
                 select Unescape(quotation.Literal);
 
             Array.Rule =
-                from items in Between(Token(JsonLexer.OpenArray), ZeroOrMore(JsonValue, Token(JsonLexer.Comma)), Token(JsonLexer.CloseArray))
-                select items.ToArray();
+                Between(Token(JsonLexer.OpenArray), ZeroOrMore(JsonValue, Token(JsonLexer.Comma)),
+                    Token(JsonLexer.CloseArray));
 
             Pair.Rule =
                 NameValuePair(Quotation, Token(JsonLexer.Colon), JsonValue);

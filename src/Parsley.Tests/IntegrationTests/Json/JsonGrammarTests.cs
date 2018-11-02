@@ -1,7 +1,7 @@
 ﻿namespace Parsley.Tests.IntegrationTests.Json
 {
-    using System.Collections.Generic;
     using Shouldly;
+    using System.Collections.Generic;
     using Xunit;
 
     public class JsonGrammarTests : JsonGrammar
@@ -57,7 +57,7 @@
             var empty = Tokenize("[]");
             var filled = Tokenize("[0, 1, 2]");
 
-            Json.Parses(empty).WithValue(value => ((object[])value).ShouldBeEmpty());
+            Json.Parses(empty).WithValue(value => ((IList<object>)value).ShouldBeEmpty());
 
             Json.Parses(filled).WithValue(value => value.ShouldBe(new[] { 0m, 1m, 2m }));
         }
