@@ -136,6 +136,11 @@ namespace Parsley
 
             => new NameValuePairParser<TName, TDelimiter, TValue>(name, delimiter, value);
 
+        public static IParser<TResult> OccupiesEntireInput<TResult>(IParser<TResult> parser)
+        {
+            return new FollowedByParser<TResult, Token>(parser, EndOfInput);
+        }
+
         protected void InferGrammarRuleNames()
         {
             var ruleNames =

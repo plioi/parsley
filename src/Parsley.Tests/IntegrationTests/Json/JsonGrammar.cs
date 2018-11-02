@@ -29,29 +29,24 @@ namespace Parsley.Tests.IntegrationTests.Json
                 Constant<object>(JsonLexer.Null, null);
 
             Number.Rule =
-                from number in Token(JsonLexer.Number)
-                select (object)decimal.Parse(number.Literal, NumberStyles.Any);
+                Token(JsonLexer.Number).BindTokenLiteral(l => (object)decimal.Parse(l, NumberStyles.Any));
 
             Quotation.Rule =
-                from quotation in Token(JsonLexer.Quotation)
-                select Unescape(quotation.Literal);
+                Token(JsonLexer.Quotation).BindTokenLiteral(Unescape);
 
             Array.Rule =
-                Between(Token(JsonLexer.OpenArray), ZeroOrMore(JsonValue, Token(JsonLexer.Comma)),
-                    Token(JsonLexer.CloseArray));
+                Between(Token(JsonLexer.OpenArray), ZeroOrMore(JsonValue, Token(JsonLexer.Comma)), Token(JsonLexer.CloseArray));
 
             Pair.Rule =
                 NameValuePair(Quotation, Token(JsonLexer.Colon), JsonValue);
 
             Dictionary.Rule =
-                from pairs in Between(Token(JsonLexer.OpenDictionary), ZeroOrMore(Pair, Token(JsonLexer.Comma)), Token(JsonLexer.CloseDictionary))
-                select ToDictionary(pairs);
+                Between(Token(JsonLexer.OpenDictionary), ZeroOrMore(Pair, Token(JsonLexer.Comma)), Token(JsonLexer.CloseDictionary))
+                .Bind(ToDictionary);
 
             JsonValue.Rule = Choice(True, False, Null, Number, Quotation, Dictionary, Array);
 
-            Json.Rule = from jsonValue in JsonValue
-                from end in EndOfInput
-                select jsonValue;
+            Json.Rule = OccupiesEntireInput(JsonValue);
         }
 
         static string Unescape(string quotation)
