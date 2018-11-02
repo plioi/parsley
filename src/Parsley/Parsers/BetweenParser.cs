@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Parsley.Primitives
+namespace Parsley.Parsers
 {
     public class BetweenParser<TLeft, TItem, TRight> : IParser<TItem>
     {

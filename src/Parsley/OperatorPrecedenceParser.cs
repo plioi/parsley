@@ -1,4 +1,6 @@
-﻿namespace Parsley
+﻿using Parsley.Parsers;
+
+namespace Parsley
 {
     using System.Collections.Generic;
 

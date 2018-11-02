@@ -1,10 +1,11 @@
-﻿namespace Parsley.Tests
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Xunit;
+﻿using Parsley.Parsers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Xunit;
 
+namespace Parsley.Tests
+{
     public class ParserQueryTests
     {
         static readonly IParser<string> Next = new LambdaParser<string>(tokens => new Parsed<string>(tokens.Current.Literal, tokens.Advance()));

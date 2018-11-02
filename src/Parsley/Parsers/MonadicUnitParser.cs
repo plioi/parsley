@@ -1,4 +1,4 @@
-﻿namespace Parsley
+﻿namespace Parsley.Parsers
 {
     public class MonadicUnitParser<T> : IParser<T>
     {

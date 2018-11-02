@@ -1,4 +1,4 @@
-﻿namespace Parsley.Primitives
+﻿namespace Parsley.Parsers
 {
     public class ConstantParser<T> : IParser<T>
     {

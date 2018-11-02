@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Text;
 
-namespace Parsley.Primitives
+namespace Parsley.Parsers
 {
     public class ChoiceParser<T> : IParser<T>
     {

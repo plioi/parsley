@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Parsley
+namespace Parsley.Parsers
 {
     public class MonadicBindParser<TInterim, TResult> : IParser<TResult>
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Parsley.Primitives
+namespace Parsley.Parsers
 {
     public class NameValuePairParser<TName, TDelimiter, TValue> : IParser<KeyValuePair<TName, TValue>>
     {

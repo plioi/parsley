@@ -1,4 +1,4 @@
-using Parsley.Primitives;
+using Parsley.Parsers;
 using System;
 
 namespace Parsley
