@@ -204,7 +204,7 @@ namespace Parsley.Tests
             labeled.FailsToParse(Tokenize("A!")).LeavingUnparsedTokens("!").WithMessage("(1, 2): B expected");
 
             //When p succeeds but does not consume input, Label(p) still succeeds but the potential error is included.
-            var succeedWithoutConsuming = new MonadicUnitParser<Token>(new Token(null, null, "$"));
+            var succeedWithoutConsuming = new MonadicUnitParser<Token>(new Token(null, new Position(0, 0), "$"));
             succeedWithoutConsuming
                 .PartiallyParses(Tokenize("!"))
                 .LeavingUnparsedTokens("!")

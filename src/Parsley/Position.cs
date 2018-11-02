@@ -1,6 +1,8 @@
-﻿namespace Parsley
+﻿using System.Collections;
+
+namespace Parsley
 {
-    public class Position : Value<Position>
+    public struct Position
     {
         public int Line { get; }
         public int Column { get; }
@@ -11,14 +13,25 @@
             Column = column;
         }
 
-        protected override object[] ImmutableFields()
+        public override bool Equals(object obj)
         {
-            return new object[] {Line, Column};
+            switch (obj)
+            {
+                case Position p:
+                    return p.Column == Column && p.Line == Line;
+                default:
+                    return false;
+            }
         }
 
-        public override string  ToString()
+        public override int GetHashCode()
         {
-            return $"({Line}, {Column})";
+            return Line ^ Column;
         }
+
+        public static bool operator ==(Position a, Position b) => a.Column == b.Column && a.Line == b.Line;
+        public static bool operator !=(Position a, Position b) => !(a == b);
+
+        public override string ToString() => $"({Line}, {Column})";
     }
 }
