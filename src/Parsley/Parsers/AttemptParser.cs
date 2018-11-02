@@ -1,6 +1,6 @@
 namespace Parsley.Parsers
 {
-    public class AttemptParser<T> : IParser<T>
+    public class AttemptParser<T> : Parser<T>
     {
         private readonly IParser<T> _parse;
 
@@ -9,9 +9,9 @@ namespace Parsley.Parsers
             _parse = parse;
         }
 
-        public string Name => $"<ATTEMPT {_parse.Name}>";
+        protected override string GetName() => $"<ATTEMPT {_parse.Name}>";
 
-        public Reply<T> Parse(TokenStream tokens)
+        public override IReply<T> Parse(TokenStream tokens)
         {
             var start = tokens.Position;
             var reply = _parse.Parse(tokens);

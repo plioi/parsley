@@ -1,16 +1,16 @@
 ﻿using Parsley.Parsers;
+using System.Collections.Generic;
+using static Parsley.Grammar;
 
 namespace Parsley
 {
-    using System.Collections.Generic;
-
     public delegate IParser<T> ExtendParserBuilder<T>(T left);
     public delegate T AtomNodeBuilder<out T>(Token atom);
     public delegate T UnaryNodeBuilder<T>(Token symbol, T operand);
     public delegate T BinaryNodeBuilder<T>(T left, Token symbol, T right);
     public enum Associativity { Left, Right }
 
-    public class OperatorPrecedenceParser<T> : Grammar, IParser<T>
+    public class OperatorPrecedenceParser<T> : Parser<T>
     {
         private readonly IDictionary<TokenKind, IParser<T>> unitParsers;
         private readonly IDictionary<TokenKind, ExtendParserBuilder<T>> extendParsers;
@@ -66,7 +66,7 @@ namespace Parsley
                                                   select createBinaryNode(left, symbol, right));
         }
 
-        public Reply<T> Parse(TokenStream tokens)
+        public override IReply<T> Parse(TokenStream tokens)
         {
             return Parse(tokens, 0);
         }
@@ -76,7 +76,7 @@ namespace Parsley
             return new LambdaParser<T>(tokens => Parse(tokens, precedence));
         }
 
-        private Reply<T> Parse(TokenStream tokens, int precedence)
+        private IReply<T> Parse(TokenStream tokens, int precedence)
         {
             var token = tokens.Current;
 
@@ -116,6 +116,6 @@ namespace Parsley
             return 0;
         }
 
-        public string Name => ToString();
+        protected override string GetName() => "<OPP>";
     }
 }

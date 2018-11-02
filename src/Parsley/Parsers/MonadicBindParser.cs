@@ -2,7 +2,7 @@
 
 namespace Parsley.Parsers
 {
-    public class MonadicBindParser<TInterim, TResult> : IParser<TResult>
+    public class MonadicBindParser<TInterim, TResult> : Parser<TResult>
     {
         public MonadicBindParser(IParser<TInterim> parser, Func<TInterim, TResult> resultContinuation)
         {
@@ -10,7 +10,7 @@ namespace Parsley.Parsers
             _resultContinuation = resultContinuation ?? throw new ArgumentNullException(nameof(resultContinuation));
         }
 
-        Reply<TResult> IParser<TResult>.Parse(TokenStream tokens)
+        public override IReply<TResult> Parse(TokenStream tokens)
         {
             var reply = _parser.Parse(tokens);
 
@@ -22,14 +22,13 @@ namespace Parsley.Parsers
             return new Parsed<TResult>(parsedValue, reply.UnparsedTokens);
         }
 
+        protected override string GetName() => $"<BIND {_parser.Name} TO {typeof(TResult)}>";
+        
         private readonly IParser<TInterim> _parser;
         private readonly Func<TInterim, TResult> _resultContinuation;
-
-        public override string ToString() => $"<BIND {_parser.Name} TO {typeof(TResult)}>";
-        public string Name => ToString();
     }
 
-    public class MonadicBindParser<T1, T2, TResult> : IParser<TResult>
+    public class MonadicBindParser<T1, T2, TResult> : Parser<TResult>
     {
         public MonadicBindParser(IParser<T1> parser1, Func<T1, IParser<T2>> parser2Continuation,
             Func<T1, T2, TResult> resultContinuation)
@@ -40,12 +39,7 @@ namespace Parsley.Parsers
             _resultContinuation = resultContinuation ?? throw new ArgumentNullException(nameof(resultContinuation));
         }
 
-        private readonly IParser<T1> _parser1;
-
-        private readonly Func<T1, IParser<T2>> _parser2Continuation;
-        private readonly Func<T1, T2, TResult> _resultContinuation;
-
-        Reply<TResult> IParser<TResult>.Parse(TokenStream tokens)
+        public override IReply<TResult> Parse(TokenStream tokens)
         {
             var reply1 = _parser1.Parse(tokens);
 
@@ -68,7 +62,11 @@ namespace Parsley.Parsers
             return new Parsed<TResult>(result, reply2.UnparsedTokens);
         }
 
-        public override string ToString() => $"<BIND2 {_parser1} TO {typeof(T1)} TO {typeof(T2)}>";
-        public string Name => ToString();
+        protected override string GetName() => $"<BIND2 {_parser1} TO {typeof(T1)} TO {typeof(T2)}>";
+
+        private readonly IParser<T1> _parser1;
+
+        private readonly Func<T1, IParser<T2>> _parser2Continuation;
+        private readonly Func<T1, T2, TResult> _resultContinuation;
     }
 }

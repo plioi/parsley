@@ -2,7 +2,7 @@
 
 namespace Parsley.Parsers
 {
-    public class FollowedByParser<TResult, TDummy> : IParser<TResult>
+    public class FollowedByParser<TResult, TDummy> : Parser<TResult>
     {
         public FollowedByParser(IParser<TResult> item, IParser<TDummy> following)
         {
@@ -10,9 +10,7 @@ namespace Parsley.Parsers
             _following = following ?? throw new ArgumentNullException(nameof(following));
         }
 
-        public string Name => $"<ITEM {_item.Name} FOLLOWED BY {_following.Name}>";
-
-        public Reply<TResult> Parse(TokenStream tokens)
+        public override IReply<TResult> Parse(TokenStream tokens)
         {
             var item = _item.Parse(tokens);
 
@@ -26,6 +24,8 @@ namespace Parsley.Parsers
 
             return new Parsed<TResult>(item.Value, following.UnparsedTokens, following.ErrorMessages);
         }
+
+        protected override string GetName() => $"<{_item.Name} FOLLOWED BY {_following.Name}>";
 
         private readonly IParser<TResult> _item;
         private readonly IParser<TDummy> _following;

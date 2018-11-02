@@ -2,20 +2,20 @@ using System;
 
 namespace Parsley.Parsers
 {
-    public class LambdaParser<T> : IParser<T>
+    public class LambdaParser<T> : Parser<T>
     {
-        private readonly Func<TokenStream, Reply<T>> _parse;
+        private readonly Func<TokenStream, IReply<T>> _parse;
 
-        public LambdaParser(Func<TokenStream, Reply<T>> parse)
+        public LambdaParser(Func<TokenStream, IReply<T>> parse)
         {
             _parse = parse;
         }
 
-        public Reply<T> Parse(TokenStream tokens)
+        public override IReply<T> Parse(TokenStream tokens)
         {
             return _parse(tokens);
         }
 
-        public string Name => ToString();
+        protected override string GetName() => $"<L {typeof(T)}>";
     }
 }

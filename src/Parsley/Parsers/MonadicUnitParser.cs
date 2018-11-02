@@ -1,17 +1,16 @@
 ﻿namespace Parsley.Parsers
 {
-    public class MonadicUnitParser<T> : IParser<T>
+    public class MonadicUnitParser<T> : Parser<T>
     {
         public MonadicUnitParser(T value)
         {
             _value = value;
         }
 
-        Reply<T> IParser<T>.Parse(TokenStream tokens) => new Parsed<T>(_value, tokens);
+        public override IReply<T> Parse(TokenStream tokens) => new Parsed<T>(_value, tokens);
 
         private readonly T _value;
 
-        public override string ToString() => $"<unit {_value}>";
-        public string Name => ToString();
+        protected override string GetName() => $"<UNIT {_value}>";
     }
 }

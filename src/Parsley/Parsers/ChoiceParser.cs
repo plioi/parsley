@@ -4,10 +4,8 @@ using System.Text;
 
 namespace Parsley.Parsers
 {
-    public class ChoiceParser<T> : IParser<T>
+    public class ChoiceParser<T> : Parser<T>
     {
-        private readonly IParser<T>[] _parsers;
-
         public ChoiceParser(IParser<T>[] parsers)
         {
             if (parsers == null)
@@ -19,7 +17,7 @@ namespace Parsley.Parsers
             _parsers = parsers;
         }
 
-        public Reply<T> Parse(TokenStream tokens)
+        public override IReply<T> Parse(TokenStream tokens)
         {
             var oldPosition = tokens.Position;
             var reply = _parsers[0].Parse(tokens);
@@ -47,7 +45,7 @@ namespace Parsley.Parsers
             return reply;
         }
 
-        public override string ToString()
+        protected override string GetName()
         {
             var sb = new StringBuilder("<CHOICE ");
 
@@ -57,6 +55,6 @@ namespace Parsley.Parsers
             return sb.ToString();
         }
 
-        public string Name => ToString();
+        private readonly IParser<T>[] _parsers;
     }
 }

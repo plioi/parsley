@@ -146,14 +146,14 @@ namespace Parsley
             var ruleNames =
                 GetType()
                     .GetRuntimeFields()
-                    .Where(grammarRuleField => grammarRuleField.FieldType.BaseType == typeof(GrammarRule))
-                    .Select(grammarRuleField => new { Rule = (GrammarRule)grammarRuleField.GetValue(this), grammarRuleField.Name })
+                    .Where(grammarRuleField => grammarRuleField.FieldType.GetInterface(nameof(INamedInternal)) != null)
+                    .Select(grammarRuleField => new { Rule = (INamedInternal)grammarRuleField.GetValue(this), grammarRuleField.Name })
                     .Where(ruleName => ruleName.Rule != null);
 
             foreach (var ruleName in ruleNames)
             {
                 if (ruleName.Rule.Name == null)
-                    ruleName.Rule.Name = ruleName.Name;
+                    ruleName.Rule.SetName(ruleName.Name);
             }
         }
     }

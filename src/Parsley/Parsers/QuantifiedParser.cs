@@ -11,7 +11,7 @@ namespace Parsley.Parsers
         NtoM
     }
 
-    public class QuantifiedParser<TItem, TSeparator> : IParser<IList<TItem>>
+    public class QuantifiedParser<TItem, TSeparator> : Parser<IList<TItem>>
     {
         private readonly IParser<TItem> _item;
         private readonly QuantificationRule _quantificationRule;
@@ -50,7 +50,7 @@ namespace Parsley.Parsers
             _itemSeparator = itemSeparator;
         }
 
-        public Reply<IList<TItem>> Parse(TokenStream tokens)
+        public override IReply<IList<TItem>> Parse(TokenStream tokens)
         {
             var oldPosition = tokens.Position;
             var reply = _item.Parse(tokens);
@@ -167,7 +167,7 @@ namespace Parsley.Parsers
             return new Parsed<IList<TItem>>(list, reply.UnparsedTokens, reply.ErrorMessages);
         }
 
-        public override string ToString()
+        protected override string GetName()
         {
             switch (_quantificationRule)
             {
@@ -179,7 +179,5 @@ namespace Parsley.Parsers
 
             return $"<{_n}+ TIMES {_item.Name}>";
         }
-
-        public string Name => ToString();
     }
 }

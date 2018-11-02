@@ -1,12 +1,10 @@
 namespace Parsley.Parsers
 {
-    public class FailingParser<T> : IParser<T>
+    public class FailingParser<T> : Parser<T>
     {
-        public Reply<T> Parse(TokenStream tokens)
+        public override IReply<T> Parse(TokenStream tokens)
             => new Error<T>(tokens, ErrorMessage.Unknown());
 
-        public override string ToString() => "<FAIL>";
-
-        public string Name => ToString();
+        protected override string GetName() => "<FAIL>";
     }
 }

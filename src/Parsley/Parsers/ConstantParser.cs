@@ -1,17 +1,14 @@
 ﻿namespace Parsley.Parsers
 {
-    public class ConstantParser<T> : IParser<T>
+    public class ConstantParser<T> : Parser<T>
     {
-        private readonly TokenKind _kind;
-        private readonly T _value;
-
         public ConstantParser(TokenKind kind, T value)
         {
             _kind = kind;
             _value = value;
         }
 
-        public Reply<T> Parse(TokenStream tokens)
+        public override IReply<T> Parse(TokenStream tokens)
         {
             if (tokens.Current.Kind == _kind)
                 return new Parsed<T>(_value, tokens.Advance());
@@ -19,8 +16,9 @@
             return new Error<T>(tokens, ErrorMessage.Expected(_kind.Name));
         }
 
-        public override string ToString() => $"<C {_kind} := {_value}>";
+        protected override string GetName() => $"<C {_kind} := {_value}>";
 
-        public string Name => ToString();
+        private readonly TokenKind _kind;
+        private readonly T _value;
     }
 }

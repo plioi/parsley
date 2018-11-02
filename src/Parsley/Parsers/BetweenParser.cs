@@ -2,7 +2,7 @@
 
 namespace Parsley.Parsers
 {
-    public class BetweenParser<TLeft, TItem, TRight> : IParser<TItem>
+    public class BetweenParser<TLeft, TItem, TRight> : Parser<TItem>
     {
         public BetweenParser(IParser<TLeft> left, IParser<TItem> item, IParser<TRight> right)
         {
@@ -11,7 +11,7 @@ namespace Parsley.Parsers
             _right = right ?? throw new ArgumentNullException(nameof(right));
         }
 
-        public Reply<TItem> Parse(TokenStream tokens)
+        public override IReply<TItem> Parse(TokenStream tokens)
         {
             var left = _left.Parse(tokens);
 
@@ -31,15 +31,10 @@ namespace Parsley.Parsers
             return new Parsed<TItem>(item.Value, right.UnparsedTokens, right.ErrorMessages);
         }
 
-        public override string ToString()
-        {
-            return Name;
-        }
-
+        protected override string GetName() => $"<({_left.Name}|{_item.Name}|{_right.Name})>";
+        
         private readonly IParser<TLeft> _left;
         private readonly IParser<TItem> _item;
         private readonly IParser<TRight> _right;
-
-        public string Name => $"<({_left.Name}|{_item.Name}|{_right.Name})>";
     }
 }
