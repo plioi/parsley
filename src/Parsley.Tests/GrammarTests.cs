@@ -106,7 +106,7 @@ namespace Parsley.Tests
         {
             var parser = OneOrMore(AB);
 
-            parser.FailsToParse(Tokenize("")).AtEndOfInput().WithMessage("(1, 1): <bind <L A> to a => value(Parsley.Tests.GrammarTests).B to (a, b) => new Token(null, a.Position, (a.Literal + b.Literal))> occurring 1+ times expected");
+            parser.FailsToParse(Tokenize("")).AtEndOfInput().WithMessage("(1, 1): <BIND2 <L A> TO Parsley.Token TO Parsley.Token> occurring 1+ times expected");
 
             parser.PartiallyParses(Tokenize("AB!"))
                 .LeavingUnparsedTokens("!")
@@ -143,7 +143,7 @@ namespace Parsley.Tests
         {
             var parser = OneOrMore(AB, COMMA);
 
-            parser.FailsToParse(Tokenize("")).AtEndOfInput().WithMessage("(1, 1): <bind <L A> to a => value(Parsley.Tests.GrammarTests).B to (a, b) => new Token(null, a.Position, (a.Literal + b.Literal))> occurring 1+ times expected");
+            parser.FailsToParse(Tokenize("")).AtEndOfInput().WithMessage("(1, 1): <BIND2 <L A> TO Parsley.Token TO Parsley.Token> occurring 1+ times expected");
             parser.Parses(Tokenize("AB")).WithValue(Literals("AB"));
             parser.Parses(Tokenize("AB,AB")).WithValue(Literals("AB", "AB"));
             parser.Parses(Tokenize("AB,AB,AB")).WithValue(Literals("AB", "AB", "AB"));
