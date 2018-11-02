@@ -2,7 +2,7 @@
 
 namespace Parsley.Parsers
 {
-    public class BindTokenLiteralParser<TResult> : IParser<TResult>
+    public class BindTokenLiteralParser<TResult> : Parser<TResult>
     {
         public BindTokenLiteralParser(IParser<Token> parser, Func<string, TResult> resultContinuation)
         {
@@ -10,7 +10,7 @@ namespace Parsley.Parsers
             _resultContinuation = resultContinuation ?? throw new ArgumentNullException(nameof(resultContinuation));
         }
 
-        Reply<TResult> IParser<TResult>.Parse(TokenStream tokens)
+        public override IReply<TResult> Parse(TokenStream tokens)
         {
             var reply = _parser.Parse(tokens);
 
@@ -22,10 +22,9 @@ namespace Parsley.Parsers
             return new Parsed<TResult>(parsedValue, reply.UnparsedTokens);
         }
 
+        protected override string GetName() => $"<BTL {_parser.Name} TO {typeof(TResult)}>";
+        
         private readonly IParser<Token> _parser;
         private readonly Func<string, TResult> _resultContinuation;
-
-        public override string ToString() => $"<BTL {_parser.Name} TO {typeof(TResult)}>";
-        public string Name => ToString();
     }
 }

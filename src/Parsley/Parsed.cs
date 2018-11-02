@@ -1,6 +1,6 @@
 ﻿namespace Parsley
 {
-    public class Parsed<T> : Reply<T>
+    public class Parsed<T> : IReply<T>
     {
         public Parsed(T value, TokenStream unparsedTokens)
             :this(value, unparsedTokens, ErrorMessageList.Empty) { }

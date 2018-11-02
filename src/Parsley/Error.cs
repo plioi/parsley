@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class Error<T> : Reply<T>
+    public class Error<T> : IReply<T>
     {
         public Error(TokenStream unparsedTokens, ErrorMessage error)
             : this(unparsedTokens,  ErrorMessageList.Empty.With(error)) { }
@@ -13,7 +13,7 @@
             ErrorMessages = errors;
         }
 
-        public static Error<T> From<TOther>(Reply<TOther> r)
+        public static Error<T> From<TOther>(IReply<TOther> r)
         {
             return new Error<T>(r.UnparsedTokens, r.ErrorMessages);
         }

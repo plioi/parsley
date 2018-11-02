@@ -41,7 +41,7 @@
             AssertTokenLiteralsEqual(expectedLiteral, actual.Literal);
         }
 
-        public static Reply<T> FailsToParse<T>(this IParser<T> parser, IEnumerable<Token> tokens)
+        public static IReply<T> FailsToParse<T>(this IParser<T> parser, IEnumerable<Token> tokens)
         {
             var reply = parser.Parse(new TokenStream(tokens));
             
@@ -51,7 +51,7 @@
             return reply;
         }
 
-        public static Reply<T> WithMessage<T>(this Reply<T> reply, string expectedMessage)
+        public static IReply<T> WithMessage<T>(this IReply<T> reply, string expectedMessage)
         {
             var position = reply.UnparsedTokens.Position;
             var actual = position + ": " + reply.ErrorMessages;
@@ -62,7 +62,7 @@
             return reply;
         }
 
-        public static Reply<T> WithNoMessage<T>(this Reply<T> reply)
+        public static IReply<T> WithNoMessage<T>(this IReply<T> reply)
         {
             if (reply.ErrorMessages != ErrorMessageList.Empty)
                 throw new AssertionException("no error message", reply.ErrorMessages);
@@ -70,17 +70,17 @@
             return reply;
         }
 
-        public static Reply<T> PartiallyParses<T>(this IParser<T> parser, IEnumerable<Token> tokens)
+        public static IReply<T> PartiallyParses<T>(this IParser<T> parser, IEnumerable<Token> tokens)
         {
             return parser.Parse(new TokenStream(tokens)).Succeeds();
         }
 
-        public static Reply<T> Parses<T>(this IParser<T> parser, IEnumerable<Token> tokens)
+        public static IReply<T> Parses<T>(this IParser<T> parser, IEnumerable<Token> tokens)
         {
             return parser.Parse(new TokenStream(tokens)).Succeeds().AtEndOfInput();
         }
 
-        private static Reply<T> Succeeds<T>(this Reply<T> reply)
+        private static IReply<T> Succeeds<T>(this IReply<T> reply)
         {
             if (!reply.Success)
             {
@@ -93,7 +93,7 @@
             return reply;
         }
 
-        public static Reply<T> LeavingUnparsedTokens<T>(this Reply<T> reply, params string[] expectedLiterals)
+        public static IReply<T> LeavingUnparsedTokens<T>(this IReply<T> reply, params string[] expectedLiterals)
         {
             var stream = reply.UnparsedTokens;
 
@@ -120,14 +120,14 @@
             return reply;
         }
 
-        public static Reply<T> AtEndOfInput<T>(this Reply<T> reply)
+        public static IReply<T> AtEndOfInput<T>(this IReply<T> reply)
         {
             var nextTokenKind = reply.UnparsedTokens.Current.Kind;
             AssertEqual(TokenKind.EndOfInput, nextTokenKind);
             return reply.LeavingUnparsedTokens(new string[] {});
         }
 
-        public static Reply<T> WithValue<T>(this Reply<T> reply, T expected)
+        public static IReply<T> WithValue<T>(this IReply<T> reply, T expected)
         {
             if (!Equals(expected, reply.Value))
                 throw new AssertionException($"parsed value: {expected}", $"parsed value: {reply.Value}");
@@ -135,7 +135,7 @@
             return reply;
         }
 
-        public static Reply<T> WithValue<T>(this Reply<T> reply, Action<T> assertParsedValue)
+        public static IReply<T> WithValue<T>(this IReply<T> reply, Action<T> assertParsedValue)
         {
             assertParsedValue(reply.Value);
 

@@ -1,7 +1,7 @@
 ﻿namespace Parsley
 {
-    public interface IParser<out T> : INamed
+    public interface IParser<out T> : IGeneralParser
     {
-        Reply<T> Parse(TokenStream tokens);
+        IReply<T> Parse(TokenStream tokens);
     }
 }

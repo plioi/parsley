@@ -1,25 +1,30 @@
+using Parsley.Parsers;
+using System;
+
 namespace Parsley
 {
-    using System;
-
-    public abstract class GrammarRule
+    internal interface INamedInternal : INamed
     {
-        public string Name { get; internal set; }
-
-        protected GrammarRule(string name)
-        {
-            Name = name;
-        }
+        void SetName(string name);
     }
 
-    public class GrammarRule<T> : GrammarRule, IParser<T>
+    public class GrammarRule<T> : Parser<T>, INamedInternal
     {
         private IParser<T> _parser;
 
         public GrammarRule(string name = null)
-            : base(name)
         {
+            _name = name;
         }
+
+        protected override string GetName() => _name ?? _parser?.Name;
+
+        void INamedInternal.SetName(string name)
+        {
+            _name = name;
+        }
+
+        private string _name;
 
         public IParser<T> Rule
         {
@@ -33,18 +38,16 @@ namespace Parsley
                 _parser = value ?? throw new ArgumentNullException(nameof(value));
 
                 if (Name == null)
-                    Name = _parser.Name;
+                    _name = _parser.Name;
             }
         }
 
-        public Reply<T> Parse(TokenStream tokens)
+        public override IReply<T> Parse(TokenStream tokens)
         {
             if (_parser == null)
                 throw new InvalidOperationException($"Rule {Name} is not initialized.");
 
             return _parser.Parse(tokens);
         }
-
-        public override string ToString() => Name ?? _parser?.Name;
     }
 }

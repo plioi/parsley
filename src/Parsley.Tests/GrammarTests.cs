@@ -98,7 +98,7 @@ namespace Parsley.Tests
 
             IParser<Token> succeedWithoutConsuming = new TokenByLiteralParser("");
             Action infiniteLoop = () => ZeroOrMore(succeedWithoutConsuming).Parse(new TokenStream(Tokenize("")));
-            infiniteLoop.ShouldThrow<Exception>("Item parser <L > encountered a potential infinite loop at position (1, 1).");
+            infiniteLoop.ShouldThrow<Exception>("Item parser <''> encountered a potential infinite loop at position (1, 1).");
         }
 
         [Fact]
@@ -106,7 +106,7 @@ namespace Parsley.Tests
         {
             var parser = OneOrMore(AB);
 
-            parser.FailsToParse(Tokenize("")).AtEndOfInput().WithMessage("(1, 1): <BIND2 <L A> TO Parsley.Token TO Parsley.Token> occurring 1+ times expected");
+            parser.FailsToParse(Tokenize("")).AtEndOfInput().WithMessage("(1, 1): <BIND2 <'A'> TO Parsley.Token TO Parsley.Token> occurring 1+ times expected");
 
             parser.PartiallyParses(Tokenize("AB!"))
                 .LeavingUnparsedTokens("!")
@@ -122,7 +122,7 @@ namespace Parsley.Tests
 
             IParser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
             Action infiniteLoop = () => OneOrMore(succeedWithoutConsuming).Parse(new TokenStream(Tokenize("")));
-            infiniteLoop.ShouldThrow<Exception>("Item parser Parsley.Parsers.LambdaParser`1[Parsley.Token] encountered a potential infinite loop at position (1, 1).");
+            infiniteLoop.ShouldThrow<Exception>("Item parser <L Parsley.Token> encountered a potential infinite loop at position (1, 1).");
         }
 
         [Fact]
@@ -143,7 +143,7 @@ namespace Parsley.Tests
         {
             var parser = OneOrMore(AB, COMMA);
 
-            parser.FailsToParse(Tokenize("")).AtEndOfInput().WithMessage("(1, 1): <BIND2 <L A> TO Parsley.Token TO Parsley.Token> occurring 1+ times expected");
+            parser.FailsToParse(Tokenize("")).AtEndOfInput().WithMessage("(1, 1): <BIND2 <'A'> TO Parsley.Token TO Parsley.Token> occurring 1+ times expected");
             parser.Parses(Tokenize("AB")).WithValue(Literals("AB"));
             parser.Parses(Tokenize("AB,AB")).WithValue(Literals("AB", "AB"));
             parser.Parses(Tokenize("AB,AB,AB")).WithValue(Literals("AB", "AB", "AB"));

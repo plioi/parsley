@@ -1,8 +1,7 @@
 ﻿namespace Parsley
 {
-    public interface Reply<out T>
+    public interface IGeneralReply
     {
-        T Value { get; }
         TokenStream UnparsedTokens { get; }
         bool Success { get; }
         ErrorMessageList ErrorMessages { get; }

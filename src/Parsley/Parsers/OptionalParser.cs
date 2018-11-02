@@ -2,7 +2,7 @@
 
 namespace Parsley.Parsers
 {
-    public class OptionalParser<TItem> : IParser<TItem>
+    public class OptionalParser<TItem> : Parser<TItem>
     {
         public OptionalParser(IParser<TItem> parser, TItem defaultValue = default(TItem))
         {
@@ -10,7 +10,7 @@ namespace Parsley.Parsers
             _defaultValue = defaultValue;
         }
 
-        public Reply<TItem> Parse(TokenStream tokens)
+        public override IReply<TItem> Parse(TokenStream tokens)
         {
             var oldPosition = tokens.Position;
             var reply = _parser.Parse(tokens);
@@ -25,8 +25,7 @@ namespace Parsley.Parsers
             return reply;
         }
 
-        public override string ToString() => $"<OPTIONAL {_parser.Name} WITH DEFAULT {_defaultValue}>";
-        public string Name => ToString();
+        protected override string GetName() => $"<? {_parser.Name} : {_defaultValue}>";
         
         private readonly IParser<TItem> _parser;
         private readonly TItem _defaultValue;

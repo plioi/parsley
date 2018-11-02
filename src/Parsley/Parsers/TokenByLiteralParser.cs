@@ -1,6 +1,6 @@
 namespace Parsley.Parsers
 {
-    public class TokenByLiteralParser : IParser<Token>
+    public class TokenByLiteralParser : Parser<Token>
     {
         private readonly string _expectation;
 
@@ -9,7 +9,7 @@ namespace Parsley.Parsers
             _expectation = expectation;
         }
 
-        public Reply<Token> Parse(TokenStream tokens)
+        public override IReply<Token> Parse(TokenStream tokens)
         {
             if (tokens.Current.Literal == _expectation)
                 return new Parsed<Token>(tokens.Current, tokens.Advance());
@@ -17,7 +17,6 @@ namespace Parsley.Parsers
             return new Error<Token>(tokens, ErrorMessage.Expected(_expectation));
         }
 
-        public override string ToString() => $"<L {_expectation}>";
-        public string Name => ToString();
+        protected override string GetName() => $"<'{_expectation}'>";
     }
 }
