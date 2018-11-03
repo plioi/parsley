@@ -1,20 +1,19 @@
 ﻿namespace Parsley
 {
-    public class Parsed<T> : IReply<T>
+    public class Parsed<T> : ParsedGeneral, IReply<T>
     {
         public Parsed(T value, TokenStream unparsedTokens)
-            :this(value, unparsedTokens, ErrorMessageList.Empty) { }
+            : this(value, unparsedTokens, ErrorMessageList.Empty)
+        { }
 
         public Parsed(T value, TokenStream unparsedTokens, ErrorMessageList potentialErrors)
+            : base (unparsedTokens)
         {
             Value = value;
-            UnparsedTokens = unparsedTokens;
             ErrorMessages = potentialErrors;
         }
 
         public T Value { get; }
-        public TokenStream UnparsedTokens { get; }
-        public bool Success => true;
-        public ErrorMessageList ErrorMessages { get; }
+        public override ErrorMessageList ErrorMessages { get; }
     }
 }
