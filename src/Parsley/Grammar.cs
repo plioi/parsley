@@ -1,4 +1,5 @@
-﻿using Parsley.Parsers;
+﻿using System;
+using Parsley.Parsers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -26,6 +27,10 @@ namespace Parsley
         public static IParser<Token> Token(string expectation)
             
             => new TokenByLiteralParser(expectation);
+
+        public static IParser<TResult> MapToken<TResult>(TokenKind kind, Func<string, TResult> resultContinuation)
+
+            => new MapTokenLiteralParser<TResult>(kind, resultContinuation);
 
         /// <summary>
         /// ZeroOrMore(p) repeatedly applies an parser p until it fails, returing
