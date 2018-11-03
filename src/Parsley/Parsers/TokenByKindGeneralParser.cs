@@ -1,6 +1,6 @@
 ﻿namespace Parsley.Parsers
 {
-    public class TokenByKindGeneralParser : IGeneralParser
+    public class TokenByKindGeneralParser : IParserG
     {
         private readonly TokenKind _kind;
 
@@ -11,12 +11,12 @@
 
         public string Name => $"<*{_kind}*>";
 
-        public IGeneralReply ParseGeneral(TokenStream tokens)
+        public IReplyG ParseG(TokenStream tokens)
         {
             if (tokens.Current.Kind == _kind)
-                return new ParsedGeneral(tokens.Advance());
+                return new ParsedG(tokens.Advance());
 
-            return new ErrorGeneral(tokens, ErrorMessage.Expected(_kind.Name));
+            return new ErrorG(tokens, ErrorMessage.Expected(_kind.Name));
         }
     }
 }

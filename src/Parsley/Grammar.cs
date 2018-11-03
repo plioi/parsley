@@ -12,7 +12,7 @@ namespace Parsley
             
             => new FailingParser<TItem>();
 
-        public static IGeneralParser EndOfInput
+        public static IParserG EndOfInput
             
             => new TokenByKindGeneralParser(TokenKind.EndOfInput);
 
@@ -20,7 +20,7 @@ namespace Parsley
             
             => new TokenByKindParser(kind);
 
-        public static IGeneralParser TokenGeneral(TokenKind kind)
+        public static IParserG TokenG(TokenKind kind)
 
             => new TokenByKindGeneralParser(kind);
         
@@ -53,30 +53,30 @@ namespace Parsley
         /// ZeroOrMore(p, s) parses zero or more occurrences of p separated by occurrences of s,
         /// returning the list of values returned by successful applications of p.
         /// </summary>
-        public static IParser<IList<TItem>> ZeroOrMore<TItem>(IParser<TItem> item, IGeneralParser separator)
+        public static IParser<IList<TItem>> ZeroOrMore<TItem>(IParser<TItem> item, IParserG separator)
 
             => new QuantifiedParser<TItem>(item, QuantificationRule.NOrMore, 0, -1, separator);
 
         /// <summary>
         /// OneOrMore(p, s) behaves like ZeroOrMore(p, s), except that p must succeed at least one time.
         /// </summary>
-        public static IParser<IList<TItem>> OneOrMore<TItem>(IParser<TItem> item, IGeneralParser separator)
+        public static IParser<IList<TItem>> OneOrMore<TItem>(IParser<TItem> item, IParserG separator)
             
             => new QuantifiedParser<TItem>(item, QuantificationRule.NOrMore, 1, -1, separator);
 
-        public static IParser<IList<TItem>> NOrMore<TItem>(int n, IParser<TItem> item, IGeneralParser separator)
+        public static IParser<IList<TItem>> NOrMore<TItem>(int n, IParser<TItem> item, IParserG separator)
 
             => new QuantifiedParser<TItem>(item, QuantificationRule.NOrMore, n, -1, separator);
 
-        public static IParser<IList<TItem>> NOrLess<TItem>(int n, IParser<TItem> item, IGeneralParser separator)
+        public static IParser<IList<TItem>> NOrLess<TItem>(int n, IParser<TItem> item, IParserG separator)
 
             => new QuantifiedParser<TItem>(item, QuantificationRule.NOrLess, n, -1, separator);
 
-        public static IParser<IList<TItem>> NToMTimes<TItem>(int n, int m, IParser<TItem> item, IGeneralParser separator)
+        public static IParser<IList<TItem>> NToMTimes<TItem>(int n, int m, IParser<TItem> item, IParserG separator)
             
             => new QuantifiedParser<TItem>(item, QuantificationRule.NtoM, n, m, separator);
 
-        public static IParser<IList<TItem>> NTimesExactly<TItem>(int n, IParser<TItem> item, IGeneralParser separator)
+        public static IParser<IList<TItem>> NTimesExactly<TItem>(int n, IParser<TItem> item, IParserG separator)
 
             => new QuantifiedParser<TItem>(item, QuantificationRule.ExactlyN, n, -1, separator);
 
@@ -84,7 +84,7 @@ namespace Parsley
         /// Between(left, goal, right) parses its arguments in order.  If all three
         /// parsers succeed, the result of the goal parser is returned.
         /// </summary>
-        public static IParser<TItem> Between<TItem>(IGeneralParser left, IParser<TItem> item, IGeneralParser right)
+        public static IParser<TItem> Between<TItem>(IParserG left, IParser<TItem> item, IParserG right)
 
             => new BetweenParser<TItem>(left, item, right);
 
@@ -141,7 +141,7 @@ namespace Parsley
             => new ConstantParser<TItem>(kind, constant);
 
         public static IParser<KeyValuePair<TName, TValue>> NameValuePair<TName, TValue>(IParser<TName> name,
-            IGeneralParser delimiter, IParser<TValue> value)
+            IParserG delimiter, IParser<TValue> value)
 
             => new NameValuePairParser<TName, TValue>(name, delimiter, value);
 

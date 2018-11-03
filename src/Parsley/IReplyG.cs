@@ -1,6 +1,6 @@
 ﻿namespace Parsley
 {
-    public interface IGeneralReply
+    public interface IReplyG
     {
         TokenStream UnparsedTokens { get; }
         bool Success { get; }

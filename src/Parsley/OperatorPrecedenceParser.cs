@@ -12,20 +12,20 @@ namespace Parsley
 
     public class OperatorPrecedenceParser<T> : Parser<T>
     {
-        private readonly IDictionary<TokenKind, IParser<T>> unitParsers;
-        private readonly IDictionary<TokenKind, ExtendParserBuilder<T>> extendParsers;
-        private readonly IDictionary<TokenKind, int> extendParserPrecedence;
+        private readonly IDictionary<TokenKind, IParser<T>> _unitParsers;
+        private readonly IDictionary<TokenKind, ExtendParserBuilder<T>> _extendParsers;
+        private readonly IDictionary<TokenKind, int> _extendParserPrecedence;
 
         public OperatorPrecedenceParser()
         {
-            unitParsers = new Dictionary<TokenKind, IParser<T>>();
-            extendParsers = new Dictionary<TokenKind, ExtendParserBuilder<T>>();
-            extendParserPrecedence = new Dictionary<TokenKind, int>();
+            _unitParsers = new Dictionary<TokenKind, IParser<T>>();
+            _extendParsers = new Dictionary<TokenKind, ExtendParserBuilder<T>>();
+            _extendParserPrecedence = new Dictionary<TokenKind, int>();
         }
 
         public void Unit(TokenKind kind, IParser<T> unitParser)
         {
-            unitParsers[kind] = unitParser;
+            _unitParsers[kind] = unitParser;
         }
 
         public void Atom(TokenKind kind, AtomNodeBuilder<T> createAtomNode)
@@ -43,8 +43,8 @@ namespace Parsley
 
         public void Extend(TokenKind operation, int precedence, ExtendParserBuilder<T> createExtendParser)
         {
-            extendParsers[operation] = createExtendParser;
-            extendParserPrecedence[operation] = precedence;
+            _extendParsers[operation] = createExtendParser;
+            _extendParserPrecedence[operation] = precedence;
         }
 
         public void Postfix(TokenKind operation, int precedence, UnaryNodeBuilder<T> createUnaryNode)
@@ -80,10 +80,10 @@ namespace Parsley
         {
             var token = tokens.Current;
 
-            if (!unitParsers.ContainsKey(token.Kind))
+            if (!_unitParsers.ContainsKey(token.Kind))
                 return new Error<T>(tokens, ErrorMessage.Unknown());
 
-            var reply = unitParsers[token.Kind].Parse(tokens);
+            var reply = _unitParsers[token.Kind].Parse(tokens);
 
             if (!reply.Success)
                 return reply;
@@ -95,7 +95,7 @@ namespace Parsley
             {
                 //Continue parsing at this precedence level.
 
-                reply = extendParsers[token.Kind](reply.Value).Parse(tokens);
+                reply = _extendParsers[token.Kind](reply.Value).Parse(tokens);
 
                 if (!reply.Success)
                     return reply;
@@ -110,8 +110,8 @@ namespace Parsley
         private int GetPrecedence(Token token)
         {
             var kind = token.Kind;
-            if (extendParserPrecedence.ContainsKey(kind))
-                return extendParserPrecedence[kind];
+            if (_extendParserPrecedence.ContainsKey(kind))
+                return _extendParserPrecedence[kind];
 
             return 0;
         }

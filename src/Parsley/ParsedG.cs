@@ -1,8 +1,8 @@
 ﻿namespace Parsley
 {
-    public class ParsedGeneral : IGeneralReply
+    public class ParsedG : IReplyG
     {
-        public ParsedGeneral(TokenStream unparsedTokens)
+        public ParsedG(TokenStream unparsedTokens)
         {
             UnparsedTokens = unparsedTokens;
         }

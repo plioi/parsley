@@ -35,13 +35,13 @@ namespace Parsley.Tests.IntegrationTests.Json
                 MapToken(JsonLexer.Quotation, Unescape);
 
             Array.Rule =
-                Between(TokenGeneral(JsonLexer.OpenArray), ZeroOrMore(JsonValue, TokenGeneral(JsonLexer.Comma)), TokenGeneral(JsonLexer.CloseArray));
+                Between(TokenG(JsonLexer.OpenArray), ZeroOrMore(JsonValue, TokenG(JsonLexer.Comma)), TokenG(JsonLexer.CloseArray));
 
             Pair.Rule =
-                NameValuePair(Quotation, TokenGeneral(JsonLexer.Colon), JsonValue);
+                NameValuePair(Quotation, TokenG(JsonLexer.Colon), JsonValue);
 
             Dictionary.Rule =
-                Between(TokenGeneral(JsonLexer.OpenDictionary), ZeroOrMore(Pair, TokenGeneral(JsonLexer.Comma)), TokenGeneral(JsonLexer.CloseDictionary))
+                Between(TokenG(JsonLexer.OpenDictionary), ZeroOrMore(Pair, TokenG(JsonLexer.Comma)), TokenG(JsonLexer.CloseDictionary))
                 .Bind(ToDictionary);
 
             JsonValue.Rule = Choice(True, False, Null, Number, Quotation, Dictionary, Array);

@@ -4,7 +4,7 @@ namespace Parsley.Parsers
 {
     public class BetweenParser<TItem> : Parser<TItem>
     {
-        public BetweenParser(IGeneralParser left, IParser<TItem> item, IGeneralParser right)
+        public BetweenParser(IParserG left, IParser<TItem> item, IParserG right)
         {
             _left = left ?? throw new ArgumentNullException(nameof(left));
             _item = item ?? throw new ArgumentNullException(nameof(item));
@@ -13,7 +13,7 @@ namespace Parsley.Parsers
 
         public override IReply<TItem> Parse(TokenStream tokens)
         {
-            var left = _left.ParseGeneral(tokens);
+            var left = _left.ParseG(tokens);
 
             if (!left.Success)
                 return Error<TItem>.From(left);
@@ -23,7 +23,7 @@ namespace Parsley.Parsers
             if (!item.Success)
                 return item;
 
-            var right = _right.ParseGeneral(item.UnparsedTokens);
+            var right = _right.ParseG(item.UnparsedTokens);
 
             if (!right.Success)
                 return Error<TItem>.From(right);
@@ -31,25 +31,25 @@ namespace Parsley.Parsers
             return new Parsed<TItem>(item.Value, right.UnparsedTokens, right.ErrorMessages);
         }
 
-        public override IGeneralReply ParseGeneral(TokenStream tokens)
+        public override IReplyG ParseG(TokenStream tokens)
         {
-            var left = _left.ParseGeneral(tokens);
+            var left = _left.ParseG(tokens);
 
             if (!left.Success)
                 return left;
 
-            var item = _item.ParseGeneral(left.UnparsedTokens);
+            var item = _item.ParseG(left.UnparsedTokens);
 
             if (!item.Success)
                 return item;
 
-            return _right.ParseGeneral(item.UnparsedTokens);
+            return _right.ParseG(item.UnparsedTokens);
         }
 
         protected override string GetName() => $"<({_left.Name}|{_item.Name}|{_right.Name})>";
         
-        private readonly IGeneralParser _left;
+        private readonly IParserG _left;
         private readonly IParser<TItem> _item;
-        private readonly IGeneralParser _right;
+        private readonly IParserG _right;
     }
 }

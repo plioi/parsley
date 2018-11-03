@@ -24,12 +24,12 @@ namespace Parsley.Parsers
         /// Parsing optimized for the case when the reply value is not needed. NOTE: Result continuation will not be called.
         /// </summary>
         /// <param name="tokens">Tokens to parse</param>
-        public override IGeneralReply ParseGeneral(TokenStream tokens)
+        public override IReplyG ParseG(TokenStream tokens)
         {
             if (tokens.Current.Kind != _kind)
-                return new ErrorGeneral(tokens, ErrorMessage.Expected(_kind.Name));
+                return new ErrorG(tokens, ErrorMessage.Expected(_kind.Name));
 
-            return new ParsedGeneral(tokens.Advance());
+            return new ParsedG(tokens.Advance());
         }
 
         protected override string GetName() => $"<BTL *{_kind}* TO {typeof(TResult)}>";

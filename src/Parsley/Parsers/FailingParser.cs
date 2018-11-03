@@ -8,7 +8,7 @@ namespace Parsley.Parsers
         /// Parsing optimized for the case when the reply value is not needed.
         /// </summary>
         /// <param name="tokens">Tokens to parse</param>
-        public override IGeneralReply ParseGeneral(TokenStream tokens) => new ErrorGeneral(tokens, ErrorMessage.Unknown());
+        public override IReplyG ParseG(TokenStream tokens) => new ErrorG(tokens, ErrorMessage.Unknown());
 
         protected override string GetName() => "<FAIL>";
     }

@@ -1,19 +1,19 @@
 ﻿namespace Parsley
 {
-    public class ErrorGeneral : IGeneralReply
+    public class ErrorG : IReplyG
     {
-        public ErrorGeneral(TokenStream unparsedTokens, ErrorMessage error)
+        public ErrorG(TokenStream unparsedTokens, ErrorMessage error)
             : this(unparsedTokens, ErrorMessageList.Empty.With(error)) { }
 
-        public ErrorGeneral(TokenStream unparsedTokens, ErrorMessageList errors)
+        public ErrorG(TokenStream unparsedTokens, ErrorMessageList errors)
         {
             UnparsedTokens = unparsedTokens;
             ErrorMessages = errors;
         }
 
-        public static ErrorGeneral From(IGeneralReply r)
+        public static ErrorG From(IReplyG r)
         {
-            return new ErrorGeneral(r.UnparsedTokens, r.ErrorMessages);
+            return new ErrorG(r.UnparsedTokens, r.ErrorMessages);
         }
 
         public TokenStream UnparsedTokens { get; }

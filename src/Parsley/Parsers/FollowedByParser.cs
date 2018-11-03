@@ -4,7 +4,7 @@ namespace Parsley.Parsers
 {
     public class FollowedByParser<TResult> : Parser<TResult>
     {
-        public FollowedByParser(IParser<TResult> item, IGeneralParser following)
+        public FollowedByParser(IParser<TResult> item, IParserG following)
         {
             _item = item ?? throw new ArgumentNullException(nameof(item));
             _following = following ?? throw new ArgumentNullException(nameof(following));
@@ -17,7 +17,7 @@ namespace Parsley.Parsers
             if (!item.Success)
                 return Error<TResult>.From(item);
 
-            var following = _following.ParseGeneral(item.UnparsedTokens);
+            var following = _following.ParseG(item.UnparsedTokens);
 
             if (!following.Success)
                 return Error<TResult>.From(following);
@@ -28,6 +28,6 @@ namespace Parsley.Parsers
         protected override string GetName() => $"<{_item.Name} FOLLOWED BY {_following.Name}>";
 
         private readonly IParser<TResult> _item;
-        private readonly IGeneralParser _following;
+        private readonly IParserG _following;
     }
 }

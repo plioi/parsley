@@ -25,14 +25,14 @@ namespace Parsley.Parsers
             return reply;
         }
 
-        public override IGeneralReply ParseGeneral(TokenStream tokens)
+        public override IReplyG ParseG(TokenStream tokens)
         {
             var oldPosition = tokens.Position;
-            var reply = _parser.ParseGeneral(tokens);
+            var reply = _parser.ParseG(tokens);
             var newPosition = reply.UnparsedTokens.Position;
 
             if (reply.Success || oldPosition == newPosition)
-                return new ParsedGeneral(reply.UnparsedTokens);
+                return new ParsedG(reply.UnparsedTokens);
 
             return reply;
         }

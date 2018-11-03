@@ -1,6 +1,6 @@
 ﻿namespace Parsley
 {
-    public interface IReply<out T> : IGeneralReply
+    public interface IReply<out T> : IReplyG
     {
         T Value { get; }
     }

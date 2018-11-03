@@ -2,7 +2,7 @@
 
 namespace Parsley
 {
-    public class Error<T> : ErrorGeneral, IReply<T>
+    public class Error<T> : ErrorG, IReply<T>
     {
         public Error(TokenStream unparsedTokens, ErrorMessage error)
             : base(unparsedTokens, error)
@@ -12,7 +12,7 @@ namespace Parsley
             : base(unparsedTokens, errors)
         { }
 
-        public new static Error<T> From(IGeneralReply r)
+        public new static Error<T> From(IReplyG r)
         {
             return new Error<T>(r.UnparsedTokens, r.ErrorMessages);
         }
