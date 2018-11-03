@@ -37,9 +37,9 @@ namespace Parsley
             return new BindTokenLiteralParser<TResult>(parser, mapper);
         }
 
-        public static IParser<TResult> FollowedBy<TResult, TDummy>(this IParser<TResult> item, IParser<TDummy> following)
+        public static IParser<TResult> FollowedBy<TResult>(this IParser<TResult> item, IGeneralParser following)
         {
-            return new FollowedByParser<TResult,TDummy>(item, following);
+            return new FollowedByParser<TResult>(item, following);
         }
     }
 }

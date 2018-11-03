@@ -13,7 +13,7 @@
             ErrorMessages = errors;
         }
 
-        public static Error<T> From<TOther>(IReply<TOther> r)
+        public static Error<T> From(IGeneralReply r)
         {
             return new Error<T>(r.UnparsedTokens, r.ErrorMessages);
         }
