@@ -1,34 +1,22 @@
-﻿namespace Parsley
-{
-    using System;
+﻿using System;
 
-    public class Error<T> : IReply<T>
+namespace Parsley
+{
+    public class Error<T> : ErrorGeneral, IReply<T>
     {
         public Error(TokenStream unparsedTokens, ErrorMessage error)
-            : this(unparsedTokens,  ErrorMessageList.Empty.With(error)) { }
+            : base(unparsedTokens, error)
+        { }
 
         public Error(TokenStream unparsedTokens, ErrorMessageList errors)
-        {
-            UnparsedTokens = unparsedTokens;
-            ErrorMessages = errors;
-        }
+            : base(unparsedTokens, errors)
+        { }
 
-        public static Error<T> From(IGeneralReply r)
+        public new static Error<T> From(IGeneralReply r)
         {
             return new Error<T>(r.UnparsedTokens, r.ErrorMessages);
         }
 
-        public T Value
-        {
-            get
-            {
-                var position = UnparsedTokens.Position;
-                throw new MemberAccessException($"{position}: {ErrorMessages}");
-            }
-        }
-
-        public TokenStream UnparsedTokens { get; }
-        public bool Success => false;
-        public ErrorMessageList ErrorMessages { get; }
+        public T Value => throw new MemberAccessException($"{UnparsedTokens.Position}: {ErrorMessages}");
     }
 }

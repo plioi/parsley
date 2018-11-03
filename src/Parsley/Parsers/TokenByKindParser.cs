@@ -17,6 +17,6 @@ namespace Parsley.Parsers
             return new Error<Token>(tokens, ErrorMessage.Expected(_kind.Name));
         }
 
-        protected override string GetName() => $"<T {_kind}>";
+        protected override string GetName() => $"<@ {_kind}>";
     }
 }

@@ -16,6 +16,14 @@
             return new Error<T>(tokens, ErrorMessage.Expected(_kind.Name));
         }
 
+        public override IGeneralReply ParseGeneral(TokenStream tokens)
+        {
+            if (tokens.Current.Kind == _kind)
+                return new ParsedGeneral(tokens.Advance());
+
+            return new ErrorGeneral(tokens, ErrorMessage.Expected(_kind.Name));
+        }
+
         protected override string GetName() => $"<C {_kind} := {_value}>";
 
         private readonly TokenKind _kind;

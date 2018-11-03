@@ -25,6 +25,7 @@ namespace Parsley.Parsers
 
             var errors = ErrorMessageList.Empty;
             var i = 1;
+
             while (!reply.Success && oldPosition == newPosition && i < _parsers.Length)
             {
                 errors = errors.Merge(reply.ErrorMessages);
@@ -32,6 +33,7 @@ namespace Parsley.Parsers
                 newPosition = reply.UnparsedTokens.Position;
                 i++;
             }
+
             if (oldPosition == newPosition)
             {
                 errors = errors.Merge(reply.ErrorMessages);
@@ -40,6 +42,34 @@ namespace Parsley.Parsers
                     return new Parsed<T>(reply.Value, reply.UnparsedTokens, errors);
 
                 return new Error<T>(reply.UnparsedTokens, errors);
+            }
+
+            return reply;
+        }
+
+        public override IGeneralReply ParseGeneral(TokenStream tokens)
+        {
+            var oldPosition = tokens.Position;
+            var reply = _parsers[0].ParseGeneral(tokens);
+            var newPosition = reply.UnparsedTokens.Position;
+
+            var errors = ErrorMessageList.Empty;
+            var i = 1;
+
+            while (!reply.Success && oldPosition == newPosition && i < _parsers.Length)
+            {
+                errors = errors.Merge(reply.ErrorMessages);
+                reply = _parsers[i].ParseGeneral(tokens);
+                newPosition = reply.UnparsedTokens.Position;
+                i++;
+            }
+
+            if (oldPosition == newPosition)
+            {
+                if (reply.Success)
+                    return new ParsedGeneral(reply.UnparsedTokens);
+
+                return new Error<T>(reply.UnparsedTokens, errors.Merge(reply.ErrorMessages));
             }
 
             return reply;

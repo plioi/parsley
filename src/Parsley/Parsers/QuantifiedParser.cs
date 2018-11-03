@@ -11,15 +11,15 @@ namespace Parsley.Parsers
         NtoM
     }
 
-    public class QuantifiedParser<TItem, TSeparator> : Parser<IList<TItem>>
+    public class QuantifiedParser<TItem> : Parser<IList<TItem>>
     {
         private readonly IParser<TItem> _item;
         private readonly QuantificationRule _quantificationRule;
         private readonly int _n;
         private readonly int _m;
-        private readonly IParser<TSeparator> _itemSeparator;
+        private readonly IGeneralParser _itemSeparator;
         
-        public QuantifiedParser(IParser<TItem> item, QuantificationRule quantificationRule, int n, int m = -1, IParser<TSeparator> itemSeparator = null)
+        public QuantifiedParser(IParser<TItem> item, QuantificationRule quantificationRule, int n, int m = -1, IGeneralParser itemSeparator = null)
         {
             _item = item ?? throw new ArgumentNullException(nameof(item));
 
@@ -66,7 +66,7 @@ namespace Parsley.Parsers
             while (reply.Success)
             {
                 if (oldPosition == newPosition)
-                    throw new Exception($"Item parser {_item} encountered a potential infinite loop at position {newPosition}.");
+                    throw new Exception($"Item parser {_item.Name} encountered a potential infinite loop at position {newPosition}.");
 
                 ++times;
 
@@ -76,21 +76,21 @@ namespace Parsley.Parsers
                         if (times > _n)
                             return new Error<IList<TItem>>(
                                 reply.UnparsedTokens,
-                                ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occurring no more than exactly {_n} times"))
+                                ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item.Name} occurring no more than exactly {_n} times"))
                             );
                         break;
                     case QuantificationRule.NtoM:
                         if (times > _m)
                             return new Error<IList<TItem>>(
                                 reply.UnparsedTokens,
-                                ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occurring no more than between {_n} and {_m} times"))
+                                ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item.Name} occurring no more than between {_n} and {_m} times"))
                             );
                         break;
                     case QuantificationRule.NOrLess:
                         if (times > _n)
                             return new Error<IList<TItem>>(
                                 reply.UnparsedTokens,
-                                ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occurring no more than {_n} times"))
+                                ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item.Name} occurring no more than {_n} times"))
                             );
                         break;
                 }
@@ -103,13 +103,13 @@ namespace Parsley.Parsers
                 {
                     var o = newPosition;
 
-                    var r = _itemSeparator.Parse(reply.UnparsedTokens);
+                    var r = _itemSeparator.ParseGeneral(reply.UnparsedTokens);
 
                     unparsedTokens = r.UnparsedTokens;
                     newPosition = unparsedTokens.Position;
 
                     if (r.Success && o == newPosition)
-                        throw new Exception($"Separator parser {_itemSeparator} encountered a potential infinite loop at position {newPosition}.");
+                        throw new Exception($"Separator parser {_itemSeparator.Name} encountered a potential infinite loop at position {newPosition}.");
 
                     separatorWasParsed = r.Success;
                 }
@@ -137,7 +137,7 @@ namespace Parsley.Parsers
                     if (times < _n)
                         return new Error<IList<TItem>>(
                             reply.UnparsedTokens,
-                            ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occurring {_n}+ times"))
+                            ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item.Name} occurring {_n}+ times"))
                         );
                     break;
                 case QuantificationRule.ExactlyN:
@@ -145,26 +145,139 @@ namespace Parsley.Parsers
                         return new Error<IList<TItem>>(
                             reply.UnparsedTokens,
                             ErrorMessageList.Empty.With(ErrorMessage.Expected(
-                                string.Format("{0} occurring no {1} than exactly {2} times", _item, times > _n ? "more" : "less", _n))
+                                string.Format("{0} occurring no {1} than exactly {2} times", _item.Name, times > _n ? "more" : "less", _n))
                         ));
                     break;
                 case QuantificationRule.NtoM:
                     if (times < _n)
                         return new Error<IList<TItem>>(
                             reply.UnparsedTokens,
-                            ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occurring no less than between {_n} and {_m} times"))
+                            ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item.Name} occurring no less than between {_n} and {_m} times"))
                         );
                     break;
                 case QuantificationRule.NOrLess:
                     if (times > _n)
                         return new Error<IList<TItem>>(
                             reply.UnparsedTokens,
-                            ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item} occurring no more than {_n} times"))
+                            ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item.Name} occurring no more than {_n} times"))
                         );
                     break;
             }
 
             return new Parsed<IList<TItem>>(list, reply.UnparsedTokens, reply.ErrorMessages);
+        }
+
+        public override IGeneralReply ParseGeneral(TokenStream tokens)
+        {
+            var oldPosition = tokens.Position;
+            var reply = _item.ParseGeneral(tokens);
+            var newPosition = reply.UnparsedTokens.Position;
+
+            var times = 0;
+
+            var separatorParserIsPresent = _itemSeparator != null;
+            var separatorWasParsed = false;
+
+            while (reply.Success)
+            {
+                if (oldPosition == newPosition)
+                    throw new Exception($"Item parser {_item.Name} encountered a potential infinite loop at position {newPosition}.");
+
+                ++times;
+
+                switch (_quantificationRule)
+                {
+                    case QuantificationRule.ExactlyN:
+                        if (times > _n)
+                            return new ErrorGeneral(
+                                reply.UnparsedTokens,
+                                ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item.Name} occurring no more than exactly {_n} times"))
+                            );
+                        break;
+                    case QuantificationRule.NtoM:
+                        if (times > _m)
+                            return new ErrorGeneral(
+                                reply.UnparsedTokens,
+                                ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item.Name} occurring no more than between {_n} and {_m} times"))
+                            );
+                        break;
+                    case QuantificationRule.NOrLess:
+                        if (times > _n)
+                            return new ErrorGeneral(
+                                reply.UnparsedTokens,
+                                ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item.Name} occurring no more than {_n} times"))
+                            );
+                        break;
+                }
+
+                var unparsedTokens = reply.UnparsedTokens;
+
+                if (separatorParserIsPresent)
+                {
+                    var o = newPosition;
+
+                    var r = _itemSeparator.ParseGeneral(reply.UnparsedTokens);
+
+                    unparsedTokens = r.UnparsedTokens;
+                    newPosition = unparsedTokens.Position;
+
+                    if (r.Success && o == newPosition)
+                        throw new Exception($"Separator parser {_itemSeparator.Name} encountered a potential infinite loop at position {newPosition}.");
+
+                    separatorWasParsed = r.Success;
+                }
+
+                oldPosition = newPosition;
+
+                if (separatorParserIsPresent && !separatorWasParsed)
+                    break;
+
+                reply = _item.ParseGeneral(unparsedTokens);
+
+                if (!reply.Success && separatorParserIsPresent)
+                    return new ErrorGeneral(reply.UnparsedTokens, reply.ErrorMessages);
+
+                newPosition = reply.UnparsedTokens.Position;
+            }
+
+            //The item parser finally failed or the separator parser parsed the next separator, but there was no item following it
+            if (oldPosition != newPosition || separatorParserIsPresent && separatorWasParsed)
+                return new ErrorGeneral(reply.UnparsedTokens, reply.ErrorMessages);
+
+            switch (_quantificationRule)
+            {
+                case QuantificationRule.NOrMore:
+                    if (times < _n)
+                        return new ErrorGeneral(
+                            reply.UnparsedTokens,
+                            ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item.Name} occurring {_n}+ times"))
+                        );
+                    break;
+                case QuantificationRule.ExactlyN:
+                    if (times != _n)
+                        return new ErrorGeneral(
+                            reply.UnparsedTokens,
+                            ErrorMessageList.Empty.With(ErrorMessage.Expected(
+                                string.Format("{0} occurring no {1} than exactly {2} times", _item.Name, times > _n ? "more" : "less", _n))
+                            ));
+                    break;
+                case QuantificationRule.NtoM:
+                    if (times < _n)
+                        return new ErrorGeneral(
+                            reply.UnparsedTokens,
+                            ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item.Name} occurring no less than between {_n} and {_m} times"))
+                        );
+                    break;
+                case QuantificationRule.NOrLess:
+                    if (times > _n)
+                        return new ErrorGeneral(
+                            reply.UnparsedTokens,
+                            ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item.Name} occurring no more than {_n} times"))
+                        );
+                    break;
+            }
+
+            return new ParsedGeneral(reply.UnparsedTokens);
         }
 
         protected override string GetName()

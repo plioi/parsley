@@ -25,6 +25,18 @@ namespace Parsley.Parsers
             return reply;
         }
 
+        public override IGeneralReply ParseGeneral(TokenStream tokens)
+        {
+            var oldPosition = tokens.Position;
+            var reply = _parser.ParseGeneral(tokens);
+            var newPosition = reply.UnparsedTokens.Position;
+
+            if (reply.Success || oldPosition == newPosition)
+                return new ParsedGeneral(reply.UnparsedTokens);
+
+            return reply;
+        }
+
         protected override string GetName() => $"<? {_parser.Name} : {_defaultValue}>";
         
         private readonly IParser<TItem> _parser;
