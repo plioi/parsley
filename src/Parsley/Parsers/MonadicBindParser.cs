@@ -26,7 +26,7 @@ namespace Parsley.Parsers
         /// Parsing optimized for the case when the reply value is not needed. NOTE: Result continuation will not be called.
         /// </summary>
         /// <param name="tokens">Tokens to parse</param>
-        public override IGeneralReply ParseGeneral(TokenStream tokens) => _parser.ParseGeneral(tokens);
+        public override IReplyG ParseG(TokenStream tokens) => _parser.ParseG(tokens);
 
         protected override string GetName() => $"<BIND {_parser.Name} TO {typeof(TResult)}>";
         

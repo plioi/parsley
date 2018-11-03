@@ -17,9 +17,9 @@ namespace Parsley.Parsers
         private readonly QuantificationRule _quantificationRule;
         private readonly int _n;
         private readonly int _m;
-        private readonly IGeneralParser _itemSeparator;
+        private readonly IParserG _itemSeparator;
         
-        public QuantifiedParser(IParser<TItem> item, QuantificationRule quantificationRule, int n, int m = -1, IGeneralParser itemSeparator = null)
+        public QuantifiedParser(IParser<TItem> item, QuantificationRule quantificationRule, int n, int m = -1, IParserG itemSeparator = null)
         {
             _item = item ?? throw new ArgumentNullException(nameof(item));
 
@@ -103,7 +103,7 @@ namespace Parsley.Parsers
                 {
                     var o = newPosition;
 
-                    var r = _itemSeparator.ParseGeneral(reply.UnparsedTokens);
+                    var r = _itemSeparator.ParseG(reply.UnparsedTokens);
 
                     unparsedTokens = r.UnparsedTokens;
                     newPosition = unparsedTokens.Position;
@@ -167,10 +167,10 @@ namespace Parsley.Parsers
             return new Parsed<IList<TItem>>(list, reply.UnparsedTokens, reply.ErrorMessages);
         }
 
-        public override IGeneralReply ParseGeneral(TokenStream tokens)
+        public override IReplyG ParseG(TokenStream tokens)
         {
             var oldPosition = tokens.Position;
-            var reply = _item.ParseGeneral(tokens);
+            var reply = _item.ParseG(tokens);
             var newPosition = reply.UnparsedTokens.Position;
 
             var times = 0;
@@ -189,21 +189,21 @@ namespace Parsley.Parsers
                 {
                     case QuantificationRule.ExactlyN:
                         if (times > _n)
-                            return new ErrorGeneral(
+                            return new ErrorG(
                                 reply.UnparsedTokens,
                                 ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item.Name} occurring no more than exactly {_n} times"))
                             );
                         break;
                     case QuantificationRule.NtoM:
                         if (times > _m)
-                            return new ErrorGeneral(
+                            return new ErrorG(
                                 reply.UnparsedTokens,
                                 ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item.Name} occurring no more than between {_n} and {_m} times"))
                             );
                         break;
                     case QuantificationRule.NOrLess:
                         if (times > _n)
-                            return new ErrorGeneral(
+                            return new ErrorG(
                                 reply.UnparsedTokens,
                                 ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item.Name} occurring no more than {_n} times"))
                             );
@@ -216,7 +216,7 @@ namespace Parsley.Parsers
                 {
                     var o = newPosition;
 
-                    var r = _itemSeparator.ParseGeneral(reply.UnparsedTokens);
+                    var r = _itemSeparator.ParseG(reply.UnparsedTokens);
 
                     unparsedTokens = r.UnparsedTokens;
                     newPosition = unparsedTokens.Position;
@@ -232,30 +232,30 @@ namespace Parsley.Parsers
                 if (separatorParserIsPresent && !separatorWasParsed)
                     break;
 
-                reply = _item.ParseGeneral(unparsedTokens);
+                reply = _item.ParseG(unparsedTokens);
 
                 if (!reply.Success && separatorParserIsPresent)
-                    return new ErrorGeneral(reply.UnparsedTokens, reply.ErrorMessages);
+                    return new ErrorG(reply.UnparsedTokens, reply.ErrorMessages);
 
                 newPosition = reply.UnparsedTokens.Position;
             }
 
             //The item parser finally failed or the separator parser parsed the next separator, but there was no item following it
             if (oldPosition != newPosition || separatorParserIsPresent && separatorWasParsed)
-                return new ErrorGeneral(reply.UnparsedTokens, reply.ErrorMessages);
+                return new ErrorG(reply.UnparsedTokens, reply.ErrorMessages);
 
             switch (_quantificationRule)
             {
                 case QuantificationRule.NOrMore:
                     if (times < _n)
-                        return new ErrorGeneral(
+                        return new ErrorG(
                             reply.UnparsedTokens,
                             ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item.Name} occurring {_n}+ times"))
                         );
                     break;
                 case QuantificationRule.ExactlyN:
                     if (times != _n)
-                        return new ErrorGeneral(
+                        return new ErrorG(
                             reply.UnparsedTokens,
                             ErrorMessageList.Empty.With(ErrorMessage.Expected(
                                 string.Format("{0} occurring no {1} than exactly {2} times", _item.Name, times > _n ? "more" : "less", _n))
@@ -263,21 +263,21 @@ namespace Parsley.Parsers
                     break;
                 case QuantificationRule.NtoM:
                     if (times < _n)
-                        return new ErrorGeneral(
+                        return new ErrorG(
                             reply.UnparsedTokens,
                             ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item.Name} occurring no less than between {_n} and {_m} times"))
                         );
                     break;
                 case QuantificationRule.NOrLess:
                     if (times > _n)
-                        return new ErrorGeneral(
+                        return new ErrorG(
                             reply.UnparsedTokens,
                             ErrorMessageList.Empty.With(ErrorMessage.Expected($"{_item.Name} occurring no more than {_n} times"))
                         );
                     break;
             }
 
-            return new ParsedGeneral(reply.UnparsedTokens);
+            return new ParsedG(reply.UnparsedTokens);
         }
 
         protected override string GetName()

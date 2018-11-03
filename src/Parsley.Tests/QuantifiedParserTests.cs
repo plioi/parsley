@@ -32,13 +32,13 @@ namespace Parsley.Tests
                     r.Success.ShouldBe(true);
                     r.Value.Count.ShouldBe(i);
 
-                    parser.ParseGeneral(AsteriscStream(i)).Success.ShouldBe(true);
+                    parser.ParseG(AsteriscStream(i)).Success.ShouldBe(true);
                 }
 
                 for (var i = n - 1; i >= 0; --i)
                 {
                     parser.Parse(AsteriscStream(i)).Success.ShouldBe(false);
-                    parser.ParseGeneral(AsteriscStream(i)).Success.ShouldBe(false);
+                    parser.ParseG(AsteriscStream(i)).Success.ShouldBe(false);
                 }
             }
 
@@ -53,13 +53,13 @@ namespace Parsley.Tests
                     r.Success.ShouldBe(true);
                     r.Value.Count.ShouldBe(i);
 
-                    parser.ParseGeneral(AsteriscStream(i, true)).Success.ShouldBe(true);
+                    parser.ParseG(AsteriscStream(i, true)).Success.ShouldBe(true);
                 }
 
                 for (var i = n - 1; i >= 0; --i)
                 {
                     parser.Parse(AsteriscStream(i, true)).Success.ShouldBe(false);
-                    parser.ParseGeneral(AsteriscStream(i, true)).Success.ShouldBe(false);
+                    parser.ParseG(AsteriscStream(i, true)).Success.ShouldBe(false);
                 }
             }
         }
@@ -74,7 +74,7 @@ namespace Parsley.Tests
                 for (var i = n - 1; i >= 0; --i)
                 {
                     parser.Parse(AsteriscStream(i)).Success.ShouldBe(false);
-                    parser.ParseGeneral(AsteriscStream(i)).Success.ShouldBe(false);
+                    parser.ParseG(AsteriscStream(i)).Success.ShouldBe(false);
                 }
 
                 var r = parser.Parse(AsteriscStream(n));
@@ -82,12 +82,12 @@ namespace Parsley.Tests
                     r.Success.ShouldBe(true);
                     r.Value.Count.ShouldBe(n);
 
-                parser.ParseGeneral(AsteriscStream(n)).Success.ShouldBe(true);
+                parser.ParseG(AsteriscStream(n)).Success.ShouldBe(true);
 
                 for (var i = n + 1; i < n + 15; ++i)
                 {
                     parser.Parse(AsteriscStream(i)).Success.ShouldBe(false);
-                    parser.ParseGeneral(AsteriscStream(i)).Success.ShouldBe(false);
+                    parser.ParseG(AsteriscStream(i)).Success.ShouldBe(false);
                 }
             }
 
@@ -98,7 +98,7 @@ namespace Parsley.Tests
                 for (var i = n - 1; i >= 0; --i)
                 {
                     parser.Parse(AsteriscStream(i, true)).Success.ShouldBe(false);
-                    parser.ParseGeneral(AsteriscStream(i, true)).Success.ShouldBe(false);
+                    parser.ParseG(AsteriscStream(i, true)).Success.ShouldBe(false);
                 }
 
                 var r = parser.Parse(AsteriscStream(n, true));
@@ -106,12 +106,12 @@ namespace Parsley.Tests
                 r.Success.ShouldBe(true);
                 r.Value.Count.ShouldBe(n);
 
-                parser.ParseGeneral(AsteriscStream(n, true)).Success.ShouldBe(true);
+                parser.ParseG(AsteriscStream(n, true)).Success.ShouldBe(true);
 
                 for (var i = n + 1; i < n + 15; ++i)
                 {
                     parser.Parse(AsteriscStream(i, true)).Success.ShouldBe(false);
-                    parser.ParseGeneral(AsteriscStream(i, true)).Success.ShouldBe(false);
+                    parser.ParseG(AsteriscStream(i, true)).Success.ShouldBe(false);
                 }
             }
         }
@@ -127,7 +127,7 @@ namespace Parsley.Tests
                     for (var i = 0; i < n; ++i)
                     {
                         parser.Parse(AsteriscStream(i)).Success.ShouldBe(false);
-                        parser.ParseGeneral(AsteriscStream(i)).Success.ShouldBe(false);
+                        parser.ParseG(AsteriscStream(i)).Success.ShouldBe(false);
                     }
 
                     for (var i = n; i <= m; ++i)
@@ -137,13 +137,13 @@ namespace Parsley.Tests
                         r.Success.ShouldBe(true);
                         r.Value.Count.ShouldBe(i);
 
-                        parser.ParseGeneral(AsteriscStream(i)).Success.ShouldBe(true);
+                        parser.ParseG(AsteriscStream(i)).Success.ShouldBe(true);
                     }
 
                     for (var i = m + 1; i < m + 15; ++i)
                     {
                         parser.Parse(AsteriscStream(i)).Success.ShouldBe(false);
-                        parser.ParseGeneral(AsteriscStream(i)).Success.ShouldBe(false);
+                        parser.ParseG(AsteriscStream(i)).Success.ShouldBe(false);
                     }
                 }
 
@@ -155,7 +155,7 @@ namespace Parsley.Tests
                     for (var i = 0; i < n; ++i)
                     {
                         parser.Parse(AsteriscStream(i, true)).Success.ShouldBe(false);
-                        parser.ParseGeneral(AsteriscStream(i, true)).Success.ShouldBe(false);
+                        parser.ParseG(AsteriscStream(i, true)).Success.ShouldBe(false);
                     }
 
                     for (var i = n; i <= m; ++i)
@@ -165,13 +165,13 @@ namespace Parsley.Tests
                         r.Success.ShouldBe(true);
                         r.Value.Count.ShouldBe(i);
 
-                        parser.ParseGeneral(AsteriscStream(i, true)).Success.ShouldBe(true);
+                        parser.ParseG(AsteriscStream(i, true)).Success.ShouldBe(true);
                     }
 
                     for (var i = m + 1; i < m + 15; ++i)
                     {
                         parser.Parse(AsteriscStream(i, true)).Success.ShouldBe(false);
-                        parser.ParseGeneral(AsteriscStream(i, true)).Success.ShouldBe(false);
+                        parser.ParseG(AsteriscStream(i, true)).Success.ShouldBe(false);
                     }
                 }
         }
@@ -190,13 +190,13 @@ namespace Parsley.Tests
                     r.Success.ShouldBe(true);
                     r.Value.Count.ShouldBe(i);
 
-                    parser.ParseGeneral(AsteriscStream(i)).Success.ShouldBe(true);
+                    parser.ParseG(AsteriscStream(i)).Success.ShouldBe(true);
                 }
 
                 for (var i = n + 1; i <= n + 15; ++i)
                 {
                     parser.Parse(AsteriscStream(i)).Success.ShouldBe(false);
-                    parser.ParseGeneral(AsteriscStream(i)).Success.ShouldBe(false);
+                    parser.ParseG(AsteriscStream(i)).Success.ShouldBe(false);
                 }
             }
 
@@ -211,13 +211,13 @@ namespace Parsley.Tests
                     r.Success.ShouldBe(true);
                     r.Value.Count.ShouldBe(i);
 
-                    parser.ParseGeneral(AsteriscStream(i, true)).Success.ShouldBe(true);
+                    parser.ParseG(AsteriscStream(i, true)).Success.ShouldBe(true);
                 }
 
                 for (var i = n + 1; i <= n + 15; ++i)
                 {
                     parser.Parse(AsteriscStream(i, true)).Success.ShouldBe(false);
-                    parser.ParseGeneral(AsteriscStream(i, true)).Success.ShouldBe(false);
+                    parser.ParseG(AsteriscStream(i, true)).Success.ShouldBe(false);
                 }
             }
         }

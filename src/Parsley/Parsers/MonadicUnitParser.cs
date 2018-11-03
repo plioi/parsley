@@ -13,7 +13,7 @@
         /// Parsing optimized for the case when the reply value is not needed.
         /// </summary>
         /// <param name="tokens">Tokens to parse</param>
-        public override IGeneralReply ParseGeneral(TokenStream tokens) => new ParsedGeneral(tokens);
+        public override IReplyG ParseG(TokenStream tokens) => new ParsedG(tokens);
 
         private readonly T _value;
 

@@ -47,10 +47,10 @@ namespace Parsley.Parsers
             return reply;
         }
 
-        public override IGeneralReply ParseGeneral(TokenStream tokens)
+        public override IReplyG ParseG(TokenStream tokens)
         {
             var oldPosition = tokens.Position;
-            var reply = _parsers[0].ParseGeneral(tokens);
+            var reply = _parsers[0].ParseG(tokens);
             var newPosition = reply.UnparsedTokens.Position;
 
             var errors = ErrorMessageList.Empty;
@@ -59,7 +59,7 @@ namespace Parsley.Parsers
             while (!reply.Success && oldPosition == newPosition && i < _parsers.Length)
             {
                 errors = errors.Merge(reply.ErrorMessages);
-                reply = _parsers[i].ParseGeneral(tokens);
+                reply = _parsers[i].ParseG(tokens);
                 newPosition = reply.UnparsedTokens.Position;
                 i++;
             }
@@ -67,7 +67,7 @@ namespace Parsley.Parsers
             if (oldPosition == newPosition)
             {
                 if (reply.Success)
-                    return new ParsedGeneral(reply.UnparsedTokens);
+                    return new ParsedG(reply.UnparsedTokens);
 
                 return new Error<T>(reply.UnparsedTokens, errors.Merge(reply.ErrorMessages));
             }

@@ -8,7 +8,7 @@
         /// Parsing optimized for the case when the reply value is not needed.
         /// </summary>
         /// <param name="tokens">Tokens to parse.</param>
-        public virtual IGeneralReply ParseGeneral(TokenStream tokens)
+        public virtual IReplyG ParseG(TokenStream tokens)
         {
             return Parse(tokens);
         }
