@@ -8,7 +8,7 @@ namespace Parsley.Tests
         [Fact]
         public void ParsesNameValuePairs()
         {
-            var parser = NameValuePair(Token(NvpLexer.Name), Token(NvpLexer.Delimiter), Token(NvpLexer.Value));
+            var parser = NameValuePair(Token(NvpLexer.Name), TokenGeneral(NvpLexer.Delimiter), Token(NvpLexer.Value));
 
             parser.Parses(Tokenize("A=B")).AtEndOfInput();
 

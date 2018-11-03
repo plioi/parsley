@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Parsley.Parsers
 {
-    public class NameValuePairParser<TName, TDelimiter, TValue> : Parser<KeyValuePair<TName, TValue>>
+    public class NameValuePairParser<TName, TValue> : Parser<KeyValuePair<TName, TValue>>
     {
-        public NameValuePairParser(IParser<TName> name, IParser<TDelimiter> delimiter, IParser<TValue> value)
+        public NameValuePairParser(IParser<TName> name, IGeneralParser delimiter, IParser<TValue> value)
         {
             _name = name ?? throw new ArgumentNullException(nameof(name));
             _delimiter = delimiter ?? throw new ArgumentNullException(nameof(delimiter));
@@ -21,7 +21,7 @@ namespace Parsley.Parsers
             if (!name.Success)
                 return Error<KeyValuePair<TName, TValue>>.From(name);
 
-            var delimiter = _delimiter.Parse(name.UnparsedTokens);
+            var delimiter = _delimiter.ParseGeneral(name.UnparsedTokens);
 
             if (!delimiter.Success)
                 return Error<KeyValuePair<TName, TValue>>.From(delimiter);
@@ -41,7 +41,7 @@ namespace Parsley.Parsers
             if (!name.Success)
                 return name;
 
-            var delimiter = _delimiter.Parse(name.UnparsedTokens);
+            var delimiter = _delimiter.ParseGeneral(name.UnparsedTokens);
 
             if (!delimiter.Success)
                 return delimiter;
@@ -50,7 +50,7 @@ namespace Parsley.Parsers
         }
 
         private readonly IParser<TName> _name;
-        private readonly IParser<TDelimiter> _delimiter;
+        private readonly IGeneralParser _delimiter;
         private readonly IParser<TValue> _value;
     }
 }

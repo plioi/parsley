@@ -11,14 +11,18 @@ namespace Parsley
             
             => new FailingParser<TItem>();
 
-        public static IParser<Token> EndOfInput
+        public static IGeneralParser EndOfInput
             
-            => Token(TokenKind.EndOfInput);
+            => new TokenByKindGeneralParser(TokenKind.EndOfInput);
 
         public static IParser<Token> Token(TokenKind kind)
             
             => new TokenByKindParser(kind);
 
+        public static IGeneralParser TokenGeneral(TokenKind kind)
+
+            => new TokenByKindGeneralParser(kind);
+        
         public static IParser<Token> Token(string expectation)
             
             => new TokenByLiteralParser(expectation);
@@ -131,10 +135,10 @@ namespace Parsley
             
             => new ConstantParser<TItem>(kind, constant);
 
-        public static IParser<KeyValuePair<TName, TValue>> NameValuePair<TName, TDelimiter, TValue>(IParser<TName> name,
-            IParser<TDelimiter> delimiter, IParser<TValue> value)
+        public static IParser<KeyValuePair<TName, TValue>> NameValuePair<TName, TValue>(IParser<TName> name,
+            IGeneralParser delimiter, IParser<TValue> value)
 
-            => new NameValuePairParser<TName, TDelimiter, TValue>(name, delimiter, value);
+            => new NameValuePairParser<TName, TValue>(name, delimiter, value);
 
         public static IParser<TResult> OccupiesEntireInput<TResult>(IParser<TResult> parser)
         {

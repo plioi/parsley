@@ -37,7 +37,7 @@ namespace Parsley.Parsers
             return reply;
         }
 
-        protected override string GetName() => $"<? {_parser.Name} : {_defaultValue}>";
+        protected override string GetName() => $"<? {_parser.Name} ?? {_defaultValue}>";
         
         private readonly IParser<TItem> _parser;
         private readonly TItem _defaultValue;

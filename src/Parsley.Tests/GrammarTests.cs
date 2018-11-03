@@ -55,7 +55,7 @@ namespace Parsley.Tests
         [Fact]
         public void CanDetectTheEndOfInputWithoutAdvancing()
         {
-            EndOfInput.Parses(Tokenize("")).WithValue(Literal(""));
+            EndOfInput.Parses(Tokenize(""));
             EndOfInput.FailsToParse(Tokenize("!")).LeavingUnparsedTokens("!").WithMessage("(1, 1): end of input expected");
         }
 
