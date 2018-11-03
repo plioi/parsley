@@ -7,7 +7,7 @@ namespace Parsley.Tests
 {
     public class QuantifiedParserTests
     {
-        private static string Asterisc = "*";
+        private static readonly string Asterisc = "*";
         private static readonly TokenKind AsteriscToken = new Operator(Asterisc);
         private static readonly Lexer AsteriscLexer = new Lexer(AsteriscToken);
         private static readonly IParser<Token> AsteriscParser = Grammar.Token(AsteriscToken);
@@ -17,13 +17,23 @@ namespace Parsley.Tests
         {
             for (int n = 0; n < 10; ++n)
             {
-                var parser = new QuantifiedParser<Token, Token>(AsteriscParser, QuantificationRule.NOrMore, n);
+                var parser = new QuantifiedParser<Token>(AsteriscParser, QuantificationRule.NOrMore, n);
 
                 for (var i = n; i < n + 15; ++i)
-                    parser.Parse(AsteriscStream(i)).Success.ShouldBe(true);
+                {
+                    var r = parser.Parse(AsteriscStream(i));
+
+                    r.Success.ShouldBe(true);
+                    r.Value.Count.ShouldBe(i);
+
+                    parser.ParseGeneral(AsteriscStream(i)).Success.ShouldBe(true);
+                }
 
                 for (var i = n - 1; i >= 0; --i)
+                {
                     parser.Parse(AsteriscStream(i)).Success.ShouldBe(false);
+                    parser.ParseGeneral(AsteriscStream(i)).Success.ShouldBe(false);
+                }
             }
         }
 
@@ -32,15 +42,26 @@ namespace Parsley.Tests
         {
             for (int n = 0; n < 15; ++n)
             {
-                var parser = new QuantifiedParser<Token, Token>(AsteriscParser, QuantificationRule.ExactlyN, n);
+                var parser = new QuantifiedParser<Token>(AsteriscParser, QuantificationRule.ExactlyN, n);
 
                 for (var i = n - 1; i >= 0; --i)
+                {
                     parser.Parse(AsteriscStream(i)).Success.ShouldBe(false);
+                    parser.ParseGeneral(AsteriscStream(i)).Success.ShouldBe(false);
+                }
 
-                parser.Parse(AsteriscStream(n)).Success.ShouldBe(true);
+                var r = parser.Parse(AsteriscStream(n));
+
+                    r.Success.ShouldBe(true);
+                    r.Value.Count.ShouldBe(n);
+
+                parser.ParseGeneral(AsteriscStream(n)).Success.ShouldBe(true);
 
                 for (var i = n + 1; i < n + 15; ++i)
+                {
                     parser.Parse(AsteriscStream(i)).Success.ShouldBe(false);
+                    parser.ParseGeneral(AsteriscStream(i)).Success.ShouldBe(false);
+                }
             }
         }
 
@@ -50,16 +71,29 @@ namespace Parsley.Tests
             for (int n = 0; n < 15; ++n)
                 for (int m = n; m < n + 10; ++m)
                 {
-                    var parser = new QuantifiedParser<Token, Token>(AsteriscParser, QuantificationRule.NtoM, n, m);
+                    var parser = new QuantifiedParser<Token>(AsteriscParser, QuantificationRule.NtoM, n, m);
 
                     for (var i = 0; i < n; ++i)
+                    {
                         parser.Parse(AsteriscStream(i)).Success.ShouldBe(false);
+                        parser.ParseGeneral(AsteriscStream(i)).Success.ShouldBe(false);
+                    }
 
                     for (var i = n; i <= m; ++i)
-                        parser.Parse(AsteriscStream(i)).Success.ShouldBe(true);
+                    {
+                        var r = parser.Parse(AsteriscStream(i));
+
+                        r.Success.ShouldBe(true);
+                        r.Value.Count.ShouldBe(i);
+
+                        parser.ParseGeneral(AsteriscStream(i)).Success.ShouldBe(true);
+                    }
 
                     for (var i = m + 1; i < m + 15; ++i)
+                    {
                         parser.Parse(AsteriscStream(i)).Success.ShouldBe(false);
+                        parser.ParseGeneral(AsteriscStream(i)).Success.ShouldBe(false);
+                    }
                 }
         }
 
@@ -68,13 +102,23 @@ namespace Parsley.Tests
         {
             for (int n = 0; n < 15; ++n)
             {
-                var parser = new QuantifiedParser<Token, Token>(AsteriscParser, QuantificationRule.NOrLess, n);
+                var parser = new QuantifiedParser<Token>(AsteriscParser, QuantificationRule.NOrLess, n);
 
-                for (var i = 0; i <= n ; ++i)
-                    parser.Parse(AsteriscStream(i)).Success.ShouldBe(true);
+                for (var i = 0; i <= n; ++i)
+                {
+                    var r = parser.Parse(AsteriscStream(i));
+
+                    r.Success.ShouldBe(true);
+                    r.Value.Count.ShouldBe(i);
+
+                    parser.ParseGeneral(AsteriscStream(i)).Success.ShouldBe(true);
+                }
 
                 for (var i = n + 1; i <= n + 15; ++i)
+                {
                     parser.Parse(AsteriscStream(i)).Success.ShouldBe(false);
+                    parser.ParseGeneral(AsteriscStream(i)).Success.ShouldBe(false);
+                }
             }
         }
 

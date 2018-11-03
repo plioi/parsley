@@ -23,6 +23,8 @@
             return new Error<T>(reply.UnparsedTokens, _errors);
         }
 
+        public override IGeneralReply ParseGeneral(TokenStream tokens) => _parser.ParseGeneral(tokens);
+
         protected override string GetName() => $"<LABEL {_parser.Name} WITH {_errors}";
 
         private readonly IParser<T> _parser;

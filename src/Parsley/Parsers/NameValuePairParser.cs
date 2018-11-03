@@ -34,6 +34,21 @@ namespace Parsley.Parsers
             return new Parsed<KeyValuePair<TName, TValue>>(new KeyValuePair<TName, TValue>(name.Value, value.Value), value.UnparsedTokens, value.ErrorMessages);
         }
 
+        public override IGeneralReply ParseGeneral(TokenStream tokens)
+        {
+            var name = _name.ParseGeneral(tokens);
+
+            if (!name.Success)
+                return name;
+
+            var delimiter = _delimiter.Parse(name.UnparsedTokens);
+
+            if (!delimiter.Success)
+                return delimiter;
+
+            return _value.Parse(delimiter.UnparsedTokens);
+        }
+
         private readonly IParser<TName> _name;
         private readonly IParser<TDelimiter> _delimiter;
         private readonly IParser<TValue> _value;

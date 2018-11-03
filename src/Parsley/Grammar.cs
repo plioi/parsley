@@ -31,53 +31,53 @@ namespace Parsley
         /// </summary>
         public static IParser<IList<TItem>> ZeroOrMore<TItem>(IParser<TItem> item)
 
-            => new QuantifiedParser<TItem, TItem>(item, QuantificationRule.NOrMore, 0);
+            => new QuantifiedParser<TItem>(item, QuantificationRule.NOrMore, 0);
 
         /// <summary>
         /// OneOrMore(p) behaves like ZeroOrMore(p), except that p must succeed at least one time.
         /// </summary>
         public static IParser<IList<TItem>> OneOrMore<TItem>(IParser<TItem> item)
 
-            => new QuantifiedParser<TItem, TItem>(item, QuantificationRule.NOrMore, 1);
+            => new QuantifiedParser<TItem>(item, QuantificationRule.NOrMore, 1);
 
         /// <summary>
         /// ZeroOrMore(p, s) parses zero or more occurrences of p separated by occurrences of s,
         /// returning the list of values returned by successful applications of p.
         /// </summary>
-        public static IParser<IList<TItem>> ZeroOrMore<TItem, TSeparator>(IParser<TItem> item, IParser<TSeparator> separator)
+        public static IParser<IList<TItem>> ZeroOrMore<TItem>(IParser<TItem> item, IGeneralParser separator)
 
-            => new QuantifiedParser<TItem, TSeparator>(item, QuantificationRule.NOrMore, 0, -1, separator);
+            => new QuantifiedParser<TItem>(item, QuantificationRule.NOrMore, 0, -1, separator);
 
         /// <summary>
         /// OneOrMore(p, s) behaves like ZeroOrMore(p, s), except that p must succeed at least one time.
         /// </summary>
-        public static IParser<IList<TItem>> OneOrMore<TItem, TSeparator>(IParser<TItem> item, IParser<TSeparator> separator)
+        public static IParser<IList<TItem>> OneOrMore<TItem>(IParser<TItem> item, IGeneralParser separator)
             
-            => new QuantifiedParser<TItem, TSeparator>(item, QuantificationRule.NOrMore, 1, -1, separator);
+            => new QuantifiedParser<TItem>(item, QuantificationRule.NOrMore, 1, -1, separator);
 
-        public static IParser<IList<TItem>> NOrMore<TItem, TSeparator>(int n, IParser<TItem> item, IParser<TSeparator> separator)
+        public static IParser<IList<TItem>> NOrMore<TItem>(int n, IParser<TItem> item, IGeneralParser separator)
 
-            => new QuantifiedParser<TItem, TSeparator>(item, QuantificationRule.NOrMore, n, -1, separator);
+            => new QuantifiedParser<TItem>(item, QuantificationRule.NOrMore, n, -1, separator);
 
-        public static IParser<IList<TItem>> NOrLess<TItem, TSeparator>(int n, IParser<TItem> item, IParser<TSeparator> separator)
+        public static IParser<IList<TItem>> NOrLess<TItem>(int n, IParser<TItem> item, IGeneralParser separator)
 
-            => new QuantifiedParser<TItem, TSeparator>(item, QuantificationRule.NOrLess, n, -1, separator);
+            => new QuantifiedParser<TItem>(item, QuantificationRule.NOrLess, n, -1, separator);
 
-        public static IParser<IList<TItem>> NToMTimes<TItem, TSeparator>(int n, int m, IParser<TItem> item, IParser<TSeparator> separator)
+        public static IParser<IList<TItem>> NToMTimes<TItem>(int n, int m, IParser<TItem> item, IGeneralParser separator)
             
-            => new QuantifiedParser<TItem, TSeparator>(item, QuantificationRule.NtoM, n, m, separator);
+            => new QuantifiedParser<TItem>(item, QuantificationRule.NtoM, n, m, separator);
 
-        public static IParser<IList<TItem>> NTimesExactly<TItem, TSeparator>(int n, IParser<TItem> item, IParser<TSeparator> separator)
+        public static IParser<IList<TItem>> NTimesExactly<TItem>(int n, IParser<TItem> item, IGeneralParser separator)
 
-            => new QuantifiedParser<TItem, TSeparator>(item, QuantificationRule.ExactlyN, n, -1, separator);
+            => new QuantifiedParser<TItem>(item, QuantificationRule.ExactlyN, n, -1, separator);
 
         /// <summary>
         /// Between(left, goal, right) parses its arguments in order.  If all three
         /// parsers succeed, the result of the goal parser is returned.
         /// </summary>
-        public static IParser<TItem> Between<TLeft, TItem, TRight>(IParser<TLeft> left, IParser<TItem> item, IParser<TRight> right)
+        public static IParser<TItem> Between<TItem>(IGeneralParser left, IParser<TItem> item, IGeneralParser right)
 
-            => new BetweenParser<TLeft, TItem, TRight>(left, item, right);
+            => new BetweenParser<TItem>(left, item, right);
 
         /// <summary>
         /// Optional(p) is equivalent to p whenever p succeeds or when p fails after consuming input.

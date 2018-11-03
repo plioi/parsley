@@ -2,9 +2,9 @@
 
 namespace Parsley.Parsers
 {
-    public class BetweenParser<TLeft, TItem, TRight> : Parser<TItem>
+    public class BetweenParser<TItem> : Parser<TItem>
     {
-        public BetweenParser(IParser<TLeft> left, IParser<TItem> item, IParser<TRight> right)
+        public BetweenParser(IGeneralParser left, IParser<TItem> item, IGeneralParser right)
         {
             _left = left ?? throw new ArgumentNullException(nameof(left));
             _item = item ?? throw new ArgumentNullException(nameof(item));
@@ -13,7 +13,7 @@ namespace Parsley.Parsers
 
         public override IReply<TItem> Parse(TokenStream tokens)
         {
-            var left = _left.Parse(tokens);
+            var left = _left.ParseGeneral(tokens);
 
             if (!left.Success)
                 return Error<TItem>.From(left);
@@ -23,7 +23,7 @@ namespace Parsley.Parsers
             if (!item.Success)
                 return item;
 
-            var right = _right.Parse(item.UnparsedTokens);
+            var right = _right.ParseGeneral(item.UnparsedTokens);
 
             if (!right.Success)
                 return Error<TItem>.From(right);
@@ -31,10 +31,25 @@ namespace Parsley.Parsers
             return new Parsed<TItem>(item.Value, right.UnparsedTokens, right.ErrorMessages);
         }
 
+        public override IGeneralReply ParseGeneral(TokenStream tokens)
+        {
+            var left = _left.ParseGeneral(tokens);
+
+            if (!left.Success)
+                return left;
+
+            var item = _item.ParseGeneral(left.UnparsedTokens);
+
+            if (!item.Success)
+                return item;
+
+            return _right.ParseGeneral(item.UnparsedTokens);
+        }
+
         protected override string GetName() => $"<({_left.Name}|{_item.Name}|{_right.Name})>";
         
-        private readonly IParser<TLeft> _left;
+        private readonly IGeneralParser _left;
         private readonly IParser<TItem> _item;
-        private readonly IParser<TRight> _right;
+        private readonly IGeneralParser _right;
     }
 }
