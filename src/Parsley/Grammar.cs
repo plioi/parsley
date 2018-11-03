@@ -138,22 +138,22 @@ namespace Parsley
 
         public static IParser<TResult> OccupiesEntireInput<TResult>(IParser<TResult> parser)
         {
-            return new FollowedByParser<TResult, Token>(parser, EndOfInput);
+            return new FollowedByParser<TResult>(parser, EndOfInput);
         }
 
         protected void InferGrammarRuleNames()
         {
-            var ruleNames =
+            var rules =
                 GetType()
                     .GetRuntimeFields()
                     .Where(grammarRuleField => grammarRuleField.FieldType.GetInterface(nameof(INamedInternal)) != null)
                     .Select(grammarRuleField => new { Rule = (INamedInternal)grammarRuleField.GetValue(this), grammarRuleField.Name })
                     .Where(ruleName => ruleName.Rule != null);
 
-            foreach (var ruleName in ruleNames)
+            foreach (var rule in rules)
             {
-                if (ruleName.Rule.Name == null)
-                    ruleName.Rule.SetName(ruleName.Name);
+                if (rule.Rule.Name == null)
+                    rule.Rule.SetName(rule.Name);
             }
         }
     }
