@@ -43,15 +43,33 @@
 
         public static IReply<T> FailsToParse<T>(this IParser<T> parser, IEnumerable<Token> tokens)
         {
-            var reply = parser.Parse(new TokenStream(tokens));
+            var stream = new TokenStream(tokens);
+
+            var reply = parser.Parse(stream);
             
+            if (reply.Success)
+                throw new AssertionException("parser failure", "parser completed successfully");
+
+            var gReply = parser.ParseGeneral(stream);
+
+            if (gReply.Success)
+                throw new AssertionException("general parser failure", "general parser completed successfully");
+
+            return reply;
+        }
+
+        public static IGeneralReply FailsToParse(this IGeneralParser parser, IEnumerable<Token> tokens)
+        {
+            var reply = parser.ParseGeneral(new TokenStream(tokens));
+
             if (reply.Success)
                 throw new AssertionException("parser failure", "parser completed successfully");
 
             return reply;
         }
 
-        public static IReply<T> WithMessage<T>(this IReply<T> reply, string expectedMessage)
+        public static TReply WithMessage<TReply>(this TReply reply, string expectedMessage)
+            where TReply : IGeneralReply
         {
             var position = reply.UnparsedTokens.Position;
             var actual = position + ": " + reply.ErrorMessages;
@@ -62,7 +80,8 @@
             return reply;
         }
 
-        public static IReply<T> WithNoMessage<T>(this IReply<T> reply)
+        public static TReply WithNoMessage<TReply>(this TReply reply)
+            where TReply : IGeneralReply
         {
             if (reply.ErrorMessages != ErrorMessageList.Empty)
                 throw new AssertionException("no error message", reply.ErrorMessages);
@@ -72,15 +91,36 @@
 
         public static IReply<T> PartiallyParses<T>(this IParser<T> parser, IEnumerable<Token> tokens)
         {
-            return parser.Parse(new TokenStream(tokens)).Succeeds();
+            var stream = new TokenStream(tokens);
+
+            parser.ParseGeneral(stream).Succeeds();
+
+            return parser.Parse(stream).Succeeds();
+        }
+
+        public static IGeneralReply PartiallyParses(this IGeneralParser parser, IEnumerable<Token> tokens)
+        {
+            var stream = new TokenStream(tokens);
+
+            return parser.ParseGeneral(stream).Succeeds();
         }
 
         public static IReply<T> Parses<T>(this IParser<T> parser, IEnumerable<Token> tokens)
         {
-            return parser.Parse(new TokenStream(tokens)).Succeeds().AtEndOfInput();
+            var stream = new TokenStream(tokens);
+
+            parser.ParseGeneral(stream).Succeeds().AtEndOfInput();
+
+            return parser.Parse(stream).Succeeds().AtEndOfInput();
         }
 
-        private static IReply<T> Succeeds<T>(this IReply<T> reply)
+        public static IGeneralReply Parses(this IGeneralParser parser, IEnumerable<Token> tokens)
+        {
+            return parser.ParseGeneral(new TokenStream(tokens)).Succeeds().AtEndOfInput();
+        }
+
+        private static TReply Succeeds<TReply>(this TReply reply)
+            where TReply : IGeneralReply
         {
             if (!reply.Success)
             {
@@ -93,7 +133,8 @@
             return reply;
         }
 
-        public static IReply<T> LeavingUnparsedTokens<T>(this IReply<T> reply, params string[] expectedLiterals)
+        public static TReply LeavingUnparsedTokens<TReply>(this TReply reply, params string[] expectedLiterals)
+            where TReply : IGeneralReply
         {
             var stream = reply.UnparsedTokens;
 
@@ -120,7 +161,8 @@
             return reply;
         }
 
-        public static IReply<T> AtEndOfInput<T>(this IReply<T> reply)
+        public static TReply AtEndOfInput<TReply>(this TReply reply)
+            where TReply : IGeneralReply
         {
             var nextTokenKind = reply.UnparsedTokens.Current.Kind;
             AssertEqual(TokenKind.EndOfInput, nextTokenKind);
