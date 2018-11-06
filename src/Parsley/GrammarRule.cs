@@ -3,11 +3,6 @@ using System;
 
 namespace Parsley
 {
-    internal interface INamedInternal : INamed
-    {
-        void SetName(string name);
-    }
-
     public class GrammarRule<T> : Parser<T>, INamedInternal
     {
         private IParser<T> _parser;
