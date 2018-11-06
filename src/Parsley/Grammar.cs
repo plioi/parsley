@@ -28,9 +28,14 @@ namespace Parsley
             
             => new TokenByLiteralParser(expectation);
 
-        public static IParser<TResult> MapToken<TResult>(TokenKind kind, Func<string, TResult> resultContinuation)
+        public static IParser<TResult> Token<TResult>(TokenKind kind, Func<string, TResult> resultContinuation)
 
             => new MapTokenLiteralParser<TResult>(kind, resultContinuation);
+
+        public static IParser<string> TokenLiteral(TokenKind kind)
+
+            => new ReturnTokenLiteralParser(kind);
+
 
         /// <summary>
         /// ZeroOrMore(p) repeatedly applies an parser p until it fails, returing

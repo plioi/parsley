@@ -29,10 +29,10 @@ namespace Parsley.Tests.IntegrationTests.Json
                 Constant<object>(JsonLexer.Null, null);
 
             Number.Rule =
-                MapToken(JsonLexer.Number, l => (object)decimal.Parse(l, NumberStyles.Any));
+                Token(JsonLexer.Number, l => (object)decimal.Parse(l, NumberStyles.Any));
 
             Quotation.Rule =
-                MapToken(JsonLexer.Quotation, Unescape);
+                Token(JsonLexer.Quotation, Unescape);
 
             Array.Rule =
                 Between(TokenG(JsonLexer.OpenArray), ZeroOrMore(JsonValue, TokenG(JsonLexer.Comma)), TokenG(JsonLexer.CloseArray));
