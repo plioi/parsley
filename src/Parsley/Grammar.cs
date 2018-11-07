@@ -151,9 +151,13 @@ namespace Parsley
             => new NameValuePairParser<TName, TValue>(name, delimiter, value);
 
         public static IParser<TResult> OccupiesEntireInput<TResult>(IParser<TResult> parser)
-        {
-            return new FollowedByParser<TResult>(parser, EndOfInput);
-        }
+        
+            => new TakeSkipParser<TResult>(parser, EndOfInput);
+
+        public static IParserG Skip(IParserG parser)
+
+            => parser;
+        
 
         protected void InferGrammarRuleNames()
         {
