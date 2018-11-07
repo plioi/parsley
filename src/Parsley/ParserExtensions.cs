@@ -37,9 +37,14 @@ namespace Parsley
             return new BindTokenLiteralParser<TResult>(parser, mapper);
         }
 
-        public static IParser<TResult> FollowedBy<TResult>(this IParser<TResult> item, IParserG following)
+        public static IParser<TResult> ThenSkip<TResult>(this IParser<TResult> item, IParserG following)
         {
-            return new FollowedByParser<TResult>(item, following);
+            return new TakeSkipParser<TResult>(item, following);
+        }
+
+        public static IParser<TResult> Take<TResult>(this IParserG preceding, IParser<TResult> item)
+        {
+            return new SkipTakeParser<TResult>(preceding, item);
         }
     }
 }

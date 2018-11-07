@@ -1,17 +1,12 @@
 ﻿namespace Parsley.Parsers
 {
-    public abstract class Parser<T> : IParser<T>
+    public abstract class Parser : IParserG
     {
-        public abstract IReply<T> Parse(TokenStream tokens);
-
         /// <summary>
         /// Parsing optimized for the case when the reply value is not needed.
         /// </summary>
         /// <param name="tokens">Tokens to parse.</param>
-        public virtual IReplyG ParseG(TokenStream tokens)
-        {
-            return Parse(tokens);
-        }
+        public abstract IReplyG ParseG(TokenStream tokens);
 
         public override string ToString() => Name;
 
@@ -34,6 +29,20 @@
             }
         }
 
-        private bool _nameRecursionGuard = false;
+        private bool _nameRecursionGuard;
+    }
+
+    public abstract class Parser<T> : Parser, IParser<T>
+    {
+        public abstract IReply<T> Parse(TokenStream tokens);
+
+        /// <summary>
+        /// Parsing optimized for the case when the reply value is not needed.
+        /// </summary>
+        /// <param name="tokens">Tokens to parse.</param>
+        public override IReplyG ParseG(TokenStream tokens)
+        {
+            return Parse(tokens);
+        }
     }
 }
