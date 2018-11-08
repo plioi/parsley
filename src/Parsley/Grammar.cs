@@ -157,7 +157,10 @@ namespace Parsley
         public static IParserG Skip(IParserG parser)
 
             => parser;
+
+        public static IParserG Skip(params Parser[] items)
         
+            => new SkipParser(items);
 
         protected void InferGrammarRuleNames()
         {
