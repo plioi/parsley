@@ -1,9 +1,8 @@
-﻿namespace Parsley.Tests
-{
-    using System.Linq;
-    using Shouldly;
-    using Xunit;
+﻿using Shouldly;
+using Xunit;
 
+namespace Parsley.Tests
+{
     public class GrammarRuleTests : Grammar
     {
         [Fact]
@@ -15,8 +14,8 @@
             var parenthesizedExpresion = new GrammarRule<string>();
 
             expression.Rule = Choice(alpha, parenthesizedExpresion);
-            alpha.Rule = from a in Token("A") select a.Literal;
-            parenthesizedExpresion.Rule = Between(Token("("), expression, Token(")"));
+            alpha.Rule = CharLexer.Char.Literal();
+            parenthesizedExpresion.Rule = Between(CharLexer.LeftParen.Kind(), expression, CharLexer.RightParen.Kind());
 
             expression.Parses(tokens).WithValue("A");
         }

@@ -8,32 +8,36 @@ namespace Parsley.Tests
     using Shouldly;
     using Xunit;
 
+    class SampleLexer : Lexer
+    {
+        public static readonly TokenKind Digit = new Pattern("Digit", @"[0-9]");
+        public static readonly TokenKind Letter = new Pattern("Letter", @"[a-zA-Z]");
+        public static readonly TokenKind Symbol = new Pattern("Symbol", @".");
+        public static readonly TokenKind A = new Operator("A");
+        public static readonly TokenKind B = new Operator("B");
+        public static readonly TokenKind C = new Operator("C");
+        public static readonly TokenKind Comma = new Operator(",");
+
+        public SampleLexer()
+            : base(Digit, A, B, C, Comma, Letter, Symbol) { }
+    }
+
     public class GrammarTests : Grammar
     {
         static IEnumerable<Token> Tokenize(string input) => new SampleLexer().Tokenize(input);
 
-        class SampleLexer : Lexer
-        {
-            public static readonly TokenKind Digit = new Pattern("Digit", @"[0-9]");
-            public static readonly TokenKind Letter = new Pattern("Letter", @"[a-zA-Z]");
-            public static readonly TokenKind Symbol = new Pattern("Symbol", @".");
-
-            public SampleLexer()
-                : base(Digit, Letter, Symbol) { }
-        }
-
-        readonly IParser<Token> A, B, AB, COMMA;
+        readonly IParser<string> A, B, AB, COMMA;
 
         public GrammarTests()
         {
-            A = Token("A");
-            B = Token("B");
+            A = SampleLexer.A.Literal();
+            B = SampleLexer.B.Literal();
 
             AB = from a in A
                  from b in B
-                 select new Token(null, a.Position, a.Literal + b.Literal);
+                 select a + b;
 
-            COMMA = Token(",");
+            COMMA = SampleLexer.Comma.Literal();
         }
 
         static Action<Token> Literal(string expectedLiteral)
@@ -62,7 +66,7 @@ namespace Parsley.Tests
         [Fact]
         public void CanDemandThatAGivenKindOfTokenAppearsNext()
         {
-            SampleLexer.Letter.Literal().Parses(Tokenize("A")).WithValue("A");
+            SampleLexer.A.Literal().Parses(Tokenize("A")).WithValue("A");
             SampleLexer.Letter.Literal().FailsToParse(Tokenize("0")).LeavingUnparsedTokens("0").WithMessage("(1, 1): Letter expected");
 
             SampleLexer.Digit.Literal().FailsToParse(Tokenize("A")).LeavingUnparsedTokens("A").WithMessage("(1, 1): Digit expected");
@@ -72,9 +76,9 @@ namespace Parsley.Tests
         [Fact]
         public void CanDemandThatAGivenTokenLiteralAppearsNext()
         {
-            Token("A").Parses(Tokenize("A")).WithValue(Literal("A"));
-            Token("A").PartiallyParses(Tokenize("A!")).LeavingUnparsedTokens("!").WithValue(Literal("A"));
-            Token("A").FailsToParse(Tokenize("B")).LeavingUnparsedTokens("B").WithMessage("(1, 1): A expected");
+            A.Parses(Tokenize("A")).WithValue("A");
+            A.PartiallyParses(Tokenize("A!")).LeavingUnparsedTokens("!").WithValue("A");
+            A.FailsToParse(Tokenize("B")).LeavingUnparsedTokens("B").WithMessage("(1, 1): A expected");
         }
 
         [Fact]
@@ -86,19 +90,19 @@ namespace Parsley.Tests
 
             parser.PartiallyParses(Tokenize("AB!"))
                 .LeavingUnparsedTokens("!")
-                .WithValue(Literals("AB"));
+                .WithValues("AB");
 
             parser.PartiallyParses(Tokenize("ABAB!"))
                 .LeavingUnparsedTokens("!")
-                .WithValue(Literals("AB", "AB"));
+                .WithValues("AB", "AB");
 
             parser.FailsToParse(Tokenize("ABABA!"))
                 .LeavingUnparsedTokens("!")
                 .WithMessage("(1, 6): B expected");
 
-            IParser<Token> succeedWithoutConsuming = new TokenByLiteralParser("");
+            var succeedWithoutConsuming = new LambdaParser<string>(t => new Parsed<string>(null, t));
             Action infiniteLoop = () => ZeroOrMore(succeedWithoutConsuming).Parse(new TokenStream(Tokenize("")));
-            infiniteLoop.ShouldThrow<Exception>("Item parser <''> encountered a potential infinite loop at position (1, 1).");
+            infiniteLoop.ShouldThrow<Exception>("Item parser <(t) System.String> encountered a potential infinite loop at position (1, 1).");
         }
 
         [Fact]
@@ -106,15 +110,15 @@ namespace Parsley.Tests
         {
             var parser = OneOrMore(AB);
 
-            parser.FailsToParse(Tokenize("")).AtEndOfInput().WithMessage("(1, 1): <BIND2 <'A'> TO Parsley.Token TO Parsley.Token> occurring 1+ times expected");
+            parser.FailsToParse(Tokenize("")).AtEndOfInput().WithMessage("(1, 1): <BIND2 <'A'> TO System.String TO System.String> occurring 1+ times expected");
 
             parser.PartiallyParses(Tokenize("AB!"))
                 .LeavingUnparsedTokens("!")
-                .WithValue(Literals("AB"));
+                .WithValues("AB");
 
             parser.PartiallyParses(Tokenize("ABAB!"))
                 .LeavingUnparsedTokens("!")
-                .WithValue(Literals("AB", "AB"));
+                .WithValues("AB", "AB");
 
             parser.FailsToParse(Tokenize("ABABA!"))
                 .LeavingUnparsedTokens("!")
@@ -122,7 +126,7 @@ namespace Parsley.Tests
 
             IParser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
             Action infiniteLoop = () => OneOrMore(succeedWithoutConsuming).Parse(new TokenStream(Tokenize("")));
-            infiniteLoop.ShouldThrow<Exception>("Item parser <L Parsley.Token> encountered a potential infinite loop at position (1, 1).");
+            infiniteLoop.ShouldThrow<Exception>("Item parser <(t) Parsley.Token> encountered a potential infinite loop at position (1, 1).");
         }
 
         [Fact]
@@ -131,9 +135,9 @@ namespace Parsley.Tests
             var parser = ZeroOrMore(AB, COMMA);
 
             parser.Parses(Tokenize("")).Value.ShouldBeEmpty();
-            parser.Parses(Tokenize("AB")).WithValue(Literals("AB"));
-            parser.Parses(Tokenize("AB,AB")).WithValue(Literals("AB", "AB"));
-            parser.Parses(Tokenize("AB,AB,AB")).WithValue(Literals("AB", "AB", "AB"));
+            parser.Parses(Tokenize("AB")).WithValues("AB");
+            parser.Parses(Tokenize("AB,AB")).WithValues("AB", "AB");
+            parser.Parses(Tokenize("AB,AB,AB")).WithValues("AB", "AB", "AB");
             parser.FailsToParse(Tokenize("AB,")).AtEndOfInput().WithMessage("(1, 4): A expected");
             parser.FailsToParse(Tokenize("AB,A")).AtEndOfInput().WithMessage("(1, 5): B expected");
         }
@@ -143,10 +147,10 @@ namespace Parsley.Tests
         {
             var parser = OneOrMore(AB, COMMA);
 
-            parser.FailsToParse(Tokenize("")).AtEndOfInput().WithMessage("(1, 1): <BIND2 <'A'> TO Parsley.Token TO Parsley.Token> occurring 1+ times expected");
-            parser.Parses(Tokenize("AB")).WithValue(Literals("AB"));
-            parser.Parses(Tokenize("AB,AB")).WithValue(Literals("AB", "AB"));
-            parser.Parses(Tokenize("AB,AB,AB")).WithValue(Literals("AB", "AB", "AB"));
+            parser.FailsToParse(Tokenize("")).AtEndOfInput().WithMessage("(1, 1): <BIND2 <'A'> TO System.String TO System.String> occurring 1+ times expected");
+            parser.Parses(Tokenize("AB")).WithValues("AB");
+            parser.Parses(Tokenize("AB,AB")).WithValues("AB", "AB");
+            parser.Parses(Tokenize("AB,AB,AB")).WithValues("AB", "AB", "AB");
             parser.FailsToParse(Tokenize("AB,")).AtEndOfInput().WithMessage("(1, 4): A expected");
             parser.FailsToParse(Tokenize("AB,A")).AtEndOfInput().WithMessage("(1, 5): B expected");
         }
@@ -162,26 +166,26 @@ namespace Parsley.Tests
             parser.FailsToParse(Tokenize("AA")).LeavingUnparsedTokens("A").WithMessage("(1, 2): B expected");
             parser.FailsToParse(Tokenize("AB")).AtEndOfInput().WithMessage("(1, 3): A expected");
             parser.FailsToParse(Tokenize("ABB")).LeavingUnparsedTokens("B").WithMessage("(1, 3): A expected");
-            parser.Parses(Tokenize("ABA")).WithValue(Literal("B"));
+            parser.Parses(Tokenize("ABA")).WithValue("B");
         }
 
         [Fact]
         public void ParsingAnOptionalRuleZeroOrOneTimes()
         {
-            Optional(AB).PartiallyParses(Tokenize("AB.")).LeavingUnparsedTokens(".").WithValue(Literal("AB"));
+            Optional(AB).PartiallyParses(Tokenize("AB.")).LeavingUnparsedTokens(".").WithValue("AB");
             Optional(AB).PartiallyParses(Tokenize(".")).LeavingUnparsedTokens(".").WithValue(token => token.ShouldBeNull());
             Optional(AB).FailsToParse(Tokenize("AC.")).LeavingUnparsedTokens("C", ".").WithMessage("(1, 2): B expected");
 
-            var defaultToken = new Token(null, new Position(0,0), "nothing in here");
+            var def = "nothing in here";
 
-            Optional(AB, defaultToken).PartiallyParses(Tokenize(".")).LeavingUnparsedTokens(".").WithValue(defaultToken);
+            Optional(AB, def).PartiallyParses(Tokenize(".")).LeavingUnparsedTokens(".").WithValue(def);
         }
 
         [Fact]
         public void AttemptingToParseRuleButBacktrackingUponFailure()
         {
             //When p succeeds, Attempt(p) is the same as p.
-            Attempt(AB).Parses(Tokenize("AB")).WithValue(Literal("AB"));
+            Attempt(AB).Parses(Tokenize("AB")).WithValue("AB");
 
             //When p fails without consuming input, Attempt(p) is the same as p.
             Attempt(AB).FailsToParse(Tokenize("!")).LeavingUnparsedTokens("!").WithMessage("(1, 1): A expected");
@@ -196,8 +200,8 @@ namespace Parsley.Tests
             var labeled = Label(AB, "'A' followed by 'B'");
 
             //When p succeeds after consuming input, Label(p) is the same as p.
-            AB.Parses(Tokenize("AB")).WithNoMessage().WithValue(Literal("AB"));
-            labeled.Parses(Tokenize("AB")).WithNoMessage().WithValue(Literal("AB"));
+            AB.Parses(Tokenize("AB")).WithNoMessage().WithValue("AB");
+            labeled.Parses(Tokenize("AB")).WithNoMessage().WithValue("AB");
 
             //When p fails after consuming input, Label(p) is the same as p.
             AB.FailsToParse(Tokenize("A!")).LeavingUnparsedTokens("!").WithMessage("(1, 2): B expected");
@@ -224,20 +228,15 @@ namespace Parsley.Tests
 
     public class AlternationTests : Grammar
     {
-        static IEnumerable<Token> Tokenize(string input) => new CharLexer().Tokenize(input);
+        static IEnumerable<Token> Tokenize(string input) => new SampleLexer().Tokenize(input);
 
-        readonly IParser<Token> A, B, C;
+        readonly IParser<string> A, B, C;
 
         public AlternationTests()
         {
-            A = Token("A");
-            B = Token("B");
-            C = Token("C");
-        }
-
-        static Action<Token> Literal(string expectedLiteral)
-        {
-            return t => t.Literal.ShouldBe(expectedLiteral);
+            A = SampleLexer.A.Literal();
+            B = SampleLexer.B.Literal();
+            C = SampleLexer.C.Literal();
         }
 
         [Fact]
@@ -258,22 +257,22 @@ namespace Parsley.Tests
         [Fact]
         public void ChoosingBetweenOneAlternativeParserIsEquivalentToThatParser()
         {
-            Choice(A).Parses(Tokenize("A")).WithValue(Literal("A"));
-            Choice(A).PartiallyParses(Tokenize("AB")).LeavingUnparsedTokens("B").WithValue(Literal("A"));
+            Choice(A).Parses(Tokenize("A")).WithValue("A");
+            Choice(A).PartiallyParses(Tokenize("AB")).LeavingUnparsedTokens("B").WithValue("A");
             Choice(A).FailsToParse(Tokenize("B")).LeavingUnparsedTokens("B").WithMessage("(1, 1): A expected");
         }
 
         [Fact]
         public void FirstParserCanSucceedWithoutExecutingOtherAlternatives()
         {
-            Choice(A, NeverExecuted).Parses(Tokenize("A")).WithValue(Literal("A"));
+            Choice(A, NeverExecuted).Parses(Tokenize("A")).WithValue("A");
         }
 
         [Fact]
         public void SubsequentParserCanSucceedWhenPreviousParsersFailWithoutConsumingInput()
         {
-            Choice(B, A).Parses(Tokenize("A")).WithValue(Literal("A"));
-            Choice(C, B, A).Parses(Tokenize("A")).WithValue(Literal("A"));
+            Choice(B, A).Parses(Tokenize("A")).WithValue("A");
+            Choice(C, B, A).Parses(Tokenize("A")).WithValue("A");
         }
 
         [Fact]
@@ -283,7 +282,7 @@ namespace Parsley.Tests
 
             var AB = from a in A
                      from b in B
-                     select new Token(null, a.Position, a.Literal + b.Literal);
+                     select a + b;
 
             Choice(AB, NeverExecuted).FailsToParse(Tokenize("A")).AtEndOfInput().WithMessage("(1, 2): B expected");
             Choice(C, AB, NeverExecuted).FailsToParse(Tokenize("A")).AtEndOfInput().WithMessage("(1, 2): B expected");
@@ -303,7 +302,7 @@ namespace Parsley.Tests
             //consuming input.  These tests simply describe the behavior under that
             //unusual situation.
 
-            IParser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
+            IParser<string> succeedWithoutConsuming = new LambdaParser<string>(tokens => new Parsed<string>(null, tokens));
 
             var reply = Choice(A, succeedWithoutConsuming).Parses(Tokenize(""));
             reply.ErrorMessages.ToString().ShouldBe("A expected");
@@ -315,7 +314,7 @@ namespace Parsley.Tests
             reply.ErrorMessages.ToString().ShouldBe("A expected");
         }
 
-        static readonly IParser<Token> NeverExecuted = new LambdaParser<Token>(
+        static readonly IParser<string> NeverExecuted = new LambdaParser<string>(
             tokens => throw new Exception("Parser 'NeverExecuted' should not have been executed."));
     }
 

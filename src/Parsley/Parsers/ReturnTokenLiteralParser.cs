@@ -31,7 +31,7 @@ namespace Parsley.Parsers
             return new ParsedG(tokens.Advance());
         }
 
-        protected override string GetName() => $"<L*{_kind}*>";
+        protected override string GetName() => $"<'{_kind}'>";
 
         private readonly TokenKind _kind;
     }
