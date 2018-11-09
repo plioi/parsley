@@ -29,19 +29,19 @@ namespace Parsley.Tests.IntegrationTests.Json
                 Constant<object>(JsonLexer.Null, null);
 
             Number.Rule =
-                Token(JsonLexer.Number, l => (object)decimal.Parse(l, NumberStyles.Any));
+                JsonLexer.Number.Literal(l => (object)decimal.Parse(l, NumberStyles.Any));
 
             Quotation.Rule =
-                Token(JsonLexer.Quotation, Unescape);
+                JsonLexer.Quotation.Literal(Unescape);
 
             Array.Rule =
-                Between(TokenG(JsonLexer.OpenArray), ZeroOrMore(JsonValue, TokenG(JsonLexer.Comma)), TokenG(JsonLexer.CloseArray));
+                Between(JsonLexer.OpenArray.Kind(), ZeroOrMore(JsonValue, JsonLexer.Comma.Kind()), JsonLexer.CloseArray.Kind());
 
             Pair.Rule =
-                NameValuePair(Quotation, TokenG(JsonLexer.Colon), JsonValue);
+                NameValuePair(Quotation, JsonLexer.Colon.Kind(), JsonValue);
 
             Dictionary.Rule =
-                Between(TokenG(JsonLexer.OpenDictionary), ZeroOrMore(Pair, TokenG(JsonLexer.Comma)), TokenG(JsonLexer.CloseDictionary))
+                Between(JsonLexer.OpenDictionary.Kind(), ZeroOrMore(Pair, JsonLexer.Comma.Kind()), JsonLexer.CloseDictionary.Kind())
                 .Bind(ToDictionary);
 
             JsonValue.Rule = Choice(True, False, Null, Number, Quotation, Dictionary, Array);

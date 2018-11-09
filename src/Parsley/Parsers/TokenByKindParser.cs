@@ -1,22 +1,22 @@
+using System;
+
 namespace Parsley.Parsers
 {
-    public class TokenByKindParser : Parser<Token>
+    public class TokenByKindParser : Parser
     {
         private readonly TokenKind _kind;
 
         public TokenByKindParser(TokenKind kind)
-        {
-            _kind = kind;
-        }
+            => _kind = kind ?? throw new ArgumentNullException(nameof(kind));
 
-        public override IReply<Token> Parse(TokenStream tokens)
+        public override IReplyG ParseG(TokenStream tokens)
         {
             if (tokens.Current.Kind == _kind)
-                return new Parsed<Token>(tokens.Current, tokens.Advance());
+                return new ParsedG(tokens.Advance());
 
-            return new Error<Token>(tokens, ErrorMessage.Expected(_kind.Name));
+            return new ErrorG(tokens, ErrorMessage.Expected(_kind.Name));
         }
 
-        protected override string GetName() => $"<@ {_kind}>";
+        protected override string GetName() => $"<*{_kind}*>";
     }
 }

@@ -15,15 +15,15 @@ namespace Parsley.Tests
         private static readonly TokenKind AsteriscToken = new Operator(Asterisc);
         private static readonly TokenKind SeparatorToken = new Operator(Separator);
         private static readonly Lexer AsteriscLexer = new Lexer(AsteriscToken, SeparatorToken);
-        private static readonly IParser<Token> AsteriscParser = Grammar.Token(AsteriscToken);
-        private static readonly IParser<Token> SeparatorParser = Grammar.Token(SeparatorToken);
+        private static readonly IParser<string> AsteriscParser = AsteriscToken.Literal();
+        private static readonly IParserG SeparatorParser = SeparatorToken.Kind();
 
         [Fact]
         public void NOrMore()
         {
             for (int n = 0; n < 10; ++n)
             {
-                var parser = new QuantifiedParser<Token>(AsteriscParser, QuantificationRule.NOrMore, n);
+                var parser = new QuantifiedParser<string>(AsteriscParser, QuantificationRule.NOrMore, n);
 
                 for (var i = n; i < n + 15; ++i)
                 {
@@ -44,7 +44,7 @@ namespace Parsley.Tests
 
             for (int n = 0; n < 10; ++n)
             {
-                var parser = new QuantifiedParser<Token>(AsteriscParser, QuantificationRule.NOrMore, n, -1, SeparatorParser);
+                var parser = new QuantifiedParser<string>(AsteriscParser, QuantificationRule.NOrMore, n, -1, SeparatorParser);
 
                 for (var i = n; i < n + 15; ++i)
                 {
@@ -69,7 +69,7 @@ namespace Parsley.Tests
         {
             for (int n = 0; n < 15; ++n)
             {
-                var parser = new QuantifiedParser<Token>(AsteriscParser, QuantificationRule.ExactlyN, n);
+                var parser = new QuantifiedParser<string>(AsteriscParser, QuantificationRule.ExactlyN, n);
 
                 for (var i = n - 1; i >= 0; --i)
                 {
@@ -93,7 +93,7 @@ namespace Parsley.Tests
 
             for (int n = 0; n < 15; ++n)
             {
-                var parser = new QuantifiedParser<Token>(AsteriscParser, QuantificationRule.ExactlyN, n, -1, SeparatorParser);
+                var parser = new QuantifiedParser<string>(AsteriscParser, QuantificationRule.ExactlyN, n, -1, SeparatorParser);
 
                 for (var i = n - 1; i >= 0; --i)
                 {
@@ -122,7 +122,7 @@ namespace Parsley.Tests
             for (int n = 0; n < 15; ++n)
                 for (int m = n; m < n + 10; ++m)
                 {
-                    var parser = new QuantifiedParser<Token>(AsteriscParser, QuantificationRule.NtoM, n, m);
+                    var parser = new QuantifiedParser<string>(AsteriscParser, QuantificationRule.NtoM, n, m);
 
                     for (var i = 0; i < n; ++i)
                     {
@@ -150,7 +150,7 @@ namespace Parsley.Tests
             for (int n = 0; n < 15; ++n)
                 for (int m = n; m < n + 10; ++m)
                 {
-                    var parser = new QuantifiedParser<Token>(AsteriscParser, QuantificationRule.NtoM, n, m, SeparatorParser);
+                    var parser = new QuantifiedParser<string>(AsteriscParser, QuantificationRule.NtoM, n, m, SeparatorParser);
 
                     for (var i = 0; i < n; ++i)
                     {
@@ -181,7 +181,7 @@ namespace Parsley.Tests
         {
             for (int n = 0; n < 15; ++n)
             {
-                var parser = new QuantifiedParser<Token>(AsteriscParser, QuantificationRule.NOrLess, n);
+                var parser = new QuantifiedParser<string>(AsteriscParser, QuantificationRule.NOrLess, n);
 
                 for (var i = 0; i <= n; ++i)
                 {
@@ -202,7 +202,7 @@ namespace Parsley.Tests
 
             for (int n = 0; n < 15; ++n)
             {
-                var parser = new QuantifiedParser<Token>(AsteriscParser, QuantificationRule.NOrLess, n, -1, SeparatorParser);
+                var parser = new QuantifiedParser<string>(AsteriscParser, QuantificationRule.NOrLess, n, -1, SeparatorParser);
 
                 for (var i = 0; i <= n; ++i)
                 {
@@ -332,7 +332,7 @@ namespace Parsley.Tests
         /// ZeroOrMore(p, s) parses zero or more occurrences of p separated by occurrences of s,
         /// returning the list of values returned by successful applications of p.
         /// </summary>
-        private static IParser<IEnumerable<T>> ClassicZeroOrMore<T, S>(IParser<T> item, IParser<S> separator)
+        private static IParser<IEnumerable<T>> ClassicZeroOrMore<T>(IParser<T> item, IParserG separator)
         {
             return Grammar.Choice(Grammar.OneOrMore(item, separator), new MonadicUnitParser<IEnumerable<T>>(Enumerable.Empty<T>()));
         }
