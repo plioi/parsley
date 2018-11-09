@@ -5,9 +5,9 @@ using static Parsley.Grammar;
 namespace Parsley
 {
     public delegate IParser<T> ExtendParserBuilder<T>(T left);
-    public delegate T AtomNodeBuilder<out T>(Token atom);
-    public delegate T UnaryNodeBuilder<T>(Token symbol, T operand);
-    public delegate T BinaryNodeBuilder<T>(T left, Token symbol, T right);
+    public delegate T AtomNodeBuilder<out T>(string atom);
+    public delegate T UnaryNodeBuilder<T>(string symbol, T operand);
+    public delegate T BinaryNodeBuilder<T>(T left, string symbol, T right);
     public enum Associativity { Left, Right }
 
     public class OperatorPrecedenceParser<T> : Parser<T>
@@ -30,13 +30,12 @@ namespace Parsley
 
         public void Atom(TokenKind kind, AtomNodeBuilder<T> createAtomNode)
         {
-            Unit(kind, from token in Token(kind)
-                       select createAtomNode(token));
+            Unit(kind, kind.Literal(l => createAtomNode(l)));
         }
 
         public void Prefix(TokenKind operation, int precedence, UnaryNodeBuilder<T> createUnaryNode)
         {
-            Unit(operation, from symbol in Token(operation)
+            Unit(operation, from symbol in operation.Literal()
                             from operand in OperandAtPrecedenceLevel(precedence)
                             select createUnaryNode(symbol, operand));
         }
@@ -49,7 +48,7 @@ namespace Parsley
 
         public void Postfix(TokenKind operation, int precedence, UnaryNodeBuilder<T> createUnaryNode)
         {
-            Extend(operation, precedence, left => from symbol in Token(operation)
+            Extend(operation, precedence, left => from symbol in operation.Literal()
                                                   select createUnaryNode(symbol, left));
         }
 
@@ -61,7 +60,7 @@ namespace Parsley
             if (associativity == Associativity.Right)
                 rightOperandPrecedence = precedence - 1;
 
-            Extend(operation, precedence, left => from symbol in Token(operation)
+            Extend(operation, precedence, left => from symbol in operation.Literal()
                                                   from right in OperandAtPrecedenceLevel(rightOperandPrecedence)
                                                   select createBinaryNode(left, symbol, right));
         }

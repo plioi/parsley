@@ -1,10 +1,12 @@
-﻿namespace Parsley.Parsers
+﻿using System;
+
+namespace Parsley.Parsers
 {
     public class ReturnTokenLiteralParser : Parser<string>
     {
         public ReturnTokenLiteralParser(TokenKind kind)
         {
-            _kind = kind;
+            _kind = kind ?? throw new ArgumentNullException(nameof(kind));
         }
 
         public override IReply<string> Parse(TokenStream tokens)
@@ -29,7 +31,7 @@
             return new ParsedG(tokens.Advance());
         }
 
-        protected override string GetName() => $"<RET *{_kind}* LITERAL>";
+        protected override string GetName() => $"<L*{_kind}*>";
 
         private readonly TokenKind _kind;
     }

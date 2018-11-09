@@ -14,28 +14,11 @@ namespace Parsley
 
         public static IParserG EndOfInput
             
-            => new TokenByKindGeneralParser(TokenKind.EndOfInput);
+            => new TokenByKindParser(TokenKind.EndOfInput);
 
-        public static IParser<Token> Token(TokenKind kind)
-            
-            => new TokenByKindParser(kind);
-
-        public static IParserG TokenG(TokenKind kind)
-
-            => new TokenByKindGeneralParser(kind);
-        
         public static IParser<Token> Token(string expectation)
             
             => new TokenByLiteralParser(expectation);
-
-        public static IParser<TResult> Token<TResult>(TokenKind kind, Func<string, TResult> resultContinuation)
-
-            => new MapTokenLiteralParser<TResult>(kind, resultContinuation);
-
-        public static IParser<string> TokenLiteral(TokenKind kind)
-
-            => new ReturnTokenLiteralParser(kind);
-
 
         /// <summary>
         /// ZeroOrMore(p) repeatedly applies an parser p until it fails, returing
@@ -158,7 +141,7 @@ namespace Parsley
 
             => parser;
 
-        public static IParserG Skip(params Parser[] items)
+        public static IParserG Skip(params IParserG[] items)
         
             => new SkipParser(items);
 

@@ -1,3 +1,5 @@
+using System;
+
 namespace Parsley.Parsers
 {
     public class TokenByLiteralParser : Parser<Token>
@@ -5,9 +7,7 @@ namespace Parsley.Parsers
         private readonly string _expectation;
 
         public TokenByLiteralParser(string expectation)
-        {
-            _expectation = expectation;
-        }
+            => _expectation = expectation ?? throw new ArgumentNullException(nameof(expectation));
 
         public override IReply<Token> Parse(TokenStream tokens)
         {

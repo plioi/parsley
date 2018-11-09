@@ -12,8 +12,8 @@
         {
             expression = new OperatorPrecedenceParser<IExpression>();
 
-            expression.Atom(SampleLexer.Digit, token => new Constant(int.Parse(token.Literal)));
-            expression.Atom(SampleLexer.Name, token => new Identifier(token.Literal));
+            expression.Atom(SampleLexer.Digit, digit => new Constant(int.Parse(digit)));
+            expression.Atom(SampleLexer.Name, name => new Identifier(name));
 
             expression.Unit(SampleLexer.LeftParen, Between(Token("("), expression, Token(")")));
 
@@ -22,9 +22,9 @@
             expression.Binary(SampleLexer.Multiply, 4, (left, symbol, right) => new Form(symbol, left, right));
             expression.Binary(SampleLexer.Divide, 4, (left, symbol, right) => new Form(symbol, left, right));
             expression.Binary(SampleLexer.Exponent, 5, (left, symbol, right) => new Form(symbol, left, right), Associativity.Right);
-            expression.Prefix(SampleLexer.Subtract, 6, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
-            expression.Postfix(SampleLexer.Increment, 7, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
-            expression.Postfix(SampleLexer.Decrement, 7, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
+            expression.Prefix(SampleLexer.Subtract, 6, (subtract, operand) => new Form(new Identifier(subtract), operand));
+            expression.Postfix(SampleLexer.Increment, 7, (increment, operand) => new Form(new Identifier(increment), operand));
+            expression.Postfix(SampleLexer.Decrement, 7, (decrement, operand) => new Form(new Identifier(decrement), operand));
 
             expression.Extend(SampleLexer.LeftParen, 8, callable =>
                                  from arguments in Between(Token("("), ZeroOrMore(expression, Token(",")), Token(")"))
@@ -186,8 +186,8 @@
             readonly IExpression head;
             readonly IEnumerable<IExpression> expressions;
 
-            public Form(Token head, params IExpression[] expressions)
-                : this(new Identifier(head.Literal), expressions) { }
+            public Form(string head, params IExpression[] expressions)
+                : this(new Identifier(head), expressions) { }
 
             public Form(IExpression head, params IExpression[] expressions)
                 : this(head, (IEnumerable<IExpression>)expressions) { }

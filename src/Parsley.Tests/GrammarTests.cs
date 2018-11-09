@@ -62,11 +62,11 @@ namespace Parsley.Tests
         [Fact]
         public void CanDemandThatAGivenKindOfTokenAppearsNext()
         {
-            Token(SampleLexer.Letter).Parses(Tokenize("A")).WithValue(Literal("A"));
-            Token(SampleLexer.Letter).FailsToParse(Tokenize("0")).LeavingUnparsedTokens("0").WithMessage("(1, 1): Letter expected");
+            SampleLexer.Letter.Literal().Parses(Tokenize("A")).WithValue("A");
+            SampleLexer.Letter.Literal().FailsToParse(Tokenize("0")).LeavingUnparsedTokens("0").WithMessage("(1, 1): Letter expected");
 
-            Token(SampleLexer.Digit).FailsToParse(Tokenize("A")).LeavingUnparsedTokens("A").WithMessage("(1, 1): Digit expected");
-            Token(SampleLexer.Digit).Parses(Tokenize("0")).WithValue(Literal("0"));
+            SampleLexer.Digit.Literal().FailsToParse(Tokenize("A")).LeavingUnparsedTokens("A").WithMessage("(1, 1): Digit expected");
+            SampleLexer.Digit.Literal().Parses(Tokenize("0")).WithValue("0");
         }
 
         [Fact]
