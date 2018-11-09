@@ -16,10 +16,6 @@ namespace Parsley
             
             => new TokenByKindParser(TokenKind.EndOfInput);
 
-        public static IParser<Token> Token(string expectation)
-            
-            => new TokenByLiteralParser(expectation);
-
         /// <summary>
         /// ZeroOrMore(p) repeatedly applies an parser p until it fails, returing
         /// the list of values returned by successful applications of p.  At the

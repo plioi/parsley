@@ -39,6 +39,8 @@
 
         public Position Position => Current.Position;
 
+        public override string ToString() => $">{Current}";
+
         private TokenStream LazyAdvance(IEnumerator<Token> enumerator)
         {
             if (enumerator.MoveNext())

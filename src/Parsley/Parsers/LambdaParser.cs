@@ -16,6 +16,6 @@ namespace Parsley.Parsers
             return _parse(tokens);
         }
 
-        protected override string GetName() => $"<L {typeof(T)}>";
+        protected override string GetName() => $"<(t) {typeof(T)}>";
     }
 }

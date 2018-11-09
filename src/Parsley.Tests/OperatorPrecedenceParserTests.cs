@@ -15,7 +15,7 @@
             expression.Atom(SampleLexer.Digit, digit => new Constant(int.Parse(digit)));
             expression.Atom(SampleLexer.Name, name => new Identifier(name));
 
-            expression.Unit(SampleLexer.LeftParen, Between(Token("("), expression, Token(")")));
+            expression.Unit(SampleLexer.LeftParen, Between(SampleLexer.LeftParen.Kind(), expression, SampleLexer.RightParen.Kind()));
 
             expression.Binary(SampleLexer.Add, 3, (left, symbol, right) => new Form(symbol, left, right));
             expression.Binary(SampleLexer.Subtract, 3, (left, symbol, right) => new Form(symbol, left, right));
@@ -27,7 +27,7 @@
             expression.Postfix(SampleLexer.Decrement, 7, (decrement, operand) => new Form(new Identifier(decrement), operand));
 
             expression.Extend(SampleLexer.LeftParen, 8, callable =>
-                                 from arguments in Between(Token("("), ZeroOrMore(expression, Token(",")), Token(")"))
+                                 from arguments in Between(SampleLexer.LeftParen.Kind(), ZeroOrMore(expression, SampleLexer.Comma.Kind()), SampleLexer.RightParen.Kind())
                                  select new Form(callable, arguments));
         }
 

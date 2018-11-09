@@ -166,7 +166,7 @@
         {
             var nextTokenKind = reply.UnparsedTokens.Current.Kind;
             AssertEqual(TokenKind.EndOfInput, nextTokenKind);
-            return reply.LeavingUnparsedTokens(new string[] {});
+            return reply.LeavingUnparsedTokens();
         }
 
         public static IReply<T> WithValue<T>(this IReply<T> reply, T expected)
@@ -180,6 +180,32 @@
         public static IReply<T> WithValue<T>(this IReply<T> reply, Action<T> assertParsedValue)
         {
             assertParsedValue(reply.Value);
+
+            return reply;
+        }
+
+        public static IReply<IEnumerable<T>> WithValues<T>(this IReply<IEnumerable<T>> reply, params T[] values)
+        {
+            using (var actual = reply.Value.GetEnumerator())
+            {
+                var expected = values.GetEnumerator();
+
+                for (var i = 0; ; ++i)
+                {
+                    var aMoved = actual.MoveNext();
+                    var eMoved = expected.MoveNext();
+
+                    if (aMoved != eMoved)
+                        throw new AssertionException("parsed and expected value collections have different sizes");
+
+                    if (!aMoved)
+                        break;
+
+                    if (!Equals(expected.Current, actual.Current))
+                        throw new AssertionException($"parsed value [{i}]: {expected}", $"parsed value [{i}]: {reply.Value}");
+                }
+            }
+
 
             return reply;
         }

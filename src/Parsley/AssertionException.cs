@@ -9,6 +9,11 @@ namespace Parsley
         {
         }
 
+        public AssertionException(string message)
+            : base(message)
+        {
+        }
+
         public AssertionException(string message, object expected, object actual)
             : base(Environment.NewLine + message + ExpectationDetails(expected, actual))
         {
