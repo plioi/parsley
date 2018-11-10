@@ -1,6 +1,5 @@
 ﻿using Parsley.Parsers;
 using System.Collections.Generic;
-using static Parsley.Grammar;
 
 namespace Parsley
 {

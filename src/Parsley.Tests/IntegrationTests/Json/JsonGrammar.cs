@@ -4,9 +4,9 @@ using System.Text.RegularExpressions;
 
 namespace Parsley.Tests.IntegrationTests.Json
 {
-    public class JsonGrammar : Grammar
+    public class JsonGrammar : Grammar<object>
     {
-        public static readonly GrammarRule<object> Json = new GrammarRule<object>();
+        static readonly GrammarRule<object> Json = new GrammarRule<object>();
         static readonly GrammarRule<object> True = new GrammarRule<object>();
         static readonly GrammarRule<object> False = new GrammarRule<object>();
         static readonly GrammarRule<object> Null = new GrammarRule<object>();
@@ -48,6 +48,10 @@ namespace Parsley.Tests.IntegrationTests.Json
 
             Json.Rule = OccupiesEntireInput(JsonValue);
         }
+
+        public JsonGrammar()
+            : base("JSON", Json)
+        { }
 
         static string Unescape(string quotation)
         {
