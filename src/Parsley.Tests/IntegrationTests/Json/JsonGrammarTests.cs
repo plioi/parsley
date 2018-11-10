@@ -1,12 +1,13 @@
-﻿namespace Parsley.Tests.IntegrationTests.Json
-{
-    using Shouldly;
-    using System.Collections.Generic;
-    using Xunit;
+﻿using Shouldly;
+using System.Collections.Generic;
+using Xunit;
 
-    public class JsonGrammarTests : JsonGrammar
+namespace Parsley.Tests.IntegrationTests.Json
+{
+    public class JsonGrammarTests
     {
         static IEnumerable<Token> Tokenize(string input) => new JsonLexer().Tokenize(input);
+        static readonly JsonGrammar Json = new JsonGrammar();
 
         [Fact]
         public void ParsesTrueLiteral()

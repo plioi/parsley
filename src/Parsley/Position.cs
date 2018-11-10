@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace Parsley
+﻿namespace Parsley
 {
     public struct Position
     {

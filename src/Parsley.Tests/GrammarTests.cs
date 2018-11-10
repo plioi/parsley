@@ -1,13 +1,11 @@
 ﻿using Parsley.Parsers;
+using Shouldly;
+using System;
+using System.Collections.Generic;
+using Xunit;
 
 namespace Parsley.Tests
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Shouldly;
-    using Xunit;
-
     class SampleLexer : Lexer
     {
         public static readonly TokenKind Digit = new Pattern("Digit", @"[0-9]");

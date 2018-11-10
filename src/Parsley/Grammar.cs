@@ -157,4 +157,27 @@ namespace Parsley
             }
         }
     }
+
+    public abstract class Grammar<T> : Grammar, IParser<T>
+    {
+        public IReply<T> Parse(TokenStream tokens)
+        {
+            return EntryRule.Parse(tokens);
+        }
+
+        public IReplyG ParseG(TokenStream tokens)
+        {
+            return EntryRule.ParseG(tokens);
+        }
+
+        public string Name { get; }
+
+        protected Grammar(string name, GrammarRule<T> entryRule)
+        {
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            EntryRule = entryRule ?? throw new ArgumentNullException(nameof(entryRule));
+        }
+
+        public IParser<T> EntryRule { get; }
+    }
 }
