@@ -105,24 +105,19 @@
         }
 
         [Fact]
-        public void NormalizesLineEndingsToSingleLineFeedCharacter()
-        {
-            var multiline = new Text("Line 1\rLine 2\nLine 3\r\nLine 4");
-            multiline.ToString().ShouldBe("Line 1\nLine 2\nLine 3\nLine 4");
-        }
-
-        [Fact]
         public void CanGetCurrentPosition()
         {
             var empty = new Text("");
             empty.Advance(0).Position.ShouldBe(new Position(1, 1));
             empty.Advance(1).Position.ShouldBe(new Position(1, 1));
 
-            var lines = new StringBuilder()
-                .AppendLine("Line 1")//Index 0-5, \n
-                .AppendLine("Line 2")//Index 7-12, \n
-                .AppendLine("Line 3");//Index 14-19, \n
-            var list = new Text(lines.ToString());
+            var newLine = "\n";
+
+            var lines =
+                   "Line 1" + newLine //Index 0-5, \n
+                 + "Line 2" + newLine //Index 7-12, \n
+                 + "Line 3" + newLine;//Index 14-19, \n
+            var list = new Text(lines, newLine);
 
             list.Advance(0).Position.ShouldBe(new Position(1, 1));
             list.Advance(5).Position.ShouldBe(new Position(1, 6));
