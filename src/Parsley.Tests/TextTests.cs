@@ -1,7 +1,8 @@
-﻿namespace Parsley.Tests
+﻿using Parsley.Tests.Fixtures;
+
+namespace Parsley.Tests
 {
     using System;
-    using System.Text;
     using Shouldly;
     using Xunit;
 
@@ -26,11 +27,11 @@
         [Fact]
         public void CanAdvanceAheadNCharacters()
         {
-            var empty = new Text("");
+            var empty = new TextTestFixture("");
             empty.Advance(0).ToString().ShouldBe("");
             empty.Advance(1).ToString().ShouldBe("");
 
-            var abc = new Text("abc");
+            var abc = new TextTestFixture("abc");
             abc.Advance(0).ToString().ShouldBe("abc");
             abc.Advance(1).ToString().ShouldBe("bc");
             abc.Advance(2).ToString().ShouldBe("c");
@@ -58,10 +59,10 @@
             empty.Match(letters).ShouldFail();
             empty.Match(end).ShouldSucceed("");
 
-            var abc123 = new Text("abc123");
-            abc123.Match(digits).ShouldFail();
-            abc123.Match(letters).ShouldSucceed("abc");
-            abc123.Match(alphanumerics).ShouldSucceed("abc123");
+            var abc123 = new TextTestFixture("abc123");
+            abc123.Advance(0).Match(digits).ShouldFail();
+            abc123.Advance(0).Match(letters).ShouldSucceed("abc");
+            abc123.Advance(0).Match(alphanumerics).ShouldSucceed("abc123");
 
             abc123.Advance(2).Match(digits).ShouldFail();
             abc123.Advance(2).Match(letters).ShouldSucceed("c");
@@ -86,10 +87,10 @@
             var empty = new Text("");
             empty.Match(letters).ShouldFail();
 
-            var abc123 = new Text("abc123");
-            abc123.Match(digits).ShouldFail();
-            abc123.Match(letters).ShouldSucceed("abc");
-            abc123.Match(alphanumerics).ShouldSucceed("abc123");
+            var abc123 = new TextTestFixture("abc123");
+            abc123.Advance(0).Match(digits).ShouldFail();
+            abc123.Advance(0).Match(letters).ShouldSucceed("abc");
+            abc123.Advance(0).Match(alphanumerics).ShouldSucceed("abc123");
 
             abc123.Advance(2).Match(digits).ShouldFail();
             abc123.Advance(2).Match(letters).ShouldSucceed("c");
@@ -107,7 +108,7 @@
         [Fact]
         public void CanGetCurrentPosition()
         {
-            var empty = new Text("");
+            var empty = new TextTestFixture("");
             empty.Advance(0).Position.ShouldBe(new Position(1, 1));
             empty.Advance(1).Position.ShouldBe(new Position(1, 1));
 
@@ -117,7 +118,8 @@
                    "Line 1" + newLine //Index 0-5, \n
                  + "Line 2" + newLine //Index 7-12, \n
                  + "Line 3" + newLine;//Index 14-19, \n
-            var list = new Text(lines, newLine);
+
+            var list = new TextTestFixture(lines, newLine);
 
             list.Advance(0).Position.ShouldBe(new Position(1, 1));
             list.Advance(5).Position.ShouldBe(new Position(1, 6));

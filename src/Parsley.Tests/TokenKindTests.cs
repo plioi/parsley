@@ -1,4 +1,6 @@
-﻿namespace Parsley.Tests
+﻿using Parsley.Tests.Fixtures;
+
+namespace Parsley.Tests
 {
     using System;
     using System.Text.RegularExpressions;
@@ -10,14 +12,14 @@
         readonly TokenKind lower;
         readonly TokenKind upper;
         readonly TokenKind caseInsensitive;
-        readonly Text abcDEF;
+        readonly TextTestFixture abcDEF;
 
         public TokenKindTests()
         {
             lower = new Pattern("Lowercase", @"[a-z]+");
             upper = new Pattern("Uppercase", @"[A-Z]+");
             caseInsensitive = new Pattern("Case Insensitive", @"[a-z]+", RegexOptions.IgnoreCase);
-            abcDEF = new Text("abcDEF");
+            abcDEF = new TextTestFixture("abcDEF");
         }
 
         [Fact]
