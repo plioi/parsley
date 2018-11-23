@@ -136,5 +136,15 @@ namespace Parsley.Tests
             list.Advance(21).Position.ShouldBe(new Position(4, 1));
             list.Advance(1000).Position.ShouldBe(new Position(4, 1));
         }
+
+        [Fact]
+        public void TextToStringShowsEllipsisForLongInputs()
+        {
+            const string complex = @"{""numbers"" : [10, 20, 30], ""window"": { ""title"": ""Sample Widget"", ""parent"": null, ""maximized"": true, ""transparent"": false}}";
+
+            var text = new Text(complex);
+
+            text.ToString().ShouldBe(@"{""numbers"" : [10, 20, 30], ""window"": { ""title"": ""S...");
+        }
     }
 }

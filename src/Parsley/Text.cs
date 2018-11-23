@@ -93,6 +93,11 @@ namespace Parsley
 
         public override string ToString()
         {
+            const int maxVisibleLength = 50;
+
+            if (_input.Length - _index >= maxVisibleLength)
+                return _input.Substring(_index, maxVisibleLength) + "...";
+
             return _input.Substring(_index);
         }
     }
