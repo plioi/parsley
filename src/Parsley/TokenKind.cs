@@ -7,7 +7,7 @@ namespace Parsley
     public abstract class TokenKind
     {
         public static readonly TokenKind EndOfInput = new Empty("end of input");
-        public static readonly TokenKind Unknown = new Pattern("unknown", @".+");
+        public static readonly TokenKind Unknown = new Unknown();
 
         protected TokenKind(string name, bool skippable = false)
         {
@@ -15,7 +15,7 @@ namespace Parsley
             Skippable = skippable;
         }
 
-        public bool TryMatch(Text text, out Token token)
+        public bool TryMatch(IText text, out Token token)
         {
             var match = Match(text);
 
@@ -29,7 +29,7 @@ namespace Parsley
             return false;
         }
 
-        protected abstract MatchResult Match(Text text);
+        protected abstract MatchResult Match(IText text);
 
         public string Name { get; }
 
@@ -56,7 +56,7 @@ namespace Parsley
             _regex = new TokenRegex(pattern, regexOptions);
         }
 
-        protected override MatchResult Match(Text text)
+        protected override MatchResult Match(IText text)
         {
             return text.Match(_regex);
         }
@@ -82,7 +82,7 @@ namespace Parsley
             _symbol = symbol;
         }
 
-        protected override MatchResult Match(Text text)
+        protected override MatchResult Match(IText text)
         {
             var peek = text.Peek(_symbol.Length);
 
@@ -98,9 +98,24 @@ namespace Parsley
         public Empty(string name)
             : base(name) { }
 
-        protected override MatchResult Match(Text text)
+        protected override MatchResult Match(IText text)
         {
             return MatchResult.Fail;
+        }
+    }
+
+    public class Unknown : TokenKind
+    {
+        public Unknown()
+            : base("unknown")
+        { }
+
+        protected override MatchResult Match(IText text)
+        {
+            if (text.EndOfInput)
+                throw new InvalidOperationException("unknown token should not be mathed againt the end of input");
+
+            return MatchResult.Succeed(text.Peek(50));
         }
     }
 }

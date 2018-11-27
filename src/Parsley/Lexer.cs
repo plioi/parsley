@@ -1,16 +1,15 @@
+using System;
+using System.Collections.Generic;
+
 namespace Parsley
 {
-    using System.Collections.Generic;
-    using System.Linq;
-
     public class Lexer
     {
-        private readonly List<TokenKind> _kinds;
+        private readonly TokenKind[] _kinds;
 
         public Lexer(params TokenKind[] kinds)
         {
-            _kinds = kinds.ToList();
-            _kinds.Add(TokenKind.Unknown);
+            _kinds = kinds ?? throw new ArgumentNullException(nameof(kinds));
         }
 
         public virtual IEnumerable<Token> Tokenize(string input)
@@ -21,20 +20,21 @@ namespace Parsley
             {
                 var current = GetToken(text);
 
-                //After exiting this loop, Current will be the
-                //next unskippable token, and text will indicate
-                //where that token starts.
-                while (current.Kind.Skippable)
+                if (current == null)
                 {
-                    text.Advance(current.Literal.Length);
+                    TokenKind.Unknown.TryMatch(text, out Token unknown);
 
-                    if (text.EndOfInput)
-                        yield break;
+                    if (unknown == null)
+                        throw new InvalidOperationException("unknown token failed to match non-empty text");
 
-                    current = GetToken(text);
+                    yield return unknown;
+                    yield break;
                 }
 
                 text.Advance(current.Literal.Length);
+
+                if (current.Kind.Skippable)
+                    continue;
 
                 yield return current;
             }
@@ -46,7 +46,7 @@ namespace Parsley
                 if (kind.TryMatch(text, out Token token))
                     return token;
 
-            return null; //Unknown guarantees this is reachable only at the end of input.
+            return null;
         }
     }
 }
