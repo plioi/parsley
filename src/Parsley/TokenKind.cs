@@ -7,7 +7,7 @@ namespace Parsley
     public abstract class TokenKind
     {
         public static readonly TokenKind EndOfInput = new Empty("end of input");
-        public static readonly TokenKind Unknown = new Pattern("unknown", @".+");
+        public static readonly TokenKind Unknown = new Unknown();
 
         protected TokenKind(string name, bool skippable = false)
         {
@@ -101,6 +101,18 @@ namespace Parsley
         protected override MatchResult Match(Text text)
         {
             return MatchResult.Fail;
+        }
+    }
+
+    public class Unknown : TokenKind
+    {
+        public Unknown()
+            : base("unknown")
+        { }
+
+        protected override MatchResult Match(Text text)
+        {
+            return text.EndOfInput ? MatchResult.Fail : MatchResult.Succeed(text.Peek(50));
         }
     }
 }
