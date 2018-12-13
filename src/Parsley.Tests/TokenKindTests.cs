@@ -27,7 +27,7 @@ namespace Parsley.Tests
         {
             Token token;
 
-            upper.TryMatch(abcDEF, out token).ShouldBeFalse();
+            upper.TryMatch((Text)abcDEF, out token).ShouldBeFalse();
             token.ShouldBeNull();
         }
 
@@ -36,13 +36,13 @@ namespace Parsley.Tests
         {
             Token token;
 
-            lower.TryMatch(abcDEF, out token).ShouldBeTrue();
+            lower.TryMatch((Text)abcDEF, out token).ShouldBeTrue();
             token.ShouldBe(lower, "abc", 1, 1);
 
             upper.TryMatch(abcDEF.Advance(3), out token).ShouldBeTrue();
             token.ShouldBe(upper, "DEF", 1, 4);
 
-            caseInsensitive.TryMatch(abcDEF, out token).ShouldBeTrue();
+            caseInsensitive.TryMatch((Text)abcDEF, out token).ShouldBeTrue();
             token.ShouldBe(caseInsensitive, "abcDEF", 1, 1);
         }
 

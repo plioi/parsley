@@ -2,7 +2,7 @@
 
 namespace Parsley
 {
-    public class Text
+    public class Text : IText
     {
         private int _index;
         private readonly string _input;
