@@ -1,5 +1,6 @@
 ﻿using Shouldly;
 using System.Collections.Generic;
+using System.IO;
 using Xunit;
 
 namespace Parsley.Tests.IntegrationTests.Json
@@ -7,6 +8,7 @@ namespace Parsley.Tests.IntegrationTests.Json
     public class JsonGrammarTests
     {
         static IEnumerable<Token> Tokenize(string input) => new JsonLexer().Tokenize(input);
+        static IEnumerable<Token> TokenizeLined(string input) => new JsonLinedLexer().Tokenize(new StringReader(input));
         static readonly JsonGrammar Json = new JsonGrammar();
 
         [Fact]
@@ -67,17 +69,19 @@ namespace Parsley.Tests.IntegrationTests.Json
         public void ParsesDictionaries()
         {
             var empty = Tokenize("{}");
-            var filled = Tokenize("{\"zero\" : 0, \"one\" : 1, \"two\" : 2}");
 
             Json.Parses(empty).WithValue(value => ((Dictionary<string, object>)value).Count.ShouldBe(0));
 
-            Json.Parses(filled).WithValue(value =>
-            {
-                var dictionary = (Dictionary<string, object>) value;
-                dictionary["zero"].ShouldBe(0m);
-                dictionary["one"].ShouldBe(1m);
-                dictionary["two"].ShouldBe(2m);
-            });
+            var filled = "{\"zero\" \n : \n 0, \"one\" \n \n\n: 1, \"two\" \n\n : 2}";
+
+            foreach (var tokens in new[] { Tokenize(filled), TokenizeLined(filled) })
+                Json.Parses(tokens).WithValue(value =>
+                {
+                    var dictionary = (Dictionary<string, object>) value;
+                    dictionary["zero"].ShouldBe(0m);
+                    dictionary["one"].ShouldBe(1m);
+                    dictionary["two"].ShouldBe(2m);
+                });
         }
 
         [Fact]
@@ -98,19 +102,18 @@ namespace Parsley.Tests.IntegrationTests.Json
 
             ";
 
-            var tokens = Tokenize(complex);
+            foreach(var tokens in new []{ Tokenize(complex), TokenizeLined(complex) })
+                Json.Parses(tokens).WithValue(value =>
+                {
+                    var json = (Dictionary<string, object>)value;
+                    json["numbers"].ShouldBe(new[] {10m, 20m, 30m});
 
-            Json.Parses(tokens).WithValue(value =>
-            {
-                var json = (Dictionary<string, object>)value;
-                json["numbers"].ShouldBe(new[] {10m, 20m, 30m});
-
-                var window = (Dictionary<string, object>) json["window"];
-                window["title"].ShouldBe("Sample Widget");
-                window["parent"].ShouldBeNull();
-                window["maximized"].ShouldBe(true);
-                window["transparent"].ShouldBe(false);
-            });
+                    var window = (Dictionary<string, object>) json["window"];
+                    window["title"].ShouldBe("Sample Widget");
+                    window["parent"].ShouldBeNull();
+                    window["maximized"].ShouldBe(true);
+                    window["transparent"].ShouldBe(false);
+                });
         }
 
         [Fact]

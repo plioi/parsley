@@ -9,8 +9,8 @@ namespace Parsley.Tests.IntegrationTests.Json
                    Number, Quotation)
         {}
 
-        static readonly TokenKind Whitespace = new Pattern("whitespace", @"\s+", skippable: true);
-        
+        public static readonly TokenKind Whitespace = new Pattern("whitespace", @"\s+", skippable: true);
+
         public static readonly Keyword Null = new Keyword("null");
         public static readonly Keyword True = new Keyword("true");
         public static readonly Keyword False = new Keyword("false");
