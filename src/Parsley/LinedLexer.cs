@@ -1,36 +1,26 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace Parsley
 {
-    public class LinedLexer
+    public class LinedLexer : LexerBase<TextReader>
     {
-        private readonly TokenKind[] _kinds;
-
         public LinedLexer(params TokenKind[] kinds)
-        {
-            _kinds = kinds ?? throw new ArgumentNullException(nameof(kinds));
-        }
+            : base(kinds)
+        { }
 
-        public virtual IEnumerable<Token> Tokenize(TextReader textReader)
+        public override IEnumerable<Token> Tokenize(TextReader textReader)
         {
             var text = new LinedText(textReader);
 
             while (text.ReadLine())
-            {
                 while (!text.EndOfLine)
                 {
                     var current = GetToken(text);
 
                     if (current == null)
                     {
-                        TokenKind.Unknown.TryMatch(text, out Token unknown);
-
-                        if (unknown == null)
-                            throw new InvalidOperationException("unknown token failed to match non-empty text");
-
-                        yield return unknown;
+                        yield return MatchUnknownToken(text);
                         yield break;
                     }
 
@@ -41,16 +31,6 @@ namespace Parsley
 
                     yield return current;
                 }
-            }
-        }
-
-        private Token GetToken(LinedText text)
-        {
-            foreach (var kind in _kinds)
-                if (kind.TryMatch(text, out Token token))
-                    return token;
-
-            return null;
         }
     }
 }

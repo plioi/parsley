@@ -1,18 +1,14 @@
-using System;
 using System.Collections.Generic;
 
 namespace Parsley
 {
-    public class Lexer
+    public class Lexer : LexerBase<string>
     {
-        private readonly TokenKind[] _kinds;
-
         public Lexer(params TokenKind[] kinds)
-        {
-            _kinds = kinds ?? throw new ArgumentNullException(nameof(kinds));
-        }
+            : base(kinds)
+        { }
 
-        public virtual IEnumerable<Token> Tokenize(string input)
+        public override IEnumerable<Token> Tokenize(string input)
         {
             var text = new Text(input);
 
@@ -22,12 +18,7 @@ namespace Parsley
 
                 if (current == null)
                 {
-                    TokenKind.Unknown.TryMatch(text, out Token unknown);
-
-                    if (unknown == null)
-                        throw new InvalidOperationException("unknown token failed to match non-empty text");
-
-                    yield return unknown;
+                    yield return MatchUnknownToken(text);
                     yield break;
                 }
 
@@ -38,15 +29,6 @@ namespace Parsley
 
                 yield return current;
             }
-        }
-
-        private Token GetToken(Text text)
-        {
-            foreach (var kind in _kinds)
-                if (kind.TryMatch(text, out Token token))
-                    return token;
-
-            return null;
         }
     }
 }
