@@ -79,7 +79,7 @@ namespace Parsley.Parsers
         {
             var sb = new StringBuilder("<CHOICE ");
 
-            sb.AppendJoin(" OR ", _parsers.Select(p => p.Name));
+            sb.Append(string.Join(" OR ", _parsers.Select(p => p.Name)));
             sb.Append(">");
 
             return sb.ToString();

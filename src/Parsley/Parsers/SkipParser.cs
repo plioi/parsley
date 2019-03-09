@@ -43,7 +43,7 @@ namespace Parsley.Parsers
         {
             var sb = new StringBuilder("<SKIP ");
 
-            sb.AppendJoin<IParserG>(' ', _parsers);
+            sb.Append(string.Join<IParserG>(" ", _parsers));
             sb.Append(">");
 
             return sb.ToString();
