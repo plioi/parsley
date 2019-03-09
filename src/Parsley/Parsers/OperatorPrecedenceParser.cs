@@ -1,7 +1,6 @@
-﻿using Parsley.Parsers;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace Parsley
+namespace Parsley.Parsers
 {
     public delegate IParser<T> ExtendParserBuilder<T>(T left);
     public delegate T AtomNodeBuilder<out T>(string atom);

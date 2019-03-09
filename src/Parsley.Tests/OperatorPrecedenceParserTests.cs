@@ -1,6 +1,7 @@
 ﻿namespace Parsley.Tests
 {
     using System.Collections.Generic;
+    using Parsley.Parsers;
     using Shouldly;
     using Xunit;
 
