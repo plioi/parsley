@@ -1,6 +1,5 @@
-﻿using System;
-using Parsley.Parsers;
-using System.Collections.Generic;
+﻿using Parsley.Parsers;
+using System;
 using System.Linq;
 using System.Reflection;
 
@@ -8,13 +7,9 @@ namespace Parsley
 {
     public abstract class Grammar
     {
-        public static IParser<TItem> Fail<TItem>()
-            
-            => new FailingParser<TItem>();
+        public static FailingParser<TItem> Fail<TItem>() => new FailingParser<TItem>();
 
-        public static IParserG EndOfInput
-            
-            => new TokenByKindParser(TokenKind.EndOfInput);
+        public static TokenByKindParser EndOfInput => new TokenByKindParser(TokenKind.EndOfInput);
 
         /// <summary>
         /// ZeroOrMore(p) repeatedly applies an parser p until it fails, returing
@@ -22,72 +17,50 @@ namespace Parsley
         /// end of the sequence, p must fail without consuming input, otherwise the
         /// sequence will fail with the error reported by p.
         /// </summary>
-        public static IParser<IList<TItem>> ZeroOrMore<TItem>(IParser<TItem> item)
-
-            => new QuantifiedParser<TItem>(item, QuantificationRule.NOrMore, 0);
+        public static QuantifiedParser<TItem> ZeroOrMore<TItem>(IParser<TItem> item) => new QuantifiedParser<TItem>(item, QuantificationRule.NOrMore, 0);
 
         /// <summary>
         /// OneOrMore(p) behaves like ZeroOrMore(p), except that p must succeed at least one time.
         /// </summary>
-        public static IParser<IList<TItem>> OneOrMore<TItem>(IParser<TItem> item)
-
-            => new QuantifiedParser<TItem>(item, QuantificationRule.NOrMore, 1);
+        public static QuantifiedParser<TItem> OneOrMore<TItem>(IParser<TItem> item) => new QuantifiedParser<TItem>(item, QuantificationRule.NOrMore, 1);
 
         /// <summary>
         /// ZeroOrMore(p, s) parses zero or more occurrences of p separated by occurrences of s,
         /// returning the list of values returned by successful applications of p.
         /// </summary>
-        public static IParser<IList<TItem>> ZeroOrMore<TItem>(IParser<TItem> item, IParserG separator)
-
-            => new QuantifiedParser<TItem>(item, QuantificationRule.NOrMore, 0, -1, separator);
+        public static QuantifiedParser<TItem> ZeroOrMore<TItem>(IParser<TItem> item, IParserG separator) => new QuantifiedParser<TItem>(item, QuantificationRule.NOrMore, 0, -1, separator);
 
         /// <summary>
         /// OneOrMore(p, s) behaves like ZeroOrMore(p, s), except that p must succeed at least one time.
         /// </summary>
-        public static IParser<IList<TItem>> OneOrMore<TItem>(IParser<TItem> item, IParserG separator)
-            
-            => new QuantifiedParser<TItem>(item, QuantificationRule.NOrMore, 1, -1, separator);
+        public static QuantifiedParser<TItem> OneOrMore<TItem>(IParser<TItem> item, IParserG separator) => new QuantifiedParser<TItem>(item, QuantificationRule.NOrMore, 1, -1, separator);
 
-        public static IParser<IList<TItem>> NOrMore<TItem>(int n, IParser<TItem> item, IParserG separator)
+        public static QuantifiedParser<TItem> NOrMore<TItem>(int n, IParser<TItem> item, IParserG separator) => new QuantifiedParser<TItem>(item, QuantificationRule.NOrMore, n, -1, separator);
 
-            => new QuantifiedParser<TItem>(item, QuantificationRule.NOrMore, n, -1, separator);
+        public static QuantifiedParser<TItem> NOrLess<TItem>(int n, IParser<TItem> item, IParserG separator) => new QuantifiedParser<TItem>(item, QuantificationRule.NOrLess, n, -1, separator);
 
-        public static IParser<IList<TItem>> NOrLess<TItem>(int n, IParser<TItem> item, IParserG separator)
+        public static QuantifiedParser<TItem> NToM<TItem>(int n, int m, IParser<TItem> item, IParserG separator) => new QuantifiedParser<TItem>(item, QuantificationRule.NtoM, n, m, separator);
 
-            => new QuantifiedParser<TItem>(item, QuantificationRule.NOrLess, n, -1, separator);
-
-        public static IParser<IList<TItem>> NToMTimes<TItem>(int n, int m, IParser<TItem> item, IParserG separator)
-            
-            => new QuantifiedParser<TItem>(item, QuantificationRule.NtoM, n, m, separator);
-
-        public static IParser<IList<TItem>> NTimesExactly<TItem>(int n, IParser<TItem> item, IParserG separator)
-
-            => new QuantifiedParser<TItem>(item, QuantificationRule.ExactlyN, n, -1, separator);
+        public static QuantifiedParser<TItem> ExactlyN<TItem>(int n, IParser<TItem> item, IParserG separator) => new QuantifiedParser<TItem>(item, QuantificationRule.ExactlyN, n, -1, separator);
 
         /// <summary>
         /// Between(left, goal, right) parses its arguments in order.  If all three
         /// parsers succeed, the result of the goal parser is returned.
         /// </summary>
-        public static IParser<TItem> Between<TItem>(IParserG left, IParser<TItem> item, IParserG right)
-
-            => new BetweenParser<TItem>(left, item, right);
+        public static BetweenParser<TItem> Between<TItem>(IParserG left, IParser<TItem> item, IParserG right) => new BetweenParser<TItem>(left, item, right);
 
         /// <summary>
         /// Optional(p) is equivalent to p whenever p succeeds or when p fails after consuming input.
         /// If p fails without consuming input, Optional(p) succeeds.
         /// </summary>
-        public static IParser<TItem> Optional<TItem>(IParser<TItem> parser, TItem defaultValue = default(TItem))
-        
-            => new OptionalParser<TItem>(parser, defaultValue);
+        public static OptionalParser<TItem> Optional<TItem>(IParser<TItem> parser, TItem defaultValue = default(TItem)) => new OptionalParser<TItem>(parser, defaultValue);
         
         /// <summary>
         /// The parser Attempt(p) behaves like parser p, except that it pretends
         /// that it hasn't consumed any input when an error occurs. This combinator
         /// is used whenever arbitrary look ahead is needed.
         /// </summary>
-        public static IParser<TItem> Attempt<TItem>(IParser<TItem> parse)
-            
-            => new AttemptParser<TItem>(parse);
+        public static AttemptParser<TItem> Attempt<TItem>(IParser<TItem> item) => new AttemptParser<TItem>(item);
 
         /// <summary>
         /// Choice() always fails without consuming input.
@@ -107,39 +80,25 @@ namespace Parsley
         /// implementation of the parser combinators and the generation
         /// of good error messages.
         /// </summary>
-        public static IParser<TItem> Choice<TItem>(params IParser<TItem>[] parsers)
-            
-            => new ChoiceParser<TItem>(parsers);
+        public static ChoiceParser<TItem> Choice<TItem>(params IParser<TItem>[] items) => new ChoiceParser<TItem>(items);
 
         /// <summary>
         /// When parser p consumes any input, Label(p, e) is the same as p.
         /// When parser p does not consume any input, Label(p, e) is the same
         /// as p, except any messages are replaced with expectation e.
         /// </summary>
-        public static IParser<TItem> Label<TItem>(IParser<TItem> parser, string expectation)
-            
-            => new LabeledParser<TItem>(parser, expectation);
+        public static LabeledParser<TItem> Label<TItem>(IParser<TItem> item, string expectation) => new LabeledParser<TItem>(item, expectation);
 
-        public static IParser<TItem> Constant<TItem>(TokenKind kind, TItem constant)
-            
-            => new ConstantParser<TItem>(kind, constant);
+        public static ConstantParser<TItem> Constant<TItem>(TokenKind tokenKind, TItem constant) => new ConstantParser<TItem>(tokenKind, constant);
 
-        public static IParser<KeyValuePair<TName, TValue>> NameValuePair<TName, TValue>(IParser<TName> name,
-            IParserG delimiter, IParser<TValue> value)
+        public static NameValuePairParser<TName, TValue> NameValuePair<TName, TValue>(IParser<TName> name,
+            IParserG delimiter, IParser<TValue> value) => new NameValuePairParser<TName, TValue>(name, delimiter, value);
 
-            => new NameValuePairParser<TName, TValue>(name, delimiter, value);
+        public static TakeSkipParser<TResult> OccupiesEntireInput<TResult>(IParser<TResult> parser) => new TakeSkipParser<TResult>(parser, EndOfInput);
 
-        public static IParser<TResult> OccupiesEntireInput<TResult>(IParser<TResult> parser)
-        
-            => new TakeSkipParser<TResult>(parser, EndOfInput);
+        public static IParserG Skip(IParserG parser) => parser;
 
-        public static IParserG Skip(IParserG parser)
-
-            => parser;
-
-        public static IParserG Skip(params IParserG[] items)
-        
-            => new SkipParser(items);
+        public static SkipParser Skip(params IParserG[] items) => new SkipParser(items);
 
         protected void InferGrammarRuleNames()
         {
@@ -160,15 +119,9 @@ namespace Parsley
 
     public abstract class Grammar<T> : Grammar, IParser<T>
     {
-        public IReply<T> Parse(TokenStream tokens)
-        {
-            return EntryRule.Parse(tokens);
-        }
+        public IReply<T> Parse(TokenStream tokens) => EntryRule.Parse(tokens);
 
-        public IReplyG ParseG(TokenStream tokens)
-        {
-            return EntryRule.ParseG(tokens);
-        }
+        public IReplyG ParseG(TokenStream tokens) => EntryRule.ParseG(tokens);
 
         public string Name { get; }
 
