@@ -1,14 +1,14 @@
-# Parsley
+# Parsimonious
 
-Parsley is a monadic parser combinator library inspired by Haskell's [Parsec](http://www.haskell.org/haskellwiki/Parsec) and F#'s [FParsec](http://www.quanttec.com/fparsec/).  It can parse context-sensitive, infinite look-ahead grammars but it performs best on predictive (LL[1]) grammars.
+Parsimonious is a monadic parser combinator library with separate lexer/parser phases. It is deemed as the natural evolution of Patrick Lioi's Parsley(https://github.com/plioi/parsley) of which it is a fork with the emphasis made on the memory and speed optimizations for very big input files, as well as conciseness and flexibility of usage. It can parse context-sensitive, infinite look-ahead grammars, but it performs best on predictive (LL[1]) grammars.
 
-Unlike Parsec/FParsec, Parsley provides separate lexer/parser phases.  The lexer phase is usually performed with a prioritized list of regex patterns, and parser grammars are expressed in terms of the tokens produced by the lexer.
+Unlike common functional parsing libraries, such as Parsec/FParsec, Parsimonious provides separate lexer/parser phases.  The lexer phase is usually performed with a prioritized list of regex patterns, and parser grammars are expressed in terms of the tokens produced by the lexer.
 
 ## Installation
 
-First, [install NuGet](http://docs.nuget.org/docs/start-here/installing-nuget). Then, install Parsley from the package manager console:
+First, [install NuGet](http://docs.nuget.org/docs/start-here/installing-nuget). Then, install Parsimonious from the package manager console:
 
-    PM> Install-Package Parsley
+    PM> Install-Package Parsimonious
 
 ## Lexer Phase (Tokenization)
 
@@ -44,7 +44,7 @@ A `Reply<T>` describes whether or not the parser succeeded, the parsed-thingy (o
 
 Grammars should inherit from `Grammar` to take advantage of several `Parser` primitives.  Grammars should define each grammar rule in terms of these primitives, ultimately exposing the start rule as some `Parser<T>`.  Grammar rule bodies may consist of LINQ queries, which allow you to glue together other grammar rules in sequence:
 
-See the integration tests for a [sample JSON grammar](https://github.com/plioi/parsley/tree/master/src/Parsley.Test/IntegrationTests/Json).
+See the integration tests for a [sample JSON grammar](https://github.com/plioi/Parsimonious/tree/master/src/Parsimonious.Test/IntegrationTests/Json).
 
 Finally, we can put all these pieces together to parse some text:
 
