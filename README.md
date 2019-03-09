@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/6yxvrmc5rdyrwtb0?svg=true)](https://ci.appveyor.com/project/DNemtsov/parsimonious)
+
 # Parsimonious
 
 Parsimonious is a monadic parser combinator library with separate lexer/parser phases. It is deemed as the natural evolution of Patrick Lioi's Parsley(https://github.com/plioi/parsley) of which it is a fork with the emphasis made on the memory and speed optimizations for very big input files, as well as conciseness and flexibility of usage. It can parse context-sensitive, infinite look-ahead grammars, but it performs best on predictive (LL[1]) grammars.
@@ -44,7 +46,7 @@ A `Reply<T>` describes whether or not the parser succeeded, the parsed-thingy (o
 
 Grammars should inherit from `Grammar` to take advantage of several `Parser` primitives.  Grammars should define each grammar rule in terms of these primitives, ultimately exposing the start rule as some `Parser<T>`.  Grammar rule bodies may consist of LINQ queries, which allow you to glue together other grammar rules in sequence:
 
-See the integration tests for a [sample JSON grammar](https://github.com/plioi/Parsimonious/tree/master/src/Parsimonious.Test/IntegrationTests/Json).
+See the integration tests for a [sample JSON grammar](https://github.com/DNemtsov/parsimonious/tree/master/src/Parsimonious.Tests/IntegrationTests/Json).
 
 Finally, we can put all these pieces together to parse some text:
 
