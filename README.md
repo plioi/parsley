@@ -14,16 +14,20 @@ First, [install NuGet](http://docs.nuget.org/docs/start-here/installing-nuget). 
 
 Strings being parsed are represented with a `Text` instance, which tracks the original string as well as the current parsing position:
 
-        var text = new Text("some input to parse");
+```csharp
+var text = new Text("some input to parse");
+```
 
 The lexer phase is implemented by anything that produces an `IEnumerable<Token>`.  The default implementation, `Lexer`, builds the series of tokens when given a prioritized series of `TokenKind` token recognizers.  The most common `TokenKind` implementation is `Pattern`, which recognizes tokens via regex patterns.  `TokenKinds` can be skippable, if you want them to be recognized but discarded:
 
-        var text = new Text("1 2 3 a b c");
-        var lexer = new Lexer(new Pattern("letter", @"[a-z]"),
-                              new Pattern("number", @"[0-9]+"),
-                              new Pattern("whitespace", @"\s+", skippable: true));
+```csharp
+var text = new Text("1 2 3 a b c");
+var lexer = new Lexer(new Pattern("letter", @"[a-z]"),
+                      new Pattern("number", @"[0-9]+"),
+                      new Pattern("whitespace", @"\s+", skippable: true));
 
-        Token[] tokens = lexer.ToArray();
+Token[] tokens = lexer.ToArray();
+```
 
 Above, the array `tokens` will contain 6 `Token` objects. Each `Token` contains the literal ("1", "a", etc), the `TokenKind` that matched it, and the `Position` (line/column number) where the token was found.
 
@@ -33,10 +37,12 @@ The collection of `Token` produced by the lexer phase is wrapped in a `TokenStre
 
 A parser of thingies is a method that consumes a `TokenStream` and produces a parsed-thingy:
 
-        public interface Parser<out T>
-        {
-            Reply<T> Parse(TokenStream tokens);
-        }
+```csharp
+public interface Parser<out T>
+{
+    Reply<T> Parse(TokenStream tokens);
+}
+```
 
 A `Reply<T>` describes whether or not the parser succeeded, the parsed-thingy (on success), a possibly-empty error message list, and a reference to a `TokenStream` representing the remaining unparsed tokens.
 
@@ -48,6 +54,8 @@ See the integration tests for a [sample JSON grammar](https://github.com/plioi/p
 
 Finally, we can put all these pieces together to parse some text:
 
-        const string input = "{\"zero\" : 0, \"one\" : 1, \"two\" : 2}";
-        var tokens = new JsonLexer(input);
-        var jsonDictionary = (Dictionary<string, object>) JsonGrammar.Json.Parse(tokens).Value;
+```csharp
+const string input = "{\"zero\" : 0, \"one\" : 1, \"two\" : 2}";
+var tokens = new JsonLexer(input);
+var jsonDictionary = (Dictionary<string, object>) JsonGrammar.Json.Parse(tokens).Value;
+```
