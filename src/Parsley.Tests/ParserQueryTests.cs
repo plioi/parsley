@@ -39,7 +39,7 @@ namespace Parsley.Tests
 
         public void PropogatesErrorsWithoutRunningRemainingParsers()
         {
-            Parser<string> Fail = Grammar.Fail<string>();
+            var Fail = Grammar.Fail<string>();
 
             var tokens = Tokenize("xy").ToArray();
 

@@ -86,9 +86,9 @@
         {
             if (this != Empty)
             {
-                if (head is T)
-                    yield return (T)head;
-                foreach (T message in tail.All<T>())
+                if (head is T match)
+                    yield return match;
+                foreach (var message in tail.All<T>())
                         yield return message;
             }
         }

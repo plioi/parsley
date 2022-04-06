@@ -21,7 +21,7 @@
         public void CanIndicateErrorsWhichCausedBacktracking()
         {
             var position = new Position(3, 4);
-            ErrorMessageList errors = ErrorMessageList.Empty
+            var errors = ErrorMessageList.Empty
                 .With(ErrorMessage.Expected("a"))
                 .With(ErrorMessage.Expected("b"));
 

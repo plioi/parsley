@@ -17,7 +17,7 @@
 
         public void CreatesNewCollectionWhenAddingItems()
         {
-            ErrorMessageList list = ErrorMessageList.Empty.With(ErrorMessage.Expected("expectation"));
+            var list = ErrorMessageList.Empty.With(ErrorMessage.Expected("expectation"));
 
             list.ToString().ShouldBe("expectation expected");
             list.ShouldNotBeSameAs(ErrorMessageList.Empty);

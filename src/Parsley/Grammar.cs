@@ -166,7 +166,7 @@
         {
             yield return first;
 
-            foreach (T item in rest)
+            foreach (var item in rest)
                 yield return item;
         }
 

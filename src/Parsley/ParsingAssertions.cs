@@ -105,7 +105,7 @@
                 stream = stream.Advance();
             }
 
-            Action raiseError = () =>
+            var raiseError = () =>
             {
                 throw new AssertionException("Parse resulted in unexpected remaining unparsed tokens.",
                                              String.Join(", ", expectedLiterals),
