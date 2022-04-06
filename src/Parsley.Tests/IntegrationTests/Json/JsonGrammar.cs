@@ -8,16 +8,16 @@
 
     public class JsonGrammar : Grammar
     {
-        public static readonly GrammarRule<object> Json = new GrammarRule<object>();
-        static readonly GrammarRule<object> JsonValue = new GrammarRule<object>();
-        static readonly GrammarRule<object> True = new GrammarRule<object>();
-        static readonly GrammarRule<object> False = new GrammarRule<object>();
-        static readonly GrammarRule<object> Null = new GrammarRule<object>();
-        static readonly GrammarRule<object> Number = new GrammarRule<object>();
-        static readonly GrammarRule<string> Quotation = new GrammarRule<string>();
-        static readonly GrammarRule<object[]> Array = new GrammarRule<object[]>();
-        static readonly GrammarRule<KeyValuePair<string, object>> Pair = new GrammarRule<KeyValuePair<string, object>>();
-        static readonly GrammarRule<Dictionary<string, object>> Dictionary = new GrammarRule<Dictionary<string, object>>();
+        public static readonly GrammarRule<object> Json = new();
+        static readonly GrammarRule<object> JsonValue = new();
+        static readonly GrammarRule<object> True = new();
+        static readonly GrammarRule<object> False = new();
+        static readonly GrammarRule<object> Null = new();
+        static readonly GrammarRule<object> Number = new();
+        static readonly GrammarRule<string> Quotation = new();
+        static readonly GrammarRule<object[]> Array = new();
+        static readonly GrammarRule<KeyValuePair<string, object>> Pair = new();
+        static readonly GrammarRule<Dictionary<string, object>> Dictionary = new();
 
         static JsonGrammar()
         {

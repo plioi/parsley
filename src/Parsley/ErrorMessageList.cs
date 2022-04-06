@@ -6,7 +6,7 @@
 
     public class ErrorMessageList
     {
-        public static readonly ErrorMessageList Empty = new ErrorMessageList();
+        public static readonly ErrorMessageList Empty = new();
 
         private readonly ErrorMessage head;
         private readonly ErrorMessageList tail;
