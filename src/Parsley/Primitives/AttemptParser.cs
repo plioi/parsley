@@ -1,10 +1,10 @@
 namespace Parsley.Primitives
 {
-    internal class AttemptParser<T> : Parser<T>
+    internal class AttemptParser<T> : IParser<T>
     {
-        private readonly Parser<T> parse;
+        private readonly IParser<T> parse;
 
-        public AttemptParser(Parser<T> parse)
+        public AttemptParser(IParser<T> parse)
         {
             this.parse = parse;
         }

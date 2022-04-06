@@ -7,11 +7,11 @@ namespace Parsley.Tests
 
     public class OperatorPrecedenceParserTests : Grammar
     {
-        readonly OperatorPrecedenceParser<Expression> expression;
+        readonly OperatorPrecedenceParser<IExpression> expression;
 
         public OperatorPrecedenceParserTests()
         {
-            expression = new OperatorPrecedenceParser<Expression>();
+            expression = new OperatorPrecedenceParser<IExpression>();
 
             expression.Atom(SampleLexer.Digit, token => new Constant(int.Parse(token.Literal, CultureInfo.InvariantCulture)));
             expression.Atom(SampleLexer.Name, token => new Identifier(token.Literal));
@@ -140,11 +140,11 @@ namespace Parsley.Tests
                        LeftParen, RightParen, Comma) { }
         }
 
-        interface Expression
+        interface IExpression
         {
         }
 
-        class Constant : Expression
+        class Constant : IExpression
         {
             readonly int value;
 
@@ -159,7 +159,7 @@ namespace Parsley.Tests
             }
         }
 
-        class Identifier : Expression
+        class Identifier : IExpression
         {
             readonly string identifier;
 
@@ -174,18 +174,18 @@ namespace Parsley.Tests
             }
         }
 
-        class Form : Expression
+        class Form : IExpression
         {
-            readonly Expression head;
-            readonly IEnumerable<Expression> expressions;
+            readonly IExpression head;
+            readonly IEnumerable<IExpression> expressions;
 
-            public Form(Token head, params Expression[] expressions)
+            public Form(Token head, params IExpression[] expressions)
                 : this(new Identifier(head.Literal), expressions) { }
 
-            public Form(Expression head, params Expression[] expressions)
-                : this(head, (IEnumerable<Expression>)expressions) { }
+            public Form(IExpression head, params IExpression[] expressions)
+                : this(head, (IEnumerable<IExpression>)expressions) { }
 
-            public Form(Expression head, IEnumerable<Expression> expressions)
+            public Form(IExpression head, IEnumerable<IExpression> expressions)
             {
                 this.head = head;
                 this.expressions = expressions;

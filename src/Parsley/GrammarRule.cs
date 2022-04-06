@@ -2,7 +2,7 @@ namespace Parsley
 {
     using System;
 
-    public class GrammarRule<T> : Parser<T>
+    public class GrammarRule<T> : IParser<T>
     {
         private Func<TokenStream, Reply<T>> parse;
 
@@ -14,7 +14,7 @@ namespace Parsley
 
         public string Name { get; internal set; }
 
-        public Parser<T> Rule
+        public IParser<T> Rule
         {
             set { parse = value.Parse; }
         }
