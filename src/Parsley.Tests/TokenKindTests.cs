@@ -3,7 +3,6 @@
     using System;
     using System.Text.RegularExpressions;
     using Shouldly;
-    using Xunit;
 
     public class TokenKindTests
     {
@@ -20,7 +19,6 @@
             abcDEF = new Text("abcDEF");
         }
 
-        [Fact]
         public void ProducesNullTokenUponFailedMatch()
         {
             Token token;
@@ -29,7 +27,6 @@
             token.ShouldBeNull();
         }
 
-        [Fact]
         public void ProducesTokenUponSuccessfulMatch()
         {
             Token token;
@@ -44,7 +41,6 @@
             token.ShouldBe(caseInsensitive, "abcDEF", 1, 1);
         }
 
-        [Fact]
         public void HasDescriptiveName()
         {
             lower.Name.ShouldBe("Lowercase");
@@ -52,7 +48,6 @@
             caseInsensitive.Name.ShouldBe("Case Insensitive");
         }
 
-        [Fact]
         public void UsesDescriptiveNameForToString()
         {
             lower.ToString().ShouldBe("Lowercase");
@@ -60,7 +55,6 @@
             caseInsensitive.ToString().ShouldBe("Case Insensitive");
         }
 
-        [Fact]
         public void ProvidesConvenienceSubclassForDefiningKeywords()
         {
             Token token;
@@ -84,7 +78,6 @@
             notJustLetters.ShouldThrow<ArgumentException>("Keywords may only contain letters.\r\nParameter name: word");
         }
 
-        [Fact]
         public void ProvidesConvenienceSubclassForDefiningOperators()
         {
             Token token;
@@ -120,7 +113,6 @@
             token.ShouldBe(doubleStar, "**", 1, 1);
         }
 
-        [Fact]
         public void ProvidesConvenienceSubclassForTokensThatDoNotMatchLiteralsFromTheInput()
         {
             Token token;

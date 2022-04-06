@@ -1,11 +1,9 @@
 namespace Parsley.Tests
 {
-    using Xunit;
     using ErrorMessage = Parsley.ErrorMessage;
 
     public class LambdaParserTests
     {
-        [Fact]
         public void CreatesParsersFromLambdas()
         {
             var succeeds = new LambdaParser<string>(tokens => new Parsed<string>("AA", tokens.Advance().Advance()));

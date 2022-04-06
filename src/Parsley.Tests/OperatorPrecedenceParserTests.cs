@@ -2,7 +2,6 @@
 {
     using System.Collections.Generic;
     using Shouldly;
-    using Xunit;
 
     public class OperatorPrecedenceParserTests : Grammar
     {
@@ -31,14 +30,12 @@
                                  select new Form(callable, arguments));
         }
 
-        [Fact]
         public void ParsesRegisteredTokensIntoCorrespondingAtoms()
         {
             Parses("1", "1");
             Parses("square", "square");
         }
 
-        [Fact]
         public void ParsesUnitExpressionsStartedByRegisteredTokens()
         {
             Parses("(0)", "0");
@@ -46,28 +43,24 @@
             Parses("(1+4)/(2-3)*4", "(* (/ (+ 1 4) (- 2 3)) 4)");
         }
 
-        [Fact]
         public void ParsesPrefixExpressionsStartedByRegisteredToken()
         {
             Parses("-1", "(- 1)");
             Parses("-(-1)", "(- (- 1))");
         }
 
-        [Fact]
         public void ParsesPostfixExpressionsEndedByRegisteredToken()
         {
             Parses("1++", "(++ 1)");
             Parses("1++--", "(-- (++ 1))");
         }
 
-        [Fact]
         public void ParsesExpressionsThatExtendTheLeftSideExpressionWhenTheRegisteredTokenIsEncountered()
         {
             Parses("square(1)", "(square 1)");
             Parses("square(1,2)", "(square 1 2)");
         }
 
-        [Fact]
         public void ParsesBinaryOperationsRespectingPrecedenceAndAssociativity()
         {
             Parses("1+2", "(+ 1 2)");
@@ -92,7 +85,6 @@
             Parses("1^2+3^4", "(+ (^ 1 2) (^ 3 4))");
         }
 
-        [Fact]
         public void ProvidesErrorAtAppropriatePositionWhenUnitParsersFail()
         {
             //Upon unit-parser failures, stop!
@@ -103,7 +95,6 @@
             expression.FailsToParse(Tokenize("(*")).LeavingUnparsedTokens("*").WithMessage("(1, 2): Parse error.");
         }
 
-        [Fact]
         public void ProvidesErrorAtAppropriatePositionWhenExtendParsersFail()
         {
             //Upon extend-parser failures, stop!

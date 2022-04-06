@@ -2,11 +2,9 @@
 {
     using System.Linq;
     using Shouldly;
-    using Xunit;
 
     public class GrammarRuleTests : Grammar
     {
-        [Fact]
         public void CanDefineMutuallyRecursiveRules()
         {
             var tokens = new CharLexer().Tokenize("(A)");
@@ -21,7 +19,6 @@
             expression.Parses(tokens).WithValue("A");
         }
 
-        [Fact]
         public void HasAnOptionallyProvidedName()
         {
             var unnamed = new GrammarRule<string>();
@@ -31,7 +28,6 @@
             named.Name.ShouldBe("Named");
         }
 
-        [Fact]
         public void ProvidesAdviceWhenRuleIsUsedBeforeBeingInitialized()
         {
             var tokens = new CharLexer().Tokenize("123").ToArray();
