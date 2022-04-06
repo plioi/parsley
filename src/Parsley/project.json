@@ -1,0 +1,28 @@
+﻿{
+  "title": "Parsley",
+  "version": "0.0.7-beta-*",
+  "authors": [ "Patrick Lioi" ],
+  "copyright": "Copyright © 2011-2016",
+  "description": "A monadic parser combinator library inspired by Haskell's Parsec library.",
+  "packOptions": {
+    "projectUrl": "https://github.com/plioi/parsley",
+    "licenseUrl": "https://github.com/plioi/parsley/blob/master/LICENSE.txt",
+    "requireLicenseAcceptance": false,
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/plioi/parsley"
+    }
+  },
+
+  "frameworks": {
+    "net452": { },
+    "netstandard1.1": {
+      "dependencies": {
+        "System.Linq": "4.1.0",
+        "System.Reflection.Extensions": "4.0.1",
+        "System.Runtime.Extensions": "4.1.0",
+        "System.Text.RegularExpressions": "4.1.0"
+      }
+    }
+  }
+}
