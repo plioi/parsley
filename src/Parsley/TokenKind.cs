@@ -77,7 +77,7 @@
             : base(word, word + @"\b")
         {
             if (word.Cast<char>().Any(ch => !Char.IsLetter(ch)))
-                throw new ArgumentException("Keywords may only contain letters.", "word");
+                throw new ArgumentException("Keywords may only contain letters.", nameof(word));
         }
     }
 
