@@ -1,4 +1,6 @@
-﻿namespace Parsley.Tests
+﻿using System.Globalization;
+
+namespace Parsley.Tests
 {
     using System.Collections.Generic;
     using Shouldly;
@@ -11,7 +13,7 @@
         {
             expression = new OperatorPrecedenceParser<Expression>();
 
-            expression.Atom(SampleLexer.Digit, token => new Constant(int.Parse(token.Literal)));
+            expression.Atom(SampleLexer.Digit, token => new Constant(int.Parse(token.Literal, CultureInfo.InvariantCulture)));
             expression.Atom(SampleLexer.Name, token => new Identifier(token.Literal));
 
             expression.Unit(SampleLexer.LeftParen, Between(Token("("), expression, Token(")")));
@@ -153,7 +155,7 @@
 
             public override string ToString()
             {
-                return value.ToString();
+                return value.ToString(CultureInfo.InvariantCulture);
             }
         }
 

@@ -32,7 +32,7 @@
 
             Number.Rule =
                 from number in Token(JsonLexer.Number)
-                select (object) Decimal.Parse(number.Literal, NumberStyles.Any);
+                select (object) Decimal.Parse(number.Literal, NumberStyles.Any, CultureInfo.InvariantCulture);
 
             Quotation.Rule =
                 from quotation in Token(JsonLexer.Quotation)
@@ -70,7 +70,7 @@
             string result = quotation.Substring(1, quotation.Length - 2); //Remove leading and trailing quotation marks
 
             result = Regex.Replace(result, @"\\u[0-9a-fA-F]{4}",
-                                   match => Char.ConvertFromUtf32(int.Parse(match.Value.Replace("\\u", ""), NumberStyles.HexNumber)));
+                                   match => Char.ConvertFromUtf32(int.Parse(match.Value.Replace("\\u", ""), NumberStyles.HexNumber, CultureInfo.InvariantCulture)));
 
             result = result
                 .Replace("\\\"", "\"")

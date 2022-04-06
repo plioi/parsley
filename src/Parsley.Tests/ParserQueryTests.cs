@@ -1,4 +1,6 @@
-﻿namespace Parsley.Tests
+﻿using System.Globalization;
+
+namespace Parsley.Tests
 {
     using System;
     using System.Collections.Generic;
@@ -20,7 +22,7 @@
         public void CanBuildParserFromSingleSimplerParser()
         {
             var parser = from x in Next
-                         select x.ToUpper();
+                         select x.ToUpper(CultureInfo.InvariantCulture);
 
             parser.PartiallyParses(Tokenize("xy")).LeavingUnparsedTokens("y").WithValue("X");
         }
@@ -30,7 +32,7 @@
             var parser = (from a in Next
                           from b in Next
                           from c in Next
-                          select (a + b + c).ToUpper());
+                          select (a + b + c).ToUpper(CultureInfo.InvariantCulture));
 
             parser.PartiallyParses(Tokenize("abcdef")).LeavingUnparsedTokens("d", "e", "f").WithValue("ABC");
         }

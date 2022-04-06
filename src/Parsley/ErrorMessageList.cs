@@ -70,7 +70,7 @@
             }
 
             if (backtrackErrors.Any())
-                parts.Add(String.Join(" ", backtrackErrors.Select(backtrack => String.Format("[{0}]", backtrack))));
+                parts.Add(String.Join(" ", backtrackErrors.Select(backtrack => $"[{backtrack}]")));
 
             return String.Join(" ", parts);
         }
