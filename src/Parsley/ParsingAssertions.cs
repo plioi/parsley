@@ -126,7 +126,7 @@
         {
             var nextTokenKind = reply.UnparsedTokens.Current.Kind;
             AssertEqual(TokenKind.EndOfInput, nextTokenKind);
-            return reply.LeavingUnparsedTokens(new string[] {});
+            return reply.LeavingUnparsedTokens(Array.Empty<string>());
         }
 
         public static Reply<T> WithValue<T>(this Reply<T> reply, T expected)
