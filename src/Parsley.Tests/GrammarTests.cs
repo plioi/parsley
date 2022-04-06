@@ -1,4 +1,6 @@
-﻿namespace Parsley.Tests
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Parsley.Tests
 {
     using System;
     using System.Collections.Generic;
@@ -289,6 +291,7 @@
     public class GrammarRuleNameInferenceTests : Grammar
     {
         readonly GrammarRule<int> AlreadyNamedRule;
+        [SuppressMessage("Usage", "CA2211:Non-constant fields should not be visible", Justification = "Example for Testing")]
         public static GrammarRule<object> PublicStaticRule;
         static GrammarRule<string> PrivateStaticRule;
         public readonly GrammarRule<int> PublicInstanceRule;
