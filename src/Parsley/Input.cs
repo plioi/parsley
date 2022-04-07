@@ -1,11 +1,11 @@
 namespace Parsley;
 
-public class TokenStream
+public class Input
 {
     readonly Token current;
-    readonly Lazy<TokenStream> rest;
+    readonly Lazy<Input> rest;
 
-    public TokenStream(IEnumerable<Token> tokens)
+    public Input(IEnumerable<Token> tokens)
     {
         var enumerator = tokens.GetEnumerator();
 
@@ -13,37 +13,37 @@ public class TokenStream
             ? enumerator.Current
             : new Token(TokenKind.EndOfInput, new Position(1, 1), "");
 
-        rest = new Lazy<TokenStream>(() => LazyAdvance(enumerator));
+        rest = new Lazy<Input>(() => LazyAdvance(enumerator));
     }
 
-    TokenStream(Token current, IEnumerator<Token> enumerator)
+    Input(Token current, IEnumerator<Token> enumerator)
     {
         this.current = current;
-        rest = new Lazy<TokenStream>(() => LazyAdvance(enumerator));
+        rest = new Lazy<Input>(() => LazyAdvance(enumerator));
     }
 
-    TokenStream(Token current)
+    Input(Token current)
     {
         this.current = current;
-        rest = new Lazy<TokenStream>(() => this);
+        rest = new Lazy<Input>(() => this);
     }
 
     public Token Current => current;
 
-    public TokenStream Advance() => rest.Value;
+    public Input Advance() => rest.Value;
 
     public Position Position => Current.Position;
 
-    TokenStream LazyAdvance(IEnumerator<Token> enumerator)
+    Input LazyAdvance(IEnumerator<Token> enumerator)
     {
         if (enumerator.MoveNext())
-            return new TokenStream(enumerator.Current, enumerator);
+            return new Input(enumerator.Current, enumerator);
 
         if (Current.Kind == TokenKind.EndOfInput)
             return this;
 
         var endPosition = new Position(Position.Line, Position.Column + Current.Literal.Length);
 
-        return new TokenStream(new Token(TokenKind.EndOfInput, endPosition, ""));
+        return new Input(new Token(TokenKind.EndOfInput, endPosition, ""));
     }
 }

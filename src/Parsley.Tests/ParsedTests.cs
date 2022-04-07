@@ -2,11 +2,11 @@ namespace Parsley.Tests;
 
 class ParsedTests
 {
-    readonly TokenStream unparsed;
+    readonly Input unparsed;
 
     public ParsedTests()
     {
-        unparsed = new TokenStream(new CharLexer().Tokenize("0"));
+        unparsed = new Input(new CharLexer().Tokenize("0"));
     }
 
     public void HasAParsedValue()

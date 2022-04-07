@@ -1,11 +1,11 @@
 namespace Parsley.Tests;
 
-class TokenStreamTests
+class InputTests
 {
     readonly TokenKind lower;
     readonly TokenKind upper;
 
-    public TokenStreamTests()
+    public InputTests()
     {
         lower = new Pattern("Lowercase", @"[a-z]+");
         upper = new Pattern("Uppercase", @"[A-Z]+");
@@ -31,28 +31,28 @@ class TokenStreamTests
 
     public void ProvidesEndOfInputTokenWhenGivenEmptyEnumerator()
     {
-        var tokens = new TokenStream(Empty());
+        var input = new Input(Empty());
 
-        tokens.Current.ShouldBe(TokenKind.EndOfInput, "", 1, 1);
-        tokens.Advance().ShouldBeSameAs(tokens);
+        input.Current.ShouldBe(TokenKind.EndOfInput, "", 1, 1);
+        input.Advance().ShouldBeSameAs(input);
     }
 
     public void ProvidesCurrentToken()
     {
-        var tokens = new TokenStream(Tokens());
-        tokens.Current.ShouldBe(upper, "ABC", 1, 1);
+        var input = new Input(Tokens());
+        input.Current.ShouldBe(upper, "ABC", 1, 1);
     }
 
     public void AdvancesToTheNextToken()
     {
-        var tokens = new TokenStream(Tokens());
-        tokens.Advance().Current.ShouldBe(lower, "def", 1, 4);
+        var input = new Input(Tokens());
+        input.Advance().Current.ShouldBe(lower, "def", 1, 4);
     }
 
     public void ProvidesEndOfInputTokenAfterEnumeratorIsExhausted()
     {
-        var tokens = new TokenStream(OneToken());
-        var end = tokens.Advance();
+        var input = new Input(OneToken());
+        var end = input.Advance();
 
         end.Current.ShouldBe(TokenKind.EndOfInput, "", 1, 4);
         end.Advance().ShouldBeSameAs(end);
@@ -60,15 +60,15 @@ class TokenStreamTests
 
     public void TryingToAdvanceBeyondEndOfInputResultsInNoMovement()
     {
-        var tokens = new TokenStream(Empty());
-        tokens.ShouldBeSameAs(tokens.Advance());
+        var input = new Input(Empty());
+        input.ShouldBeSameAs(input.Advance());
     }
 
     public void DoesNotChangeStateAsUnderlyingEnumeratorIsTraversed()
     {
-        var tokens = new TokenStream(Tokens());
+        var input = new Input(Tokens());
             
-        var first = tokens;
+        var first = input;
 
         first.Current.ShouldBe(upper, "ABC", 1, 1);
 
@@ -92,30 +92,30 @@ class TokenStreamTests
 
     public void AllowsRepeatableTraversalWhileTraversingUnderlyingEnumeratorItemsAtMostOnce()
     {
-        var tokens = new TokenStream(Tokens());
+        var input = new Input(Tokens());
 
-        tokens.Current.ShouldBe(upper, "ABC", 1, 1);
-        tokens.Advance().Current.ShouldBe(lower, "def", 1, 4);
-        tokens.Advance().Advance().Current.ShouldBe(upper, "GHI", 1, 7);
-        tokens.Advance().Advance().Advance().Current.ShouldBe(TokenKind.EndOfInput, "", 1, 10);
+        input.Current.ShouldBe(upper, "ABC", 1, 1);
+        input.Advance().Current.ShouldBe(lower, "def", 1, 4);
+        input.Advance().Advance().Current.ShouldBe(upper, "GHI", 1, 7);
+        input.Advance().Advance().Advance().Current.ShouldBe(TokenKind.EndOfInput, "", 1, 10);
 
-        tokens.Advance().ShouldBeSameAs(tokens.Advance());
+        input.Advance().ShouldBeSameAs(input.Advance());
     }
 
     public void ProvidesPositionOfCurrentToken()
     {
-        var tokens = new TokenStream(Tokens());
+        var input = new Input(Tokens());
             
-        tokens.Position.Line.ShouldBe(1);
-        tokens.Position.Column.ShouldBe(1);
+        input.Position.Line.ShouldBe(1);
+        input.Position.Column.ShouldBe(1);
 
-        tokens.Advance().Position.Line.ShouldBe(1);
-        tokens.Advance().Position.Column.ShouldBe(4);
+        input.Advance().Position.Line.ShouldBe(1);
+        input.Advance().Position.Column.ShouldBe(4);
 
-        tokens.Advance().Advance().Position.Line.ShouldBe(1);
-        tokens.Advance().Advance().Position.Column.ShouldBe(7);
+        input.Advance().Advance().Position.Line.ShouldBe(1);
+        input.Advance().Advance().Position.Column.ShouldBe(7);
 
-        tokens.Advance().Advance().Advance().Position.Line.ShouldBe(1);
-        tokens.Advance().Advance().Advance().Position.Column.ShouldBe(10);
+        input.Advance().Advance().Advance().Position.Line.ShouldBe(1);
+        input.Advance().Advance().Advance().Position.Column.ShouldBe(10);
     }
 }

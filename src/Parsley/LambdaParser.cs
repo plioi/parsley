@@ -2,11 +2,11 @@ namespace Parsley;
 
 public class LambdaParser<T> : IParser<T>
 {
-    readonly Func<TokenStream, Reply<T>> parse;
+    readonly Func<Input, Reply<T>> parse;
 
-    public LambdaParser(Func<TokenStream, Reply<T>> parse)
+    public LambdaParser(Func<Input, Reply<T>> parse)
         => this.parse = parse;
 
-    public Reply<T> Parse(TokenStream tokens)
-        => parse(tokens);
+    public Reply<T> Parse(Input input)
+        => parse(input);
 }

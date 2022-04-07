@@ -4,7 +4,7 @@ namespace Parsley.Tests;
 
 class ParserQueryTests
 {
-    static readonly IParser<string> Next = new LambdaParser<string>(tokens => new Parsed<string>(tokens.Current.Literal, tokens.Advance()));
+    static readonly IParser<string> Next = new LambdaParser<string>(input => new Parsed<string>(input.Current.Literal, input.Advance()));
 
     static IEnumerable<Token> Tokenize(string input) => new CharLexer().Tokenize(input);
 

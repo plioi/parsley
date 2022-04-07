@@ -2,10 +2,10 @@ namespace Parsley;
 
 public class Error<T> : Reply<T>
 {
-    public Error(TokenStream unparsedTokens, ErrorMessage error)
+    public Error(Input unparsedTokens, ErrorMessage error)
         : this(unparsedTokens,  ErrorMessageList.Empty.With(error)) { }
 
-    public Error(TokenStream unparsedTokens, ErrorMessageList errors)
+    public Error(Input unparsedTokens, ErrorMessageList errors)
     {
         UnparsedTokens = unparsedTokens;
         ErrorMessages = errors;
@@ -20,7 +20,7 @@ public class Error<T> : Reply<T>
         }
     }
 
-    public TokenStream UnparsedTokens { get; }
+    public Input UnparsedTokens { get; }
     public bool Success => false;
     public ErrorMessageList ErrorMessages { get; }
 }

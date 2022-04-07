@@ -2,12 +2,12 @@ namespace Parsley;
 
 public class GrammarRule<T> : IParser<T>
 {
-    Func<TokenStream, Reply<T>> parse;
+    Func<Input, Reply<T>> parse;
 
     public GrammarRule(string name = null)
     {
         Name = name;
-        parse = tokens => new Error<T>(tokens, new UndefinedGrammarRuleErrorMessage(Name));
+        parse = input => new Error<T>(input, new UndefinedGrammarRuleErrorMessage(Name));
     }
 
     public string Name { get; internal set; }
@@ -17,6 +17,6 @@ public class GrammarRule<T> : IParser<T>
         set { parse = value.Parse; }
     }
 
-    public Reply<T> Parse(TokenStream tokens)
-        => parse(tokens);
+    public Reply<T> Parse(Input input)
+        => parse(input);
 }

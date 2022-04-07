@@ -2,14 +2,14 @@ namespace Parsley.Tests;
 
 class ErrorTests
 {
-    readonly TokenStream x;
-    readonly TokenStream endOfInput;
+    readonly Input x;
+    readonly Input endOfInput;
 
     public ErrorTests()
     {
         var lexer = new Lexer();
-        x = new TokenStream(lexer.Tokenize("x"));
-        endOfInput = new TokenStream(lexer.Tokenize(""));
+        x = new Input(lexer.Tokenize("x"));
+        endOfInput = new Input(lexer.Tokenize(""));
     }
 
     public void CanIndicateErrorsAtTheCurrentPosition()

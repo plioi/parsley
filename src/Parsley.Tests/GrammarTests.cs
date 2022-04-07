@@ -82,7 +82,7 @@ class GrammarTests : Grammar
             .WithMessage("(1, 6): B expected");
 
         IParser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
-        Action infiniteLoop = () => ZeroOrMore(succeedWithoutConsuming).Parse(new TokenStream(Tokenize("")));
+        Action infiniteLoop = () => ZeroOrMore(succeedWithoutConsuming).Parse(new Input(Tokenize("")));
         infiniteLoop.ShouldThrow<Exception>("Parser encountered a potential infinite loop at position (1, 1).");
     }
 
@@ -105,7 +105,7 @@ class GrammarTests : Grammar
             .WithMessage("(1, 6): B expected");
 
         IParser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
-        Action infiniteLoop = () => OneOrMore(succeedWithoutConsuming).Parse(new TokenStream(Tokenize("")));
+        Action infiniteLoop = () => OneOrMore(succeedWithoutConsuming).Parse(new Input(Tokenize("")));
         infiniteLoop.ShouldThrow<Exception>("Parser encountered a potential infinite loop at position (1, 1).");
     }
 

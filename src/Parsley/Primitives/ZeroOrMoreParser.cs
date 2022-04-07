@@ -9,10 +9,10 @@ class ZeroOrMoreParser<T> : IParser<IEnumerable<T>>
         this.item = item;
     }
 
-    public Reply<IEnumerable<T>> Parse(TokenStream tokens)
+    public Reply<IEnumerable<T>> Parse(Input input)
     {
-        var oldPosition = tokens.Position;
-        var reply = item.Parse(tokens);
+        var oldPosition = input.Position;
+        var reply = item.Parse(input);
         var newPosition = reply.UnparsedTokens.Position;
 
         var list = new List<T>();

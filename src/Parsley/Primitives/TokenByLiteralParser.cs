@@ -9,11 +9,11 @@ class TokenByLiteralParser : IParser<Token>
         this.expectation = expectation;
     }
 
-    public Reply<Token> Parse(TokenStream tokens)
+    public Reply<Token> Parse(Input input)
     {
-        if (tokens.Current.Literal == expectation)
-            return new Parsed<Token>(tokens.Current, tokens.Advance());
+        if (input.Current.Literal == expectation)
+            return new Parsed<Token>(input.Current, input.Advance());
 
-        return new Error<Token>(tokens, ErrorMessage.Expected(expectation));
+        return new Error<Token>(input, ErrorMessage.Expected(expectation));
     }
 }

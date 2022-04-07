@@ -62,42 +62,42 @@ public class OperatorPrecedenceParser<T> : Grammar, IParser<T>
             select createBinaryNode(left, symbol, right));
     }
 
-    public Reply<T> Parse(TokenStream tokens)
+    public Reply<T> Parse(Input input)
     {
-        return Parse(tokens, 0);
+        return Parse(input, 0);
     }
 
     IParser<T> OperandAtPrecedenceLevel(int precedence)
     {
-        return new LambdaParser<T>(tokens => Parse(tokens, precedence));
+        return new LambdaParser<T>(input => Parse(input, precedence));
     }
 
-    Reply<T> Parse(TokenStream tokens, int precedence)
+    Reply<T> Parse(Input input, int precedence)
     {
-        var token = tokens.Current;
+        var token = input.Current;
 
         if (!unitParsers.ContainsKey(token.Kind))
-            return new Error<T>(tokens, ErrorMessage.Unknown());
+            return new Error<T>(input, ErrorMessage.Unknown());
 
-        var reply = unitParsers[token.Kind].Parse(tokens);
+        var reply = unitParsers[token.Kind].Parse(input);
 
         if (!reply.Success)
             return reply;
 
-        tokens = reply.UnparsedTokens;
-        token = tokens.Current;
+        input = reply.UnparsedTokens;
+        token = input.Current;
 
         while (precedence < GetPrecedence(token))
         {
             //Continue parsing at this precedence level.
 
-            reply = extendParsers[token.Kind](reply.Value).Parse(tokens);
+            reply = extendParsers[token.Kind](reply.Value).Parse(input);
 
             if (!reply.Success)
                 return reply;
 
-            tokens = reply.UnparsedTokens;
-            token = tokens.Current;
+            input = reply.UnparsedTokens;
+            token = input.Current;
         }
 
         return reply;

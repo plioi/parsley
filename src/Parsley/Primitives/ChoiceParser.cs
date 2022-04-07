@@ -9,10 +9,10 @@ class ChoiceParser<T> : IParser<T>
         this.parsers = parsers;
     }
 
-    public Reply<T> Parse(TokenStream tokens)
+    public Reply<T> Parse(Input input)
     {
-        var start = tokens.Position;
-        var reply = parsers[0].Parse(tokens);
+        var start = input.Position;
+        var reply = parsers[0].Parse(input);
         var newPosition = reply.UnparsedTokens.Position;
 
         var errors = ErrorMessageList.Empty;
@@ -20,7 +20,7 @@ class ChoiceParser<T> : IParser<T>
         while (!reply.Success && (start == newPosition) && i < parsers.Length)
         {
             errors = errors.Merge(reply.ErrorMessages);
-            reply = parsers[i].Parse(tokens);
+            reply = parsers[i].Parse(input);
             newPosition = reply.UnparsedTokens.Position;
             i++;
         }

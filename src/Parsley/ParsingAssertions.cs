@@ -40,7 +40,7 @@ public static class ParsingAssertions
 
     public static Reply<T> FailsToParse<T>(this IParser<T> parser, IEnumerable<Token> tokens)
     {
-        var reply = parser.Parse(new TokenStream(tokens));
+        var reply = parser.Parse(new Input(tokens));
             
         if (reply.Success)
             throw new AssertionException("parser failure", "parser completed successfully");
@@ -69,12 +69,12 @@ public static class ParsingAssertions
 
     public static Reply<T> PartiallyParses<T>(this IParser<T> parser, IEnumerable<Token> tokens)
     {
-        return parser.Parse(new TokenStream(tokens)).Succeeds();
+        return parser.Parse(new Input(tokens)).Succeeds();
     }
 
     public static Reply<T> Parses<T>(this IParser<T> parser, IEnumerable<Token> tokens)
     {
-        return parser.Parse(new TokenStream(tokens)).Succeeds().AtEndOfInput();
+        return parser.Parse(new Input(tokens)).Succeeds().AtEndOfInput();
     }
 
     static Reply<T> Succeeds<T>(this Reply<T> reply)

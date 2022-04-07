@@ -11,10 +11,10 @@ class LabeledParser<T> : IParser<T>
         errors = ErrorMessageList.Empty.With(ErrorMessage.Expected(expectation));
     }
 
-    public Reply<T> Parse(TokenStream tokens)
+    public Reply<T> Parse(Input input)
     {
-        var start = tokens.Position;
-        var reply = parser.Parse(tokens);
+        var start = input.Position;
+        var reply = parser.Parse(input);
         var newPosition = reply.UnparsedTokens.Position;
         if (start == newPosition)
         {

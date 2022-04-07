@@ -2,6 +2,6 @@ namespace Parsley.Primitives;
 
 class FailingParser<T> : IParser<T>
 {
-    public Reply<T> Parse(TokenStream tokens)
-        => new Error<T>(tokens, ErrorMessage.Unknown());
+    public Reply<T> Parse(Input input)
+        => new Error<T>(input, ErrorMessage.Unknown());
 }
