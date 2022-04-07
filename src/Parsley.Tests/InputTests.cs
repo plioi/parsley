@@ -90,16 +90,20 @@ class InputTests
         fourth.Advance().ShouldBeSameAs(fourth);
     }
 
-    public void AllowsRepeatableTraversalWhileTraversingUnderlyingEnumeratorItemsAtMostOnce()
+    public void AllowsRepeatableTraversal()
     {
         var input = new Input(Tokens());
 
         input.Current.ShouldBe(upper, "ABC", 1, 1);
-        input.Advance().Current.ShouldBe(lower, "def", 1, 4);
-        input.Advance().Advance().Current.ShouldBe(upper, "GHI", 1, 7);
-        input.Advance().Advance().Advance().Current.ShouldBe(TokenKind.EndOfInput, "", 1, 10);
 
-        input.Advance().ShouldBeSameAs(input.Advance());
+        input.Advance().Current.ShouldBe(lower, "def", 1, 4);
+        input.Advance().Current.ShouldBe(lower, "def", 1, 4);
+
+        input.Advance().Advance().Current.ShouldBe(upper, "GHI", 1, 7);
+        input.Advance().Advance().Current.ShouldBe(upper, "GHI", 1, 7);
+
+        input.Advance().Advance().Advance().Current.ShouldBe(TokenKind.EndOfInput, "", 1, 10);
+        input.Advance().Advance().Advance().Current.ShouldBe(TokenKind.EndOfInput, "", 1, 10);
     }
 
     public void ProvidesPositionOfCurrentToken()
