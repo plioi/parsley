@@ -2,8 +2,8 @@ namespace Parsley;
 
 public class TokenStream
 {
-    private readonly Token current;
-    private readonly Lazy<TokenStream> rest;
+    readonly Token current;
+    readonly Lazy<TokenStream> rest;
 
     public TokenStream(IEnumerable<Token> tokens)
     {
@@ -16,13 +16,13 @@ public class TokenStream
         rest = new Lazy<TokenStream>(() => LazyAdvance(enumerator));
     }
 
-    private TokenStream(Token current, IEnumerator<Token> enumerator)
+    TokenStream(Token current, IEnumerator<Token> enumerator)
     {
         this.current = current;
         rest = new Lazy<TokenStream>(() => LazyAdvance(enumerator));
     }
 
-    private TokenStream(Token current)
+    TokenStream(Token current)
     {
         this.current = current;
         rest = new Lazy<TokenStream>(() => this);
@@ -43,7 +43,7 @@ public class TokenStream
         get { return Current.Position; }
     }
 
-    private TokenStream LazyAdvance(IEnumerator<Token> enumerator)
+    TokenStream LazyAdvance(IEnumerator<Token> enumerator)
     {
         if (enumerator.MoveNext())
             return new TokenStream(enumerator.Current, enumerator);

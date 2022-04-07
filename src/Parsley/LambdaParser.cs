@@ -2,7 +2,7 @@ namespace Parsley;
 
 public class LambdaParser<T> : IParser<T>
 {
-    private readonly Func<TokenStream, Reply<T>> parse;
+    readonly Func<TokenStream, Reply<T>> parse;
 
     public LambdaParser(Func<TokenStream, Reply<T>> parse)
     {

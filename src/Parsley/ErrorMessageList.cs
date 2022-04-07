@@ -4,16 +4,16 @@ public class ErrorMessageList
 {
     public static readonly ErrorMessageList Empty = new();
 
-    private readonly ErrorMessage head;
-    private readonly ErrorMessageList tail;
+    readonly ErrorMessage head;
+    readonly ErrorMessageList tail;
 
-    private ErrorMessageList()
+    ErrorMessageList()
     {
         head = null;
         tail = null;
     }
 
-    private ErrorMessageList(ErrorMessage head, ErrorMessageList tail)
+    ErrorMessageList(ErrorMessage head, ErrorMessageList tail)
     {
         this.head = head;
         this.tail = tail;
@@ -71,14 +71,14 @@ public class ErrorMessageList
         return String.Join(" ", parts);
     }
 
-    private static IEnumerable<string> Separators(int count)
+    static IEnumerable<string> Separators(int count)
     {
         if (count <= 0)
             return Enumerable.Empty<string>();
         return Enumerable.Repeat(", ", count - 1).Concat(new[] { " or " });
     }
 
-    private IEnumerable<T> All<T>() where T : ErrorMessage
+    IEnumerable<T> All<T>() where T : ErrorMessage
     {
         if (this != Empty)
         {

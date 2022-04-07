@@ -1,9 +1,9 @@
 namespace Parsley.Primitives;
 
-internal class LabeledParser<T> : IParser<T>
+class LabeledParser<T> : IParser<T>
 {
-    private readonly IParser<T> parser;
-    private readonly ErrorMessageList errors;
+    readonly IParser<T> parser;
+    readonly ErrorMessageList errors;
 
     public LabeledParser(IParser<T> parser, string expectation)
     {

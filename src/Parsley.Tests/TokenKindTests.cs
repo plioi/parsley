@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace Parsley.Tests;
 
-public class TokenKindTests
+class TokenKindTests
 {
     readonly TokenKind lower;
     readonly TokenKind upper;

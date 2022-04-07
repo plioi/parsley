@@ -1,6 +1,6 @@
 namespace Parsley.Tests;
 
-public class ErrorMessageListTests
+class ErrorMessageListTests
 {
     public void ShouldProvideSharedEmptyInstance()
     {

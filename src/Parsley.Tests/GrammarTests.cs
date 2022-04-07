@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Parsley.Tests;
 
-public class GrammarTests : Grammar
+class GrammarTests : Grammar
 {
     static IEnumerable<Token> Tokenize(string input) => new SampleLexer().Tokenize(input);
 

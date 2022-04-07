@@ -2,7 +2,7 @@ namespace Parsley;
 
 public class GrammarRule<T> : IParser<T>
 {
-    private Func<TokenStream, Reply<T>> parse;
+    Func<TokenStream, Reply<T>> parse;
 
     public GrammarRule(string name = null)
     {

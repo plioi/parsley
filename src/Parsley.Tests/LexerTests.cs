@@ -1,6 +1,6 @@
 namespace Parsley.Tests;
 
-public class LexerTests
+class LexerTests
 {
     readonly TokenKind lower;
     readonly TokenKind upper;

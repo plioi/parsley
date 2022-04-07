@@ -2,14 +2,14 @@ namespace Parsley;
 
 public class Text
 {
-    private readonly int index;
-    private readonly string input;
-    private readonly int line;
+    readonly int index;
+    readonly string input;
+    readonly int line;
 
     public Text(string input)
         : this(NormalizeLineEndings(input), 0, 1) { }
 
-    private Text(string input, int index, int line)
+    Text(string input, int index, int line)
     {
         this.input = input;
         this.index = index;
@@ -63,7 +63,7 @@ public class Text
         return MatchResult.Fail;
     }
 
-    private int Column
+    int Column
     {
         get
         {
@@ -85,7 +85,7 @@ public class Text
         return input.Substring(index);
     }
 
-    private static string NormalizeLineEndings(string input)
+    static string NormalizeLineEndings(string input)
     {
         return input.Replace("\r\n", "\n").Replace('\r', '\n');
     }

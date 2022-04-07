@@ -160,7 +160,7 @@ public abstract class Grammar
         return new LabeledParser<T>(parser, expectation);
     }
 
-    private static IEnumerable<T> List<T>(T first, IEnumerable<T> rest)
+    static IEnumerable<T> List<T>(T first, IEnumerable<T> rest)
     {
         yield return first;
 
@@ -168,7 +168,7 @@ public abstract class Grammar
             yield return item;
     }
 
-    private static IParser<IEnumerable<T>> Zero<T>()
+    static IParser<IEnumerable<T>> Zero<T>()
     {
         return Enumerable.Empty<T>().SucceedWithThisValue();
     }

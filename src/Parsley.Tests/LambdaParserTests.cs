@@ -1,6 +1,6 @@
 namespace Parsley.Tests;
 
-public class LambdaParserTests
+class LambdaParserTests
 {
     public void CreatesParsersFromLambdas()
     {

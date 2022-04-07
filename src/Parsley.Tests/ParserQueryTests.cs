@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace Parsley.Tests;
 
-public class ParserQueryTests
+class ParserQueryTests
 {
     static readonly IParser<string> Next = new LambdaParser<string>(tokens => new Parsed<string>(tokens.Current.Literal, tokens.Advance()));
 

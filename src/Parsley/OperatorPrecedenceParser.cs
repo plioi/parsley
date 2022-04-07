@@ -8,9 +8,9 @@ public enum Associativity { Left, Right }
 
 public class OperatorPrecedenceParser<T> : Grammar, IParser<T>
 {
-    private readonly IDictionary<TokenKind, IParser<T>> unitParsers;
-    private readonly IDictionary<TokenKind, ExtendParserBuilder<T>> extendParsers;
-    private readonly IDictionary<TokenKind, int> extendParserPrecedence;
+    readonly IDictionary<TokenKind, IParser<T>> unitParsers;
+    readonly IDictionary<TokenKind, ExtendParserBuilder<T>> extendParsers;
+    readonly IDictionary<TokenKind, int> extendParserPrecedence;
 
     public OperatorPrecedenceParser()
     {
@@ -67,12 +67,12 @@ public class OperatorPrecedenceParser<T> : Grammar, IParser<T>
         return Parse(tokens, 0);
     }
 
-    private IParser<T> OperandAtPrecedenceLevel(int precedence)
+    IParser<T> OperandAtPrecedenceLevel(int precedence)
     {
         return new LambdaParser<T>(tokens => Parse(tokens, precedence));
     }
 
-    private Reply<T> Parse(TokenStream tokens, int precedence)
+    Reply<T> Parse(TokenStream tokens, int precedence)
     {
         var token = tokens.Current;
 
@@ -103,7 +103,7 @@ public class OperatorPrecedenceParser<T> : Grammar, IParser<T>
         return reply;
     }
 
-    private int GetPrecedence(Token token)
+    int GetPrecedence(Token token)
     {
         var kind = token.Kind;
         if (extendParserPrecedence.ContainsKey(kind))

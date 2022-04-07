@@ -1,8 +1,8 @@
 namespace Parsley.Primitives;
 
-internal class ChoiceParser<T> : IParser<T>
+class ChoiceParser<T> : IParser<T>
 {
-    private readonly IParser<T>[] parsers;
+    readonly IParser<T>[] parsers;
 
     public ChoiceParser(IParser<T>[] parsers)
     {

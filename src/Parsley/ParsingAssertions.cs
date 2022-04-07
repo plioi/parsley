@@ -77,7 +77,7 @@ public static class ParsingAssertions
         return parser.Parse(new TokenStream(tokens)).Succeeds().AtEndOfInput();
     }
 
-    private static Reply<T> Succeeds<T>(this Reply<T> reply)
+    static Reply<T> Succeeds<T>(this Reply<T> reply)
     {
         if (!reply.Success)
         {
@@ -141,13 +141,13 @@ public static class ParsingAssertions
         return reply;
     }
 
-    private static void AssertTokenLiteralsEqual(string expected, string actual)
+    static void AssertTokenLiteralsEqual(string expected, string actual)
     {
         if (actual != expected)
             throw new AssertionException($"token with literal \"{expected}\"", $"token with literal \"{actual}\"");
     }
 
-    private static void AssertEqual(TokenKind expected, TokenKind actual)
+    static void AssertEqual(TokenKind expected, TokenKind actual)
     {
         if (actual != expected)
             throw new AssertionException($"<{expected}> token", $"<{actual}> token");

@@ -2,7 +2,7 @@ using System.Text;
 
 namespace Parsley.Tests;
 
-public class TextTests
+class TextTests
 {
     public void CanPeekAheadNCharacters()
     {

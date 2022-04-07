@@ -1,6 +1,6 @@
 namespace Parsley.Tests;
 
-public class GrammarRuleTests : Grammar
+class GrammarRuleTests : Grammar
 {
     public void CanDefineMutuallyRecursiveRules()
     {

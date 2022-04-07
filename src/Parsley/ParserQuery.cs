@@ -37,7 +37,7 @@ public static class ParserQuery
     /// <remarks>
     /// In monadic terms, this is the 'Bind' function.
     /// </remarks>
-    private static IParser<U> Bind<T, U>(this IParser<T> parser, Func<T, IParser<U>> constructNextParser)
+    static IParser<U> Bind<T, U>(this IParser<T> parser, Func<T, IParser<U>> constructNextParser)
     {
         return new LambdaParser<U>(tokens =>
         {

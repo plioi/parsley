@@ -14,7 +14,7 @@ public abstract class ErrorMessage
 
 public class UndefinedGrammarRuleErrorMessage : ErrorMessage
 {
-    private readonly string grammarRuleName;
+    readonly string grammarRuleName;
 
     internal UndefinedGrammarRuleErrorMessage(string grammarRuleName)
     {

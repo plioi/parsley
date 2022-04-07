@@ -1,6 +1,6 @@
 namespace Parsley.Tests;
 
-public class ErrorMessageTests
+class ErrorMessageTests
 {
     public void CanIndicateGenericErrors()
     {

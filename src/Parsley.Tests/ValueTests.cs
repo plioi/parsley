@@ -1,6 +1,6 @@
 namespace Parsley.Tests;
 
-public class ValueTests
+class ValueTests
 {
     public void AnInstanceShouldAlwaysReturnTheSameHashCode()
     {

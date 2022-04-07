@@ -1,6 +1,6 @@
 namespace Parsley.Tests;
 
-public class ParsedTests
+class ParsedTests
 {
     readonly TokenStream unparsed;
 

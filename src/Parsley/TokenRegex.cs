@@ -4,8 +4,8 @@ namespace Parsley;
 
 public class TokenRegex
 {
-    private readonly string pattern;
-    private readonly Regex regex;
+    readonly string pattern;
+    readonly Regex regex;
 
     public TokenRegex(string pattern, params RegexOptions[] regexOptions)
     {

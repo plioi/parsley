@@ -1,8 +1,8 @@
 namespace Parsley.Primitives;
 
-internal class TokenByKindParser : IParser<Token>
+class TokenByKindParser : IParser<Token>
 {
-    private readonly TokenKind kind;
+    readonly TokenKind kind;
 
     public TokenByKindParser(TokenKind kind)
     {

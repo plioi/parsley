@@ -1,6 +1,6 @@
 namespace Parsley.Tests;
 
-public class ErrorTests
+class ErrorTests
 {
     readonly TokenStream x;
     readonly TokenStream endOfInput;

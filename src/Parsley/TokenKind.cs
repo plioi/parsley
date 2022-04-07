@@ -7,8 +7,8 @@ public abstract class TokenKind
     public static readonly TokenKind EndOfInput = new Empty("end of input");
     public static readonly TokenKind Unknown = new Pattern("Unknown", @".+");
 
-    private readonly string name;
-    private readonly bool skippable;
+    readonly string name;
+    readonly bool skippable;
 
     protected TokenKind(string name, bool skippable = false)
     {
@@ -50,7 +50,7 @@ public abstract class TokenKind
 
 public class Pattern : TokenKind
 {
-    private readonly TokenRegex regex;
+    readonly TokenRegex regex;
 
     public Pattern(string name, string pattern, params RegexOptions[] regexOptions)
         : this(name, pattern, false, regexOptions)
@@ -81,7 +81,7 @@ public class Keyword : Pattern
 
 public class Operator : TokenKind
 {
-    private readonly string symbol;
+    readonly string symbol;
 
     public Operator(string symbol)
         : base(symbol)

@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
+
 namespace Parsley.Tests.IntegrationTests.Json;
 
 public class JsonGrammar : Grammar

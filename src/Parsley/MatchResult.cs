@@ -9,7 +9,7 @@ public class MatchResult
         return new MatchResult(true, value);
     }
 
-    private MatchResult(bool success, string value)
+    MatchResult(bool success, string value)
     {
         Success = success;
         Value = value;

@@ -1,6 +1,6 @@
 namespace Parsley;
 
-internal class AssertionException : Exception
+class AssertionException : Exception
 {
     public AssertionException(object expected, object actual)
         : base(ExpectationDetails(expected, actual))
@@ -12,6 +12,6 @@ internal class AssertionException : Exception
     {
     }
 
-    private static string ExpectationDetails(object expected, object actual)
+    static string ExpectationDetails(object expected, object actual)
         => $"{Environment.NewLine}Expected: {expected}{Environment.NewLine}But was:  {actual}";
 }

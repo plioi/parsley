@@ -1,8 +1,8 @@
 namespace Parsley.Primitives;
 
-internal class ZeroOrMoreParser<T> : IParser<IEnumerable<T>>
+class ZeroOrMoreParser<T> : IParser<IEnumerable<T>>
 {
-    private readonly IParser<T> item;
+    readonly IParser<T> item;
 
     public ZeroOrMoreParser(IParser<T> item)
     {

@@ -2,7 +2,7 @@ namespace Parsley;
 
 public class Lexer
 {
-    private readonly List<TokenKind> kinds;
+    readonly List<TokenKind> kinds;
 
     public Lexer(params TokenKind[] kinds)
     {
@@ -36,7 +36,7 @@ public class Lexer
         }
     }
 
-    private Token GetToken(Text text)
+    Token GetToken(Text text)
     {
         Token token;
         foreach (var kind in kinds)

@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace Parsley.Tests;
 
-public class OperatorPrecedenceParserTests : Grammar
+class OperatorPrecedenceParserTests : Grammar
 {
     readonly OperatorPrecedenceParser<IExpression> expression;
 

@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace Parsley.Tests;
 
-public class TokenRegexTests
+class TokenRegexTests
 {
     public void CanMatchRegexStartingFromGivenCharacterPosition()
     {
