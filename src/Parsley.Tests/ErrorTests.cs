@@ -33,10 +33,10 @@ class ErrorTests
         inspectParsedValue.ShouldThrow<MemberAccessException>("(1, 1): Parse error.");
     }
 
-    public void HasRemainingUnparsedTokens()
+    public void HasRemainingUnparsedInput()
     {
-        new Error<object>(x, ErrorMessage.Unknown()).UnparsedTokens.ShouldBe(x);
-        new Error<object>(endOfInput, ErrorMessage.Unknown()).UnparsedTokens.ShouldBe(endOfInput);
+        new Error<object>(x, ErrorMessage.Unknown()).UnparsedInput.ShouldBe(x);
+        new Error<object>(endOfInput, ErrorMessage.Unknown()).UnparsedInput.ShouldBe(endOfInput);
     }
 
     public void ReportsErrorState()

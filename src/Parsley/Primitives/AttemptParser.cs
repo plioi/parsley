@@ -13,7 +13,7 @@ class AttemptParser<T> : IParser<T>
     {
         var start = input.Position;
         var reply = parse.Parse(input);
-        var newPosition = reply.UnparsedTokens.Position;
+        var newPosition = reply.UnparsedInput.Position;
 
         if (reply.Success || start == newPosition)
             return reply;

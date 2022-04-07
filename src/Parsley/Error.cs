@@ -2,12 +2,12 @@ namespace Parsley;
 
 public class Error<T> : Reply<T>
 {
-    public Error(Input unparsedTokens, ErrorMessage error)
-        : this(unparsedTokens,  ErrorMessageList.Empty.With(error)) { }
+    public Error(Input unparsedInput, ErrorMessage error)
+        : this(unparsedInput,  ErrorMessageList.Empty.With(error)) { }
 
-    public Error(Input unparsedTokens, ErrorMessageList errors)
+    public Error(Input unparsedInput, ErrorMessageList errors)
     {
-        UnparsedTokens = unparsedTokens;
+        UnparsedInput = unparsedInput;
         ErrorMessages = errors;
     }
 
@@ -15,12 +15,12 @@ public class Error<T> : Reply<T>
     {
         get
         {
-            var position = UnparsedTokens.Position;
+            var position = UnparsedInput.Position;
             throw new MemberAccessException($"{position}: {ErrorMessages}");
         }
     }
 
-    public Input UnparsedTokens { get; }
+    public Input UnparsedInput { get; }
     public bool Success => false;
     public ErrorMessageList ErrorMessages { get; }
 }

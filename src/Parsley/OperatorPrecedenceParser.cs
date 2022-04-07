@@ -84,7 +84,7 @@ public class OperatorPrecedenceParser<T> : Grammar, IParser<T>
         if (!reply.Success)
             return reply;
 
-        input = reply.UnparsedTokens;
+        input = reply.UnparsedInput;
         token = input.Current;
 
         while (precedence < GetPrecedence(token))
@@ -96,7 +96,7 @@ public class OperatorPrecedenceParser<T> : Grammar, IParser<T>
             if (!reply.Success)
                 return reply;
 
-            input = reply.UnparsedTokens;
+            input = reply.UnparsedInput;
             token = input.Current;
         }
 

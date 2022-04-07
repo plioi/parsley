@@ -102,10 +102,10 @@ class JsonGrammarTests : JsonGrammar
 
     public void RequiresEndOfInputAfterFirstValidJsonValue()
     {
-        Json.FailsToParse(Tokenize("true $garbage$")).LeavingUnparsedTokens("$garbage$").WithMessage("(1, 6): end of input expected");
-        Json.FailsToParse(Tokenize("10.123E-11  $garbage$")).LeavingUnparsedTokens("$garbage$").WithMessage("(1, 13): end of input expected");
-        Json.FailsToParse(Tokenize("\"garbage\" $garbage$")).LeavingUnparsedTokens("$garbage$").WithMessage("(1, 11): end of input expected");
-        Json.FailsToParse(Tokenize("[0, 1, 2] $garbage$")).LeavingUnparsedTokens("$garbage$").WithMessage("(1, 11): end of input expected");
-        Json.FailsToParse(Tokenize("{\"zero\" : 0} $garbage$")).LeavingUnparsedTokens("$garbage$").WithMessage("(1, 14): end of input expected");
+        Json.FailsToParse(Tokenize("true $garbage$")).LeavingUnparsedInput("$garbage$").WithMessage("(1, 6): end of input expected");
+        Json.FailsToParse(Tokenize("10.123E-11  $garbage$")).LeavingUnparsedInput("$garbage$").WithMessage("(1, 13): end of input expected");
+        Json.FailsToParse(Tokenize("\"garbage\" $garbage$")).LeavingUnparsedInput("$garbage$").WithMessage("(1, 11): end of input expected");
+        Json.FailsToParse(Tokenize("[0, 1, 2] $garbage$")).LeavingUnparsedInput("$garbage$").WithMessage("(1, 11): end of input expected");
+        Json.FailsToParse(Tokenize("{\"zero\" : 0} $garbage$")).LeavingUnparsedInput("$garbage$").WithMessage("(1, 14): end of input expected");
     }
 }

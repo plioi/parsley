@@ -13,7 +13,7 @@ class ChoiceParser<T> : IParser<T>
     {
         var start = input.Position;
         var reply = parsers[0].Parse(input);
-        var newPosition = reply.UnparsedTokens.Position;
+        var newPosition = reply.UnparsedInput.Position;
 
         var errors = ErrorMessageList.Empty;
         var i = 1;
@@ -21,16 +21,16 @@ class ChoiceParser<T> : IParser<T>
         {
             errors = errors.Merge(reply.ErrorMessages);
             reply = parsers[i].Parse(input);
-            newPosition = reply.UnparsedTokens.Position;
+            newPosition = reply.UnparsedInput.Position;
             i++;
         }
         if (start == newPosition)
         {
             errors = errors.Merge(reply.ErrorMessages);
             if (reply.Success)
-                reply = new Parsed<T>(reply.Value, reply.UnparsedTokens, errors);
+                reply = new Parsed<T>(reply.Value, reply.UnparsedInput, errors);
             else
-                reply = new Error<T>(reply.UnparsedTokens, errors);
+                reply = new Error<T>(reply.UnparsedInput, errors);
         }
 
         return reply;

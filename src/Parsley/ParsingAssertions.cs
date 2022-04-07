@@ -50,7 +50,7 @@ public static class ParsingAssertions
 
     public static Reply<T> WithMessage<T>(this Reply<T> reply, string expectedMessage)
     {
-        var position = reply.UnparsedTokens.Position;
+        var position = reply.UnparsedInput.Position;
         var actual = position + ": " + reply.ErrorMessages;
             
         if (actual != expectedMessage)
@@ -81,7 +81,7 @@ public static class ParsingAssertions
     {
         if (!reply.Success)
         {
-            var message = "Position: " + reply.UnparsedTokens.Position
+            var message = "Position: " + reply.UnparsedInput.Position
                                        + Environment.NewLine
                                        + "Error Message: " + reply.ErrorMessages;
             throw new AssertionException(message, "parser success", "parser failed");
@@ -90,9 +90,9 @@ public static class ParsingAssertions
         return reply;
     }
 
-    public static Reply<T> LeavingUnparsedTokens<T>(this Reply<T> reply, params string[] expectedLiterals)
+    public static Reply<T> LeavingUnparsedInput<T>(this Reply<T> reply, params string[] expectedLiterals)
     {
-        var stream = reply.UnparsedTokens;
+        var stream = reply.UnparsedInput;
 
         var actualLiterals = new List<string>();
 
@@ -121,9 +121,9 @@ public static class ParsingAssertions
 
     public static Reply<T> AtEndOfInput<T>(this Reply<T> reply)
     {
-        var nextTokenKind = reply.UnparsedTokens.Current.Kind;
+        var nextTokenKind = reply.UnparsedInput.Current.Kind;
         AssertEqual(TokenKind.EndOfInput, nextTokenKind);
-        return reply.LeavingUnparsedTokens(Array.Empty<string>());
+        return reply.LeavingUnparsedInput(Array.Empty<string>());
     }
 
     public static Reply<T> WithValue<T>(this Reply<T> reply, T expected)

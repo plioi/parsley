@@ -28,9 +28,9 @@ class ParsedTests
         new Parsed<object>("x", unparsed, potentialErrors).ErrorMessages.ShouldBe(potentialErrors);
     }
 
-    public void HasRemainingUnparsedTokens()
+    public void HasRemainingUnparsedInput()
     {
-        new Parsed<string>("parsed", unparsed).UnparsedTokens.ShouldBe(unparsed);
+        new Parsed<string>("parsed", unparsed).UnparsedInput.ShouldBe(unparsed);
     }
 
     public void ReportsNonerrorState()

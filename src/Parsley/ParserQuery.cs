@@ -44,9 +44,9 @@ public static class ParserQuery
             var reply = parser.Parse(input);
 
             if (reply.Success)
-                return constructNextParser(reply.Value).Parse(reply.UnparsedTokens);
+                return constructNextParser(reply.Value).Parse(reply.UnparsedInput);
 
-            return new Error<U>(reply.UnparsedTokens, reply.ErrorMessages);
+            return new Error<U>(reply.UnparsedInput, reply.ErrorMessages);
         });
     }
 }
