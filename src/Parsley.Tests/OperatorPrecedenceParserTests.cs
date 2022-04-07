@@ -14,7 +14,7 @@ class OperatorPrecedenceParserTests
         expression.Atom(SampleLexer.Digit, token => new Constant(int.Parse(token.Literal, CultureInfo.InvariantCulture)));
         expression.Atom(SampleLexer.Name, token => new Identifier(token.Literal));
 
-        expression.Unit(SampleLexer.LeftParen, Between(Token("("), expression, Token(")")));
+        expression.Unit(SampleLexer.LeftParen, Between(Token(SampleLexer.LeftParen), expression, Token(SampleLexer.RightParen)));
 
         expression.Binary(SampleLexer.Add, 3, (left, symbol, right) => new Form(symbol, left, right));
         expression.Binary(SampleLexer.Subtract, 3, (left, symbol, right) => new Form(symbol, left, right));
@@ -26,7 +26,7 @@ class OperatorPrecedenceParserTests
         expression.Postfix(SampleLexer.Decrement, 7, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
 
         expression.Extend(SampleLexer.LeftParen, 8, callable =>
-            from arguments in Between(Token("("), ZeroOrMore(expression, Token(",")), Token(")"))
+            from arguments in Between(Token(SampleLexer.LeftParen), ZeroOrMore(expression, Token(SampleLexer.Comma)), Token(SampleLexer.RightParen))
             select new Form(callable, arguments));
     }
 

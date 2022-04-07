@@ -30,24 +30,24 @@ public class JsonGrammar
 
         Number.Rule =
             from number in Token(JsonLexer.Number)
-            select (object) Decimal.Parse(number.Literal, NumberStyles.Any, CultureInfo.InvariantCulture);
+            select (object) decimal.Parse(number.Literal, NumberStyles.Any, CultureInfo.InvariantCulture);
 
         Quotation.Rule =
             from quotation in Token(JsonLexer.Quotation)
             select Unescape(quotation.Literal);
 
         Array.Rule =
-            from items in Between(Token("["), ZeroOrMore(JsonValue, Token(",")), Token("]"))
+            from items in Between(Token(JsonLexer.OpenArray), ZeroOrMore(JsonValue, Token(JsonLexer.Comma)), Token(JsonLexer.CloseArray))
             select items.ToArray();
 
         Pair.Rule =
             from key in Quotation
-            from colon in Token(":")
+            from colon in Token(JsonLexer.Colon)
             from value in JsonValue
             select new KeyValuePair<string, object>(key, value);
 
         Dictionary.Rule =
-            from pairs in Between(Token("{"), ZeroOrMore(Pair, Token(",")), Token("}"))
+            from pairs in Between(Token(JsonLexer.OpenDictionary), ZeroOrMore(Pair, Token(JsonLexer.Comma)), Token(JsonLexer.CloseDictionary))
             select ToDictionary(pairs);
 
         JsonValue.Rule = Choice(True, False, Null, Number, Quotation, Dictionary, Array);
