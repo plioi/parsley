@@ -1,9 +1,10 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
+using static Parsley.Grammar;
 
 namespace Parsley.Tests.IntegrationTests.Json;
 
-public class JsonGrammar : Grammar
+public class JsonGrammar
 {
     public static readonly GrammarRule<object> Json = new(nameof(Json));
     static readonly GrammarRule<object> JsonValue = new(nameof(JsonValue));

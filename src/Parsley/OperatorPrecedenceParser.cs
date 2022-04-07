@@ -1,3 +1,5 @@
+using static Parsley.Grammar;
+
 namespace Parsley;
 
 public delegate IParser<T> ExtendParserBuilder<T>(T left);
@@ -6,7 +8,7 @@ public delegate T UnaryNodeBuilder<T>(Token symbol, T operand);
 public delegate T BinaryNodeBuilder<T>(T left, Token symbol, T right);
 public enum Associativity { Left, Right }
 
-public class OperatorPrecedenceParser<T> : Grammar, IParser<T>
+public class OperatorPrecedenceParser<T> : IParser<T>
 {
     readonly IDictionary<TokenKind, IParser<T>> unitParsers;
     readonly IDictionary<TokenKind, ExtendParserBuilder<T>> extendParsers;

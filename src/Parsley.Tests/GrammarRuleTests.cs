@@ -1,6 +1,8 @@
+using static Parsley.Grammar;
+
 namespace Parsley.Tests;
 
-class GrammarRuleTests : Grammar
+class GrammarRuleTests
 {
     public void CanDefineMutuallyRecursiveRules()
     {

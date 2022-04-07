@@ -1,8 +1,8 @@
-using System.Diagnostics.CodeAnalysis;
+using static Parsley.Grammar;
 
 namespace Parsley.Tests;
 
-class GrammarTests : Grammar
+class GrammarTests
 {
     static IEnumerable<Token> Tokenize(string input) => new SampleLexer().Tokenize(input);
 
@@ -196,7 +196,7 @@ class GrammarTests : Grammar
     }
 }
 
-public class AlternationTests : Grammar
+public class AlternationTests
 {
     static IEnumerable<Token> Tokenize(string input) => new CharLexer().Tokenize(input);
 

@@ -1,8 +1,9 @@
 using System.Globalization;
+using static Parsley.Grammar;
 
 namespace Parsley.Tests;
 
-class OperatorPrecedenceParserTests : Grammar
+class OperatorPrecedenceParserTests
 {
     readonly OperatorPrecedenceParser<IExpression> expression;
 

@@ -2,7 +2,7 @@ using Parsley.Primitives;
 
 namespace Parsley;
 
-public abstract class Grammar
+public static class Grammar
 {
     public static IParser<T> Fail<T>() => new FailingParser<T>();
 

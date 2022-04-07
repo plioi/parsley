@@ -1,4 +1,5 @@
 using System.Globalization;
+using static Parsley.Grammar;
 
 namespace Parsley.Tests;
 
@@ -35,7 +36,7 @@ class ParserQueryTests
 
     public void PropogatesErrorsWithoutRunningRemainingParsers()
     {
-        var Fail = Grammar.Fail<string>();
+        var Fail = Fail<string>();
 
         var tokens = Tokenize("xy").ToArray();
 
