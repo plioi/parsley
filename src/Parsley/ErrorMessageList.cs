@@ -1,4 +1,4 @@
-﻿namespace Parsley
+namespace Parsley
 {
     using System;
     using System.Collections.Generic;
@@ -6,7 +6,7 @@
 
     public class ErrorMessageList
     {
-        public static readonly ErrorMessageList Empty = new ErrorMessageList();
+        public static readonly ErrorMessageList Empty = new();
 
         private readonly ErrorMessage head;
         private readonly ErrorMessageList tail;
@@ -70,7 +70,7 @@
             }
 
             if (backtrackErrors.Any())
-                parts.Add(String.Join(" ", backtrackErrors.Select(backtrack => String.Format("[{0}]", backtrack))));
+                parts.Add(String.Join(" ", backtrackErrors.Select(backtrack => $"[{backtrack}]")));
 
             return String.Join(" ", parts);
         }
@@ -86,9 +86,9 @@
         {
             if (this != Empty)
             {
-                if (head is T)
-                    yield return (T)head;
-                foreach (T message in tail.All<T>())
+                if (head is T match)
+                    yield return match;
+                foreach (var message in tail.All<T>())
                         yield return message;
             }
         }

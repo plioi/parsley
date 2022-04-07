@@ -1,6 +1,6 @@
-﻿namespace Parsley
+namespace Parsley
 {
-    public interface Parser<out T>
+    public interface IParser<out T>
     {
         Reply<T> Parse(TokenStream tokens);
     }

@@ -1,33 +1,28 @@
-﻿namespace Parsley.Tests
+namespace Parsley.Tests
 {
     using Shouldly;
-    using Xunit;
     using ErrorMessage = Parsley.ErrorMessage;
 
     public class ErrorMessageListTests
     {
-        [Fact]
         public void ShouldProvideSharedEmptyInstance()
         {
             ErrorMessageList.Empty.ShouldBeSameAs(ErrorMessageList.Empty);
         }
 
-        [Fact]
         public void CanBeEmpty()
         {
             ErrorMessageList.Empty.ToString().ShouldBe("");
         }
 
-        [Fact]
         public void CreatesNewCollectionWhenAddingItems()
         {
-            ErrorMessageList list = ErrorMessageList.Empty.With(ErrorMessage.Expected("expectation"));
+            var list = ErrorMessageList.Empty.With(ErrorMessage.Expected("expectation"));
 
             list.ToString().ShouldBe("expectation expected");
             list.ShouldNotBeSameAs(ErrorMessageList.Empty);
         }
 
-        [Fact]
         public void CanIncludeUnknownErrors()
         {
             ErrorMessageList.Empty
@@ -35,7 +30,6 @@
                 .ToString().ShouldBe("Parse error.");
         }
 
-        [Fact]
         public void CanIncludeMultipleExpectations()
         {
             ErrorMessageList.Empty
@@ -57,7 +51,6 @@
                 .ToString().ShouldBe("A, B, C or D expected");
         }
 
-        [Fact]
         public void OmitsDuplicateExpectationsFromExpectationLists()
         {
             ErrorMessageList.Empty
@@ -72,7 +65,6 @@
                 .ToString().ShouldBe("A, B or C expected");
         }
 
-        [Fact]
         public void CanIncludeBacktrackErrors()
         {
             var deepBacktrack = ErrorMessage.Backtrack(new Position(3, 4),
@@ -107,7 +99,6 @@
                 .ToString().ShouldBe("G or H expected [(1, 2): E or F expected] [(2, 3): C or D expected [(3, 4): A or B expected]]");
         }
 
-        [Fact]
         public void CanMergeTwoLists()
         {
             var first = ErrorMessageList.Empty
@@ -126,7 +117,6 @@
                 .ToString().ShouldBe("A, B, C, D or E expected");
         }
 
-        [Fact]
         public void OmitsUnknownErrorsWhenAdditionalErrorsExist()
         {
             ErrorMessageList.Empty

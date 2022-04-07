@@ -1,9 +1,8 @@
-﻿namespace Parsley.Tests
+namespace Parsley.Tests
 {
     using System;
     using System.Text.RegularExpressions;
     using Shouldly;
-    using Xunit;
 
     public class TokenKindTests
     {
@@ -20,21 +19,15 @@
             abcDEF = new Text("abcDEF");
         }
 
-        [Fact]
         public void ProducesNullTokenUponFailedMatch()
         {
-            Token token;
-
-            upper.TryMatch(abcDEF, out token).ShouldBeFalse();
+            upper.TryMatch(abcDEF, out var token).ShouldBeFalse();
             token.ShouldBeNull();
         }
 
-        [Fact]
         public void ProducesTokenUponSuccessfulMatch()
         {
-            Token token;
-
-            lower.TryMatch(abcDEF, out token).ShouldBeTrue();
+            lower.TryMatch(abcDEF, out var token).ShouldBeTrue();
             token.ShouldBe(lower, "abc", 1, 1);
 
             upper.TryMatch(abcDEF.Advance(3), out token).ShouldBeTrue();
@@ -44,7 +37,6 @@
             token.ShouldBe(caseInsensitive, "abcDEF", 1, 1);
         }
 
-        [Fact]
         public void HasDescriptiveName()
         {
             lower.Name.ShouldBe("Lowercase");
@@ -52,7 +44,6 @@
             caseInsensitive.Name.ShouldBe("Case Insensitive");
         }
 
-        [Fact]
         public void UsesDescriptiveNameForToString()
         {
             lower.ToString().ShouldBe("Lowercase");
@@ -60,15 +51,13 @@
             caseInsensitive.ToString().ShouldBe("Case Insensitive");
         }
 
-        [Fact]
         public void ProvidesConvenienceSubclassForDefiningKeywords()
         {
-            Token token;
             var foo = new Keyword("foo");
 
             foo.Name.ShouldBe("foo");
 
-            foo.TryMatch(new Text("bar"), out token).ShouldBeFalse();
+            foo.TryMatch(new Text("bar"), out var token).ShouldBeFalse();
             token.ShouldBeNull();
 
             foo.TryMatch(new Text("foo"), out token).ShouldBeTrue();
@@ -80,20 +69,18 @@
             foo.TryMatch(new Text("foobar"), out token).ShouldBeFalse();
             token.ShouldBeNull();
 
-            Action notJustLetters = () => new Keyword(" oops ");
-            notJustLetters.ShouldThrow<ArgumentException>("Keywords may only contain letters.\r\nParameter name: word");
+            var notJustLetters = () => new Keyword(" oops ");
+            notJustLetters.ShouldThrow<ArgumentException>("Keywords may only contain letters. (Parameter 'word')");
         }
 
-        [Fact]
         public void ProvidesConvenienceSubclassForDefiningOperators()
         {
-            Token token;
             var star = new Operator("*");
             var doubleStar = new Operator("**");
 
             star.Name.ShouldBe("*");
 
-            star.TryMatch(new Text("a"), out token).ShouldBeFalse();
+            star.TryMatch(new Text("a"), out var token).ShouldBeFalse();
             token.ShouldBeNull();
 
             star.TryMatch(new Text("*"), out token).ShouldBeTrue();
@@ -120,18 +107,15 @@
             token.ShouldBe(doubleStar, "**", 1, 1);
         }
 
-        [Fact]
         public void ProvidesConvenienceSubclassForTokensThatDoNotMatchLiteralsFromTheInput()
         {
-            Token token;
-
             TokenKind.EndOfInput.ShouldBeOfType<Empty>();
 
             TokenKind.EndOfInput.Name.ShouldBe("end of input");
             TokenKind.EndOfInput.Skippable.ShouldBeFalse();
 
-            TokenKind.EndOfInput.TryMatch(new Text(""), out token).ShouldBeFalse();
-            TokenKind.EndOfInput.TryMatch(new Text("foo"), out token).ShouldBeFalse();
+            TokenKind.EndOfInput.TryMatch(new Text(""), out _).ShouldBeFalse();
+            TokenKind.EndOfInput.TryMatch(new Text("foo"), out _).ShouldBeFalse();
         }
     }
 }

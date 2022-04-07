@@ -1,0 +1,22 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: .NET SDK
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.101'
+    - name: Build / Test / Pack
+      run: pwsh ./eng/pack.ps1

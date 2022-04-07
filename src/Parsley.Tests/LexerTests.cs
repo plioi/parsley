@@ -2,7 +2,6 @@ namespace Parsley.Tests
 {
     using System.Collections.Generic;
     using Shouldly;
-    using Xunit;
 
     public class LexerTests
     {
@@ -22,13 +21,11 @@ namespace Parsley.Tests
             return new Lexer(lower, upper, space).Tokenize(input);
         }
 
-        [Fact]
         public void ProvidesEmptyEnumerableForEmptyText()
         {
             Tokenize("").ShouldBeEmpty();
         }
 
-        [Fact]
         public void UsesPrioritizedTokenMatchersToTokenize()
         {
             Tokenize("ABCdefGHI")
@@ -37,7 +34,6 @@ namespace Parsley.Tests
                             t => t.ShouldBe(upper, "GHI", 1, 7));
         }
 
-        [Fact]
         public void ProvidesTokenAtUnrecognizedInput()
         {
             Tokenize("ABC!def")
@@ -45,7 +41,6 @@ namespace Parsley.Tests
                             t => t.ShouldBe(TokenKind.Unknown, "!def", 1, 4));
         }
 
-        [Fact]
         public void SkipsPastSkippableTokens()
         {
             Tokenize(" ").ShouldBeEmpty();

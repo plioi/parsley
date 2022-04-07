@@ -1,6 +1,4 @@
-/artifacts
-bin/
-obj/
-/.vs/
-*.xproj.user
-project.lock.json
+/src/.vs/
+/src/**/bin/
+/src/**/obj/
+/src/**/*.csproj.user

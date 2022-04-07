@@ -1,18 +1,19 @@
-﻿namespace Parsley.Tests
+using System.Globalization;
+
+namespace Parsley.Tests
 {
     using System.Collections.Generic;
     using Shouldly;
-    using Xunit;
 
     public class OperatorPrecedenceParserTests : Grammar
     {
-        readonly OperatorPrecedenceParser<Expression> expression;
+        readonly OperatorPrecedenceParser<IExpression> expression;
 
         public OperatorPrecedenceParserTests()
         {
-            expression = new OperatorPrecedenceParser<Expression>();
+            expression = new OperatorPrecedenceParser<IExpression>();
 
-            expression.Atom(SampleLexer.Digit, token => new Constant(int.Parse(token.Literal)));
+            expression.Atom(SampleLexer.Digit, token => new Constant(int.Parse(token.Literal, CultureInfo.InvariantCulture)));
             expression.Atom(SampleLexer.Name, token => new Identifier(token.Literal));
 
             expression.Unit(SampleLexer.LeftParen, Between(Token("("), expression, Token(")")));
@@ -31,14 +32,12 @@
                                  select new Form(callable, arguments));
         }
 
-        [Fact]
         public void ParsesRegisteredTokensIntoCorrespondingAtoms()
         {
             Parses("1", "1");
             Parses("square", "square");
         }
 
-        [Fact]
         public void ParsesUnitExpressionsStartedByRegisteredTokens()
         {
             Parses("(0)", "0");
@@ -46,28 +45,24 @@
             Parses("(1+4)/(2-3)*4", "(* (/ (+ 1 4) (- 2 3)) 4)");
         }
 
-        [Fact]
         public void ParsesPrefixExpressionsStartedByRegisteredToken()
         {
             Parses("-1", "(- 1)");
             Parses("-(-1)", "(- (- 1))");
         }
 
-        [Fact]
         public void ParsesPostfixExpressionsEndedByRegisteredToken()
         {
             Parses("1++", "(++ 1)");
             Parses("1++--", "(-- (++ 1))");
         }
 
-        [Fact]
         public void ParsesExpressionsThatExtendTheLeftSideExpressionWhenTheRegisteredTokenIsEncountered()
         {
             Parses("square(1)", "(square 1)");
             Parses("square(1,2)", "(square 1 2)");
         }
 
-        [Fact]
         public void ParsesBinaryOperationsRespectingPrecedenceAndAssociativity()
         {
             Parses("1+2", "(+ 1 2)");
@@ -92,7 +87,6 @@
             Parses("1^2+3^4", "(+ (^ 1 2) (^ 3 4))");
         }
 
-        [Fact]
         public void ProvidesErrorAtAppropriatePositionWhenUnitParsersFail()
         {
             //Upon unit-parser failures, stop!
@@ -103,7 +97,6 @@
             expression.FailsToParse(Tokenize("(*")).LeavingUnparsedTokens("*").WithMessage("(1, 2): Parse error.");
         }
 
-        [Fact]
         public void ProvidesErrorAtAppropriatePositionWhenExtendParsersFail()
         {
             //Upon extend-parser failures, stop!
@@ -147,11 +140,11 @@
                        LeftParen, RightParen, Comma) { }
         }
 
-        interface Expression
+        interface IExpression
         {
         }
 
-        class Constant : Expression
+        class Constant : IExpression
         {
             readonly int value;
 
@@ -162,11 +155,11 @@
 
             public override string ToString()
             {
-                return value.ToString();
+                return value.ToString(CultureInfo.InvariantCulture);
             }
         }
 
-        class Identifier : Expression
+        class Identifier : IExpression
         {
             readonly string identifier;
 
@@ -181,18 +174,18 @@
             }
         }
 
-        class Form : Expression
+        class Form : IExpression
         {
-            readonly Expression head;
-            readonly IEnumerable<Expression> expressions;
+            readonly IExpression head;
+            readonly IEnumerable<IExpression> expressions;
 
-            public Form(Token head, params Expression[] expressions)
+            public Form(Token head, params IExpression[] expressions)
                 : this(new Identifier(head.Literal), expressions) { }
 
-            public Form(Expression head, params Expression[] expressions)
-                : this(head, (IEnumerable<Expression>)expressions) { }
+            public Form(IExpression head, params IExpression[] expressions)
+                : this(head, (IEnumerable<IExpression>)expressions) { }
 
-            public Form(Expression head, IEnumerable<Expression> expressions)
+            public Form(IExpression head, IEnumerable<IExpression> expressions)
             {
                 this.head = head;
                 this.expressions = expressions;

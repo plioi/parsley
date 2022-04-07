@@ -1,12 +1,10 @@
-﻿namespace Parsley.Tests
+namespace Parsley.Tests
 {
     using System.Text.RegularExpressions;
     using Shouldly;
-    using Xunit;
 
     public class TokenRegexTests
     {
-        [Fact]
         public void CanMatchRegexStartingFromGivenCharacterPosition()
         {
             var regex = new TokenRegex(@"[a-z]+");
@@ -20,7 +18,6 @@
             regex.Match("123abc0", 4).Value.ShouldBe("bc");
         }
 
-        [Fact]
         public void CanMatchMultilineAndCommentedRegexes()
         {
             var regex = new TokenRegex(
@@ -34,7 +31,6 @@
             regex.Match("$23ab!", 3).Value.ShouldBe("ab");
         }
 
-        [Fact]
         public void SupportsOptionalRegexOptions()
         {
             var regex = new TokenRegex(@"[a-z]+", RegexOptions.IgnoreCase);
@@ -48,7 +44,6 @@
             regex.Match("123aBc0", 4).Value.ShouldBe("Bc");
         }
 
-        [Fact]
         public void HasStringRepresentation()
         {
             new TokenRegex(@"[a-zA-Z0-9]*").ToString().ShouldBe(@"[a-zA-Z0-9]*");

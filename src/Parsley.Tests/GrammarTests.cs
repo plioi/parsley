@@ -1,10 +1,11 @@
-﻿namespace Parsley.Tests
+using System.Diagnostics.CodeAnalysis;
+
+namespace Parsley.Tests
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using Shouldly;
-    using Xunit;
 
     public class GrammarTests : Grammar
     {
@@ -20,7 +21,7 @@
                 : base(Digit, Letter, Symbol) { }
         }
 
-        readonly Parser<Token> A, B, AB, COMMA;
+        readonly IParser<Token> A, B, AB, COMMA;
 
         public GrammarTests()
         {
@@ -44,20 +45,17 @@
             return tokens => tokens.ShouldList(expectedLiterals.Select(Literal).ToArray());
         }
 
-        [Fact]
         public void CanFailWithoutConsumingInput()
         {
             Fail<string>().FailsToParse(Tokenize("ABC")).LeavingUnparsedTokens("A", "B", "C");
         }
 
-        [Fact]
         public void CanDetectTheEndOfInputWithoutAdvancing()
         {
             EndOfInput.Parses(Tokenize("")).WithValue(Literal(""));
             EndOfInput.FailsToParse(Tokenize("!")).LeavingUnparsedTokens("!").WithMessage("(1, 1): end of input expected");
         }
 
-        [Fact]
         public void CanDemandThatAGivenKindOfTokenAppearsNext()
         {
             Token(SampleLexer.Letter).Parses(Tokenize("A")).WithValue(Literal("A"));
@@ -67,7 +65,6 @@
             Token(SampleLexer.Digit).Parses(Tokenize("0")).WithValue(Literal("0"));
         }
 
-        [Fact]
         public void CanDemandThatAGivenTokenLiteralAppearsNext()
         {
             Token("A").Parses(Tokenize("A")).WithValue(Literal("A"));
@@ -75,7 +72,6 @@
             Token("A").FailsToParse(Tokenize("B")).LeavingUnparsedTokens("B").WithMessage("(1, 1): A expected");
         }
 
-        [Fact]
         public void ApplyingARuleZeroOrMoreTimes()
         {
             var parser = ZeroOrMore(AB);
@@ -94,12 +90,11 @@
                 .LeavingUnparsedTokens("!")
                 .WithMessage("(1, 6): B expected");
 
-            Parser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
+            IParser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
             Action infiniteLoop = () => ZeroOrMore(succeedWithoutConsuming).Parse(new TokenStream(Tokenize("")));
             infiniteLoop.ShouldThrow<Exception>("Parser encountered a potential infinite loop at position (1, 1).");
         }
 
-        [Fact]
         public void ApplyingARuleOneOrMoreTimes()
         {
             var parser = OneOrMore(AB);
@@ -118,12 +113,11 @@
                 .LeavingUnparsedTokens("!")
                 .WithMessage("(1, 6): B expected");
 
-            Parser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
+            IParser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
             Action infiniteLoop = () => OneOrMore(succeedWithoutConsuming).Parse(new TokenStream(Tokenize("")));
             infiniteLoop.ShouldThrow<Exception>("Parser encountered a potential infinite loop at position (1, 1).");
         }
 
-        [Fact]
         public void ApplyingARuleZeroOrMoreTimesInterspersedByASeparatorRule()
         {
             var parser = ZeroOrMore(AB, COMMA);
@@ -136,7 +130,6 @@
             parser.FailsToParse(Tokenize("AB,A")).AtEndOfInput().WithMessage("(1, 5): B expected");
         }
 
-        [Fact]
         public void ApplyingARuleOneOrMoreTimesInterspersedByASeparatorRule()
         {
             var parser = OneOrMore(AB, COMMA);
@@ -149,7 +142,6 @@
             parser.FailsToParse(Tokenize("AB,A")).AtEndOfInput().WithMessage("(1, 5): B expected");
         }
 
-        [Fact]
         public void ApplyingARuleBetweenTwoOtherRules()
         {
             var parser = Between(A, B, A);
@@ -163,7 +155,6 @@
             parser.Parses(Tokenize("ABA")).WithValue(Literal("B"));
         }
 
-        [Fact]
         public void ParsingAnOptionalRuleZeroOrOneTimes()
         {
             Optional(AB).PartiallyParses(Tokenize("AB.")).LeavingUnparsedTokens(".").WithValue(Literal("AB"));
@@ -171,7 +162,6 @@
             Optional(AB).FailsToParse(Tokenize("AC.")).LeavingUnparsedTokens("C", ".").WithMessage("(1, 2): B expected");
         }
 
-        [Fact]
         public void AttemptingToParseRuleButBacktrackingUponFailure()
         {
             //When p succeeds, Attempt(p) is the same as p.
@@ -184,7 +174,6 @@
             Attempt(AB).FailsToParse(Tokenize("A!")).LeavingUnparsedTokens("A", "!").WithMessage("(1, 1): [(1, 2): B expected]");
         }
 
-        [Fact]
         public void ImprovingDefaultMessagesWithAKnownExpectation()
         {
             var labeled = Label(AB, "'A' followed by 'B'");
@@ -220,7 +209,7 @@
     {
         static IEnumerable<Token> Tokenize(string input) => new CharLexer().Tokenize(input);
 
-        readonly Parser<Token> A, B, C;
+        readonly IParser<Token> A, B, C;
 
         public AlternationTests()
         {
@@ -234,13 +223,11 @@
             return t => t.Literal.ShouldBe(expectedLiteral);
         }
 
-        [Fact]
         public void ChoosingBetweenZeroAlternativesAlwaysFails()
         {
             Choice<string>().FailsToParse(Tokenize("ABC")).LeavingUnparsedTokens("A", "B", "C");
         }
 
-        [Fact]
         public void ChoosingBetweenOneAlternativeParserIsEquivalentToThatParser()
         {
             Choice(A).Parses(Tokenize("A")).WithValue(Literal("A"));
@@ -248,20 +235,17 @@
             Choice(A).FailsToParse(Tokenize("B")).LeavingUnparsedTokens("B").WithMessage("(1, 1): A expected");
         }
 
-        [Fact]
         public void FirstParserCanSucceedWithoutExecutingOtherAlternatives()
         {
             Choice(A, NeverExecuted).Parses(Tokenize("A")).WithValue(Literal("A"));
         }
 
-        [Fact]
         public void SubsequentParserCanSucceedWhenPreviousParsersFailWithoutConsumingInput()
         {
             Choice(B, A).Parses(Tokenize("A")).WithValue(Literal("A"));
             Choice(C, B, A).Parses(Tokenize("A")).WithValue(Literal("A"));
         }
 
-        [Fact]
         public void SubsequentParserWillNotBeAttemptedWhenPreviousParserFailsAfterConsumingInput()
         {
             //As soon as something consumes input, it's failure and message win.
@@ -274,21 +258,19 @@
             Choice(C, AB, NeverExecuted).FailsToParse(Tokenize("A")).AtEndOfInput().WithMessage("(1, 2): B expected");
         }
 
-        [Fact]
         public void MergesErrorMessagesWhenParsersFailWithoutConsumingInput()
         {
             Choice(A, B).FailsToParse(Tokenize("")).AtEndOfInput().WithMessage("(1, 1): A or B expected");
             Choice(A, B, C).FailsToParse(Tokenize("")).AtEndOfInput().WithMessage("(1, 1): A, B or C expected");
         }
 
-        [Fact]
         public void MergesPotentialErrorMessagesWhenParserSucceedsWithoutConsumingInput()
         {
             //Choice really shouldn't be used with parsers that can succeed without
             //consuming input.  These tests simply describe the behavior under that
             //unusual situation.
 
-            Parser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
+            IParser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
 
             var reply = Choice(A, succeedWithoutConsuming).Parses(Tokenize(""));
             reply.ErrorMessages.ToString().ShouldBe("A expected");
@@ -300,7 +282,7 @@
             reply.ErrorMessages.ToString().ShouldBe("A expected");
         }
 
-        static readonly Parser<Token> NeverExecuted = new LambdaParser<Token>(tokens =>
+        static readonly IParser<Token> NeverExecuted = new LambdaParser<Token>(tokens =>
         {
             throw new Exception("Parser 'NeverExecuted' should not have been executed.");
         });
@@ -309,6 +291,7 @@
     public class GrammarRuleNameInferenceTests : Grammar
     {
         readonly GrammarRule<int> AlreadyNamedRule;
+        [SuppressMessage("Usage", "CA2211:Non-constant fields should not be visible", Justification = "Example for Testing")]
         public static GrammarRule<object> PublicStaticRule;
         static GrammarRule<string> PrivateStaticRule;
         public readonly GrammarRule<int> PublicInstanceRule;
@@ -327,37 +310,31 @@
             InferGrammarRuleNames();
         }
 
-        [Fact]
         public void WillNotInferNameWhenNameIsAlreadyProvided()
         {
             AlreadyNamedRule.Name.ShouldBe("This name is not inferred.");
         }
 
-        [Fact]
         public void InfersNamesOfPublicStaticGrammarRules()
         {
             PublicStaticRule.Name.ShouldBe("PublicStaticRule");
         }
 
-        [Fact]
         public void InfersNamesOfPrivateStaticGrammarRules()
         {
             PrivateStaticRule.Name.ShouldBe("PrivateStaticRule");
         }
 
-        [Fact]
         public void InfersNamesOfPublicInstanceGrammarRules()
         {
             PublicInstanceRule.Name.ShouldBe("PublicInstanceRule");
         }
 
-        [Fact]
         public void InfersNamesOfPrivateInstanceGrammarRules()
         {
             PrivateInstanceRule.Name.ShouldBe("PrivateInstanceRule");
         }
 
-        [Fact]
         public void SilentlyIgnoresNullRules()
         {
             NullRule.ShouldBeNull();

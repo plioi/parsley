@@ -1,8 +1,7 @@
-﻿namespace Parsley.Tests
+namespace Parsley.Tests
 {
     using System.Collections.Generic;
     using Shouldly;
-    using Xunit;
 
     public class TokenStreamTests
     {
@@ -33,7 +32,6 @@
             yield return new Token(TokenKind.EndOfInput, new Position(1, 10), "");
         }
 
-        [Fact]
         public void ProvidesEndOfInputTokenWhenGivenEmptyEnumerator()
         {
             var tokens = new TokenStream(Empty());
@@ -42,21 +40,18 @@
             tokens.Advance().ShouldBeSameAs(tokens);
         }
 
-        [Fact]
         public void ProvidesCurrentToken()
         {
             var tokens = new TokenStream(Tokens());
             tokens.Current.ShouldBe(upper, "ABC", 1, 1);
         }
 
-        [Fact]
         public void AdvancesToTheNextToken()
         {
             var tokens = new TokenStream(Tokens());
             tokens.Advance().Current.ShouldBe(lower, "def", 1, 4);
         }
 
-        [Fact]
         public void ProvidesEndOfInputTokenAfterEnumeratorIsExhausted()
         {
             var tokens = new TokenStream(OneToken());
@@ -66,14 +61,12 @@
             end.Advance().ShouldBeSameAs(end);
         }
 
-        [Fact]
         public void TryingToAdvanceBeyondEndOfInputResultsInNoMovement()
         {
             var tokens = new TokenStream(Empty());
             tokens.ShouldBeSameAs(tokens.Advance());
         }
 
-        [Fact]
         public void DoesNotChangeStateAsUnderlyingEnumeratorIsTraversed()
         {
             var tokens = new TokenStream(Tokens());
@@ -100,7 +93,6 @@
             fourth.Advance().ShouldBeSameAs(fourth);
         }
 
-        [Fact]
         public void AllowsRepeatableTraversalWhileTraversingUnderlyingEnumeratorItemsAtMostOnce()
         {
             var tokens = new TokenStream(Tokens());
@@ -113,7 +105,6 @@
             tokens.Advance().ShouldBeSameAs(tokens.Advance());
         }
 
-        [Fact]
         public void ProvidesPositionOfCurrentToken()
         {
             var tokens = new TokenStream(Tokens());

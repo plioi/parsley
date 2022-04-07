@@ -1,13 +1,11 @@
-﻿namespace Parsley.Tests
+namespace Parsley.Tests
 {
     using System;
     using System.Text;
     using Shouldly;
-    using Xunit;
 
     public class TextTests
     {
-        [Fact]
         public void CanPeekAheadNCharacters()
         {
             var empty = new Text("");
@@ -23,7 +21,6 @@
             abc.Peek(100).ShouldBe("abc");
         }
 
-        [Fact]
         public void CanAdvanceAheadNCharacters()
         {
             var empty = new Text("");
@@ -39,14 +36,12 @@
             abc.Advance(100).ToString().ShouldBe("");
         }
 
-        [Fact]
         public void DetectsTheEndOfInput()
         {
             new Text("!").EndOfInput.ShouldBeFalse();
             new Text("").EndOfInput.ShouldBeTrue();
         }
 
-        [Fact]
         public void CanMatchLeadingCharactersByTokenRegex()
         {
             var end = new TokenRegex(@"$");
@@ -76,7 +71,6 @@
             abc123.Advance(6).Match(alphanumerics).ShouldFail();
         }
 
-        [Fact]
         public void CanMatchLeadingCharactersByPredicate()
         {
             Predicate<char> letters = Char.IsLetter;
@@ -104,14 +98,12 @@
             abc123.Advance(6).Match(alphanumerics).ShouldFail();
         }
 
-        [Fact]
         public void NormalizesLineEndingsToSingleLineFeedCharacter()
         {
             var multiline = new Text("Line 1\rLine 2\nLine 3\r\nLine 4");
             multiline.ToString().ShouldBe("Line 1\nLine 2\nLine 3\nLine 4");
         }
 
-        [Fact]
         public void CanGetCurrentPosition()
         {
             var empty = new Text("");

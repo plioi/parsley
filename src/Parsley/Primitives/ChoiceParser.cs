@@ -1,10 +1,10 @@
 namespace Parsley.Primitives
 {
-    internal class ChoiceParser<T> : Parser<T>
+    internal class ChoiceParser<T> : IParser<T>
     {
-        private readonly Parser<T>[] parsers;
+        private readonly IParser<T>[] parsers;
 
-        public ChoiceParser(Parser<T>[] parsers)
+        public ChoiceParser(IParser<T>[] parsers)
         {
             this.parsers = parsers;
         }

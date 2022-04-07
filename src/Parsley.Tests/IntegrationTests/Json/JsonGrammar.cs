@@ -1,4 +1,4 @@
-﻿namespace Parsley.Tests.IntegrationTests.Json
+namespace Parsley.Tests.IntegrationTests.Json
 {
     using System;
     using System.Collections.Generic;
@@ -8,16 +8,16 @@
 
     public class JsonGrammar : Grammar
     {
-        public static readonly GrammarRule<object> Json = new GrammarRule<object>();
-        static readonly GrammarRule<object> JsonValue = new GrammarRule<object>();
-        static readonly GrammarRule<object> True = new GrammarRule<object>();
-        static readonly GrammarRule<object> False = new GrammarRule<object>();
-        static readonly GrammarRule<object> Null = new GrammarRule<object>();
-        static readonly GrammarRule<object> Number = new GrammarRule<object>();
-        static readonly GrammarRule<string> Quotation = new GrammarRule<string>();
-        static readonly GrammarRule<object[]> Array = new GrammarRule<object[]>();
-        static readonly GrammarRule<KeyValuePair<string, object>> Pair = new GrammarRule<KeyValuePair<string, object>>();
-        static readonly GrammarRule<Dictionary<string, object>> Dictionary = new GrammarRule<Dictionary<string, object>>();
+        public static readonly GrammarRule<object> Json = new();
+        static readonly GrammarRule<object> JsonValue = new();
+        static readonly GrammarRule<object> True = new();
+        static readonly GrammarRule<object> False = new();
+        static readonly GrammarRule<object> Null = new();
+        static readonly GrammarRule<object> Number = new();
+        static readonly GrammarRule<string> Quotation = new();
+        static readonly GrammarRule<object[]> Array = new();
+        static readonly GrammarRule<KeyValuePair<string, object>> Pair = new();
+        static readonly GrammarRule<Dictionary<string, object>> Dictionary = new();
 
         static JsonGrammar()
         {
@@ -32,7 +32,7 @@
 
             Number.Rule =
                 from number in Token(JsonLexer.Number)
-                select (object) Decimal.Parse(number.Literal, NumberStyles.Any);
+                select (object) Decimal.Parse(number.Literal, NumberStyles.Any, CultureInfo.InvariantCulture);
 
             Quotation.Rule =
                 from quotation in Token(JsonLexer.Quotation)
@@ -59,7 +59,7 @@
                         select jsonValue;
         }
 
-        static Parser<object> Constant(TokenKind kind, object constant)
+        static IParser<object> Constant(TokenKind kind, object constant)
         {
             return from _ in Token(kind)
                    select constant;
@@ -70,7 +70,7 @@
             string result = quotation.Substring(1, quotation.Length - 2); //Remove leading and trailing quotation marks
 
             result = Regex.Replace(result, @"\\u[0-9a-fA-F]{4}",
-                                   match => Char.ConvertFromUtf32(int.Parse(match.Value.Replace("\\u", ""), NumberStyles.HexNumber)));
+                                   match => Char.ConvertFromUtf32(int.Parse(match.Value.Replace("\\u", ""), NumberStyles.HexNumber, CultureInfo.InvariantCulture)));
 
             result = result
                 .Replace("\\\"", "\"")

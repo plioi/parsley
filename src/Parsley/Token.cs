@@ -1,4 +1,4 @@
-﻿namespace Parsley
+namespace Parsley
 {
     public class Token
     {
