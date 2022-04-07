@@ -62,13 +62,13 @@ public class ErrorMessageList
         {
             var suffixes = Separators(expectationErrors.Count - 1).Concat(new[] { " expected" });
 
-            parts.Add(String.Join("", expectationErrors.Zip(suffixes, (error, suffix) => error + suffix)));
+            parts.Add(string.Join("", expectationErrors.Zip(suffixes, (error, suffix) => error + suffix)));
         }
 
         if (backtrackErrors.Any())
-            parts.Add(String.Join(" ", backtrackErrors.Select(backtrack => $"[{backtrack}]")));
+            parts.Add(string.Join(" ", backtrackErrors.Select(backtrack => $"[{backtrack}]")));
 
-        return String.Join(" ", parts);
+        return string.Join(" ", parts);
     }
 
     static IEnumerable<string> Separators(int count)

@@ -105,8 +105,8 @@ public static class ParsingAssertions
         var raiseError = () =>
         {
             throw new AssertionException("Parse resulted in unexpected remaining unparsed tokens.",
-                String.Join(", ", expectedLiterals),
-                String.Join(", ", actualLiterals));
+                string.Join(", ", expectedLiterals),
+                string.Join(", ", actualLiterals));
         };
 
         if (actualLiterals.Count != expectedLiterals.Length)
