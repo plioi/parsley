@@ -2,10 +2,6 @@ using System.Globalization;
 
 namespace Parsley.Tests;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 public class ParserQueryTests
 {
     static readonly IParser<string> Next = new LambdaParser<string>(tokens => new Parsed<string>(tokens.Current.Literal, tokens.Advance()));

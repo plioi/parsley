@@ -1,7 +1,5 @@
 namespace Parsley;
 
-using System;
-
 internal class AssertionException : Exception
 {
     public AssertionException(object expected, object actual)

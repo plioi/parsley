@@ -1,8 +1,5 @@
 namespace Parsley;
 
-using System;
-using System.Linq;
-
 public class Text
 {
     private readonly int index;

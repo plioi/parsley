@@ -1,8 +1,5 @@
 namespace Parsley.Tests;
 
-using System.Collections.Generic;
-using Shouldly;
-
 public class LexerTests
 {
     readonly TokenKind lower;

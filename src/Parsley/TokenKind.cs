@@ -1,8 +1,6 @@
-namespace Parsley;
-
-using System;
-using System.Linq;
 using System.Text.RegularExpressions;
+
+namespace Parsley;
 
 public abstract class TokenKind
 {

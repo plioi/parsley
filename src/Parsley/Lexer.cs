@@ -1,8 +1,5 @@
 namespace Parsley;
 
-using System.Collections.Generic;
-using System.Linq;
-
 public class Lexer
 {
     private readonly List<TokenKind> kinds;

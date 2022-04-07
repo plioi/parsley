@@ -1,7 +1,5 @@
 namespace Parsley;
 
-using System.Collections.Generic;
-
 public delegate IParser<T> ExtendParserBuilder<T>(T left);
 public delegate T AtomNodeBuilder<out T>(Token atom);
 public delegate T UnaryNodeBuilder<T>(Token symbol, T operand);

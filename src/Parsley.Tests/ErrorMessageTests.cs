@@ -1,8 +1,5 @@
 namespace Parsley.Tests;
 
-using Shouldly;
-using ErrorMessage = Parsley.ErrorMessage;
-
 public class ErrorMessageTests
 {
     public void CanIndicateGenericErrors()

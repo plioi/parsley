@@ -2,11 +2,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Parsley.Tests;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Shouldly;
-
 public class GrammarTests : Grammar
 {
     static IEnumerable<Token> Tokenize(string input) => new SampleLexer().Tokenize(input);

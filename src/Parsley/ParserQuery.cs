@@ -1,7 +1,5 @@
 namespace Parsley;
 
-using System;
-
 public static class ParserQuery
 {
     /// <summary>

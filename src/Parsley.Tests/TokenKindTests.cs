@@ -1,8 +1,6 @@
-namespace Parsley.Tests;
-
-using System;
 using System.Text.RegularExpressions;
-using Shouldly;
+
+namespace Parsley.Tests;
 
 public class TokenKindTests
 {

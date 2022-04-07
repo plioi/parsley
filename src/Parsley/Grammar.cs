@@ -1,9 +1,7 @@
-namespace Parsley;
-
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using Primitives;
+using Parsley.Primitives;
+
+namespace Parsley;
 
 public abstract class Grammar
 {

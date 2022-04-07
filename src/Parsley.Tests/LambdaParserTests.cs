@@ -1,7 +1,5 @@
 namespace Parsley.Tests;
 
-using ErrorMessage = Parsley.ErrorMessage;
-
 public class LambdaParserTests
 {
     public void CreatesParsersFromLambdas()

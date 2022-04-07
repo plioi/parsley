@@ -1,8 +1,5 @@
 namespace Parsley;
 
-using System;
-using System.Collections.Generic;
-
 public static class ParsingAssertions
 {
     public static void ShouldSucceed(this MatchResult actual, string expected)

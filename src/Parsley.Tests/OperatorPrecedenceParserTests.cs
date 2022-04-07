@@ -2,9 +2,6 @@ using System.Globalization;
 
 namespace Parsley.Tests;
 
-using System.Collections.Generic;
-using Shouldly;
-
 public class OperatorPrecedenceParserTests : Grammar
 {
     readonly OperatorPrecedenceParser<IExpression> expression;

@@ -1,7 +1,5 @@
 namespace Parsley;
 
-using System;
-
 public class GrammarRule<T> : IParser<T>
 {
     private Func<TokenStream, Reply<T>> parse;

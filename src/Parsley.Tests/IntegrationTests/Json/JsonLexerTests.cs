@@ -1,9 +1,5 @@
 namespace Parsley.Tests.IntegrationTests.Json;
 
-using System.Collections.Generic;
-using System.Linq;
-using Shouldly;
-
 public class JsonLexerTests
 {
     static IEnumerable<Token> Tokenize(string input) => new JsonLexer().Tokenize(input);

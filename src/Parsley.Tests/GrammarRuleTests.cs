@@ -1,8 +1,5 @@
 namespace Parsley.Tests;
 
-using System.Linq;
-using Shouldly;
-
 public class GrammarRuleTests : Grammar
 {
     public void CanDefineMutuallyRecursiveRules()

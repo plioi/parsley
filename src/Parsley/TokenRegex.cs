@@ -1,6 +1,6 @@
-namespace Parsley;
-
 using System.Text.RegularExpressions;
+
+namespace Parsley;
 
 public class TokenRegex
 {

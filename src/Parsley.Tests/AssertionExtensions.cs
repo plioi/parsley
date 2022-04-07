@@ -1,10 +1,5 @@
 namespace Parsley.Tests;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Shouldly;
-
 public static class AssertionExtensions
 {
     public static void ShouldThrow<TException>(this Action shouldThrow, string expectedMessage) where TException : Exception
