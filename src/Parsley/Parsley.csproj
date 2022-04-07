@@ -6,6 +6,21 @@
     <!-- <Nullable>enable</Nullable> -->
   </PropertyGroup>
 
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Description>Expressive parsing inspired by Haskell's Parsec.</Description>
+    <Authors>Patrick Lioi</Authors>
+    <Copyright>Copyright (c) 2011 Patrick Lioi</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/plioi/parsley</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/plioi/parsley</RepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE" Pack="true" PackagePath="" Visible="false" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="MinVer" Version="2.5.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
