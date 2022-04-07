@@ -1,18 +1,7 @@
 namespace Parsley;
 
-public class Token
+public record Token(TokenKind Kind, Position Position, string Literal)
 {
-    public TokenKind Kind { get; }
-    public Position Position { get; }
-    public string Literal { get; }
-
-    public Token(TokenKind kind, Position position, string value)
-    {
-        Kind = kind;
-        Position = position;
-        Literal = value;
-    }
-
     public override string ToString()
         => $"Kind: {Kind}, Position: {Position}, Literal: {Literal}";
 }
