@@ -63,7 +63,7 @@ public class Keyword : Pattern
     public Keyword(string word)
         : base(word, word + @"\b")
     {
-        if (word.Cast<char>().Any(ch => !char.IsLetter(ch)))
+        if (word.Any(ch => !char.IsLetter(ch)))
             throw new ArgumentException("Keywords may only contain letters.", nameof(word));
     }
 }

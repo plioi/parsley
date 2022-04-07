@@ -38,9 +38,8 @@ public class Lexer
 
     Token GetToken(Text text)
     {
-        Token token;
         foreach (var kind in kinds)
-            if (kind.TryMatch(text, out token))
+            if (kind.TryMatch(text, out var token))
                 return token;
 
         return null; //Unknown guarantees this is reachable only at the end of input.
