@@ -1,4 +1,4 @@
-﻿namespace Parsley.Tests
+namespace Parsley.Tests
 {
     using Shouldly;
     using ErrorMessage = Parsley.ErrorMessage;

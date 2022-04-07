@@ -1,4 +1,4 @@
-﻿namespace Parsley.Tests
+namespace Parsley.Tests
 {
     using System.Text.RegularExpressions;
     using Shouldly;

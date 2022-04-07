@@ -1,4 +1,4 @@
-﻿namespace Parsley.Primitives
+namespace Parsley.Primitives
 {
     internal class LabeledParser<T> : IParser<T>
     {
