@@ -10,15 +10,15 @@ public class JsonLexer : Lexer
 
     static readonly TokenKind Whitespace = new Pattern("whitespace", @"\s+", skippable: true);
         
-    public static readonly Keyword @null = new Keyword("null");
-    public static readonly Keyword @true = new Keyword("true");
-    public static readonly Keyword @false = new Keyword("false");
-    public static readonly Operator Comma = new Operator(",");
-    public static readonly Operator OpenArray = new Operator("[");
-    public static readonly Operator CloseArray = new Operator("]");
-    public static readonly Operator OpenDictionary = new Operator("{");
-    public static readonly Operator CloseDictionary = new Operator("}");
-    public static readonly Operator Colon = new Operator(":");
+    public static readonly Keyword @null = new("null");
+    public static readonly Keyword @true = new("true");
+    public static readonly Keyword @false = new("false");
+    public static readonly Operator Comma = new(",");
+    public static readonly Operator OpenArray = new("[");
+    public static readonly Operator CloseArray = new("]");
+    public static readonly Operator OpenDictionary = new("{");
+    public static readonly Operator CloseDictionary = new("}");
+    public static readonly Operator Colon = new(":");
 
     public static readonly TokenKind Quotation = new Pattern("string", @"
             # Open quote:

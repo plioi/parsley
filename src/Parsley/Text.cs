@@ -68,7 +68,7 @@ public class Text
     }
 
     public Position Position
-        => new Position(line, Column);
+        => new(line, Column);
 
     public override string ToString()
         => input.Substring(index);
