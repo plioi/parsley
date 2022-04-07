@@ -1,33 +1,9 @@
-using System.Reflection;
 using Parsley.Primitives;
 
 namespace Parsley;
 
 public abstract class Grammar
 {
-    protected void InferGrammarRuleNames()
-    {
-        var grammarRules =
-            GetType()
-                .GetRuntimeFields()
-                .Where(rule =>
-                    rule.FieldType.GetTypeInfo().IsGenericType &&
-                    rule.FieldType.GetGenericTypeDefinition() == typeof (GrammarRule<>));
-
-        foreach (var rule in grammarRules)
-        {
-            var value = rule.GetValue(this);
-            if (value != null)
-            {
-                var nameProperty = value.GetType().GetRuntimeProperty("Name");
-                var name = nameProperty.GetValue(value, null);
-
-                if (name as string == null)
-                    nameProperty.SetValue(value, rule.Name, null);
-            }
-        }
-    }
-
     public static IParser<T> Fail<T>() => new FailingParser<T>();
 
     public static IParser<Token> EndOfInput => Token(TokenKind.EndOfInput);

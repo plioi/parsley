@@ -5,16 +5,16 @@ namespace Parsley.Tests.IntegrationTests.Json;
 
 public class JsonGrammar : Grammar
 {
-    public static readonly GrammarRule<object> Json = new();
-    static readonly GrammarRule<object> JsonValue = new();
-    static readonly GrammarRule<object> True = new();
-    static readonly GrammarRule<object> False = new();
-    static readonly GrammarRule<object> Null = new();
-    static readonly GrammarRule<object> Number = new();
-    static readonly GrammarRule<string> Quotation = new();
-    static readonly GrammarRule<object[]> Array = new();
-    static readonly GrammarRule<KeyValuePair<string, object>> Pair = new();
-    static readonly GrammarRule<Dictionary<string, object>> Dictionary = new();
+    public static readonly GrammarRule<object> Json = new(nameof(Json));
+    static readonly GrammarRule<object> JsonValue = new(nameof(JsonValue));
+    static readonly GrammarRule<object> True = new(nameof(True));
+    static readonly GrammarRule<object> False = new(nameof(False));
+    static readonly GrammarRule<object> Null = new(nameof(Null));
+    static readonly GrammarRule<object> Number = new(nameof(Number));
+    static readonly GrammarRule<string> Quotation = new(nameof(Quotation));
+    static readonly GrammarRule<object[]> Array = new(nameof(Array));
+    static readonly GrammarRule<KeyValuePair<string, object>> Pair = new(nameof(Pair));
+    static readonly GrammarRule<Dictionary<string, object>> Dictionary = new(nameof(Dictionary));
 
     static JsonGrammar()
     {
