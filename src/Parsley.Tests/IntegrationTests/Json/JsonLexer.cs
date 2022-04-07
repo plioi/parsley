@@ -1,26 +1,26 @@
-namespace Parsley.Tests.IntegrationTests.Json
+namespace Parsley.Tests.IntegrationTests.Json;
+
+public class JsonLexer : Lexer
 {
-    public class JsonLexer : Lexer
-    {
-        public JsonLexer()
-            : base(Whitespace,
-                   @null, @true, @false,
-                   Comma, OpenArray, CloseArray, OpenDictionary, CloseDictionary, Colon,
-                   Number, Quotation) { }
+    public JsonLexer()
+        : base(Whitespace,
+            @null, @true, @false,
+            Comma, OpenArray, CloseArray, OpenDictionary, CloseDictionary, Colon,
+            Number, Quotation) { }
 
-        static readonly TokenKind Whitespace = new Pattern("whitespace", @"\s+", skippable: true);
+    static readonly TokenKind Whitespace = new Pattern("whitespace", @"\s+", skippable: true);
         
-        public static readonly Keyword @null = new Keyword("null");
-        public static readonly Keyword @true = new Keyword("true");
-        public static readonly Keyword @false = new Keyword("false");
-        public static readonly Operator Comma = new Operator(",");
-        public static readonly Operator OpenArray = new Operator("[");
-        public static readonly Operator CloseArray = new Operator("]");
-        public static readonly Operator OpenDictionary = new Operator("{");
-        public static readonly Operator CloseDictionary = new Operator("}");
-        public static readonly Operator Colon = new Operator(":");
+    public static readonly Keyword @null = new Keyword("null");
+    public static readonly Keyword @true = new Keyword("true");
+    public static readonly Keyword @false = new Keyword("false");
+    public static readonly Operator Comma = new Operator(",");
+    public static readonly Operator OpenArray = new Operator("[");
+    public static readonly Operator CloseArray = new Operator("]");
+    public static readonly Operator OpenDictionary = new Operator("{");
+    public static readonly Operator CloseDictionary = new Operator("}");
+    public static readonly Operator Colon = new Operator(":");
 
-        public static readonly TokenKind Quotation = new Pattern("string", @"
+    public static readonly TokenKind Quotation = new Pattern("string", @"
             # Open quote:
             ""
 
@@ -35,7 +35,7 @@ namespace Parsley.Tests.IntegrationTests.Json
             ""
         ");
 
-        public static readonly TokenKind Number = new Pattern("number", @"
+    public static readonly TokenKind Number = new Pattern("number", @"
             # Look-ahead to confirm the whole-number part is either 0 or starts with 1-9:
             (?=
                 0(?!\d)  |  [1-9]
@@ -54,5 +54,4 @@ namespace Parsley.Tests.IntegrationTests.Json
                 \d+
             )?
         ");
-    }
 }

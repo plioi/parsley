@@ -1,52 +1,51 @@
-namespace Parsley
+namespace Parsley;
+
+using System.Collections.Generic;
+using System.Linq;
+
+public class Lexer
 {
-    using System.Collections.Generic;
-    using System.Linq;
+    private readonly List<TokenKind> kinds;
 
-    public class Lexer
+    public Lexer(params TokenKind[] kinds)
     {
-        private readonly List<TokenKind> kinds;
+        this.kinds = kinds.ToList();
+        this.kinds.Add(TokenKind.Unknown);
+    }
 
-        public Lexer(params TokenKind[] kinds)
+    public IEnumerable<Token> Tokenize(string input)
+    {
+        var text = new Text(input);
+        while (!text.EndOfInput)
         {
-            this.kinds = kinds.ToList();
-            this.kinds.Add(TokenKind.Unknown);
-        }
+            var current = GetToken(text);
 
-        public IEnumerable<Token> Tokenize(string input)
-        {
-            var text = new Text(input);
-            while (!text.EndOfInput)
+            //After exiting this loop, Current will be the
+            //next unskippable token, and text will indicate
+            //where that token starts.
+            while (current.Kind.Skippable)
             {
-                var current = GetToken(text);
-
-                //After exiting this loop, Current will be the
-                //next unskippable token, and text will indicate
-                //where that token starts.
-                while (current.Kind.Skippable)
-                {
-                    text = text.Advance(current.Literal.Length);
-
-                    if (text.EndOfInput)
-                        yield break;
-
-                    current = GetToken(text);
-                }
-
                 text = text.Advance(current.Literal.Length);
 
-                yield return current;
+                if (text.EndOfInput)
+                    yield break;
+
+                current = GetToken(text);
             }
-        }
 
-        private Token GetToken(Text text)
-        {
-            Token token;
-            foreach (var kind in kinds)
-                if (kind.TryMatch(text, out token))
-                    return token;
+            text = text.Advance(current.Literal.Length);
 
-            return null; //Unknown guarantees this is reachable only at the end of input.
+            yield return current;
         }
+    }
+
+    private Token GetToken(Text text)
+    {
+        Token token;
+        foreach (var kind in kinds)
+            if (kind.TryMatch(text, out token))
+                return token;
+
+        return null; //Unknown guarantees this is reachable only at the end of input.
     }
 }

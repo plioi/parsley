@@ -1,20 +1,19 @@
-namespace Parsley.Primitives
+namespace Parsley.Primitives;
+
+internal class TokenByKindParser : IParser<Token>
 {
-    internal class TokenByKindParser : IParser<Token>
+    private readonly TokenKind kind;
+
+    public TokenByKindParser(TokenKind kind)
     {
-        private readonly TokenKind kind;
+        this.kind = kind;
+    }
 
-        public TokenByKindParser(TokenKind kind)
-        {
-            this.kind = kind;
-        }
+    public Reply<Token> Parse(TokenStream tokens)
+    {
+        if (tokens.Current.Kind == kind)
+            return new Parsed<Token>(tokens.Current, tokens.Advance());
 
-        public Reply<Token> Parse(TokenStream tokens)
-        {
-            if (tokens.Current.Kind == kind)
-                return new Parsed<Token>(tokens.Current, tokens.Advance());
-
-            return new Error<Token>(tokens, ErrorMessage.Expected(kind.Name));
-        }
+        return new Error<Token>(tokens, ErrorMessage.Expected(kind.Name));
     }
 }

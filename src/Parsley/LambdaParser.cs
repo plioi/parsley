@@ -1,19 +1,18 @@
-namespace Parsley
+namespace Parsley;
+
+using System;
+
+public class LambdaParser<T> : IParser<T>
 {
-    using System;
+    private readonly Func<TokenStream, Reply<T>> parse;
 
-    public class LambdaParser<T> : IParser<T>
+    public LambdaParser(Func<TokenStream, Reply<T>> parse)
     {
-        private readonly Func<TokenStream, Reply<T>> parse;
+        this.parse = parse;
+    }
 
-        public LambdaParser(Func<TokenStream, Reply<T>> parse)
-        {
-            this.parse = parse;
-        }
-
-        public Reply<T> Parse(TokenStream tokens)
-        {
-            return parse(tokens);
-        }
+    public Reply<T> Parse(TokenStream tokens)
+    {
+        return parse(tokens);
     }
 }

@@ -1,38 +1,37 @@
-namespace Parsley
+namespace Parsley;
+
+using System.Text.RegularExpressions;
+
+public class TokenRegex
 {
-    using System.Text.RegularExpressions;
+    private readonly string pattern;
+    private readonly Regex regex;
 
-    public class TokenRegex
+    public TokenRegex(string pattern, params RegexOptions[] regexOptions)
     {
-        private readonly string pattern;
-        private readonly Regex regex;
+        var options = RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace;
 
-        public TokenRegex(string pattern, params RegexOptions[] regexOptions)
-        {
-            var options = RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace;
+        foreach (var additionalOption in regexOptions)
+            options |= additionalOption;
 
-            foreach (var additionalOption in regexOptions)
-                options |= additionalOption;
-
-            this.pattern = pattern;
-            regex = new Regex(@"\G(
+        this.pattern = pattern;
+        regex = new Regex(@"\G(
                                        " + pattern + @"
                                        )", options);
-        }
+    }
 
-        public MatchResult Match(string input, int index)
-        {
-            var match = regex.Match(input, index);
+    public MatchResult Match(string input, int index)
+    {
+        var match = regex.Match(input, index);
 
-            if (match.Success)
-                return MatchResult.Succeed(match.Value);
+        if (match.Success)
+            return MatchResult.Succeed(match.Value);
 
-            return MatchResult.Fail;
-        }
+        return MatchResult.Fail;
+    }
 
-        public override string ToString()
-        {
-            return pattern;
-        }
+    public override string ToString()
+    {
+        return pattern;
     }
 }

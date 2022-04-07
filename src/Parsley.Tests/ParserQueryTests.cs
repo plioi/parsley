@@ -1,62 +1,61 @@
 using System.Globalization;
 
-namespace Parsley.Tests
+namespace Parsley.Tests;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+public class ParserQueryTests
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
+    static readonly IParser<string> Next = new LambdaParser<string>(tokens => new Parsed<string>(tokens.Current.Literal, tokens.Advance()));
 
-    public class ParserQueryTests
+    static IEnumerable<Token> Tokenize(string input) => new CharLexer().Tokenize(input);
+
+    public void CanBuildParserWhichSimulatesSuccessfulParsingOfGivenValueWithoutConsumingInput()
     {
-        static readonly IParser<string> Next = new LambdaParser<string>(tokens => new Parsed<string>(tokens.Current.Literal, tokens.Advance()));
+        var parser = 1.SucceedWithThisValue();
 
-        static IEnumerable<Token> Tokenize(string input) => new CharLexer().Tokenize(input);
+        parser.PartiallyParses(Tokenize("input")).LeavingUnparsedTokens("i", "n", "p", "u", "t").WithValue(1);
+    }
 
-        public void CanBuildParserWhichSimulatesSuccessfulParsingOfGivenValueWithoutConsumingInput()
-        {
-            var parser = 1.SucceedWithThisValue();
+    public void CanBuildParserFromSingleSimplerParser()
+    {
+        var parser = from x in Next
+            select x.ToUpper(CultureInfo.InvariantCulture);
 
-            parser.PartiallyParses(Tokenize("input")).LeavingUnparsedTokens("i", "n", "p", "u", "t").WithValue(1);
-        }
+        parser.PartiallyParses(Tokenize("xy")).LeavingUnparsedTokens("y").WithValue("X");
+    }
 
-        public void CanBuildParserFromSingleSimplerParser()
-        {
-            var parser = from x in Next
-                         select x.ToUpper(CultureInfo.InvariantCulture);
+    public void CanBuildParserFromOrderedSequenceOfSimplerParsers()
+    {
+        var parser = (from a in Next
+            from b in Next
+            from c in Next
+            select (a + b + c).ToUpper(CultureInfo.InvariantCulture));
 
-            parser.PartiallyParses(Tokenize("xy")).LeavingUnparsedTokens("y").WithValue("X");
-        }
+        parser.PartiallyParses(Tokenize("abcdef")).LeavingUnparsedTokens("d", "e", "f").WithValue("ABC");
+    }
 
-        public void CanBuildParserFromOrderedSequenceOfSimplerParsers()
-        {
-            var parser = (from a in Next
-                          from b in Next
-                          from c in Next
-                          select (a + b + c).ToUpper(CultureInfo.InvariantCulture));
+    public void PropogatesErrorsWithoutRunningRemainingParsers()
+    {
+        var Fail = Grammar.Fail<string>();
 
-            parser.PartiallyParses(Tokenize("abcdef")).LeavingUnparsedTokens("d", "e", "f").WithValue("ABC");
-        }
+        var tokens = Tokenize("xy").ToArray();
 
-        public void PropogatesErrorsWithoutRunningRemainingParsers()
-        {
-            var Fail = Grammar.Fail<string>();
+        (from _ in Fail
+            from x in Next
+            from y in Next
+            select Tuple.Create(x, y)).FailsToParse(tokens).LeavingUnparsedTokens("x", "y");
 
-            var tokens = Tokenize("xy").ToArray();
+        (from x in Next
+            from _ in Fail
+            from y in Next
+            select Tuple.Create(x, y)).FailsToParse(tokens).LeavingUnparsedTokens("y");
 
-            (from _ in Fail
-             from x in Next
-             from y in Next
-             select Tuple.Create(x, y)).FailsToParse(tokens).LeavingUnparsedTokens("x", "y");
-
-            (from x in Next
-             from _ in Fail
-             from y in Next
-             select Tuple.Create(x, y)).FailsToParse(tokens).LeavingUnparsedTokens("y");
-
-            (from x in Next
-             from y in Next
-             from _ in Fail
-             select Tuple.Create(x, y)).FailsToParse(tokens).AtEndOfInput();
-        }
+        (from x in Next
+            from y in Next
+            from _ in Fail
+            select Tuple.Create(x, y)).FailsToParse(tokens).AtEndOfInput();
     }
 }

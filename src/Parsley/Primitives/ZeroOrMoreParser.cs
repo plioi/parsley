@@ -1,42 +1,41 @@
-namespace Parsley.Primitives
+namespace Parsley.Primitives;
+
+using System;
+using System.Collections.Generic;
+
+internal class ZeroOrMoreParser<T> : IParser<IEnumerable<T>>
 {
-    using System;
-    using System.Collections.Generic;
+    private readonly IParser<T> item;
 
-    internal class ZeroOrMoreParser<T> : IParser<IEnumerable<T>>
+    public ZeroOrMoreParser(IParser<T> item)
     {
-        private readonly IParser<T> item;
+        this.item = item;
+    }
 
-        public ZeroOrMoreParser(IParser<T> item)
+    public Reply<IEnumerable<T>> Parse(TokenStream tokens)
+    {
+        var oldPosition = tokens.Position;
+        var reply = item.Parse(tokens);
+        var newPosition = reply.UnparsedTokens.Position;
+
+        var list = new List<T>();
+
+        while (reply.Success)
         {
-            this.item = item;
+            if (oldPosition == newPosition)
+                throw new Exception($"Parser encountered a potential infinite loop at position {newPosition}.");
+
+            list.Add(reply.Value);
+            oldPosition = newPosition;
+            reply = item.Parse(reply.UnparsedTokens);
+            newPosition = reply.UnparsedTokens.Position;
         }
 
-        public Reply<IEnumerable<T>> Parse(TokenStream tokens)
-        {
-            var oldPosition = tokens.Position;
-            var reply = item.Parse(tokens);
-            var newPosition = reply.UnparsedTokens.Position;
+        //The item parser finally failed.
 
-            var list = new List<T>();
+        if (oldPosition != newPosition)
+            return new Error<IEnumerable<T>>(reply.UnparsedTokens, reply.ErrorMessages);
 
-            while (reply.Success)
-            {
-                if (oldPosition == newPosition)
-                    throw new Exception($"Parser encountered a potential infinite loop at position {newPosition}.");
-
-                list.Add(reply.Value);
-                oldPosition = newPosition;
-                reply = item.Parse(reply.UnparsedTokens);
-                newPosition = reply.UnparsedTokens.Position;
-            }
-
-            //The item parser finally failed.
-
-            if (oldPosition != newPosition)
-                return new Error<IEnumerable<T>>(reply.UnparsedTokens, reply.ErrorMessages);
-
-            return new Parsed<IEnumerable<T>>(list, reply.UnparsedTokens, reply.ErrorMessages);
-        }
+        return new Parsed<IEnumerable<T>>(list, reply.UnparsedTokens, reply.ErrorMessages);
     }
 }

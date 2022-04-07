@@ -1,27 +1,26 @@
-namespace Parsley
+namespace Parsley;
+
+using System;
+
+public class GrammarRule<T> : IParser<T>
 {
-    using System;
+    private Func<TokenStream, Reply<T>> parse;
 
-    public class GrammarRule<T> : IParser<T>
+    public GrammarRule(string name = null)
     {
-        private Func<TokenStream, Reply<T>> parse;
+        Name = name;
+        parse = tokens => new Error<T>(tokens, new UndefinedGrammarRuleErrorMessage(Name));
+    }
 
-        public GrammarRule(string name = null)
-        {
-            Name = name;
-            parse = tokens => new Error<T>(tokens, new UndefinedGrammarRuleErrorMessage(Name));
-        }
+    public string Name { get; internal set; }
 
-        public string Name { get; internal set; }
+    public IParser<T> Rule
+    {
+        set { parse = value.Parse; }
+    }
 
-        public IParser<T> Rule
-        {
-            set { parse = value.Parse; }
-        }
-
-        public Reply<T> Parse(TokenStream tokens)
-        {
-            return parse(tokens);
-        }
+    public Reply<T> Parse(TokenStream tokens)
+    {
+        return parse(tokens);
     }
 }

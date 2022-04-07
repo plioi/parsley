@@ -1,8 +1,7 @@
-namespace Parsley.Tests
+namespace Parsley.Tests;
+
+public class CharLexer : Lexer
 {
-    public class CharLexer : Lexer
-    {
-        public CharLexer()
-            : base(new Pattern("Character", @".")) { }
-    }
+    public CharLexer()
+        : base(new Pattern("Character", @".")) { }
 }

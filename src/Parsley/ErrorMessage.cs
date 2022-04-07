@@ -1,76 +1,75 @@
-namespace Parsley
+namespace Parsley;
+
+public abstract class ErrorMessage
 {
-    public abstract class ErrorMessage
+    public static ErrorMessage Unknown()
+        => new UnknownErrorMessage();
+
+    public static ErrorMessage Expected(string expectation)
+        => new ExpectedErrorMessage(expectation);
+
+    public static ErrorMessage Backtrack(Position position, ErrorMessageList errors)
+        => new BacktrackErrorMessage(position, errors);
+}
+
+public class UndefinedGrammarRuleErrorMessage : ErrorMessage
+{
+    private readonly string grammarRuleName;
+
+    internal UndefinedGrammarRuleErrorMessage(string grammarRuleName)
     {
-        public static ErrorMessage Unknown()
-            => new UnknownErrorMessage();
-
-        public static ErrorMessage Expected(string expectation)
-            => new ExpectedErrorMessage(expectation);
-
-        public static ErrorMessage Backtrack(Position position, ErrorMessageList errors)
-            => new BacktrackErrorMessage(position, errors);
+        this.grammarRuleName = grammarRuleName;
     }
 
-    public class UndefinedGrammarRuleErrorMessage : ErrorMessage
+    public override string ToString()
     {
-        private readonly string grammarRuleName;
+        if (grammarRuleName == null)
+            return "An anonymous GrammarRule has not been initialized.  Try setting the Rule property.";
 
-        internal UndefinedGrammarRuleErrorMessage(string grammarRuleName)
-        {
-            this.grammarRuleName = grammarRuleName;
-        }
+        return $"GrammarRule '{grammarRuleName}' has not been initialized.  Try setting the Rule property.";
+    }
+}
 
-        public override string ToString()
-        {
-            if (grammarRuleName == null)
-                return "An anonymous GrammarRule has not been initialized.  Try setting the Rule property.";
+public class UnknownErrorMessage : ErrorMessage
+{
+    internal UnknownErrorMessage() { }
 
-            return $"GrammarRule '{grammarRuleName}' has not been initialized.  Try setting the Rule property.";
-        }
+    public override string ToString()
+        => "Parse error.";
+}
+
+/// <summary>
+/// Parsers report this when a specific expectation was not met at the current position.
+/// </summary>
+public class ExpectedErrorMessage : ErrorMessage
+{
+    internal ExpectedErrorMessage(string expectation)
+    {
+        Expectation = expectation;
     }
 
-    public class UnknownErrorMessage : ErrorMessage
-    {
-        internal UnknownErrorMessage() { }
+    public string Expectation { get; }
 
-        public override string ToString()
-            => "Parse error.";
+    public override string ToString()
+        => Expectation + " expected";
+}
+
+/// <summary>
+/// Parsers report this when they have backtracked after an error occurred.
+/// The Position property describes the position where the original error
+/// occurred.
+/// </summary>
+public class BacktrackErrorMessage : ErrorMessage
+{
+    internal BacktrackErrorMessage(Position position, ErrorMessageList errors)
+    {
+        Position = position;
+        Errors = errors;
     }
 
-    /// <summary>
-    /// Parsers report this when a specific expectation was not met at the current position.
-    /// </summary>
-    public class ExpectedErrorMessage : ErrorMessage
-    {
-        internal ExpectedErrorMessage(string expectation)
-        {
-            Expectation = expectation;
-        }
+    public Position Position { get; }
+    public ErrorMessageList Errors { get; }
 
-        public string Expectation { get; }
-
-        public override string ToString()
-            => Expectation + " expected";
-    }
-
-    /// <summary>
-    /// Parsers report this when they have backtracked after an error occurred.
-    /// The Position property describes the position where the original error
-    /// occurred.
-    /// </summary>
-    public class BacktrackErrorMessage : ErrorMessage
-    {
-        internal BacktrackErrorMessage(Position position, ErrorMessageList errors)
-        {
-            Position = position;
-            Errors = errors;
-        }
-
-        public Position Position { get; }
-        public ErrorMessageList Errors { get; }
-
-        public override string ToString()
-            => $"{Position}: {Errors}";
-    }
+    public override string ToString()
+        => $"{Position}: {Errors}";
 }

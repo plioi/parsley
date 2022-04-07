@@ -1,20 +1,19 @@
-namespace Parsley.Primitives
+namespace Parsley.Primitives;
+
+internal class TokenByLiteralParser : IParser<Token>
 {
-    internal class TokenByLiteralParser : IParser<Token>
+    private readonly string expectation;
+
+    public TokenByLiteralParser(string expectation)
     {
-        private readonly string expectation;
+        this.expectation = expectation;
+    }
 
-        public TokenByLiteralParser(string expectation)
-        {
-            this.expectation = expectation;
-        }
+    public Reply<Token> Parse(TokenStream tokens)
+    {
+        if (tokens.Current.Literal == expectation)
+            return new Parsed<Token>(tokens.Current, tokens.Advance());
 
-        public Reply<Token> Parse(TokenStream tokens)
-        {
-            if (tokens.Current.Literal == expectation)
-                return new Parsed<Token>(tokens.Current, tokens.Advance());
-
-            return new Error<Token>(tokens, ErrorMessage.Expected(expectation));
-        }
+        return new Error<Token>(tokens, ErrorMessage.Expected(expectation));
     }
 }
