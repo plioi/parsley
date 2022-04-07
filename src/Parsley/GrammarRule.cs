@@ -18,7 +18,5 @@ public class GrammarRule<T> : IParser<T>
     }
 
     public Reply<T> Parse(TokenStream tokens)
-    {
-        return parse(tokens);
-    }
+        => parse(tokens);
 }

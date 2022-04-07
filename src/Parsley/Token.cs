@@ -14,7 +14,5 @@ public class Token
     }
 
     public override string ToString()
-    {
-        return $"Kind: {Kind}, Position: {Position}, Literal: {Literal}";
-    }
+        => $"Kind: {Kind}, Position: {Position}, Literal: {Literal}";
 }

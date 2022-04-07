@@ -28,25 +28,13 @@ public abstract class Grammar
         }
     }
 
-    public static IParser<T> Fail<T>()
-    {
-        return new FailingParser<T>();
-    }
+    public static IParser<T> Fail<T>() => new FailingParser<T>();
 
-    public static IParser<Token> EndOfInput
-    {
-        get { return Token(TokenKind.EndOfInput); }
-    }
+    public static IParser<Token> EndOfInput => Token(TokenKind.EndOfInput);
 
-    public static IParser<Token> Token(TokenKind kind)
-    {
-        return new TokenByKindParser(kind);
-    }
+    public static IParser<Token> Token(TokenKind kind) => new TokenByKindParser(kind);
 
-    public static IParser<Token> Token(string expectation)
-    {
-        return new TokenByLiteralParser(expectation);
-    }
+    public static IParser<Token> Token(string expectation) => new TokenByLiteralParser(expectation);
 
     /// <summary>
     /// ZeroOrMore(p) repeatedly applies an parser p until it fails, returing

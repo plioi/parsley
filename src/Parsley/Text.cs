@@ -21,11 +21,9 @@ public class Text
     }
 
     public string Peek(int characters)
-    {
-        return index + characters >= input.Length
+        => index + characters >= input.Length
             ? input.Substring(index)
             : input.Substring(index, characters);
-    }
 
     public Text Advance(int characters)
     {
@@ -38,15 +36,9 @@ public class Text
         return new Text(input, newIndex, newLineNumber);
     }
 
-    public bool EndOfInput
-    {
-        get { return index >= input.Length; }
-    }
+    public bool EndOfInput => index >= input.Length;
 
-    public MatchResult Match(TokenRegex regex)
-    {
-        return regex.Match(input, index);
-    }
+    public MatchResult Match(TokenRegex regex) => regex.Match(input, index);
 
     public MatchResult Match(Predicate<char> test)
     {
@@ -76,17 +68,11 @@ public class Text
     }
 
     public Position Position
-    {
-        get { return new Position(line, Column); }
-    }
+        => new Position(line, Column);
 
     public override string ToString()
-    {
-        return input.Substring(index);
-    }
+        => input.Substring(index);
 
     static string NormalizeLineEndings(string input)
-    {
-        return input.Replace("\r\n", "\n").Replace('\r', '\n');
-    }
+        => input.Replace("\r\n", "\n").Replace('\r', '\n');
 }

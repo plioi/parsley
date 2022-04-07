@@ -31,7 +31,5 @@ public class TokenRegex
     }
 
     public override string ToString()
-    {
-        return pattern;
-    }
+        => pattern;
 }

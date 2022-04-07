@@ -31,14 +31,10 @@ class GrammarTests : Grammar
     }
 
     static Action<Token> Literal(string expectedLiteral)
-    {
-        return t => t.Literal.ShouldBe(expectedLiteral);
-    }
+        => t => t.Literal.ShouldBe(expectedLiteral);
 
     static Action<IEnumerable<Token>> Literals(params string[] expectedLiterals)
-    {
-        return tokens => tokens.ShouldList(expectedLiterals.Select(Literal).ToArray());
-    }
+        => tokens => tokens.ShouldList(expectedLiterals.Select(Literal).ToArray());
 
     public void CanFailWithoutConsumingInput()
     {
@@ -214,9 +210,7 @@ public class AlternationTests : Grammar
     }
 
     static Action<Token> Literal(string expectedLiteral)
-    {
-        return t => t.Literal.ShouldBe(expectedLiteral);
-    }
+        => t => t.Literal.ShouldBe(expectedLiteral);
 
     public void ChoosingBetweenZeroAlternativesAlwaysFails()
     {

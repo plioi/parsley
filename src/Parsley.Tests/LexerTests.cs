@@ -14,9 +14,7 @@ class LexerTests
     }
 
     IEnumerable<Token> Tokenize(string input)
-    {
-        return new Lexer(lower, upper, space).Tokenize(input);
-    }
+        => new Lexer(lower, upper, space).Tokenize(input);
 
     public void ProvidesEmptyEnumerableForEmptyText()
     {

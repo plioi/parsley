@@ -32,20 +32,11 @@ public abstract class TokenKind
 
     protected abstract MatchResult Match(Text text);
 
-    public string Name
-    {
-        get { return name; }
-    }
+    public string Name => name;
 
-    public bool Skippable
-    {
-        get { return skippable;}
-    }
+    public bool Skippable => skippable;
 
-    public override string ToString()
-    {
-        return name;
-    }
+    public override string ToString() => name;
 }
 
 public class Pattern : TokenKind
@@ -64,9 +55,7 @@ public class Pattern : TokenKind
     }
 
     protected override MatchResult Match(Text text)
-    {
-        return text.Match(regex);
-    }
+        => text.Match(regex);
 }
 
 public class Keyword : Pattern
@@ -106,7 +95,5 @@ public class Empty : TokenKind
         : base(name) { }
 
     protected override MatchResult Match(Text text)
-    {
-        return MatchResult.Fail;
-    }
+        => MatchResult.Fail;
 }

@@ -12,12 +12,8 @@ public class Position : Value<Position>
     }
 
     protected override object[] ImmutableFields()
-    {
-        return new object[] {Line, Column};
-    }
+        => new object[] {Line, Column};
 
     public override string  ToString()
-    {
-        return $"({Line}, {Column})";
-    }
+        => $"({Line}, {Column})";
 }

@@ -112,9 +112,7 @@ class OperatorPrecedenceParserTests : Grammar
     }
 
     static IEnumerable<Token> Tokenize(string input)
-    {
-        return new SampleLexer().Tokenize(input);
-    }
+        => new SampleLexer().Tokenize(input);
 
     class SampleLexer : Lexer
     {
@@ -146,14 +144,10 @@ class OperatorPrecedenceParserTests : Grammar
         readonly int value;
 
         public Constant(int value)
-        {
-            this.value = value;
-        }
+            => this.value = value;
 
         public override string ToString()
-        {
-            return value.ToString(CultureInfo.InvariantCulture);
-        }
+            => value.ToString(CultureInfo.InvariantCulture);
     }
 
     class Identifier : IExpression
@@ -161,14 +155,10 @@ class OperatorPrecedenceParserTests : Grammar
         readonly string identifier;
 
         public Identifier(string identifier)
-        {
-            this.identifier = identifier;
-        }
+            => this.identifier = identifier;
 
         public override string ToString()
-        {
-            return identifier;
-        }
+            => identifier;
     }
 
     class Form : IExpression
@@ -189,8 +179,6 @@ class OperatorPrecedenceParserTests : Grammar
         }
 
         public override string ToString()
-        {
-            return "(" + head + " " + string.Join(" ", expressions) + ")";
-        }
+            => "(" + head + " " + string.Join(" ", expressions) + ")";
     }
 }
