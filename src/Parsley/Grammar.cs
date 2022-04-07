@@ -10,7 +10,7 @@ public static class Grammar
 
     public static IParser<Token> Token(TokenKind kind) => new TokenByKindParser(kind);
 
-    public static IParser<Token> Token(string expectation) => new TokenByLiteralParser(expectation);
+    public static IParser<Token> Token(TokenKind kind, string expectation) => new TokenByLiteralParser(kind, expectation);
 
     /// <summary>
     /// ZeroOrMore(p) repeatedly applies an parser p until it fails, returing

@@ -7,13 +7,14 @@ class GrammarRuleTests
     public void CanDefineMutuallyRecursiveRules()
     {
         var tokens = new CharLexer().Tokenize("(A)");
+        var kind = CharLexer.Character;
         var expression = new GrammarRule<string>();
         var alpha = new GrammarRule<string>();
         var parenthesizedExpresion = new GrammarRule<string>();
 
         expression.Rule = Choice(alpha, parenthesizedExpresion);
-        alpha.Rule = from a in Token("A") select a.Literal;
-        parenthesizedExpresion.Rule = Between(Token("("), expression, Token(")"));
+        alpha.Rule = from a in Token(kind, "A") select a.Literal;
+        parenthesizedExpresion.Rule = Between(Token(kind, "("), expression, Token(kind, ")"));
 
         expression.Parses(tokens).WithValue("A");
     }

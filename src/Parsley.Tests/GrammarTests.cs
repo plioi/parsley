@@ -20,14 +20,14 @@ class GrammarTests
 
     public GrammarTests()
     {
-        A = Token("A");
-        B = Token("B");
+        A = Token(SampleLexer.Letter, "A");
+        B = Token(SampleLexer.Letter, "B");
 
         AB = from a in A
             from b in B
             select new Token(null, a.Position, a.Literal + b.Literal);
 
-        COMMA = Token(",");
+        COMMA = Token(SampleLexer.Symbol, ",");
     }
 
     static Action<Token> Literal(string expectedLiteral)
@@ -58,9 +58,9 @@ class GrammarTests
 
     public void CanDemandThatAGivenTokenLiteralAppearsNext()
     {
-        Token("A").Parses(Tokenize("A")).WithValue(Literal("A"));
-        Token("A").PartiallyParses(Tokenize("A!")).LeavingUnparsedInput("!").WithValue(Literal("A"));
-        Token("A").FailsToParse(Tokenize("B")).LeavingUnparsedInput("B").WithMessage("(1, 1): A expected");
+        Token(SampleLexer.Letter, "A").Parses(Tokenize("A")).WithValue(Literal("A"));
+        Token(SampleLexer.Letter, "A").PartiallyParses(Tokenize("A!")).LeavingUnparsedInput("!").WithValue(Literal("A"));
+        Token(SampleLexer.Letter, "A").FailsToParse(Tokenize("B")).LeavingUnparsedInput("B").WithMessage("(1, 1): A expected");
     }
 
     public void ApplyingARuleZeroOrMoreTimes()
@@ -204,9 +204,10 @@ public class AlternationTests
 
     public AlternationTests()
     {
-        A = Token("A");
-        B = Token("B");
-        C = Token("C");
+        var kind = CharLexer.Character;
+        A = Token(kind, "A");
+        B = Token(kind,"B");
+        C = Token(kind,"C");
     }
 
     static Action<Token> Literal(string expectedLiteral)
