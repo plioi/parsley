@@ -26,13 +26,13 @@ class TokenKindTests
     public void ProducesTokenUponSuccessfulMatch()
     {
         lower.TryMatch(abcDEF, out var token).ShouldBeTrue();
-        token.ShouldBe(lower, "abc", 1, 1);
+        token.ShouldBe(lower, "abc");
 
         upper.TryMatch(abcDEF.Advance(3), out token).ShouldBeTrue();
-        token.ShouldBe(upper, "DEF", 1, 4);
+        token.ShouldBe(upper, "DEF");
 
         caseInsensitive.TryMatch(abcDEF, out token).ShouldBeTrue();
-        token.ShouldBe(caseInsensitive, "abcDEF", 1, 1);
+        token.ShouldBe(caseInsensitive, "abcDEF");
     }
 
     public void HasDescriptiveName()
@@ -59,10 +59,10 @@ class TokenKindTests
         token.ShouldBeNull();
 
         foo.TryMatch(new Text("foo"), out token).ShouldBeTrue();
-        token.ShouldBe(foo, "foo", 1, 1);
+        token.ShouldBe(foo, "foo");
 
         foo.TryMatch(new Text("foo bar"), out token).ShouldBeTrue();
-        token.ShouldBe(foo, "foo", 1, 1);
+        token.ShouldBe(foo, "foo");
 
         foo.TryMatch(new Text("foobar"), out token).ShouldBeFalse();
         token.ShouldBeNull();
@@ -82,13 +82,13 @@ class TokenKindTests
         token.ShouldBeNull();
 
         star.TryMatch(new Text("*"), out token).ShouldBeTrue();
-        token.ShouldBe(star, "*", 1, 1);
+        token.ShouldBe(star, "*");
 
         star.TryMatch(new Text("* *"), out token).ShouldBeTrue();
-        token.ShouldBe(star, "*", 1, 1);
+        token.ShouldBe(star, "*");
 
         star.TryMatch(new Text("**"), out token).ShouldBeTrue();
-        token.ShouldBe(star, "*", 1, 1);
+        token.ShouldBe(star, "*");
 
         doubleStar.Name.ShouldBe("**");
 
@@ -102,7 +102,7 @@ class TokenKindTests
         token.ShouldBeNull();
 
         doubleStar.TryMatch(new Text("**"), out token).ShouldBeTrue();
-        token.ShouldBe(doubleStar, "**", 1, 1);
+        token.ShouldBe(doubleStar, "**");
     }
 
     public void ProvidesConvenienceSubclassForTokensThatDoNotMatchLiteralsFromTheInput()

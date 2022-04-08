@@ -24,16 +24,16 @@ class LexerTests
     public void UsesPrioritizedTokenMatchersToTokenize()
     {
         Tokenize("ABCdefGHI")
-            .ShouldList(t => t.ShouldBe(upper, "ABC", 1, 1),
-                t => t.ShouldBe(lower, "def", 1, 4),
-                t => t.ShouldBe(upper, "GHI", 1, 7));
+            .ShouldList(t => t.ShouldBe(upper, "ABC"),
+                t => t.ShouldBe(lower, "def"),
+                t => t.ShouldBe(upper, "GHI"));
     }
 
     public void ProvidesTokenAtUnrecognizedInput()
     {
         Tokenize("ABC!def")
-            .ShouldList(t => t.ShouldBe(upper, "ABC", 1, 1),
-                t => t.ShouldBe(TokenKind.Unknown, "!def", 1, 4));
+            .ShouldList(t => t.ShouldBe(upper, "ABC"),
+                t => t.ShouldBe(TokenKind.Unknown, "!def"));
     }
 
     public void SkipsPastSkippableTokens()
@@ -41,9 +41,9 @@ class LexerTests
         Tokenize(" ").ShouldBeEmpty();
 
         Tokenize(" ABC  def   GHI    jkl  ")
-            .ShouldList(t => t.ShouldBe(upper, "ABC", 1, 2),
-                t => t.ShouldBe(lower, "def", 1, 7),
-                t => t.ShouldBe(upper, "GHI", 1, 13),
-                t => t.ShouldBe(lower, "jkl", 1, 20));
+            .ShouldList(t => t.ShouldBe(upper, "ABC"),
+                t => t.ShouldBe(lower, "def"),
+                t => t.ShouldBe(upper, "GHI"),
+                t => t.ShouldBe(lower, "jkl"));
     }
 }

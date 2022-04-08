@@ -33,20 +33,20 @@ class InputTests
     {
         var input = new Input(Empty());
 
-        input.Current.ShouldBe(TokenKind.EndOfInput, "", 1, 1);
+        input.Current.ShouldBe(TokenKind.EndOfInput, "");
         input.Advance().ShouldBeSameAs(input);
     }
 
     public void ProvidesCurrentToken()
     {
         var input = new Input(Tokens());
-        input.Current.ShouldBe(upper, "ABC", 1, 1);
+        input.Current.ShouldBe(upper, "ABC");
     }
 
     public void AdvancesToTheNextToken()
     {
         var input = new Input(Tokens());
-        input.Advance().Current.ShouldBe(lower, "def", 1, 4);
+        input.Advance().Current.ShouldBe(lower, "def");
     }
 
     public void ProvidesEndOfInputTokenAfterEnumeratorIsExhausted()
@@ -54,7 +54,7 @@ class InputTests
         var input = new Input(OneToken());
         var end = input.Advance();
 
-        end.Current.ShouldBe(TokenKind.EndOfInput, "", 1, 4);
+        end.Current.ShouldBe(TokenKind.EndOfInput, "");
         end.Advance().ShouldBeSameAs(end);
     }
 
@@ -70,22 +70,22 @@ class InputTests
             
         var first = input;
 
-        first.Current.ShouldBe(upper, "ABC", 1, 1);
+        first.Current.ShouldBe(upper, "ABC");
 
         var second = first.Advance();
-        first.Current.ShouldBe(upper, "ABC", 1, 1);
-        second.Current.ShouldBe(lower, "def", 1, 4);
+        first.Current.ShouldBe(upper, "ABC");
+        second.Current.ShouldBe(lower, "def");
 
         var third = second.Advance();
-        first.Current.ShouldBe(upper, "ABC", 1, 1);
-        second.Current.ShouldBe(lower, "def", 1, 4);
-        third.Current.ShouldBe(upper, "GHI", 1, 7);
+        first.Current.ShouldBe(upper, "ABC");
+        second.Current.ShouldBe(lower, "def");
+        third.Current.ShouldBe(upper, "GHI");
 
         var fourth = third.Advance();
-        first.Current.ShouldBe(upper, "ABC", 1, 1);
-        second.Current.ShouldBe(lower, "def", 1, 4);
-        third.Current.ShouldBe(upper, "GHI", 1, 7);
-        fourth.Current.ShouldBe(TokenKind.EndOfInput, "", 1, 10);
+        first.Current.ShouldBe(upper, "ABC");
+        second.Current.ShouldBe(lower, "def");
+        third.Current.ShouldBe(upper, "GHI");
+        fourth.Current.ShouldBe(TokenKind.EndOfInput, "");
 
         fourth.Advance().ShouldBeSameAs(fourth);
     }
@@ -94,16 +94,16 @@ class InputTests
     {
         var input = new Input(Tokens());
 
-        input.Current.ShouldBe(upper, "ABC", 1, 1);
+        input.Current.ShouldBe(upper, "ABC");
 
-        input.Advance().Current.ShouldBe(lower, "def", 1, 4);
-        input.Advance().Current.ShouldBe(lower, "def", 1, 4);
+        input.Advance().Current.ShouldBe(lower, "def");
+        input.Advance().Current.ShouldBe(lower, "def");
 
-        input.Advance().Advance().Current.ShouldBe(upper, "GHI", 1, 7);
-        input.Advance().Advance().Current.ShouldBe(upper, "GHI", 1, 7);
+        input.Advance().Advance().Current.ShouldBe(upper, "GHI");
+        input.Advance().Advance().Current.ShouldBe(upper, "GHI");
 
-        input.Advance().Advance().Advance().Current.ShouldBe(TokenKind.EndOfInput, "", 1, 10);
-        input.Advance().Advance().Advance().Current.ShouldBe(TokenKind.EndOfInput, "", 1, 10);
+        input.Advance().Advance().Advance().Current.ShouldBe(TokenKind.EndOfInput, "");
+        input.Advance().Advance().Advance().Current.ShouldBe(TokenKind.EndOfInput, "");
     }
 
     public void ProvidesPositionOfCurrentToken()

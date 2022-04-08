@@ -20,9 +20,9 @@ class JsonLexerTests
         Tokenize("false").Single().ShouldBe(JsonLexer.@false, "false");
 
         Tokenize("null true false")
-            .ShouldList(t => t.ShouldBe(JsonLexer.@null, "null", 1, 1),
-                t => t.ShouldBe(JsonLexer.@true, "true", 1, 6),
-                t => t.ShouldBe(JsonLexer.@false, "false", 1, 11));
+            .ShouldList(t => t.ShouldBe(JsonLexer.@null, "null"),
+                t => t.ShouldBe(JsonLexer.@true, "true"),
+                t => t.ShouldBe(JsonLexer.@false, "false"));
     }
 
     public void RecognizesOperators()
@@ -35,12 +35,12 @@ class JsonLexerTests
         Tokenize(":").Single().ShouldBe(JsonLexer.Colon, ":");
 
         Tokenize(",[]{}:")
-            .ShouldList(t => t.ShouldBe(JsonLexer.Comma, ",", 1, 1),
-                t => t.ShouldBe(JsonLexer.OpenArray, "[", 1, 2),
-                t => t.ShouldBe(JsonLexer.CloseArray, "]", 1, 3),
-                t => t.ShouldBe(JsonLexer.OpenDictionary, "{", 1, 4),
-                t => t.ShouldBe(JsonLexer.CloseDictionary, "}", 1, 5),
-                t => t.ShouldBe(JsonLexer.Colon, ":", 1, 6));
+            .ShouldList(t => t.ShouldBe(JsonLexer.Comma, ","),
+                t => t.ShouldBe(JsonLexer.OpenArray, "["),
+                t => t.ShouldBe(JsonLexer.CloseArray, "]"),
+                t => t.ShouldBe(JsonLexer.OpenDictionary, "{"),
+                t => t.ShouldBe(JsonLexer.CloseDictionary, "}"),
+                t => t.ShouldBe(JsonLexer.Colon, ":"));
     }
 
     public void RecognizesQuotations()
@@ -59,9 +59,9 @@ class JsonLexerTests
         Tokenize("\"abc \\u005C def\"").Single().ShouldBe(JsonLexer.Quotation, "\"abc \\u005C def\"");
 
         Tokenize("\" a \" \" b \" \" c \"")
-            .ShouldList(t => t.ShouldBe(JsonLexer.Quotation, "\" a \"", 1, 1),
-                t => t.ShouldBe(JsonLexer.Quotation, "\" b \"", 1, 7),
-                t => t.ShouldBe(JsonLexer.Quotation, "\" c \"", 1, 13));
+            .ShouldList(t => t.ShouldBe(JsonLexer.Quotation, "\" a \""),
+                t => t.ShouldBe(JsonLexer.Quotation, "\" b \""),
+                t => t.ShouldBe(JsonLexer.Quotation, "\" c \""));
     }
 
     public void RecognizesNumbers()
@@ -81,9 +81,9 @@ class JsonLexerTests
         Tokenize("10.123e11").Single().ShouldBe(JsonLexer.Number, "10.123e11");
 
         Tokenize("0 12 3e4 5E+67")
-            .ShouldList(t => t.ShouldBe(JsonLexer.Number, "0", 1, 1),
-                t => t.ShouldBe(JsonLexer.Number, "12", 1, 3),
-                t => t.ShouldBe(JsonLexer.Number, "3e4", 1, 6),
-                t => t.ShouldBe(JsonLexer.Number, "5E+67", 1, 10));
+            .ShouldList(t => t.ShouldBe(JsonLexer.Number, "0"),
+                t => t.ShouldBe(JsonLexer.Number, "12"),
+                t => t.ShouldBe(JsonLexer.Number, "3e4"),
+                t => t.ShouldBe(JsonLexer.Number, "5E+67"));
     }
 }

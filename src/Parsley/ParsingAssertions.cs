@@ -22,16 +22,6 @@ public static class ParsingAssertions
             throw new AssertionException(expected, actual.Value);
     }
 
-    public static void ShouldBe(this Token actual, TokenKind expectedKind, string expectedLiteral, int expectedLine, int expectedColumn)
-    {
-        actual.ShouldBe(expectedKind, expectedLiteral);
-
-        var expectedPosition = new Position(expectedLine, expectedColumn);
-        if (actual.Position != expectedPosition)
-            throw new AssertionException("token at position " + expectedPosition,
-                "token at position " + actual.Position);
-    }
-
     public static void ShouldBe(this Token actual, TokenKind expectedKind, string expectedLiteral)
     {
         AssertEqual(expectedKind, actual.Kind);
