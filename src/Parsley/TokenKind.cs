@@ -8,12 +8,10 @@ public abstract class TokenKind
     public static readonly TokenKind Unknown = new Pattern("Unknown", @".+");
 
     readonly string name;
-    readonly bool skippable;
 
-    protected TokenKind(string name, bool skippable = false)
+    protected TokenKind(string name)
     {
         this.name = name;
-        this.skippable = skippable;
     }
 
     public bool TryMatch(Text text, out Token token)
@@ -34,8 +32,6 @@ public abstract class TokenKind
 
     public string Name => name;
 
-    public bool Skippable => skippable;
-
     public override string ToString() => name;
 }
 
@@ -44,12 +40,7 @@ public class Pattern : TokenKind
     readonly TokenRegex regex;
 
     public Pattern(string name, string pattern, params RegexOptions[] regexOptions)
-        : this(name, pattern, false, regexOptions)
-    {
-    }
-
-    public Pattern(string name, string pattern, bool skippable, params RegexOptions[] regexOptions)
-        : base(name, skippable)
+        : base(name)
     {
         regex = new TokenRegex(pattern, regexOptions);
     }

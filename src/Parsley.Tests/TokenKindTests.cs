@@ -110,7 +110,6 @@ class TokenKindTests
         TokenKind.EndOfInput.ShouldBeOfType<Empty>();
 
         TokenKind.EndOfInput.Name.ShouldBe("end of input");
-        TokenKind.EndOfInput.Skippable.ShouldBeFalse();
 
         TokenKind.EndOfInput.TryMatch(new Text(""), out var token).ShouldBeTrue();
         token.ShouldBe(TokenKind.EndOfInput, "");

@@ -6,7 +6,7 @@ namespace Parsley.Tests.IntegrationTests.Json;
 
 public class JsonGrammar
 {
-    static readonly TokenKind WhitespaceLiteral = new Pattern("whitespace", @"\s+", skippable: true);
+    static readonly TokenKind WhitespaceLiteral = new Pattern("whitespace", @"\s+");
     static readonly Keyword @null = new("null");
     static readonly Keyword @true = new("true");
     static readonly Keyword @false = new("false");
