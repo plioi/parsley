@@ -6,7 +6,7 @@ namespace Parsley.Tests.IntegrationTests.Json;
 
 public class JsonGrammar
 {
-    static readonly TokenKind WhitespaceLiteral = new Pattern("whitespace", @"\s+");
+    static readonly Pattern WhitespaceLiteral = new("whitespace", @"\s+");
     static readonly Keyword @null = new("null");
     static readonly Keyword @true = new("true");
     static readonly Keyword @false = new("false");
@@ -17,7 +17,7 @@ public class JsonGrammar
     static readonly Operator CloseDictionary = new("}");
     static readonly Operator Colon = new(":");
 
-    static readonly TokenKind StringLiteral = new Pattern("string", @"
+    static readonly Pattern StringLiteral = new("string", @"
             # Open quote:
             ""
 
@@ -32,7 +32,7 @@ public class JsonGrammar
             ""
         ");
 
-    static readonly TokenKind NumberLiteral = new Pattern("number", @"
+    static readonly Pattern NumberLiteral = new("number", @"
             # Look-ahead to confirm the whole-number part is either 0 or starts with 1-9:
             (?=
                 0(?!\d)  |  [1-9]

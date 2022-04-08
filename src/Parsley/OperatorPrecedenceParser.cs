@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using static Parsley.Grammar;
 
 namespace Parsley;

@@ -4,9 +4,9 @@ namespace Parsley.Tests;
 
 class GrammarTests
 {
-    static readonly TokenKind Digit = new Pattern("Digit", @"[0-9]");
-    static readonly TokenKind Letter = new Pattern("Letter", @"[a-zA-Z]");
-    static readonly TokenKind Symbol = new Pattern("Symbol", @".");
+    static readonly Pattern Digit = new("Digit", @"[0-9]");
+    static readonly Pattern Letter = new("Letter", @"[a-zA-Z]");
+    static readonly Pattern Symbol = new("Symbol", @".");
 
     readonly IParser<Token> A, B, AB, COMMA;
 

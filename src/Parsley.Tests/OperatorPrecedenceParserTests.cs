@@ -112,18 +112,18 @@ class OperatorPrecedenceParserTests
         expression.Parses(input).WithValue(e => e.ToString().ShouldBe(expectedTree));
     }
 
-    static readonly TokenKind Digit = new Pattern("Digit", @"[0-9]");
-    static readonly TokenKind Name = new Pattern("Name", @"[a-z]+");
-    static readonly TokenKind Increment = new Operator("++");
-    static readonly TokenKind Decrement = new Operator("--");
-    static readonly TokenKind Add = new Operator("+");
-    static readonly TokenKind Subtract = new Operator("-");
-    static readonly TokenKind Multiply = new Operator("*");
-    static readonly TokenKind Divide = new Operator("/");
-    static readonly TokenKind Exponent = new Operator("^");
-    static readonly TokenKind LeftParen = new Operator("(");
-    static readonly TokenKind RightParen = new Operator(")");
-    static readonly TokenKind Comma = new Operator(",");
+    static readonly Pattern Digit = new("Digit", @"[0-9]");
+    static readonly Pattern Name = new("Name", @"[a-z]+");
+    static readonly Operator Increment = new("++");
+    static readonly Operator Decrement = new("--");
+    static readonly Operator Add = new("+");
+    static readonly Operator Subtract = new("-");
+    static readonly Operator Multiply = new("*");
+    static readonly Operator Divide = new("/");
+    static readonly Operator Exponent = new("^");
+    static readonly Operator LeftParen = new("(");
+    static readonly Operator RightParen = new(")");
+    static readonly Operator Comma = new(",");
 
     interface IExpression
     {
