@@ -6,20 +6,19 @@ class GrammarTests
 {
     static readonly Pattern Digit = new("Digit", @"[0-9]");
     static readonly Pattern Letter = new("Letter", @"[a-zA-Z]");
-    static readonly Pattern Symbol = new("Symbol", @".");
 
     readonly IParser<Token> A, B, AB, COMMA;
 
     public GrammarTests()
     {
-        A = Token(Letter, "A");
-        B = Token(Letter, "B");
+        A = new Pattern("A", @"A");
+        B = new Pattern("B", @"B");
 
         AB = from a in A
             from b in B
             select new Token(null, a.Literal + b.Literal);
 
-        COMMA = Token(Symbol, ",");
+        COMMA = new Pattern("COMMA", @",");
     }
 
     static Action<Token> Literal(string expectedLiteral)
@@ -41,18 +40,18 @@ class GrammarTests
 
     public void CanDemandThatAGivenKindOfTokenAppearsNext()
     {
-        Token(Letter).Parses("A").WithValue(Literal("A"));
-        Token(Letter).FailsToParse("0").LeavingUnparsedInput("0").WithMessage("(1, 1): Letter expected");
+        Letter.Parses("A").WithValue(Literal("A"));
+        Letter.FailsToParse("0").LeavingUnparsedInput("0").WithMessage("(1, 1): Letter expected");
 
-        Token(Digit).FailsToParse("A").LeavingUnparsedInput("A").WithMessage("(1, 1): Digit expected");
-        Token(Digit).Parses("0").WithValue(Literal("0"));
+        Digit.FailsToParse("A").LeavingUnparsedInput("A").WithMessage("(1, 1): Digit expected");
+        Digit.Parses("0").WithValue(Literal("0"));
     }
 
     public void CanDemandThatAGivenTokenLiteralAppearsNext()
     {
-        Token(Letter, "A").Parses("A").WithValue(Literal("A"));
-        Token(Letter, "A").PartiallyParses("A!").LeavingUnparsedInput("!").WithValue(Literal("A"));
-        Token(Letter, "A").FailsToParse("B").LeavingUnparsedInput("B").WithMessage("(1, 1): A expected");
+        A.Parses("A").WithValue(Literal("A"));
+        A.PartiallyParses("A!").LeavingUnparsedInput("!").WithValue(Literal("A"));
+        A.FailsToParse("B").LeavingUnparsedInput("B").WithMessage("(1, 1): A expected");
     }
 
     public void ApplyingARuleZeroOrMoreTimes()
@@ -194,10 +193,9 @@ public class AlternationTests
 
     public AlternationTests()
     {
-        var kind = new Pattern("Character", @".");
-        A = Token(kind, "A");
-        B = Token(kind, "B");
-        C = Token(kind, "C");
+        A = new Pattern("A", @"A");
+        B = new Pattern("B", @"B");
+        C = new Pattern("C", @"C");
     }
 
     static Action<Token> Literal(string expectedLiteral)

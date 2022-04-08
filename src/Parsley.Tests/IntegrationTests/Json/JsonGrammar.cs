@@ -67,7 +67,7 @@ public class JsonGrammar
     static JsonGrammar()
     {
         Whitespace.Rule =
-            Optional(Token(WhitespaceLiteral));
+            Optional(WhitespaceLiteral);
 
         True.Rule =
             Keyword(@true, true);
@@ -79,12 +79,12 @@ public class JsonGrammar
             Keyword(@null, null);
 
         Number.Rule =
-            from number in Token(NumberLiteral)
+            from number in NumberLiteral
             from trailing in Whitespace
             select (object) decimal.Parse(number.Literal, NumberStyles.Any, CultureInfo.InvariantCulture);
 
         String.Rule =
-            from quotation in Token(StringLiteral)
+            from quotation in StringLiteral
             from trailing in Whitespace
             select Unescape(quotation.Literal);
 
@@ -114,14 +114,14 @@ public class JsonGrammar
 
     static IParser<object> Keyword(Keyword keyword, object constant)
     {
-        return from _ in Token(keyword)
+        return from _ in keyword
             from trailing in Whitespace
             select constant;
     }
 
     static IParser<object> Operator(Operator @operator)
     {
-        return from symbol in Token(@operator)
+        return from symbol in @operator
             from trailing in Whitespace
             select symbol;
     }

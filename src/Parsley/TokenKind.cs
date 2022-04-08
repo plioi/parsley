@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace Parsley;
 
-public abstract class TokenKind
+public abstract class TokenKind : IParser<Token>
 {
     public static readonly TokenKind EndOfInput = new Empty("end of input");
 
@@ -11,6 +11,14 @@ public abstract class TokenKind
     protected TokenKind(string name)
     {
         this.name = name;
+    }
+
+    public Reply<Token> Parse(Text input)
+    {
+        if (TryMatch(input, out var token))
+            return new Parsed<Token>(token, input.Advance(token.Literal.Length));
+
+        return new Error<Token>(input, ErrorMessage.Expected(name));
     }
 
     public bool TryMatch(Text text, out Token token)

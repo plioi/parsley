@@ -21,13 +21,13 @@ public class OperatorPrecedenceParser<T> : IParser<T>
 
     public void Atom(TokenKind kind, AtomNodeBuilder<T> createAtomNode)
     {
-        Unit(kind, from token in Token(kind)
+        Unit(kind, from token in kind
             select createAtomNode(token));
     }
 
     public void Prefix(TokenKind operation, int precedence, UnaryNodeBuilder<T> createUnaryNode)
     {
-        Unit(operation, from symbol in Token(operation)
+        Unit(operation, from symbol in operation
             from operand in OperandAtPrecedenceLevel(precedence)
             select createUnaryNode(symbol, operand));
     }
@@ -40,7 +40,7 @@ public class OperatorPrecedenceParser<T> : IParser<T>
 
     public void Postfix(TokenKind operation, int precedence, UnaryNodeBuilder<T> createUnaryNode)
     {
-        Extend(operation, precedence, left => from symbol in Token(operation)
+        Extend(operation, precedence, left => from symbol in operation
             select createUnaryNode(symbol, left));
     }
 
@@ -52,7 +52,7 @@ public class OperatorPrecedenceParser<T> : IParser<T>
         if (associativity == Associativity.Right)
             rightOperandPrecedence = precedence - 1;
 
-        Extend(operation, precedence, left => from symbol in Token(operation)
+        Extend(operation, precedence, left => from symbol in operation
             from right in OperandAtPrecedenceLevel(rightOperandPrecedence)
             select createBinaryNode(left, symbol, right));
     }
