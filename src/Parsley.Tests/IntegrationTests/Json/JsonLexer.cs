@@ -8,7 +8,7 @@ public class JsonLexer : Lexer
             Comma, OpenArray, CloseArray, OpenDictionary, CloseDictionary, Colon,
             Number, Quotation) { }
 
-    static readonly TokenKind Whitespace = new Pattern("whitespace", @"\s+", skippable: true);
+    public static readonly TokenKind Whitespace = new Pattern("whitespace", @"\s+", skippable: true);
         
     public static readonly Keyword @null = new("null");
     public static readonly Keyword @true = new("true");
