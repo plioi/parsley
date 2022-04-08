@@ -10,20 +10,13 @@ public enum Associativity { Left, Right }
 
 public class OperatorPrecedenceParser<T> : IParser<T>
 {
-    readonly IDictionary<TokenKind, IParser<T>> unitParsers;
-    readonly IDictionary<TokenKind, ExtendParserBuilder<T>> extendParsers;
-    readonly IDictionary<TokenKind, int> extendParserPrecedence;
-
-    public OperatorPrecedenceParser()
-    {
-        unitParsers = new Dictionary<TokenKind, IParser<T>>();
-        extendParsers = new Dictionary<TokenKind, ExtendParserBuilder<T>>();
-        extendParserPrecedence = new Dictionary<TokenKind, int>();
-    }
+    readonly List<(TokenKind, IParser<T>)> unitParsers = new();
+    readonly List<(TokenKind, ExtendParserBuilder<T>)> extendParsers = new();
+    readonly Dictionary<TokenKind, int> extendParserPrecedence = new();
 
     public void Unit(TokenKind kind, IParser<T> unitParser)
     {
-        unitParsers[kind] = unitParser;
+        unitParsers.Add((kind, unitParser));
     }
 
     public void Atom(TokenKind kind, AtomNodeBuilder<T> createAtomNode)
@@ -41,7 +34,7 @@ public class OperatorPrecedenceParser<T> : IParser<T>
 
     public void Extend(TokenKind operation, int precedence, ExtendParserBuilder<T> createExtendParser)
     {
-        extendParsers[operation] = createExtendParser;
+        extendParsers.Add((operation, createExtendParser));
         extendParserPrecedence[operation] = precedence;
     }
 
@@ -78,10 +71,20 @@ public class OperatorPrecedenceParser<T> : IParser<T>
     {
         var token = input.Current;
 
-        if (!unitParsers.ContainsKey(token.Kind))
+        IParser<T> matchingUnitParser = null;
+        foreach(var (kind, parser) in unitParsers)
+        {
+            if (kind == token.Kind)
+            {
+                matchingUnitParser = parser;
+                break;
+            }
+        }
+
+        if (matchingUnitParser == null)
             return new Error<T>(input, ErrorMessage.Unknown());
 
-        var reply = unitParsers[token.Kind].Parse(input);
+        var reply = matchingUnitParser.Parse(input);
 
         if (!reply.Success)
             return reply;
@@ -93,7 +96,23 @@ public class OperatorPrecedenceParser<T> : IParser<T>
         {
             //Continue parsing at this precedence level.
 
-            reply = extendParsers[token.Kind](reply.Value).Parse(input);
+            ExtendParserBuilder<T> matchingExtendParserBuilder = null;
+
+            foreach (var (kind, extendParserBuilder) in extendParsers)
+            {
+                if (kind == token.Kind)
+                {
+                    matchingExtendParserBuilder = extendParserBuilder;
+                    break;
+                }
+            }
+
+            if (matchingExtendParserBuilder == null)
+                return new Error<T>(input, ErrorMessage.Unknown());
+
+            var extendParser = matchingExtendParserBuilder(reply.Value);
+
+            reply = extendParser.Parse(input);
 
             if (!reply.Success)
                 return reply;

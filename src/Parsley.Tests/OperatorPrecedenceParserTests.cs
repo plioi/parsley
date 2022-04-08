@@ -16,14 +16,14 @@ class OperatorPrecedenceParserTests
 
         expression.Unit(SampleLexer.LeftParen, Between(Token(SampleLexer.LeftParen), expression, Token(SampleLexer.RightParen)));
 
+        expression.Postfix(SampleLexer.Increment, 7, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
+        expression.Postfix(SampleLexer.Decrement, 7, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
         expression.Binary(SampleLexer.Add, 3, (left, symbol, right) => new Form(symbol, left, right));
         expression.Binary(SampleLexer.Subtract, 3, (left, symbol, right) => new Form(symbol, left, right));
         expression.Binary(SampleLexer.Multiply, 4, (left, symbol, right) => new Form(symbol, left, right));
         expression.Binary(SampleLexer.Divide, 4, (left, symbol, right) => new Form(symbol, left, right));
         expression.Binary(SampleLexer.Exponent, 5, (left, symbol, right) => new Form(symbol, left, right), Associativity.Right);
         expression.Prefix(SampleLexer.Subtract, 6, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
-        expression.Postfix(SampleLexer.Increment, 7, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
-        expression.Postfix(SampleLexer.Decrement, 7, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
 
         expression.Extend(SampleLexer.LeftParen, 8, callable =>
             from arguments in Between(Token(SampleLexer.LeftParen), ZeroOrMore(expression, Token(SampleLexer.Comma)), Token(SampleLexer.RightParen))
