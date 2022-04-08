@@ -19,7 +19,7 @@ public abstract class TokenKind
 
         if (match.Success)
         {
-            token = new Token(this, text.Position, match.Value);
+            token = new Token(this, match.Value);
             return true;
         }
 

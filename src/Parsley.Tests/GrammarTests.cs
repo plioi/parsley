@@ -17,7 +17,7 @@ class GrammarTests
 
         AB = from a in A
             from b in B
-            select new Token(null, a.Position, a.Literal + b.Literal);
+            select new Token(null, a.Literal + b.Literal);
 
         COMMA = Token(Symbol, ",");
     }
@@ -170,7 +170,7 @@ class GrammarTests
         labeled.FailsToParse("A!").LeavingUnparsedInput("!").WithMessage("(1, 2): B expected");
 
         //When p succeeds but does not consume input, Label(p) still succeeds but the potential error is included.
-        var succeedWithoutConsuming = new Token(null, null, "$").SucceedWithThisValue();
+        var succeedWithoutConsuming = new Token(null, "$").SucceedWithThisValue();
         succeedWithoutConsuming
             .PartiallyParses("!")
             .LeavingUnparsedInput("!")
@@ -232,7 +232,7 @@ public class AlternationTests
 
         var AB = from a in A
             from b in B
-            select new Token(null, a.Position, a.Literal + b.Literal);
+            select new Token(null, a.Literal + b.Literal);
 
         Choice(AB, NeverExecuted).FailsToParse("A").AtEndOfInput().WithMessage("(1, 2): B expected");
         Choice(C, AB, NeverExecuted).FailsToParse("A").AtEndOfInput().WithMessage("(1, 2): B expected");
