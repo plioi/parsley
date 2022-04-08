@@ -7,7 +7,7 @@ class GrammarRuleTests
     public void CanDefineMutuallyRecursiveRules()
     {
         var input = "(A)";
-        var kind = CharLexer.Character;
+        var kind = new Pattern("Character", @".");
         var expression = new GrammarRule<string>();
         var alpha = new GrammarRule<string>();
         var parenthesizedExpresion = new GrammarRule<string>();

@@ -6,6 +6,52 @@ namespace Parsley.Tests.IntegrationTests.Json;
 
 public class JsonGrammar
 {
+    static readonly TokenKind WhitespaceLiteral = new Pattern("whitespace", @"\s+", skippable: true);
+    static readonly Keyword @null = new("null");
+    static readonly Keyword @true = new("true");
+    static readonly Keyword @false = new("false");
+    static readonly Operator Comma = new(",");
+    static readonly Operator OpenArray = new("[");
+    static readonly Operator CloseArray = new("]");
+    static readonly Operator OpenDictionary = new("{");
+    static readonly Operator CloseDictionary = new("}");
+    static readonly Operator Colon = new(":");
+
+    static readonly TokenKind StringLiteral = new Pattern("string", @"
+            # Open quote:
+            ""
+
+            # Zero or more content characters:
+            (
+                      [^""\\]*             # Zero or more non-quote, non-slash characters.
+                |     \\ [""\\bfnrt\/]     # One of: slash-quote   \\   \b   \f   \n   \r   \t   \/
+                |     \\ u [0-9a-fA-F]{4}  # \u folowed by four hex digits
+            )*
+
+            # Close quote:
+            ""
+        ");
+
+    static readonly TokenKind NumberLiteral = new Pattern("number", @"
+            # Look-ahead to confirm the whole-number part is either 0 or starts with 1-9:
+            (?=
+                0(?!\d)  |  [1-9]
+            )
+
+            # Whole number part:
+            \d+
+
+            # Optional fractional part:
+            (\.\d+)?
+
+            # Optional exponent
+            (
+                [eE]
+                [+-]?
+                \d+
+            )?
+        ");
+
     public static readonly GrammarRule<object> Json = new(nameof(Json));
     static readonly GrammarRule<Token> Whitespace = new(nameof(Whitespace));
     static readonly GrammarRule<object> JsonValue = new(nameof(JsonValue));
@@ -13,7 +59,7 @@ public class JsonGrammar
     static readonly GrammarRule<object> False = new(nameof(False));
     static readonly GrammarRule<object> Null = new(nameof(Null));
     static readonly GrammarRule<object> Number = new(nameof(Number));
-    static readonly GrammarRule<string> Quotation = new(nameof(Quotation));
+    static readonly GrammarRule<string> String = new(nameof(String));
     static readonly GrammarRule<object[]> Array = new(nameof(Array));
     static readonly GrammarRule<KeyValuePair<string, object>> Pair = new(nameof(Pair));
     static readonly GrammarRule<Dictionary<string, object>> Dictionary = new(nameof(Dictionary));
@@ -21,42 +67,42 @@ public class JsonGrammar
     static JsonGrammar()
     {
         Whitespace.Rule =
-            Optional(Token(JsonLexer.Whitespace));
+            Optional(Token(WhitespaceLiteral));
 
         True.Rule =
-            Keyword(JsonLexer.@true, true);
+            Keyword(@true, true);
 
         False.Rule =
-            Keyword(JsonLexer.@false, false);
+            Keyword(@false, false);
 
         Null.Rule =
-            Keyword(JsonLexer.@null, null);
+            Keyword(@null, null);
 
         Number.Rule =
-            from number in Token(JsonLexer.Number)
+            from number in Token(NumberLiteral)
             from trailing in Whitespace
             select (object) decimal.Parse(number.Literal, NumberStyles.Any, CultureInfo.InvariantCulture);
 
-        Quotation.Rule =
-            from quotation in Token(JsonLexer.Quotation)
+        String.Rule =
+            from quotation in Token(StringLiteral)
             from trailing in Whitespace
             select Unescape(quotation.Literal);
 
         Array.Rule =
-            from items in Between(Operator(JsonLexer.OpenArray), ZeroOrMore(JsonValue, Operator(JsonLexer.Comma)), Operator(JsonLexer.CloseArray))
+            from items in Between(Operator(OpenArray), ZeroOrMore(JsonValue, Operator(Comma)), Operator(CloseArray))
             select items.ToArray();
 
         Pair.Rule =
-            from key in Quotation
-            from colon in Operator(JsonLexer.Colon)
+            from key in String
+            from colon in Operator(Colon)
             from value in JsonValue
             select new KeyValuePair<string, object>(key, value);
 
         Dictionary.Rule =
-            from pairs in Between(Operator(JsonLexer.OpenDictionary), ZeroOrMore(Pair, Operator(JsonLexer.Comma)), Operator(JsonLexer.CloseDictionary))
+            from pairs in Between(Operator(OpenDictionary), ZeroOrMore(Pair, Operator(Comma)), Operator(CloseDictionary))
             select ToDictionary(pairs);
 
-        JsonValue.Rule = Choice(True, False, Null, Number, Quotation, Dictionary, Array);
+        JsonValue.Rule = Choice(True, False, Null, Number, String, Dictionary, Array);
 
         Json.Rule =
             from leading in Whitespace

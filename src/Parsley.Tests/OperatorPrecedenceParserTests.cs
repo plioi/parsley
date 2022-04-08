@@ -11,22 +11,22 @@ class OperatorPrecedenceParserTests
     {
         expression = new OperatorPrecedenceParser<IExpression>();
 
-        expression.Atom(SampleLexer.Digit, token => new Constant(int.Parse(token.Literal, CultureInfo.InvariantCulture)));
-        expression.Atom(SampleLexer.Name, token => new Identifier(token.Literal));
+        expression.Atom(Digit, token => new Constant(int.Parse(token.Literal, CultureInfo.InvariantCulture)));
+        expression.Atom(Name, token => new Identifier(token.Literal));
 
-        expression.Unit(SampleLexer.LeftParen, Between(Token(SampleLexer.LeftParen), expression, Token(SampleLexer.RightParen)));
+        expression.Unit(LeftParen, Between(Token(LeftParen), expression, Token(RightParen)));
 
-        expression.Postfix(SampleLexer.Increment, 7, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
-        expression.Postfix(SampleLexer.Decrement, 7, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
-        expression.Binary(SampleLexer.Add, 3, (left, symbol, right) => new Form(symbol, left, right));
-        expression.Binary(SampleLexer.Subtract, 3, (left, symbol, right) => new Form(symbol, left, right));
-        expression.Binary(SampleLexer.Multiply, 4, (left, symbol, right) => new Form(symbol, left, right));
-        expression.Binary(SampleLexer.Divide, 4, (left, symbol, right) => new Form(symbol, left, right));
-        expression.Binary(SampleLexer.Exponent, 5, (left, symbol, right) => new Form(symbol, left, right), Associativity.Right);
-        expression.Prefix(SampleLexer.Subtract, 6, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
+        expression.Postfix(Increment, 7, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
+        expression.Postfix(Decrement, 7, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
+        expression.Binary(Add, 3, (left, symbol, right) => new Form(symbol, left, right));
+        expression.Binary(Subtract, 3, (left, symbol, right) => new Form(symbol, left, right));
+        expression.Binary(Multiply, 4, (left, symbol, right) => new Form(symbol, left, right));
+        expression.Binary(Divide, 4, (left, symbol, right) => new Form(symbol, left, right));
+        expression.Binary(Exponent, 5, (left, symbol, right) => new Form(symbol, left, right), Associativity.Right);
+        expression.Prefix(Subtract, 6, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
 
-        expression.Extend(SampleLexer.LeftParen, 8, callable =>
-            from arguments in Between(Token(SampleLexer.LeftParen), ZeroOrMore(expression, Token(SampleLexer.Comma)), Token(SampleLexer.RightParen))
+        expression.Extend(LeftParen, 8, callable =>
+            from arguments in Between(Token(LeftParen), ZeroOrMore(expression, Token(Comma)), Token(RightParen))
             select new Form(callable, arguments));
     }
 
@@ -112,26 +112,18 @@ class OperatorPrecedenceParserTests
         expression.Parses(input).WithValue(e => e.ToString().ShouldBe(expectedTree));
     }
 
-    class SampleLexer : Lexer
-    {
-        public static readonly TokenKind Digit = new Pattern("Digit", @"[0-9]");
-        public static readonly TokenKind Name = new Pattern("Name", @"[a-z]+");
-        public static readonly TokenKind Increment = new Operator("++");
-        public static readonly TokenKind Decrement = new Operator("--");
-        public static readonly TokenKind Add = new Operator("+");
-        public static readonly TokenKind Subtract = new Operator("-");
-        public static readonly TokenKind Multiply = new Operator("*");
-        public static readonly TokenKind Divide = new Operator("/");
-        public static readonly TokenKind Exponent = new Operator("^");
-        public static readonly TokenKind LeftParen = new Operator("(");
-        public static readonly TokenKind RightParen = new Operator(")");
-        public static readonly TokenKind Comma = new Operator(",");
-
-        public SampleLexer()
-            : base(Digit, Name, Increment, Decrement, Add,
-                Subtract, Multiply, Divide, Exponent,
-                LeftParen, RightParen, Comma) { }
-    }
+    static readonly TokenKind Digit = new Pattern("Digit", @"[0-9]");
+    static readonly TokenKind Name = new Pattern("Name", @"[a-z]+");
+    static readonly TokenKind Increment = new Operator("++");
+    static readonly TokenKind Decrement = new Operator("--");
+    static readonly TokenKind Add = new Operator("+");
+    static readonly TokenKind Subtract = new Operator("-");
+    static readonly TokenKind Multiply = new Operator("*");
+    static readonly TokenKind Divide = new Operator("/");
+    static readonly TokenKind Exponent = new Operator("^");
+    static readonly TokenKind LeftParen = new Operator("(");
+    static readonly TokenKind RightParen = new Operator(")");
+    static readonly TokenKind Comma = new Operator(",");
 
     interface IExpression
     {

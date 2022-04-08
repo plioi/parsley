@@ -4,28 +4,22 @@ namespace Parsley.Tests;
 
 class GrammarTests
 {
-    class SampleLexer : Lexer
-    {
-        public static readonly TokenKind Digit = new Pattern("Digit", @"[0-9]");
-        public static readonly TokenKind Letter = new Pattern("Letter", @"[a-zA-Z]");
-        public static readonly TokenKind Symbol = new Pattern("Symbol", @".");
-
-        public SampleLexer()
-            : base(Digit, Letter, Symbol) { }
-    }
+    static readonly TokenKind Digit = new Pattern("Digit", @"[0-9]");
+    static readonly TokenKind Letter = new Pattern("Letter", @"[a-zA-Z]");
+    static readonly TokenKind Symbol = new Pattern("Symbol", @".");
 
     readonly IParser<Token> A, B, AB, COMMA;
 
     public GrammarTests()
     {
-        A = Token(SampleLexer.Letter, "A");
-        B = Token(SampleLexer.Letter, "B");
+        A = Token(Letter, "A");
+        B = Token(Letter, "B");
 
         AB = from a in A
             from b in B
             select new Token(null, a.Position, a.Literal + b.Literal);
 
-        COMMA = Token(SampleLexer.Symbol, ",");
+        COMMA = Token(Symbol, ",");
     }
 
     static Action<Token> Literal(string expectedLiteral)
@@ -47,18 +41,18 @@ class GrammarTests
 
     public void CanDemandThatAGivenKindOfTokenAppearsNext()
     {
-        Token(SampleLexer.Letter).Parses("A").WithValue(Literal("A"));
-        Token(SampleLexer.Letter).FailsToParse("0").LeavingUnparsedInput("0").WithMessage("(1, 1): Letter expected");
+        Token(Letter).Parses("A").WithValue(Literal("A"));
+        Token(Letter).FailsToParse("0").LeavingUnparsedInput("0").WithMessage("(1, 1): Letter expected");
 
-        Token(SampleLexer.Digit).FailsToParse("A").LeavingUnparsedInput("A").WithMessage("(1, 1): Digit expected");
-        Token(SampleLexer.Digit).Parses("0").WithValue(Literal("0"));
+        Token(Digit).FailsToParse("A").LeavingUnparsedInput("A").WithMessage("(1, 1): Digit expected");
+        Token(Digit).Parses("0").WithValue(Literal("0"));
     }
 
     public void CanDemandThatAGivenTokenLiteralAppearsNext()
     {
-        Token(SampleLexer.Letter, "A").Parses("A").WithValue(Literal("A"));
-        Token(SampleLexer.Letter, "A").PartiallyParses("A!").LeavingUnparsedInput("!").WithValue(Literal("A"));
-        Token(SampleLexer.Letter, "A").FailsToParse("B").LeavingUnparsedInput("B").WithMessage("(1, 1): A expected");
+        Token(Letter, "A").Parses("A").WithValue(Literal("A"));
+        Token(Letter, "A").PartiallyParses("A!").LeavingUnparsedInput("!").WithValue(Literal("A"));
+        Token(Letter, "A").FailsToParse("B").LeavingUnparsedInput("B").WithMessage("(1, 1): A expected");
     }
 
     public void ApplyingARuleZeroOrMoreTimes()
@@ -200,10 +194,10 @@ public class AlternationTests
 
     public AlternationTests()
     {
-        var kind = CharLexer.Character;
+        var kind = new Pattern("Character", @".");
         A = Token(kind, "A");
-        B = Token(kind,"B");
-        C = Token(kind,"C");
+        B = Token(kind, "B");
+        C = Token(kind, "C");
     }
 
     static Action<Token> Literal(string expectedLiteral)

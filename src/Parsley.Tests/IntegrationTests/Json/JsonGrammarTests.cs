@@ -19,6 +19,17 @@ class JsonGrammarTests : JsonGrammar
 
     public void ParsesNumbers()
     {
+        Json.Parses("0").WithValue(0m);
+        Json.Parses("12345").WithValue(12345m);
+        Json.Parses("0.012").WithValue(0.012m);
+        Json.Parses("0e1").WithValue(0e1m);
+        Json.Parses("0e+1").WithValue(0e+1m);
+        Json.Parses("0e-1").WithValue(0e-1m);
+        Json.Parses("0E1").WithValue(0E1m);
+        Json.Parses("0E+1").WithValue(0E+1m);
+        Json.Parses("0E-1").WithValue(0E-1m);
+        Json.Parses("10e11").WithValue(10e11m);
+        Json.Parses("10.123e11").WithValue(10.123e11m);
         Json.Parses("10.123E-11").WithValue(10.123E-11m);
     }
 
@@ -58,22 +69,23 @@ class JsonGrammarTests : JsonGrammar
         });
     }
 
-    public void ParsesComplexJsonValues()
+    public void ParsesComplexJsonValuesSkippingOptionalWhitespace()
     {
-        const string complex = @"
+        const string whitespaceCharacters = "\r\n\t";
+        const string complex = whitespaceCharacters + @"
 
                 {
-                    ""numbers"" : [10, 20, 30],
+                    ""numbers"" : [ 10, 20, 30 ],
                     ""window"":
                     {
-                        ""title"": ""Sample Widget"",
+                        ""title"": ""Sample Widget""," + whitespaceCharacters + @"
                         ""parent"": null,
-                        ""maximized"": true,
+                        ""maximized"": true  ,
                         ""transparent"": false
                     }
                 }
 
-            ";
+            " + whitespaceCharacters;
 
         Json.Parses(complex).WithValue(value =>
         {
