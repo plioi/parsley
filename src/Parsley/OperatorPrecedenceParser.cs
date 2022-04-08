@@ -70,19 +70,7 @@ public class OperatorPrecedenceParser<T> : IParser<T>
 
     Reply<T> Parse(Text input, int precedence)
     {
-        throw new NotImplementedException();
-        /*
-        var token = input.Current;
-
-        IParser<T> matchingUnitParser = null;
-        foreach(var (kind, parser) in unitParsers)
-        {
-            if (kind == token.Kind)
-            {
-                matchingUnitParser = parser;
-                break;
-            }
-        }
+        var matchingUnitParser = FirstMatchingUnitParserOrNull(input, out var token);
 
         if (matchingUnitParser == null)
             return new Error<T>(input, ErrorMessage.Unknown());
@@ -93,25 +81,12 @@ public class OperatorPrecedenceParser<T> : IParser<T>
             return reply;
 
         input = reply.UnparsedInput;
-        token = input.Current;
 
-        while (precedence < GetPrecedence(token))
+        var matchingExtendParserBuilder = FirstMatchingExtendParserBuilderOrNull(input, out token);
+
+        while (matchingExtendParserBuilder != null && precedence < GetPrecedence(token))
         {
             //Continue parsing at this precedence level.
-
-            ExtendParserBuilder<T> matchingExtendParserBuilder = null;
-
-            foreach (var (kind, extendParserBuilder) in extendParsers)
-            {
-                if (kind == token.Kind)
-                {
-                    matchingExtendParserBuilder = extendParserBuilder;
-                    break;
-                }
-            }
-
-            if (matchingExtendParserBuilder == null)
-                return new Error<T>(input, ErrorMessage.Unknown());
 
             var extendParser = matchingExtendParserBuilder(reply.Value);
 
@@ -121,14 +96,35 @@ public class OperatorPrecedenceParser<T> : IParser<T>
                 return reply;
 
             input = reply.UnparsedInput;
-            token = input.Current;
+
+            matchingExtendParserBuilder = FirstMatchingExtendParserBuilderOrNull(input, out token);
         }
 
         return reply;
-        */
     }
 
-    [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members")]
+    IParser<T> FirstMatchingUnitParserOrNull(Text input, out Token token)
+    {
+        token = null;
+
+        foreach(var (kind, parser) in unitParsers)
+            if (kind.TryMatch(input, out token))
+                return parser;
+
+        return null;
+    }
+
+    ExtendParserBuilder<T> FirstMatchingExtendParserBuilderOrNull(Text input, out Token token)
+    {
+        token = null;
+
+        foreach (var (kind, extendParserBuilder) in extendParsers)
+            if (kind.TryMatch(input, out token))
+                return extendParserBuilder;
+
+        return null;
+    }
+
     int GetPrecedence(Token token)
     {
         var kind = token.Kind;
