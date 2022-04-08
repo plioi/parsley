@@ -95,5 +95,10 @@ public class Empty : TokenKind
         : base(name) { }
 
     protected override MatchResult Match(Text text)
-        => MatchResult.Fail;
+    {
+        if (text.EndOfInput)
+            return MatchResult.Succeed("");
+
+        return MatchResult.Fail;
+    }
 }

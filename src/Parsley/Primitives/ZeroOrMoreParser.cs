@@ -9,7 +9,7 @@ class ZeroOrMoreParser<T> : IParser<IEnumerable<T>>
         this.item = item;
     }
 
-    public Reply<IEnumerable<T>> Parse(Input input)
+    public Reply<IEnumerable<T>> Parse(Text input)
     {
         var oldPosition = input.Position;
         var reply = item.Parse(input);

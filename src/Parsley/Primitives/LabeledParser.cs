@@ -11,7 +11,7 @@ class LabeledParser<T> : IParser<T>
         errors = ErrorMessageList.Empty.With(ErrorMessage.Expected(expectation));
     }
 
-    public Reply<T> Parse(Input input)
+    public Reply<T> Parse(Text input)
     {
         var start = input.Position;
         var reply = parser.Parse(input);

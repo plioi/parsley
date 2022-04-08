@@ -2,7 +2,7 @@ namespace Parsley;
 
 public class GrammarRule<T> : IParser<T>
 {
-    Func<Input, Reply<T>> parse;
+    Func<Text, Reply<T>> parse;
 
     public GrammarRule(string name = null)
     {
@@ -17,6 +17,6 @@ public class GrammarRule<T> : IParser<T>
         set { parse = value.Parse; }
     }
 
-    public Reply<T> Parse(Input input)
+    public Reply<T> Parse(Text input)
         => parse(input);
 }

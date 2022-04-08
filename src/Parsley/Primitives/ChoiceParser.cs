@@ -9,7 +9,7 @@ class ChoiceParser<T> : IParser<T>
         this.parsers = parsers;
     }
 
-    public Reply<T> Parse(Input input)
+    public Reply<T> Parse(Text input)
     {
         var start = input.Position;
         var reply = parsers[0].Parse(input);

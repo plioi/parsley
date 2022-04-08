@@ -9,10 +9,10 @@ class TokenByKindParser : IParser<Token>
         this.kind = kind;
     }
 
-    public Reply<Token> Parse(Input input)
+    public Reply<Token> Parse(Text input)
     {
-        if (input.Current.Kind == kind)
-            return new Parsed<Token>(input.Current, input.Advance());
+        if (kind.TryMatch(input, out var token))
+            return new Parsed<Token>(token, input.Advance(token.Literal.Length));
 
         return new Error<Token>(input, ErrorMessage.Expected(kind.Name));
     }

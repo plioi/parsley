@@ -105,14 +105,17 @@ class TokenKindTests
         token.ShouldBe(doubleStar, "**");
     }
 
-    public void ProvidesConvenienceSubclassForTokensThatDoNotMatchLiteralsFromTheInput()
+    public void ProvidesConvenienceSubclassForRecognizingTheEndOfInput()
     {
         TokenKind.EndOfInput.ShouldBeOfType<Empty>();
 
         TokenKind.EndOfInput.Name.ShouldBe("end of input");
         TokenKind.EndOfInput.Skippable.ShouldBeFalse();
 
-        TokenKind.EndOfInput.TryMatch(new Text(""), out _).ShouldBeFalse();
-        TokenKind.EndOfInput.TryMatch(new Text("foo"), out _).ShouldBeFalse();
+        TokenKind.EndOfInput.TryMatch(new Text(""), out var token).ShouldBeTrue();
+        token.ShouldBe(TokenKind.EndOfInput, "");
+
+        TokenKind.EndOfInput.TryMatch(new Text("foo"), out token).ShouldBeFalse();
+        token.ShouldBeNull();
     }
 }

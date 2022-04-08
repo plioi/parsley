@@ -2,10 +2,10 @@ namespace Parsley;
 
 public class Parsed<T> : Reply<T>
 {
-    public Parsed(T value, Input unparsedInput)
+    public Parsed(T value, Text unparsedInput)
         :this(value, unparsedInput, ErrorMessageList.Empty) { }
 
-    public Parsed(T value, Input unparsedInput, ErrorMessageList potentialErrors)
+    public Parsed(T value, Text unparsedInput, ErrorMessageList potentialErrors)
     {
         Value = value;
         UnparsedInput = unparsedInput;
@@ -13,7 +13,7 @@ public class Parsed<T> : Reply<T>
     }
 
     public T Value { get; }
-    public Input UnparsedInput { get; }
+    public Text UnparsedInput { get; }
     public bool Success => true;
     public ErrorMessageList ErrorMessages { get; }
 }

@@ -2,40 +2,30 @@ namespace Parsley.Tests.IntegrationTests.Json;
 
 class JsonGrammarTests : JsonGrammar
 {
-    static IEnumerable<Token> Tokenize(string input) => new JsonLexer().Tokenize(input);
-
     public void ParsesTrueLiteral()
     {
-        var tokens = Tokenize("true");
-
-        Json.Parses(tokens).WithValue(true);
+        Json.Parses("true").WithValue(true);
     }
 
     public void ParsesFalseLiteral()
     {
-        var tokens = Tokenize("false");
-
-        Json.Parses(tokens).WithValue(false);
+        Json.Parses("false").WithValue(false);
     }
 
     public void ParsesNullLiteral()
     {
-        var tokens = Tokenize("null");
-
-        Json.Parses(tokens).WithValue(value => value.ShouldBeNull());
+        Json.Parses("null").WithValue(value => value.ShouldBeNull());
     }
 
     public void ParsesNumbers()
     {
-        var tokens = Tokenize("10.123E-11");
-
-        Json.Parses(tokens).WithValue(10.123E-11m);
+        Json.Parses("10.123E-11").WithValue(10.123E-11m);
     }
 
     public void ParsesQuotations()
     {
-        var empty = Tokenize("\"\"");
-        var filled = Tokenize("\"abc \\\" \\\\ \\/ \\b \\f \\n \\r \\t \\u263a def\"");
+        var empty = "\"\"";
+        var filled = "\"abc \\\" \\\\ \\/ \\b \\f \\n \\r \\t \\u263a def\"";
         const string expected = "abc \" \\ / \b \f \n \r \t ☺ def";
 
         Json.Parses(empty).WithValue("");
@@ -44,8 +34,8 @@ class JsonGrammarTests : JsonGrammar
 
     public void ParsesArrays()
     {
-        var empty = Tokenize("[]");
-        var filled = Tokenize("[0, 1, 2]");
+        var empty = "[]";
+        var filled = "[0, 1, 2]";
 
         Json.Parses(empty).WithValue(value => ((object[])value).ShouldBeEmpty());
 
@@ -54,8 +44,8 @@ class JsonGrammarTests : JsonGrammar
 
     public void ParsesDictionaries()
     {
-        var empty = Tokenize("{}");
-        var filled = Tokenize("{\"zero\" : 0, \"one\" : 1, \"two\" : 2}");
+        var empty = "{}";
+        var filled = "{\"zero\" : 0, \"one\" : 1, \"two\" : 2}";
 
         Json.Parses(empty).WithValue(value => ((Dictionary<string, object>)value).Count.ShouldBe(0));
 
@@ -85,9 +75,7 @@ class JsonGrammarTests : JsonGrammar
 
             ";
 
-        var tokens = Tokenize(complex);
-
-        Json.Parses(tokens).WithValue(value =>
+        Json.Parses(complex).WithValue(value =>
         {
             var json = (Dictionary<string, object>)value;
             json["numbers"].ShouldBe(new[] {10m, 20m, 30m});
@@ -102,10 +90,10 @@ class JsonGrammarTests : JsonGrammar
 
     public void RequiresEndOfInputAfterFirstValidJsonValue()
     {
-        Json.FailsToParse(Tokenize("true $garbage$")).LeavingUnparsedInput("$garbage$").WithMessage("(1, 6): end of input expected");
-        Json.FailsToParse(Tokenize("10.123E-11  $garbage$")).LeavingUnparsedInput("$garbage$").WithMessage("(1, 13): end of input expected");
-        Json.FailsToParse(Tokenize("\"garbage\" $garbage$")).LeavingUnparsedInput("$garbage$").WithMessage("(1, 11): end of input expected");
-        Json.FailsToParse(Tokenize("[0, 1, 2] $garbage$")).LeavingUnparsedInput("$garbage$").WithMessage("(1, 11): end of input expected");
-        Json.FailsToParse(Tokenize("{\"zero\" : 0} $garbage$")).LeavingUnparsedInput("$garbage$").WithMessage("(1, 14): end of input expected");
+        Json.FailsToParse("true $garbage$").LeavingUnparsedInput("$garbage$").WithMessage("(1, 6): end of input expected");
+        Json.FailsToParse("10.123E-11  $garbage$").LeavingUnparsedInput("$garbage$").WithMessage("(1, 13): end of input expected");
+        Json.FailsToParse("\"garbage\" $garbage$").LeavingUnparsedInput("$garbage$").WithMessage("(1, 11): end of input expected");
+        Json.FailsToParse("[0, 1, 2] $garbage$").LeavingUnparsedInput("$garbage$").WithMessage("(1, 11): end of input expected");
+        Json.FailsToParse("{\"zero\" : 0} $garbage$").LeavingUnparsedInput("$garbage$").WithMessage("(1, 14): end of input expected");
     }
 }

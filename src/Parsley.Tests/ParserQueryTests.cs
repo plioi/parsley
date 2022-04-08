@@ -5,15 +5,13 @@ namespace Parsley.Tests;
 
 class ParserQueryTests
 {
-    static readonly IParser<string> Next = new LambdaParser<string>(input => new Parsed<string>(input.Current.Literal, input.Advance()));
-
-    static IEnumerable<Token> Tokenize(string input) => new CharLexer().Tokenize(input);
+    static readonly IParser<string> Next = new LambdaParser<string>(input => new Parsed<string>(input.Peek(1), input.Advance(1)));
 
     public void CanBuildParserWhichSimulatesSuccessfulParsingOfGivenValueWithoutConsumingInput()
     {
         var parser = 1.SucceedWithThisValue();
 
-        parser.PartiallyParses(Tokenize("input")).LeavingUnparsedInput("i", "n", "p", "u", "t").WithValue(1);
+        parser.PartiallyParses("input").LeavingUnparsedInput("input").WithValue(1);
     }
 
     public void CanBuildParserFromSingleSimplerParser()
@@ -21,7 +19,7 @@ class ParserQueryTests
         var parser = from x in Next
             select x.ToUpper(CultureInfo.InvariantCulture);
 
-        parser.PartiallyParses(Tokenize("xy")).LeavingUnparsedInput("y").WithValue("X");
+        parser.PartiallyParses("xy").LeavingUnparsedInput("y").WithValue("X");
     }
 
     public void CanBuildParserFromOrderedSequenceOfSimplerParsers()
@@ -31,28 +29,26 @@ class ParserQueryTests
             from c in Next
             select (a + b + c).ToUpper(CultureInfo.InvariantCulture));
 
-        parser.PartiallyParses(Tokenize("abcdef")).LeavingUnparsedInput("d", "e", "f").WithValue("ABC");
+        parser.PartiallyParses("abcdef").LeavingUnparsedInput("def").WithValue("ABC");
     }
 
     public void PropogatesErrorsWithoutRunningRemainingParsers()
     {
         var Fail = Fail<string>();
 
-        var tokens = Tokenize("xy").ToArray();
-
         (from _ in Fail
             from x in Next
             from y in Next
-            select Tuple.Create(x, y)).FailsToParse(tokens).LeavingUnparsedInput("x", "y");
+            select Tuple.Create(x, y)).FailsToParse("xy").LeavingUnparsedInput("xy");
 
         (from x in Next
             from _ in Fail
             from y in Next
-            select Tuple.Create(x, y)).FailsToParse(tokens).LeavingUnparsedInput("y");
+            select Tuple.Create(x, y)).FailsToParse("xy").LeavingUnparsedInput("y");
 
         (from x in Next
             from y in Next
             from _ in Fail
-            select Tuple.Create(x, y)).FailsToParse(tokens).AtEndOfInput();
+            select Tuple.Create(x, y)).FailsToParse("xy").AtEndOfInput();
     }
 }

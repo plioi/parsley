@@ -92,7 +92,7 @@ class OperatorPrecedenceParserTests
         //The "(" unit-parser is invoked but fails.  The next token, "*", has
         //high precedence, but that should not provoke parsing to continue.
             
-        expression.FailsToParse(Tokenize("(*")).LeavingUnparsedInput("*").WithMessage("(1, 2): Parse error.");
+        expression.FailsToParse("(*").LeavingUnparsedInput("*").WithMessage("(1, 2): Parse error.");
     }
 
     public void ProvidesErrorAtAppropriatePositionWhenExtendParsersFail()
@@ -104,16 +104,13 @@ class OperatorPrecedenceParserTests
         //is invoked and immediately fails.  The next token, "*", has
         //high precedence, but that should not provoke parsing to continue.
 
-        expression.FailsToParse(Tokenize("2-*")).LeavingUnparsedInput("*").WithMessage("(1, 3): Parse error.");
+        expression.FailsToParse("2-*").LeavingUnparsedInput("*").WithMessage("(1, 3): Parse error.");
     }
 
     void Parses(string input, string expectedTree)
     {
-        expression.Parses(Tokenize(input)).WithValue(e => e.ToString().ShouldBe(expectedTree));
+        expression.Parses(input).WithValue(e => e.ToString().ShouldBe(expectedTree));
     }
-
-    static IEnumerable<Token> Tokenize(string input)
-        => new SampleLexer().Tokenize(input);
 
     class SampleLexer : Lexer
     {

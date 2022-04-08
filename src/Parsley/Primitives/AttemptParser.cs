@@ -9,7 +9,7 @@ class AttemptParser<T> : IParser<T>
         this.parse = parse;
     }
 
-    public Reply<T> Parse(Input input)
+    public Reply<T> Parse(Text input)
     {
         var start = input.Position;
         var reply = parse.Parse(input);

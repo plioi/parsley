@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using static Parsley.Grammar;
 
 namespace Parsley;
@@ -57,7 +58,7 @@ public class OperatorPrecedenceParser<T> : IParser<T>
             select createBinaryNode(left, symbol, right));
     }
 
-    public Reply<T> Parse(Input input)
+    public Reply<T> Parse(Text input)
     {
         return Parse(input, 0);
     }
@@ -67,8 +68,10 @@ public class OperatorPrecedenceParser<T> : IParser<T>
         return new LambdaParser<T>(input => Parse(input, precedence));
     }
 
-    Reply<T> Parse(Input input, int precedence)
+    Reply<T> Parse(Text input, int precedence)
     {
+        throw new NotImplementedException();
+        /*
         var token = input.Current;
 
         IParser<T> matchingUnitParser = null;
@@ -122,8 +125,10 @@ public class OperatorPrecedenceParser<T> : IParser<T>
         }
 
         return reply;
+        */
     }
 
+    [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members")]
     int GetPrecedence(Token token)
     {
         var kind = token.Kind;
