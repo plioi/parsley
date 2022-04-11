@@ -9,8 +9,7 @@ public enum Associativity { Left, Right }
 public class OperatorPrecedenceParser<T> : IParser<T>
 {
     readonly List<(IParser<Token>, IParser<T>)> unitParsers = new();
-    readonly List<(IParser<Token>, ExtendParserBuilder<T>)> extendParsers = new();
-    readonly Dictionary<IParser<Token>, int> extendParserPrecedence = new();
+    readonly List<(IParser<Token>, int precedence, ExtendParserBuilder<T>)> extendParsers = new();
 
     public void Unit(IParser<Token> kind, IParser<T> unitParser)
     {
@@ -32,8 +31,7 @@ public class OperatorPrecedenceParser<T> : IParser<T>
 
     public void Extend(IParser<Token> operation, int precedence, ExtendParserBuilder<T> createExtendParser)
     {
-        extendParsers.Add((operation, createExtendParser));
-        extendParserPrecedence[operation] = precedence;
+        extendParsers.Add((operation, precedence, createExtendParser));
     }
 
     public void Postfix(IParser<Token> operation, int precedence, UnaryNodeBuilder<T> createUnaryNode)
@@ -79,9 +77,9 @@ public class OperatorPrecedenceParser<T> : IParser<T>
 
         input = reply.UnparsedInput;
 
-        var matchingExtendParserBuilder = FirstMatchingExtendParserBuilderOrNull(input, out token);
+        var matchingExtendParserBuilder = FirstMatchingExtendParserBuilderOrNull(input, out token, out int? tokenPrecedence);
 
-        while (matchingExtendParserBuilder != null && precedence < GetPrecedence(token))
+        while (matchingExtendParserBuilder != null && precedence < tokenPrecedence)
         {
             //Continue parsing at this precedence level.
 
@@ -94,7 +92,7 @@ public class OperatorPrecedenceParser<T> : IParser<T>
 
             input = reply.UnparsedInput;
 
-            matchingExtendParserBuilder = FirstMatchingExtendParserBuilderOrNull(input, out token);
+            matchingExtendParserBuilder = FirstMatchingExtendParserBuilderOrNull(input, out token, out tokenPrecedence);
         }
 
         return reply;
@@ -118,30 +116,23 @@ public class OperatorPrecedenceParser<T> : IParser<T>
         return null;
     }
 
-    ExtendParserBuilder<T> FirstMatchingExtendParserBuilderOrNull(Text input, out Token token)
+    ExtendParserBuilder<T> FirstMatchingExtendParserBuilderOrNull(Text input, out Token token, out int? tokenPrecedence)
     {
         token = null;
+        tokenPrecedence = null;
 
-        foreach (var (kind, extendParserBuilder) in extendParsers)
+        foreach (var (kind, precedence, extendParserBuilder) in extendParsers)
         {
             var reply = kind.Parse(input);
 
             if (reply.Success)
             {
                 token = reply.Value;
+                tokenPrecedence = precedence;
                 return extendParserBuilder;
             }
         }
 
         return null;
-    }
-
-    int GetPrecedence(Token token)
-    {
-        var kind = token.Kind;
-        if (extendParserPrecedence.ContainsKey(kind))
-            return extendParserPrecedence[kind];
-
-        return 0;
     }
 }
