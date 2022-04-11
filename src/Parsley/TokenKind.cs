@@ -4,27 +4,17 @@ namespace Parsley;
 
 public abstract class TokenKind : IParser<Token>
 {
-    protected readonly string name;
-
-    protected TokenKind(string name)
-    {
-        this.name = name;
-    }
-
-    public string Name => name;
-
     public abstract Reply<Token> Parse(Text input);
-
-    public override string ToString() => name;
 }
 
 public class Pattern : TokenKind
 {
+    readonly string name;
     readonly TokenRegex regex;
 
     public Pattern(string name, string pattern, params RegexOptions[] regexOptions)
-        : base(name)
     {
+        this.name = name;
         regex = new TokenRegex(pattern, regexOptions);
     }
 
@@ -58,10 +48,7 @@ public class Operator : TokenKind
     readonly string symbol;
 
     public Operator(string symbol)
-        : base(symbol)
-    {
-        this.symbol = symbol;
-    }
+        => this.symbol = symbol;
 
     public override Reply<Token> Parse(Text input)
     {
@@ -74,6 +61,6 @@ public class Operator : TokenKind
             return new Parsed<Token>(token, input.Advance(peek.Length));
         }
 
-        return new Error<Token>(input, ErrorMessage.Expected(name));
+        return new Error<Token>(input, ErrorMessage.Expected(symbol));
     }
 }

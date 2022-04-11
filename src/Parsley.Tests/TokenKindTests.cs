@@ -15,15 +15,19 @@ class TokenKindTests
         caseInsensitive = new Pattern("Case Insensitive", @"[a-z]+", RegexOptions.IgnoreCase);
     }
 
-    public void ProvidesConvenienceSubclassForRecognizingRegexPatterns()
+    public void ProvidesConvenienceSubclassForRecognizingNamedRegexPatterns()
     {
-        lower.Name.ShouldBe("Lowercase");
-        upper.Name.ShouldBe("Uppercase");
-        caseInsensitive.Name.ShouldBe("Case Insensitive");
+        lower.FailsToParse("ABCdef")
+            .LeavingUnparsedInput("ABCdef")
+            .WithMessage("(1, 1): Lowercase expected");
 
         upper.FailsToParse("abcDEF")
             .LeavingUnparsedInput("abcDEF")
             .WithMessage("(1, 1): Uppercase expected");
+
+        caseInsensitive.FailsToParse("!abcDEF")
+            .LeavingUnparsedInput("!abcDEF")
+            .WithMessage("(1, 1): Case Insensitive expected");
 
         lower.PartiallyParses("abcDEF")
             .LeavingUnparsedInput("DEF")
@@ -36,18 +40,9 @@ class TokenKindTests
             .WithValue(token => token.ShouldBe(caseInsensitive, "abcDEF"));
     }
 
-    public void UsesDescriptiveNameForToString()
-    {
-        lower.ToString().ShouldBe("Lowercase");
-        upper.ToString().ShouldBe("Uppercase");
-        caseInsensitive.ToString().ShouldBe("Case Insensitive");
-    }
-
     public void ProvidesConvenienceSubclassForDefiningKeywords()
     {
         var foo = new Keyword("foo");
-
-        foo.Name.ShouldBe("foo");
 
         foo.FailsToParse("bar")
             .LeavingUnparsedInput("bar")
@@ -73,8 +68,6 @@ class TokenKindTests
         var star = new Operator("*");
         var doubleStar = new Operator("**");
 
-        star.Name.ShouldBe("*");
-
         star.FailsToParse("a")
             .LeavingUnparsedInput("a")
             .WithMessage("(1, 1): * expected");
@@ -89,8 +82,6 @@ class TokenKindTests
         star.PartiallyParses("**")
             .LeavingUnparsedInput("*")
             .WithValue(token => token.ShouldBe(star, "*"));
-
-        doubleStar.Name.ShouldBe("**");
 
         doubleStar.FailsToParse("a")
             .LeavingUnparsedInput("a")
