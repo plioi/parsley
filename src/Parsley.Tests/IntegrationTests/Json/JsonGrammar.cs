@@ -6,10 +6,6 @@ namespace Parsley.Tests.IntegrationTests.Json;
 
 public class JsonGrammar
 {
-    static readonly IParser<string> WhitespaceLiteral = Pattern("whitespace", @"\s+");
-    static readonly IParser<string> @null = Keyword("null");
-    static readonly IParser<string> @true = Keyword("true");
-    static readonly IParser<string> @false = Keyword("false");
     static readonly IParser<string> Comma = Symbol(",");
     static readonly IParser<string> OpenArray = Symbol("[");
     static readonly IParser<string> CloseArray = Symbol("]");
@@ -67,16 +63,16 @@ public class JsonGrammar
     static JsonGrammar()
     {
         Whitespace.Rule =
-            Optional(WhitespaceLiteral);
+            Optional(Pattern("whitespace", @"\s+"));
 
         True.Rule =
-            KeywordConstant(@true, true);
+            KeywordConstant("true", true);
 
         False.Rule =
-            KeywordConstant(@false, false);
+            KeywordConstant("false", false);
 
         Null.Rule =
-            KeywordConstant(@null, null);
+            KeywordConstant("null", null);
 
         Number.Rule =
             from number in NumberLiteral
@@ -112,9 +108,9 @@ public class JsonGrammar
             select jsonValue;
     }
 
-    static IParser<object> KeywordConstant(IParser<string> keyword, object constant)
+    static IParser<object> KeywordConstant(string keyword, object constant)
     {
-        return from _ in keyword
+        return from _ in Keyword(keyword)
             from trailing in Whitespace
             select constant;
     }
