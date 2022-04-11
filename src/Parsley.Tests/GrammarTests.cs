@@ -34,7 +34,7 @@ class GrammarTests
 
     public void CanDetectTheEndOfInputWithoutAdvancing()
     {
-        EndOfInput.Parses("").WithValue(Literal(""));
+        EndOfInput.Parses("").WithValue("");
         EndOfInput.FailsToParse("!").LeavingUnparsedInput("!").WithMessage("(1, 1): end of input expected");
     }
 

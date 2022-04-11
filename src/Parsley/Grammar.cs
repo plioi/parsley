@@ -6,7 +6,7 @@ public static class Grammar
 {
     public static IParser<T> Fail<T>() => new FailingParser<T>();
 
-    public static IParser<Token> EndOfInput => TokenKind.EndOfInput;
+    public static IParser<string> EndOfInput { get; } = new EndOfInputParser();
 
     /// <summary>
     /// ZeroOrMore(p) repeatedly applies an parser p until it fails, returing

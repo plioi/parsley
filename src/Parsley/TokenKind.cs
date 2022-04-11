@@ -4,8 +4,6 @@ namespace Parsley;
 
 public abstract class TokenKind : IParser<Token>
 {
-    public static readonly TokenKind EndOfInput = new Empty("end of input");
-
     protected readonly string name;
 
     protected TokenKind(string name)
@@ -74,24 +72,6 @@ public class Operator : TokenKind
             var token = new Token(this, peek);
 
             return new Parsed<Token>(token, input.Advance(peek.Length));
-        }
-
-        return new Error<Token>(input, ErrorMessage.Expected(name));
-    }
-}
-
-public class Empty : TokenKind
-{
-    public Empty(string name)
-        : base(name) { }
-
-    public override Reply<Token> Parse(Text input)
-    {
-        if (input.EndOfInput)
-        {
-            var token = new Token(this, "");
-
-            return new Parsed<Token>(token, input);
         }
 
         return new Error<Token>(input, ErrorMessage.Expected(name));

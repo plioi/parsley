@@ -111,18 +111,4 @@ class TokenKindTests
             .LeavingUnparsedInput("*")
             .WithValue(token => token.ShouldBe(doubleStar, "**"));
     }
-
-    public void ProvidesConvenienceSubclassForRecognizingTheEndOfInput()
-    {
-        TokenKind.EndOfInput.ShouldBeOfType<Empty>();
-
-        TokenKind.EndOfInput.Name.ShouldBe("end of input");
-
-        TokenKind.EndOfInput.Parses("")
-            .WithValue(token => token.ShouldBe(TokenKind.EndOfInput, ""));
-
-        TokenKind.EndOfInput.FailsToParse("foo")
-            .LeavingUnparsedInput("foo")
-            .WithMessage("(1, 1): end of input expected");
-    }
 }
