@@ -1,5 +1,3 @@
-using static Parsley.Grammar;
-
 namespace Parsley;
 
 public delegate IParser<T> ExtendParserBuilder<T>(T left);
@@ -10,41 +8,41 @@ public enum Associativity { Left, Right }
 
 public class OperatorPrecedenceParser<T> : IParser<T>
 {
-    readonly List<(TokenKind, IParser<T>)> unitParsers = new();
-    readonly List<(TokenKind, ExtendParserBuilder<T>)> extendParsers = new();
-    readonly Dictionary<TokenKind, int> extendParserPrecedence = new();
+    readonly List<(IParser<Token>, IParser<T>)> unitParsers = new();
+    readonly List<(IParser<Token>, ExtendParserBuilder<T>)> extendParsers = new();
+    readonly Dictionary<IParser<Token>, int> extendParserPrecedence = new();
 
-    public void Unit(TokenKind kind, IParser<T> unitParser)
+    public void Unit(IParser<Token> kind, IParser<T> unitParser)
     {
         unitParsers.Add((kind, unitParser));
     }
 
-    public void Atom(TokenKind kind, AtomNodeBuilder<T> createAtomNode)
+    public void Atom(IParser<Token> kind, AtomNodeBuilder<T> createAtomNode)
     {
         Unit(kind, from token in kind
             select createAtomNode(token));
     }
 
-    public void Prefix(TokenKind operation, int precedence, UnaryNodeBuilder<T> createUnaryNode)
+    public void Prefix(IParser<Token> operation, int precedence, UnaryNodeBuilder<T> createUnaryNode)
     {
         Unit(operation, from symbol in operation
             from operand in OperandAtPrecedenceLevel(precedence)
             select createUnaryNode(symbol, operand));
     }
 
-    public void Extend(TokenKind operation, int precedence, ExtendParserBuilder<T> createExtendParser)
+    public void Extend(IParser<Token> operation, int precedence, ExtendParserBuilder<T> createExtendParser)
     {
         extendParsers.Add((operation, createExtendParser));
         extendParserPrecedence[operation] = precedence;
     }
 
-    public void Postfix(TokenKind operation, int precedence, UnaryNodeBuilder<T> createUnaryNode)
+    public void Postfix(IParser<Token> operation, int precedence, UnaryNodeBuilder<T> createUnaryNode)
     {
         Extend(operation, precedence, left => from symbol in operation
             select createUnaryNode(symbol, left));
     }
 
-    public void Binary(TokenKind operation, int precedence, BinaryNodeBuilder<T> createBinaryNode,
+    public void Binary(IParser<Token> operation, int precedence, BinaryNodeBuilder<T> createBinaryNode,
                        Associativity associativity = Associativity.Left)
     {
         int rightOperandPrecedence = precedence;

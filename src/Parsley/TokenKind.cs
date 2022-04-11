@@ -2,12 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace Parsley;
 
-public abstract class TokenKind : IParser<Token>
-{
-    public abstract Reply<Token> Parse(Text input);
-}
-
-public class Pattern : TokenKind
+public class Pattern : IParser<Token>
 {
     readonly string name;
     readonly TokenRegex regex;
@@ -18,7 +13,7 @@ public class Pattern : TokenKind
         regex = new TokenRegex(pattern, regexOptions);
     }
 
-    public override Reply<Token> Parse(Text input)
+    public Reply<Token> Parse(Text input)
     {
         var match = input.Match(regex);
 
@@ -43,14 +38,14 @@ public class Keyword : Pattern
     }
 }
 
-public class Operator : TokenKind
+public class Operator : IParser<Token>
 {
     readonly string symbol;
 
     public Operator(string symbol)
         => this.symbol = symbol;
 
-    public override Reply<Token> Parse(Text input)
+    public Reply<Token> Parse(Text input)
     {
         var peek = input.Peek(symbol.Length);
 
