@@ -31,13 +31,13 @@ class TokenKindTests
 
         lower.PartiallyParses("abcDEF")
             .LeavingUnparsedInput("DEF")
-            .WithValue(token => token.ShouldBe(lower, "abc"));
+            .WithValue(token => token.ShouldBe("abc"));
 
         upper.Parses("DEF")
-            .WithValue(token => token.ShouldBe(upper, "DEF"));
+            .WithValue(token => token.ShouldBe("DEF"));
 
         caseInsensitive.Parses("abcDEF")
-            .WithValue(token => token.ShouldBe(caseInsensitive, "abcDEF"));
+            .WithValue(token => token.ShouldBe("abcDEF"));
     }
 
     public void ProvidesConvenienceSubclassForDefiningKeywords()
@@ -49,11 +49,11 @@ class TokenKindTests
             .WithMessage("(1, 1): foo expected");
 
         foo.Parses("foo")
-            .WithValue(token => token.ShouldBe(foo, "foo"));
+            .WithValue(token => token.ShouldBe("foo"));
 
         foo.PartiallyParses("foo bar")
             .LeavingUnparsedInput(" bar")
-            .WithValue(token => token.ShouldBe(foo, "foo"));
+            .WithValue(token => token.ShouldBe("foo"));
 
         foo.FailsToParse("foobar")
             .LeavingUnparsedInput("foobar")
@@ -73,15 +73,15 @@ class TokenKindTests
             .WithMessage("(1, 1): * expected");
 
         star.Parses("*")
-            .WithValue(token => token.ShouldBe(star, "*"));
+            .WithValue(token => token.ShouldBe("*"));
 
         star.PartiallyParses("* *")
             .LeavingUnparsedInput(" *")
-            .WithValue(token => token.ShouldBe(star, "*"));
+            .WithValue(token => token.ShouldBe("*"));
 
         star.PartiallyParses("**")
             .LeavingUnparsedInput("*")
-            .WithValue(token => token.ShouldBe(star, "*"));
+            .WithValue(token => token.ShouldBe("*"));
 
         doubleStar.FailsToParse("a")
             .LeavingUnparsedInput("a")
@@ -96,10 +96,10 @@ class TokenKindTests
             .WithMessage("(1, 1): ** expected");
 
         doubleStar.Parses("**")
-            .WithValue(token => token.ShouldBe(doubleStar, "**"));
+            .WithValue(token => token.ShouldBe("**"));
 
         doubleStar.PartiallyParses("***")
             .LeavingUnparsedInput("*")
-            .WithValue(token => token.ShouldBe(doubleStar, "**"));
+            .WithValue(token => token.ShouldBe("**"));
     }
 }

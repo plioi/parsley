@@ -19,7 +19,7 @@ public class Pattern : IParser<Token>
 
         if (match.Success)
         {
-            var token = new Token(this, match.Value);
+            var token = new Token(match.Value);
 
             return new Parsed<Token>(token, input.Advance(token.Literal.Length));
         }
@@ -51,7 +51,7 @@ public class Operator : IParser<Token>
 
         if (peek == symbol)
         {
-            var token = new Token(this, peek);
+            var token = new Token(peek);
 
             return new Parsed<Token>(token, input.Advance(peek.Length));
         }

@@ -22,9 +22,8 @@ public static class ParsingAssertions
             throw new AssertionException(expected, actual.Value);
     }
 
-    public static void ShouldBe(this Token actual, IParser<Token> expectedKind, string expectedLiteral)
+    public static void ShouldBe(this Token actual, string expectedLiteral)
     {
-        AssertEqual(expectedKind, actual.Kind);
         AssertTokenLiteralsEqual(expectedLiteral, actual.Literal);
     }
 
@@ -119,11 +118,5 @@ public static class ParsingAssertions
     {
         if (actual != expected)
             throw new AssertionException($"token with literal \"{expected}\"", $"token with literal \"{actual}\"");
-    }
-
-    static void AssertEqual(IParser<Token> expected, IParser<Token> actual)
-    {
-        if (actual != expected)
-            throw new AssertionException($"<{expected}> token", $"<{actual}> token");
     }
 }
