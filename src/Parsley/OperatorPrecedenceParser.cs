@@ -107,8 +107,15 @@ public class OperatorPrecedenceParser<T> : IParser<T>
         token = null;
 
         foreach(var (kind, parser) in unitParsers)
-            if (kind.TryMatch(input, out token))
+        {
+            var reply = kind.Parse(input);
+
+            if (reply.Success)
+            {
+                token = reply.Value;
                 return parser;
+            }
+        }
 
         return null;
     }
@@ -118,8 +125,15 @@ public class OperatorPrecedenceParser<T> : IParser<T>
         token = null;
 
         foreach (var (kind, extendParserBuilder) in extendParsers)
-            if (kind.TryMatch(input, out token))
+        {
+            var reply = kind.Parse(input);
+
+            if (reply.Success)
+            {
+                token = reply.Value;
                 return extendParserBuilder;
+            }
+        }
 
         return null;
     }
