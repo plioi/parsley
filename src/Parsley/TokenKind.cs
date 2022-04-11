@@ -15,24 +15,16 @@ public abstract class TokenKind : IParser<Token>
 
     public Reply<Token> Parse(Text input)
     {
-        if (TryMatch(input, out var token))
-            return new Parsed<Token>(token, input.Advance(token.Literal.Length));
-
-        return new Error<Token>(input, ErrorMessage.Expected(name));
-    }
-
-    public bool TryMatch(Text text, out Token token)
-    {
-        var match = Match(text);
+        var match = Match(input);
 
         if (match.Success)
         {
-            token = new Token(this, match.Value);
-            return true;
+            var token = new Token(this, match.Value);
+
+            return new Parsed<Token>(token, input.Advance(token.Literal.Length));
         }
 
-        token = null;
-        return false;
+        return new Error<Token>(input, ErrorMessage.Expected(name));
     }
 
     protected abstract MatchResult Match(Text text);
