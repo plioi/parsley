@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Parsley.Primitives;
 
 namespace Parsley;
@@ -8,8 +9,17 @@ public static class Grammar
 
     public static IParser<string> EndOfInput { get; } = new EndOfInputParser();
 
+    public static IParser<string> Pattern(string name, string pattern, params RegexOptions[] regexOptions)
+        => new PatternParser(name, pattern, regexOptions);
+
+    public static IParser<string> Keyword(string word)
+        => new KeywordParser(word);
+
+    public static IParser<string> Operator(string symbol)
+        => new OperatorParser(symbol);
+
     /// <summary>
-    /// ZeroOrMore(p) repeatedly applies an parser p until it fails, returing
+    /// ZeroOrMore(p) repeatedly applies an parser p until it fails, returning
     /// the list of values returned by successful applications of p.  At the
     /// end of the sequence, p must fail without consuming input, otherwise the
     /// sequence will fail with the error reported by p.

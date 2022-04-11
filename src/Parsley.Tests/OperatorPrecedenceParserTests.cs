@@ -11,19 +11,19 @@ class OperatorPrecedenceParserTests
     {
         expression = new OperatorPrecedenceParser<IExpression>();
 
-        expression.Atom(Digit, token => new Constant(int.Parse(token.Literal, CultureInfo.InvariantCulture)));
-        expression.Atom(Name, token => new Identifier(token.Literal));
+        expression.Atom(Digit, token => new Constant(int.Parse(token, CultureInfo.InvariantCulture)));
+        expression.Atom(Name, token => new Identifier(token));
 
         expression.Unit(LeftParen, Between(LeftParen, expression, RightParen));
 
-        expression.Postfix(Increment, 7, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
-        expression.Postfix(Decrement, 7, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
+        expression.Postfix(Increment, 7, (symbol, operand) => new Form(new Identifier(symbol), operand));
+        expression.Postfix(Decrement, 7, (symbol, operand) => new Form(new Identifier(symbol), operand));
         expression.Binary(Add, 3, (left, symbol, right) => new Form(symbol, left, right));
         expression.Binary(Subtract, 3, (left, symbol, right) => new Form(symbol, left, right));
         expression.Binary(Multiply, 4, (left, symbol, right) => new Form(symbol, left, right));
         expression.Binary(Divide, 4, (left, symbol, right) => new Form(symbol, left, right));
         expression.Binary(Exponent, 5, (left, symbol, right) => new Form(symbol, left, right), Associativity.Right);
-        expression.Prefix(Subtract, 6, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
+        expression.Prefix(Subtract, 6, (symbol, operand) => new Form(new Identifier(symbol), operand));
 
         expression.Extend(LeftParen, 8, callable =>
             from arguments in Between(LeftParen, ZeroOrMore(expression, Comma), RightParen)
@@ -112,18 +112,18 @@ class OperatorPrecedenceParserTests
         expression.Parses(input).WithValue(e => e.ToString().ShouldBe(expectedTree));
     }
 
-    static readonly Pattern Digit = new("Digit", @"[0-9]");
-    static readonly Pattern Name = new("Name", @"[a-z]+");
-    static readonly Operator Increment = new("++");
-    static readonly Operator Decrement = new("--");
-    static readonly Operator Add = new("+");
-    static readonly Operator Subtract = new("-");
-    static readonly Operator Multiply = new("*");
-    static readonly Operator Divide = new("/");
-    static readonly Operator Exponent = new("^");
-    static readonly Operator LeftParen = new("(");
-    static readonly Operator RightParen = new(")");
-    static readonly Operator Comma = new(",");
+    static readonly IParser<string> Digit = Pattern("Digit", @"[0-9]");
+    static readonly IParser<string> Name = Pattern("Name", @"[a-z]+");
+    static readonly IParser<string> Increment = Operator("++");
+    static readonly IParser<string> Decrement = Operator("--");
+    static readonly IParser<string> Add = Operator("+");
+    static readonly IParser<string> Subtract = Operator("-");
+    static readonly IParser<string> Multiply = Operator("*");
+    static readonly IParser<string> Divide = Operator("/");
+    static readonly IParser<string> Exponent = Operator("^");
+    static readonly IParser<string> LeftParen = Operator("(");
+    static readonly IParser<string> RightParen = Operator(")");
+    static readonly IParser<string> Comma = Operator(",");
 
     interface IExpression
     {
@@ -156,8 +156,8 @@ class OperatorPrecedenceParserTests
         readonly IExpression head;
         readonly IEnumerable<IExpression> expressions;
 
-        public Form(Token head, params IExpression[] expressions)
-            : this(new Identifier(head.Literal), expressions) { }
+        public Form(string head, params IExpression[] expressions)
+            : this(new Identifier(head), expressions) { }
 
         public Form(IExpression head, params IExpression[] expressions)
             : this(head, (IEnumerable<IExpression>)expressions) { }

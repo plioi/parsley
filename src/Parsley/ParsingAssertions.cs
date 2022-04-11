@@ -22,11 +22,6 @@ public static class ParsingAssertions
             throw new AssertionException(expected, actual.Value);
     }
 
-    public static void ShouldBe(this Token actual, string expectedLiteral)
-    {
-        AssertTokenLiteralsEqual(expectedLiteral, actual.Literal);
-    }
-
     public static Reply<T> FailsToParse<T>(this IParser<T> parser, string input)
     {
         var reply = parser.Parse(new Text(input));
@@ -112,11 +107,5 @@ public static class ParsingAssertions
         assertParsedValue(reply.Value);
 
         return reply;
-    }
-
-    static void AssertTokenLiteralsEqual(string expected, string actual)
-    {
-        if (actual != expected)
-            throw new AssertionException($"token with literal \"{expected}\"", $"token with literal \"{actual}\"");
     }
 }

@@ -7,15 +7,15 @@ class GrammarRuleTests
     public void CanDefineMutuallyRecursiveRules()
     {
         var input = "(A)";
-        var open = new Operator("(");
-        var letter = new Pattern("Letter", @"[a-zA-Z]");
-        var close = new Operator(")");
+        var open = Operator("(");
+        var letter = Pattern("Letter", @"[a-zA-Z]");
+        var close = Operator(")");
         var expression = new GrammarRule<string>();
         var alpha = new GrammarRule<string>();
         var parenthesizedExpresion = new GrammarRule<string>();
 
         expression.Rule = Choice(alpha, parenthesizedExpresion);
-        alpha.Rule = from a in letter select a.Literal;
+        alpha.Rule = letter;
         parenthesizedExpresion.Rule = Between(open, expression, close);
 
         expression.Parses(input).WithValue("A");

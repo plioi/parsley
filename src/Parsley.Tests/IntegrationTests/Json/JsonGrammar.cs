@@ -6,18 +6,18 @@ namespace Parsley.Tests.IntegrationTests.Json;
 
 public class JsonGrammar
 {
-    static readonly Pattern WhitespaceLiteral = new("whitespace", @"\s+");
-    static readonly Keyword @null = new("null");
-    static readonly Keyword @true = new("true");
-    static readonly Keyword @false = new("false");
-    static readonly Operator Comma = new(",");
-    static readonly Operator OpenArray = new("[");
-    static readonly Operator CloseArray = new("]");
-    static readonly Operator OpenDictionary = new("{");
-    static readonly Operator CloseDictionary = new("}");
-    static readonly Operator Colon = new(":");
+    static readonly IParser<string> WhitespaceLiteral = Pattern("whitespace", @"\s+");
+    static readonly IParser<string> @null = Keyword("null");
+    static readonly IParser<string> @true = Keyword("true");
+    static readonly IParser<string> @false = Keyword("false");
+    static readonly IParser<string> Comma = Symbol(",");
+    static readonly IParser<string> OpenArray = Symbol("[");
+    static readonly IParser<string> CloseArray = Symbol("]");
+    static readonly IParser<string> OpenDictionary = Symbol("{");
+    static readonly IParser<string> CloseDictionary = Symbol("}");
+    static readonly IParser<string> Colon = Symbol(":");
 
-    static readonly Pattern StringLiteral = new("string", @"
+    static readonly IParser<string> StringLiteral = Pattern("string", @"
             # Open quote:
             ""
 
@@ -32,7 +32,7 @@ public class JsonGrammar
             ""
         ");
 
-    static readonly Pattern NumberLiteral = new("number", @"
+    static readonly IParser<string> NumberLiteral = Pattern("number", @"
             # Look-ahead to confirm the whole-number part is either 0 or starts with 1-9:
             (?=
                 0(?!\d)  |  [1-9]
@@ -53,7 +53,7 @@ public class JsonGrammar
         ");
 
     public static readonly GrammarRule<object> Json = new(nameof(Json));
-    static readonly GrammarRule<Token> Whitespace = new(nameof(Whitespace));
+    static readonly GrammarRule<string> Whitespace = new(nameof(Whitespace));
     static readonly GrammarRule<object> JsonValue = new(nameof(JsonValue));
     static readonly GrammarRule<object> True = new(nameof(True));
     static readonly GrammarRule<object> False = new(nameof(False));
@@ -70,36 +70,36 @@ public class JsonGrammar
             Optional(WhitespaceLiteral);
 
         True.Rule =
-            Keyword(@true, true);
+            KeywordConstant(@true, true);
 
         False.Rule =
-            Keyword(@false, false);
+            KeywordConstant(@false, false);
 
         Null.Rule =
-            Keyword(@null, null);
+            KeywordConstant(@null, null);
 
         Number.Rule =
             from number in NumberLiteral
             from trailing in Whitespace
-            select (object) decimal.Parse(number.Literal, NumberStyles.Any, CultureInfo.InvariantCulture);
+            select (object) decimal.Parse(number, NumberStyles.Any, CultureInfo.InvariantCulture);
 
         String.Rule =
             from quotation in StringLiteral
             from trailing in Whitespace
-            select Unescape(quotation.Literal);
+            select Unescape(quotation);
 
         Array.Rule =
-            from items in Between(Operator(OpenArray), ZeroOrMore(JsonValue, Operator(Comma)), Operator(CloseArray))
+            from items in Between(OpenArray, ZeroOrMore(JsonValue, Comma), CloseArray)
             select items.ToArray();
 
         Pair.Rule =
             from key in String
-            from colon in Operator(Colon)
+            from colon in Colon
             from value in JsonValue
             select new KeyValuePair<string, object>(key, value);
 
         Dictionary.Rule =
-            from pairs in Between(Operator(OpenDictionary), ZeroOrMore(Pair, Operator(Comma)), Operator(CloseDictionary))
+            from pairs in Between(OpenDictionary, ZeroOrMore(Pair, Comma), CloseDictionary)
             select ToDictionary(pairs);
 
         JsonValue.Rule = Choice(True, False, Null, Number, String, Dictionary, Array);
@@ -112,18 +112,18 @@ public class JsonGrammar
             select jsonValue;
     }
 
-    static IParser<object> Keyword(Keyword keyword, object constant)
+    static IParser<object> KeywordConstant(IParser<string> keyword, object constant)
     {
         return from _ in keyword
             from trailing in Whitespace
             select constant;
     }
 
-    static IParser<object> Operator(Operator @operator)
+    static IParser<string> Symbol(string symbol)
     {
-        return from symbol in @operator
+        return from s in Operator(symbol)
             from trailing in Whitespace
-            select symbol;
+            select s;
     }
 
     static string Unescape(string quotation)

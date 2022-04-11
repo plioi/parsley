@@ -14,7 +14,7 @@ class JsonGrammarTests : JsonGrammar
 
     public void ParsesNullLiteral()
     {
-        Json.Parses("null").WithValue(value => value.ShouldBeNull());
+        Json.Parses("null").WithValue((object)null);
     }
 
     public void ParsesNumbers()

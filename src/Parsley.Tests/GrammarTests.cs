@@ -1,31 +1,29 @@
+using System.Text.RegularExpressions;
 using static Parsley.Grammar;
 
 namespace Parsley.Tests;
 
 class GrammarTests
 {
-    static readonly Pattern Digit = new("Digit", @"[0-9]");
-    static readonly Pattern Letter = new("Letter", @"[a-zA-Z]");
+    static readonly IParser<string> Digit = Pattern("Digit", @"[0-9]");
+    static readonly IParser<string> Letter = Pattern("Letter", @"[a-zA-Z]");
 
-    readonly IParser<Token> A, B, AB, COMMA;
+    readonly IParser<string> A, B, AB, COMMA;
 
     public GrammarTests()
     {
-        A = new Pattern("A", @"A");
-        B = new Pattern("B", @"B");
+        A = Pattern("A", @"A");
+        B = Pattern("B", @"B");
 
         AB = from a in A
             from b in B
-            select new Token(a.Literal + b.Literal);
+            select a + b;
 
-        COMMA = new Pattern("COMMA", @",");
+        COMMA = Pattern("COMMA", @",");
     }
 
-    static Action<Token> Literal(string expectedLiteral)
-        => t => t.Literal.ShouldBe(expectedLiteral);
-
-    static Action<IEnumerable<Token>> Literals(params string[] expectedLiterals)
-        => tokens => tokens.ShouldList(expectedLiterals.Select(Literal).ToArray());
+    static Action<IEnumerable<string>> Literals(params string[] expectedLiterals)
+        => actualLiterals => actualLiterals.ShouldBe(expectedLiterals);
 
     public void CanFailWithoutConsumingInput()
     {
@@ -38,19 +36,19 @@ class GrammarTests
         EndOfInput.FailsToParse("!").LeavingUnparsedInput("!").WithMessage("(1, 1): end of input expected");
     }
 
-    public void CanDemandThatAGivenKindOfTokenAppearsNext()
+    public void CanDemandThatAGivenParserRecognizesTheNextConsumableInput()
     {
-        Letter.Parses("A").WithValue(Literal("A"));
+        Letter.Parses("A").WithValue("A");
         Letter.FailsToParse("0").LeavingUnparsedInput("0").WithMessage("(1, 1): Letter expected");
 
         Digit.FailsToParse("A").LeavingUnparsedInput("A").WithMessage("(1, 1): Digit expected");
-        Digit.Parses("0").WithValue(Literal("0"));
+        Digit.Parses("0").WithValue("0");
     }
 
     public void CanDemandThatAGivenTokenLiteralAppearsNext()
     {
-        A.Parses("A").WithValue(Literal("A"));
-        A.PartiallyParses("A!").LeavingUnparsedInput("!").WithValue(Literal("A"));
+        A.Parses("A").WithValue("A");
+        A.PartiallyParses("A!").LeavingUnparsedInput("!").WithValue("A");
         A.FailsToParse("B").LeavingUnparsedInput("B").WithMessage("(1, 1): A expected");
     }
 
@@ -72,7 +70,7 @@ class GrammarTests
             .LeavingUnparsedInput("!")
             .WithMessage("(1, 6): B expected");
 
-        IParser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
+        IParser<string> succeedWithoutConsuming = new LambdaParser<string>(input => new Parsed<string>(null, input));
         Action infiniteLoop = () => ZeroOrMore(succeedWithoutConsuming).Parse(new Text(""));
         infiniteLoop.ShouldThrow<Exception>("Parser encountered a potential infinite loop at position (1, 1).");
     }
@@ -95,7 +93,7 @@ class GrammarTests
             .LeavingUnparsedInput("!")
             .WithMessage("(1, 6): B expected");
 
-        IParser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
+        IParser<string> succeedWithoutConsuming = new LambdaParser<string>(input => new Parsed<string>(null, input));
         Action infiniteLoop = () => OneOrMore(succeedWithoutConsuming).Parse(new Text(""));
         infiniteLoop.ShouldThrow<Exception>("Parser encountered a potential infinite loop at position (1, 1).");
     }
@@ -134,20 +132,20 @@ class GrammarTests
         parser.FailsToParse("AA").LeavingUnparsedInput("A").WithMessage("(1, 2): B expected");
         parser.FailsToParse("AB").AtEndOfInput().WithMessage("(1, 3): A expected");
         parser.FailsToParse("ABB").LeavingUnparsedInput("B").WithMessage("(1, 3): A expected");
-        parser.Parses("ABA").WithValue(Literal("B"));
+        parser.Parses("ABA").WithValue("B");
     }
 
     public void ParsingAnOptionalRuleZeroOrOneTimes()
     {
-        Optional(AB).PartiallyParses("AB.").LeavingUnparsedInput(".").WithValue(Literal("AB"));
-        Optional(AB).PartiallyParses(".").LeavingUnparsedInput(".").WithValue(token => token.ShouldBeNull());
+        Optional(AB).PartiallyParses("AB.").LeavingUnparsedInput(".").WithValue("AB");
+        Optional(AB).PartiallyParses(".").LeavingUnparsedInput(".").WithValue((string)null);
         Optional(AB).FailsToParse("AC.").LeavingUnparsedInput("C.").WithMessage("(1, 2): B expected");
     }
 
     public void AttemptingToParseRuleButBacktrackingUponFailure()
     {
         //When p succeeds, Attempt(p) is the same as p.
-        Attempt(AB).Parses("AB").WithValue(Literal("AB"));
+        Attempt(AB).Parses("AB").WithValue("AB");
 
         //When p fails without consuming input, Attempt(p) is the same as p.
         Attempt(AB).FailsToParse("!").LeavingUnparsedInput("!").WithMessage("(1, 1): A expected");
@@ -161,45 +159,134 @@ class GrammarTests
         var labeled = Label(AB, "'A' followed by 'B'");
 
         //When p succeeds after consuming input, Label(p) is the same as p.
-        AB.Parses("AB").WithNoMessage().WithValue(Literal("AB"));
-        labeled.Parses("AB").WithNoMessage().WithValue(Literal("AB"));
+        AB.Parses("AB").WithNoMessage().WithValue("AB");
+        labeled.Parses("AB").WithNoMessage().WithValue("AB");
 
         //When p fails after consuming input, Label(p) is the same as p.
         AB.FailsToParse("A!").LeavingUnparsedInput("!").WithMessage("(1, 2): B expected");
         labeled.FailsToParse("A!").LeavingUnparsedInput("!").WithMessage("(1, 2): B expected");
 
         //When p succeeds but does not consume input, Label(p) still succeeds but the potential error is included.
-        var succeedWithoutConsuming = new Token("$").SucceedWithThisValue();
+        var succeedWithoutConsuming = "$".SucceedWithThisValue();
         succeedWithoutConsuming
             .PartiallyParses("!")
             .LeavingUnparsedInput("!")
             .WithNoMessage()
-            .WithValue(Literal("$"));
+            .WithValue("$");
         Label(succeedWithoutConsuming, "nothing")
             .PartiallyParses("!")
             .LeavingUnparsedInput("!")
             .WithMessage("(1, 1): nothing expected")
-            .WithValue(Literal("$"));
+            .WithValue("$");
 
         //When p fails but does not consume input, Label(p) fails with the given expectation.
         AB.FailsToParse("!").LeavingUnparsedInput("!").WithMessage("(1, 1): A expected");
         labeled.FailsToParse("!").LeavingUnparsedInput("!").WithMessage("(1, 1): 'A' followed by 'B' expected");
     }
+
+    public void ProvidesConveniencePrimitiveForRecognizingNamedRegexPatterns()
+    {
+        var lower = Pattern("Lowercase", @"[a-z]+");
+        var upper = Pattern("Uppercase", @"[A-Z]+");
+        var caseInsensitive = Pattern("Case Insensitive", @"[a-z]+", RegexOptions.IgnoreCase);
+
+        lower.FailsToParse("ABCdef")
+            .LeavingUnparsedInput("ABCdef")
+            .WithMessage("(1, 1): Lowercase expected");
+
+        upper.FailsToParse("abcDEF")
+            .LeavingUnparsedInput("abcDEF")
+            .WithMessage("(1, 1): Uppercase expected");
+
+        caseInsensitive.FailsToParse("!abcDEF")
+            .LeavingUnparsedInput("!abcDEF")
+            .WithMessage("(1, 1): Case Insensitive expected");
+
+        lower.PartiallyParses("abcDEF")
+            .LeavingUnparsedInput("DEF")
+            .WithValue("abc");
+
+        upper.Parses("DEF")
+            .WithValue("DEF");
+
+        caseInsensitive.Parses("abcDEF")
+            .WithValue("abcDEF");
+    }
+
+    public void ProvidesConveniencePrimitiveForDefiningKeywords()
+    {
+        var foo = Keyword("foo");
+
+        foo.FailsToParse("bar")
+            .LeavingUnparsedInput("bar")
+            .WithMessage("(1, 1): foo expected");
+
+        foo.Parses("foo")
+            .WithValue("foo");
+
+        foo.PartiallyParses("foo bar")
+            .LeavingUnparsedInput(" bar")
+            .WithValue("foo");
+
+        foo.FailsToParse("foobar")
+            .LeavingUnparsedInput("foobar")
+            .WithMessage("(1, 1): foo expected");
+
+        var notJustLetters = () => Keyword(" oops ");
+        notJustLetters.ShouldThrow<ArgumentException>("Keywords may only contain letters. (Parameter 'word')");
+    }
+
+    public void ProvidesConveniencePrimitiveForDefiningOperators()
+    {
+        var star = Operator("*");
+        var doubleStar = Operator("**");
+
+        star.FailsToParse("a")
+            .LeavingUnparsedInput("a")
+            .WithMessage("(1, 1): * expected");
+
+        star.Parses("*")
+            .WithValue("*");
+
+        star.PartiallyParses("* *")
+            .LeavingUnparsedInput(" *")
+            .WithValue("*");
+
+        star.PartiallyParses("**")
+            .LeavingUnparsedInput("*")
+            .WithValue("*");
+
+        doubleStar.FailsToParse("a")
+            .LeavingUnparsedInput("a")
+            .WithMessage("(1, 1): ** expected");
+
+        doubleStar.FailsToParse("*")
+            .LeavingUnparsedInput("*")
+            .WithMessage("(1, 1): ** expected");
+
+        doubleStar.FailsToParse("* *")
+            .LeavingUnparsedInput("* *")
+            .WithMessage("(1, 1): ** expected");
+
+        doubleStar.Parses("**")
+            .WithValue("**");
+
+        doubleStar.PartiallyParses("***")
+            .LeavingUnparsedInput("*")
+            .WithValue("**");
+    }
 }
 
 public class AlternationTests
 {
-    readonly IParser<Token> A, B, C;
+    readonly IParser<string> A, B, C;
 
     public AlternationTests()
     {
-        A = new Pattern("A", @"A");
-        B = new Pattern("B", @"B");
-        C = new Pattern("C", @"C");
+        A = Pattern("A", @"A");
+        B = Pattern("B", @"B");
+        C = Pattern("C", @"C");
     }
-
-    static Action<Token> Literal(string expectedLiteral)
-        => t => t.Literal.ShouldBe(expectedLiteral);
 
     public void ChoosingBetweenZeroAlternativesAlwaysFails()
     {
@@ -208,20 +295,20 @@ public class AlternationTests
 
     public void ChoosingBetweenOneAlternativeParserIsEquivalentToThatParser()
     {
-        Choice(A).Parses("A").WithValue(Literal("A"));
-        Choice(A).PartiallyParses("AB").LeavingUnparsedInput("B").WithValue(Literal("A"));
+        Choice(A).Parses("A").WithValue("A");
+        Choice(A).PartiallyParses("AB").LeavingUnparsedInput("B").WithValue("A");
         Choice(A).FailsToParse("B").LeavingUnparsedInput("B").WithMessage("(1, 1): A expected");
     }
 
     public void FirstParserCanSucceedWithoutExecutingOtherAlternatives()
     {
-        Choice(A, NeverExecuted).Parses("A").WithValue(Literal("A"));
+        Choice(A, NeverExecuted).Parses("A").WithValue("A");
     }
 
     public void SubsequentParserCanSucceedWhenPreviousParsersFailWithoutConsumingInput()
     {
-        Choice(B, A).Parses("A").WithValue(Literal("A"));
-        Choice(C, B, A).Parses("A").WithValue(Literal("A"));
+        Choice(B, A).Parses("A").WithValue("A");
+        Choice(C, B, A).Parses("A").WithValue("A");
     }
 
     public void SubsequentParserWillNotBeAttemptedWhenPreviousParserFailsAfterConsumingInput()
@@ -230,7 +317,7 @@ public class AlternationTests
 
         var AB = from a in A
             from b in B
-            select new Token(a.Literal + b.Literal);
+            select a + b;
 
         Choice(AB, NeverExecuted).FailsToParse("A").AtEndOfInput().WithMessage("(1, 2): B expected");
         Choice(C, AB, NeverExecuted).FailsToParse("A").AtEndOfInput().WithMessage("(1, 2): B expected");
@@ -248,7 +335,7 @@ public class AlternationTests
         //consuming input.  These tests simply describe the behavior under that
         //unusual situation.
 
-        IParser<Token> succeedWithoutConsuming = new LambdaParser<Token>(tokens => new Parsed<Token>(null, tokens));
+        IParser<string> succeedWithoutConsuming = new LambdaParser<string>(input => new Parsed<string>(null, input));
 
         var reply = Choice(A, succeedWithoutConsuming).Parses("");
         reply.ErrorMessages.ToString().ShouldBe("A expected");
@@ -260,7 +347,7 @@ public class AlternationTests
         reply.ErrorMessages.ToString().ShouldBe("A expected");
     }
 
-    static readonly IParser<Token> NeverExecuted = new LambdaParser<Token>(tokens =>
+    static readonly IParser<string> NeverExecuted = new LambdaParser<string>(input =>
     {
         throw new Exception("Parser 'NeverExecuted' should not have been executed.");
     });
