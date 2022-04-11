@@ -6,30 +6,16 @@ public abstract class TokenKind : IParser<Token>
 {
     public static readonly TokenKind EndOfInput = new Empty("end of input");
 
-    readonly string name;
+    protected readonly string name;
 
     protected TokenKind(string name)
     {
         this.name = name;
     }
 
-    public Reply<Token> Parse(Text input)
-    {
-        var match = Match(input);
-
-        if (match.Success)
-        {
-            var token = new Token(this, match.Value);
-
-            return new Parsed<Token>(token, input.Advance(token.Literal.Length));
-        }
-
-        return new Error<Token>(input, ErrorMessage.Expected(name));
-    }
-
-    protected abstract MatchResult Match(Text text);
-
     public string Name => name;
+
+    public abstract Reply<Token> Parse(Text input);
 
     public override string ToString() => name;
 }
@@ -44,8 +30,19 @@ public class Pattern : TokenKind
         regex = new TokenRegex(pattern, regexOptions);
     }
 
-    protected override MatchResult Match(Text text)
-        => text.Match(regex);
+    public override Reply<Token> Parse(Text input)
+    {
+        var match = input.Match(regex);
+
+        if (match.Success)
+        {
+            var token = new Token(this, match.Value);
+
+            return new Parsed<Token>(token, input.Advance(token.Literal.Length));
+        }
+
+        return new Error<Token>(input, ErrorMessage.Expected(name));
+    }
 }
 
 public class Keyword : Pattern
@@ -68,14 +65,18 @@ public class Operator : TokenKind
         this.symbol = symbol;
     }
 
-    protected override MatchResult Match(Text text)
+    public override Reply<Token> Parse(Text input)
     {
-        var peek = text.Peek(symbol.Length);
+        var peek = input.Peek(symbol.Length);
 
         if (peek == symbol)
-            return MatchResult.Succeed(peek);
+        {
+            var token = new Token(this, peek);
 
-        return MatchResult.Fail;
+            return new Parsed<Token>(token, input.Advance(peek.Length));
+        }
+
+        return new Error<Token>(input, ErrorMessage.Expected(name));
     }
 }
 
@@ -84,11 +85,15 @@ public class Empty : TokenKind
     public Empty(string name)
         : base(name) { }
 
-    protected override MatchResult Match(Text text)
+    public override Reply<Token> Parse(Text input)
     {
-        if (text.EndOfInput)
-            return MatchResult.Succeed("");
+        if (input.EndOfInput)
+        {
+            var token = new Token(this, "");
 
-        return MatchResult.Fail;
+            return new Parsed<Token>(token, input);
+        }
+
+        return new Error<Token>(input, ErrorMessage.Expected(name));
     }
 }
