@@ -15,7 +15,7 @@ partial class Grammar
         {
             var start = input.Position;
             var reply = parse(input);
-            var newPosition = reply.Position;
+            var newPosition = input.Position;
 
             if (start == newPosition)
             {

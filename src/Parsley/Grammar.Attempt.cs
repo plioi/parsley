@@ -14,7 +14,7 @@ partial class Grammar
             var snapshot = input.Snapshot();
             var start = input.Position;
             var reply = parse(input);
-            var newPosition = reply.Position;
+            var newPosition = input.Position;
 
             if (reply.Success || start == newPosition)
                 return reply;
