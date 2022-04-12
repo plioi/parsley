@@ -9,11 +9,15 @@ public class Parsed<T> : Reply<T>
     {
         Value = value;
         UnparsedInput = unparsedInput;
+        Position = unparsedInput.Position;
+        EndOfInput = unparsedInput.EndOfInput;
         ErrorMessages = potentialErrors;
     }
 
     public T Value { get; }
     public Text UnparsedInput { get; }
+    public Position Position { get; }
+    public bool EndOfInput { get; }
     public bool Success => true;
     public ErrorMessageList ErrorMessages { get; }
 }

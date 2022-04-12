@@ -8,6 +8,8 @@ public class Error<T> : Reply<T>
     public Error(Text unparsedInput, ErrorMessageList errors)
     {
         UnparsedInput = unparsedInput;
+        Position = unparsedInput.Position;
+        EndOfInput = unparsedInput.EndOfInput;
         ErrorMessages = errors;
     }
 
@@ -21,6 +23,8 @@ public class Error<T> : Reply<T>
     }
 
     public Text UnparsedInput { get; }
+    public Position Position { get; }
+    public bool EndOfInput { get; }
     public bool Success => false;
     public ErrorMessageList ErrorMessages { get; }
 }

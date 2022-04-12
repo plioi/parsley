@@ -14,7 +14,7 @@ partial class Grammar
         {
             var oldPosition = input.Position;
             var reply = item(input);
-            var newPosition = reply.UnparsedInput.Position;
+            var newPosition = reply.Position;
 
             var list = new List<T>();
 
@@ -26,7 +26,7 @@ partial class Grammar
                 list.Add(reply.Value);
                 oldPosition = newPosition;
                 reply = item(reply.UnparsedInput);
-                newPosition = reply.UnparsedInput.Position;
+                newPosition = reply.Position;
             }
 
             //The item parser finally failed.

@@ -13,7 +13,7 @@ partial class Grammar
         {
             var start = input.Position;
             var reply = parse(input);
-            var newPosition = reply.UnparsedInput.Position;
+            var newPosition = reply.Position;
 
             if (reply.Success || start == newPosition)
                 return reply;

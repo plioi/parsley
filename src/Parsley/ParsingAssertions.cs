@@ -48,7 +48,7 @@ public static class ParsingAssertions
 
     public static Reply<T> WithMessage<T>(this Reply<T> reply, string expectedMessage)
     {
-        var position = reply.UnparsedInput.Position;
+        var position = reply.Position;
         var actual = position + ": " + reply.ErrorMessages;
             
         if (actual != expectedMessage)
@@ -79,7 +79,7 @@ public static class ParsingAssertions
     {
         if (!reply.Success)
         {
-            var message = "Position: " + reply.UnparsedInput.Position
+            var message = "Position: " + reply.Position
                                        + Environment.NewLine
                                        + "Error Message: " + reply.ErrorMessages;
             throw new AssertionException(message, "parser success", "parser failed");
@@ -102,7 +102,7 @@ public static class ParsingAssertions
 
     public static Reply<T> AtEndOfInput<T>(this Reply<T> reply)
     {
-        if (!reply.UnparsedInput.EndOfInput)
+        if (!reply.EndOfInput)
             throw new AssertionException("end of input", reply.UnparsedInput);
 
         return reply.LeavingUnparsedInput("");
