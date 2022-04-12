@@ -1,11 +1,11 @@
 namespace Parsley.Primitives;
 
-class LabeledParser<T> : IParser<T>
+class LabeledParser<T> : Parser<T>
 {
-    readonly IParser<T> parser;
+    readonly Parser<T> parser;
     readonly ErrorMessageList errors;
 
-    public LabeledParser(IParser<T> parser, string expectation)
+    public LabeledParser(Parser<T> parser, string expectation)
     {
         this.parser = parser;
         errors = ErrorMessageList.Empty.With(ErrorMessage.Expected(expectation));

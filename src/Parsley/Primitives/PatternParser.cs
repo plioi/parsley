@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace Parsley.Primitives;
 
-class PatternParser : IParser<string>
+class PatternParser : Parser<string>
 {
     readonly string name;
     readonly TokenRegex regex;

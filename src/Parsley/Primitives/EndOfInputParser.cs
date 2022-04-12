@@ -1,6 +1,6 @@
 namespace Parsley.Primitives;
 
-class EndOfInputParser : IParser<string>
+class EndOfInputParser : Parser<string>
 {
     public Reply<string> Parse(Text input)
         => input.EndOfInput

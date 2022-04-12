@@ -6,9 +6,9 @@ namespace Parsley.Tests.IntegrationTests.Json;
 
 public class JsonGrammar
 {
-    public static readonly IParser<object> JsonDocument;
+    public static readonly Parser<object> JsonDocument;
 
-    static readonly IParser<object> Value;
+    static readonly Parser<object> Value;
 
     static JsonGrammar()
     {
@@ -63,7 +63,7 @@ public class JsonGrammar
             select value;
     }
 
-    static readonly IParser<string> Number = Pattern("number", @"
+    static readonly Parser<string> Number = Pattern("number", @"
             # Look-ahead to confirm the whole-number part is either 0 or starts with 1-9:
             (?=
                 0(?!\d)  |  [1-9]
@@ -83,7 +83,7 @@ public class JsonGrammar
             )?
         ");
 
-    static readonly IParser<string> Quote = Pattern("string", @"
+    static readonly Parser<string> Quote = Pattern("string", @"
             # Open quote:
             ""
 

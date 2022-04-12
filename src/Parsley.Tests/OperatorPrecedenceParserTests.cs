@@ -118,18 +118,18 @@ class OperatorPrecedenceParserTests
         expression.Parses(input).WithValue(e => e.ToString().ShouldBe(expectedTree));
     }
 
-    static readonly IParser<string> Digit = Pattern("Digit", @"[0-9]");
-    static readonly IParser<string> Name = Pattern("Name", @"[a-z]+");
-    static readonly IParser<string> Increment = Operator("++");
-    static readonly IParser<string> Decrement = Operator("--");
-    static readonly IParser<string> Add = Operator("+");
-    static readonly IParser<string> Subtract = Operator("-");
-    static readonly IParser<string> Multiply = Operator("*");
-    static readonly IParser<string> Divide = Operator("/");
-    static readonly IParser<string> Exponent = Operator("^");
-    static readonly IParser<string> LeftParen = Operator("(");
-    static readonly IParser<string> RightParen = Operator(")");
-    static readonly IParser<string> Comma = Operator(",");
+    static readonly Parser<string> Digit = Pattern("Digit", @"[0-9]");
+    static readonly Parser<string> Name = Pattern("Name", @"[a-z]+");
+    static readonly Parser<string> Increment = Operator("++");
+    static readonly Parser<string> Decrement = Operator("--");
+    static readonly Parser<string> Add = Operator("+");
+    static readonly Parser<string> Subtract = Operator("-");
+    static readonly Parser<string> Multiply = Operator("*");
+    static readonly Parser<string> Divide = Operator("/");
+    static readonly Parser<string> Exponent = Operator("^");
+    static readonly Parser<string> LeftParen = Operator("(");
+    static readonly Parser<string> RightParen = Operator(")");
+    static readonly Parser<string> Comma = Operator(",");
 
     interface IExpression
     {

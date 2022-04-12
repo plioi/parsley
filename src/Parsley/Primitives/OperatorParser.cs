@@ -1,6 +1,6 @@
 namespace Parsley.Primitives;
 
-public class OperatorParser : IParser<string>
+public class OperatorParser : Parser<string>
 {
     readonly string symbol;
 

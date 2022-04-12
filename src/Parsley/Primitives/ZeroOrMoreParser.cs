@@ -1,10 +1,10 @@
 namespace Parsley.Primitives;
 
-class ZeroOrMoreParser<T> : IParser<IEnumerable<T>>
+class ZeroOrMoreParser<T> : Parser<IEnumerable<T>>
 {
-    readonly IParser<T> item;
+    readonly Parser<T> item;
 
-    public ZeroOrMoreParser(IParser<T> item)
+    public ZeroOrMoreParser(Parser<T> item)
     {
         this.item = item;
     }

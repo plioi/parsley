@@ -1,6 +1,6 @@
 namespace Parsley;
 
-public class LambdaParser<T> : IParser<T>
+public class LambdaParser<T> : Parser<T>
 {
     readonly Func<Text, Reply<T>> parse;
 

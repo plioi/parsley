@@ -22,7 +22,7 @@ public static class ParsingAssertions
             throw new AssertionException(expected, actual.Value);
     }
 
-    public static Reply<T> FailsToParse<T>(this IParser<T> parser, string input)
+    public static Reply<T> FailsToParse<T>(this Parser<T> parser, string input)
     {
         var reply = parser.Parse(new Text(input));
             
@@ -51,12 +51,12 @@ public static class ParsingAssertions
         return reply;
     }
 
-    public static Reply<T> PartiallyParses<T>(this IParser<T> parser, string input)
+    public static Reply<T> PartiallyParses<T>(this Parser<T> parser, string input)
     {
         return parser.Parse(new Text(input)).Succeeds();
     }
 
-    public static Reply<T> Parses<T>(this IParser<T> parser, string input)
+    public static Reply<T> Parses<T>(this Parser<T> parser, string input)
     {
         return parser.Parse(new Text(input)).Succeeds().AtEndOfInput();
     }

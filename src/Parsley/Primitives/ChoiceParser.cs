@@ -1,10 +1,10 @@
 namespace Parsley.Primitives;
 
-class ChoiceParser<T> : IParser<T>
+class ChoiceParser<T> : Parser<T>
 {
-    readonly IParser<T>[] parsers;
+    readonly Parser<T>[] parsers;
 
-    public ChoiceParser(IParser<T>[] parsers)
+    public ChoiceParser(Parser<T>[] parsers)
     {
         this.parsers = parsers;
     }

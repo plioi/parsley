@@ -5,10 +5,10 @@ namespace Parsley.Tests;
 
 class GrammarTests
 {
-    static readonly IParser<string> Digit = Pattern("Digit", @"[0-9]");
-    static readonly IParser<string> Letter = Pattern("Letter", @"[a-zA-Z]");
+    static readonly Parser<string> Digit = Pattern("Digit", @"[0-9]");
+    static readonly Parser<string> Letter = Pattern("Letter", @"[a-zA-Z]");
 
-    readonly IParser<string> A, B, AB, COMMA;
+    readonly Parser<string> A, B, AB, COMMA;
 
     public GrammarTests()
     {
@@ -70,7 +70,7 @@ class GrammarTests
             .LeavingUnparsedInput("!")
             .WithMessage("(1, 6): B expected");
 
-        IParser<string> succeedWithoutConsuming = new LambdaParser<string>(input => new Parsed<string>(null, input));
+        Parser<string> succeedWithoutConsuming = new LambdaParser<string>(input => new Parsed<string>(null, input));
         Action infiniteLoop = () => ZeroOrMore(succeedWithoutConsuming).Parse(new Text(""));
 
         infiniteLoop
@@ -96,7 +96,7 @@ class GrammarTests
             .LeavingUnparsedInput("!")
             .WithMessage("(1, 6): B expected");
 
-        IParser<string> succeedWithoutConsuming = new LambdaParser<string>(input => new Parsed<string>(null, input));
+        Parser<string> succeedWithoutConsuming = new LambdaParser<string>(input => new Parsed<string>(null, input));
         Action infiniteLoop = () => OneOrMore(succeedWithoutConsuming).Parse(new Text(""));
 
         infiniteLoop
@@ -273,7 +273,7 @@ class GrammarTests
 
 public class AlternationTests
 {
-    readonly IParser<string> A, B, C;
+    readonly Parser<string> A, B, C;
 
     public AlternationTests()
     {
@@ -329,7 +329,7 @@ public class AlternationTests
         //consuming input.  These tests simply describe the behavior under that
         //unusual situation.
 
-        IParser<string> succeedWithoutConsuming = new LambdaParser<string>(input => new Parsed<string>(null, input));
+        Parser<string> succeedWithoutConsuming = new LambdaParser<string>(input => new Parsed<string>(null, input));
 
         var reply = Choice(A, succeedWithoutConsuming).Parses("");
         reply.ErrorMessages.ToString().ShouldBe("A expected");
@@ -341,7 +341,7 @@ public class AlternationTests
         reply.ErrorMessages.ToString().ShouldBe("A expected");
     }
 
-    static readonly IParser<string> NeverExecuted = new LambdaParser<string>(input =>
+    static readonly Parser<string> NeverExecuted = new LambdaParser<string>(input =>
     {
         throw new Exception("Parser 'NeverExecuted' should not have been executed.");
     });

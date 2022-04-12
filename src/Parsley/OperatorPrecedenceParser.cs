@@ -1,46 +1,46 @@
 namespace Parsley;
 
-public delegate IParser<T> ExtendParserBuilder<T>(T left);
+public delegate Parser<T> ExtendParserBuilder<T>(T left);
 public delegate T AtomNodeBuilder<out T>(string atom);
 public delegate T UnaryNodeBuilder<T>(string symbol, T operand);
 public delegate T BinaryNodeBuilder<T>(T left, string symbol, T right);
 public enum Associativity { Left, Right }
 
-public class OperatorPrecedenceParser<T> : IParser<T>
+public class OperatorPrecedenceParser<T> : Parser<T>
 {
-    readonly List<(IParser<string>, IParser<T>)> unitParsers = new();
-    readonly List<(IParser<string>, int precedence, ExtendParserBuilder<T>)> extendParsers = new();
+    readonly List<(Parser<string>, Parser<T>)> unitParsers = new();
+    readonly List<(Parser<string>, int precedence, ExtendParserBuilder<T>)> extendParsers = new();
 
-    public void Unit(IParser<string> kind, IParser<T> unitParser)
+    public void Unit(Parser<string> kind, Parser<T> unitParser)
     {
         unitParsers.Add((kind, unitParser));
     }
 
-    public void Atom(IParser<string> kind, AtomNodeBuilder<T> createAtomNode)
+    public void Atom(Parser<string> kind, AtomNodeBuilder<T> createAtomNode)
     {
         Unit(kind, from token in kind
             select createAtomNode(token));
     }
 
-    public void Prefix(IParser<string> operation, int precedence, UnaryNodeBuilder<T> createUnaryNode)
+    public void Prefix(Parser<string> operation, int precedence, UnaryNodeBuilder<T> createUnaryNode)
     {
         Unit(operation, from symbol in operation
             from operand in OperandAtPrecedenceLevel(precedence)
             select createUnaryNode(symbol, operand));
     }
 
-    public void Extend(IParser<string> operation, int precedence, ExtendParserBuilder<T> createExtendParser)
+    public void Extend(Parser<string> operation, int precedence, ExtendParserBuilder<T> createExtendParser)
     {
         extendParsers.Add((operation, precedence, createExtendParser));
     }
 
-    public void Postfix(IParser<string> operation, int precedence, UnaryNodeBuilder<T> createUnaryNode)
+    public void Postfix(Parser<string> operation, int precedence, UnaryNodeBuilder<T> createUnaryNode)
     {
         Extend(operation, precedence, left => from symbol in operation
             select createUnaryNode(symbol, left));
     }
 
-    public void Binary(IParser<string> operation, int precedence, BinaryNodeBuilder<T> createBinaryNode,
+    public void Binary(Parser<string> operation, int precedence, BinaryNodeBuilder<T> createBinaryNode,
                        Associativity associativity = Associativity.Left)
     {
         int rightOperandPrecedence = precedence;
@@ -58,7 +58,7 @@ public class OperatorPrecedenceParser<T> : IParser<T>
         return Parse(input, 0);
     }
 
-    IParser<T> OperandAtPrecedenceLevel(int precedence)
+    Parser<T> OperandAtPrecedenceLevel(int precedence)
     {
         return new LambdaParser<T>(input => Parse(input, precedence));
     }
@@ -98,7 +98,7 @@ public class OperatorPrecedenceParser<T> : IParser<T>
         return reply;
     }
 
-    IParser<T> FirstMatchingUnitParserOrNull(Text input, out string token)
+    Parser<T> FirstMatchingUnitParserOrNull(Text input, out string token)
     {
         token = null;
 

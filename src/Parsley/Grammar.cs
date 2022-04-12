@@ -5,17 +5,17 @@ namespace Parsley;
 
 public static class Grammar
 {
-    public static IParser<T> Fail<T>() => new FailingParser<T>();
+    public static Parser<T> Fail<T>() => new FailingParser<T>();
 
-    public static IParser<string> EndOfInput { get; } = new EndOfInputParser();
+    public static Parser<string> EndOfInput { get; } = new EndOfInputParser();
 
-    public static IParser<string> Pattern(string name, string pattern, params RegexOptions[] regexOptions)
+    public static Parser<string> Pattern(string name, string pattern, params RegexOptions[] regexOptions)
         => new PatternParser(name, pattern, regexOptions);
 
-    public static IParser<string> Keyword(string word)
+    public static Parser<string> Keyword(string word)
         => new KeywordParser(word);
 
-    public static IParser<string> Operator(string symbol)
+    public static Parser<string> Operator(string symbol)
         => new OperatorParser(symbol);
 
     /// <summary>
@@ -24,7 +24,7 @@ public static class Grammar
     /// end of the sequence, p must fail without consuming input, otherwise the
     /// sequence will fail with the error reported by p.
     /// </summary>
-    public static IParser<IEnumerable<T>> ZeroOrMore<T>(IParser<T> item)
+    public static Parser<IEnumerable<T>> ZeroOrMore<T>(Parser<T> item)
     {
         return new ZeroOrMoreParser<T>(item);
     }
@@ -32,7 +32,7 @@ public static class Grammar
     /// <summary>
     /// OneOrMore(p) behaves like ZeroOrMore(p), except that p must succeed at least one time.
     /// </summary>
-    public static IParser<IEnumerable<T>> OneOrMore<T>(IParser<T> item)
+    public static Parser<IEnumerable<T>> OneOrMore<T>(Parser<T> item)
     {
         return from first in item
             from rest in ZeroOrMore(item)
@@ -43,7 +43,7 @@ public static class Grammar
     /// ZeroOrMore(p, s) parses zero or more occurrences of p separated by occurrences of s,
     /// returning the list of values returned by successful applications of p.
     /// </summary>
-    public static IParser<IEnumerable<T>> ZeroOrMore<T, S>(IParser<T> item, IParser<S> separator)
+    public static Parser<IEnumerable<T>> ZeroOrMore<T, S>(Parser<T> item, Parser<S> separator)
     {
         return Choice(OneOrMore(item, separator), Zero<T>());
     }
@@ -51,7 +51,7 @@ public static class Grammar
     /// <summary>
     /// OneOrMore(p, s) behaves like ZeroOrMore(p, s), except that p must succeed at least one time.
     /// </summary>
-    public static IParser<IEnumerable<T>> OneOrMore<T, S>(IParser<T> item, IParser<S> separator)
+    public static Parser<IEnumerable<T>> OneOrMore<T, S>(Parser<T> item, Parser<S> separator)
     {
         return from first in item
             from rest in ZeroOrMore(from sep in separator
@@ -64,7 +64,7 @@ public static class Grammar
     /// Optional(p) is equivalent to p whenever p succeeds or when p fails after consuming input.
     /// If p fails without consuming input, Optional(p) succeeds.
     /// </summary>
-    public static IParser<T> Optional<T>(IParser<T> parser)
+    public static Parser<T> Optional<T>(Parser<T> parser)
     {
         var nothing = default(T).SucceedWithThisValue();
         return Choice(parser, nothing);
@@ -75,7 +75,7 @@ public static class Grammar
     /// that it hasn't consumed any input when an error occurs. This combinator
     /// is used whenever arbitrary look ahead is needed.
     /// </summary>
-    public static IParser<T> Attempt<T>(IParser<T> parse)
+    public static Parser<T> Attempt<T>(Parser<T> parse)
     {
         return new AttemptParser<T>(parse);
     }
@@ -98,7 +98,7 @@ public static class Grammar
     /// implementation of the parser combinators and the generation
     /// of good error messages.
     /// </summary>
-    public static IParser<T> Choice<T>(params IParser<T>[] parsers)
+    public static Parser<T> Choice<T>(params Parser<T>[] parsers)
     {
         if (parsers.Length == 0)
             return Fail<T>();
@@ -111,7 +111,7 @@ public static class Grammar
     /// When parser p does not consume any input, Label(p, e) is the same
     /// as p, except any messages are replaced with expectation e.
     /// </summary>
-    public static IParser<T> Label<T>(IParser<T> parser, string expectation)
+    public static Parser<T> Label<T>(Parser<T> parser, string expectation)
     {
         return new LabeledParser<T>(parser, expectation);
     }
@@ -124,7 +124,7 @@ public static class Grammar
             yield return item;
     }
 
-    static IParser<IEnumerable<T>> Zero<T>()
+    static Parser<IEnumerable<T>> Zero<T>()
     {
         return Enumerable.Empty<T>().SucceedWithThisValue();
     }
