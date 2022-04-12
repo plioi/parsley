@@ -46,9 +46,7 @@ public static class ParserQuery
             if (reply.Success)
                 return constructNextParser(reply.Value)(reply.UnparsedInput);
 
-            Text unparsedInput = reply.UnparsedInput;
-
-            return new Error<U>(unparsedInput, unparsedInput.Position, unparsedInput.EndOfInput, reply.ErrorMessages);
+            return new Error<U>(reply.UnparsedInput, reply.Position, reply.EndOfInput, reply.ErrorMessages);
         };
     }
 }
