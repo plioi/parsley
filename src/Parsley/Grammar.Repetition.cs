@@ -25,16 +25,16 @@ partial class Grammar
 
                 list.Add(reply.Value);
                 oldPosition = newPosition;
-                reply = item(reply.UnparsedInput);
+                reply = item(input);
                 newPosition = reply.Position;
             }
 
             //The item parser finally failed.
 
             if (oldPosition != newPosition)
-                return new Error<IEnumerable<T>>(reply.UnparsedInput, reply.Position, reply.EndOfInput, reply.ErrorMessages);
+                return new Error<IEnumerable<T>>(reply.Position, reply.EndOfInput, reply.ErrorMessages);
 
-            return new Parsed<IEnumerable<T>>(list, reply.UnparsedInput, reply.Position, reply.EndOfInput, reply.ErrorMessages);
+            return new Parsed<IEnumerable<T>>(list, reply.Position, reply.EndOfInput, reply.ErrorMessages);
         };
     }
 

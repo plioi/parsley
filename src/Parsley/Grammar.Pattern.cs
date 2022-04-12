@@ -17,10 +17,10 @@ partial class Grammar
             {
                 input.Advance(match.Value.Length);
 
-                return new Parsed<string>(match.Value, input, input.Position, input.EndOfInput);
+                return new Parsed<string>(match.Value, input.Position, input.EndOfInput);
             }
 
-            return new Error<string>(input, input.Position, input.EndOfInput, ErrorMessage.Expected(name));
+            return new Error<string>(input.Position, input.EndOfInput, ErrorMessage.Expected(name));
         };
     }
 }

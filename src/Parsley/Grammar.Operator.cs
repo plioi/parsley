@@ -12,10 +12,10 @@ partial class Grammar
             {
                 input.Advance(peek.Length);
 
-                return new Parsed<string>(peek, input, input.Position, input.EndOfInput);
+                return new Parsed<string>(peek, input.Position, input.EndOfInput);
             }
 
-            return new Error<string>(input, input.Position, input.EndOfInput, ErrorMessage.Expected(symbol));
+            return new Error<string>(input.Position, input.EndOfInput, ErrorMessage.Expected(symbol));
         };
     }
 }
