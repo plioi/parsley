@@ -72,7 +72,10 @@ class GrammarTests
 
         IParser<string> succeedWithoutConsuming = new LambdaParser<string>(input => new Parsed<string>(null, input));
         Action infiniteLoop = () => ZeroOrMore(succeedWithoutConsuming).Parse(new Text(""));
-        infiniteLoop.ShouldThrow<Exception>("Parser encountered a potential infinite loop at position (1, 1).");
+
+        infiniteLoop
+            .ShouldThrow<Exception>()
+            .Message.ShouldBe("Parser encountered a potential infinite loop at position (1, 1).");
     }
 
     public void ApplyingARuleOneOrMoreTimes()
@@ -95,7 +98,10 @@ class GrammarTests
 
         IParser<string> succeedWithoutConsuming = new LambdaParser<string>(input => new Parsed<string>(null, input));
         Action infiniteLoop = () => OneOrMore(succeedWithoutConsuming).Parse(new Text(""));
-        infiniteLoop.ShouldThrow<Exception>("Parser encountered a potential infinite loop at position (1, 1).");
+
+        infiniteLoop
+            .ShouldThrow<Exception>()
+            .Message.ShouldBe("Parser encountered a potential infinite loop at position (1, 1).");
     }
 
     public void ApplyingARuleZeroOrMoreTimesInterspersedByASeparatorRule()
@@ -220,7 +226,8 @@ class GrammarTests
             .WithMessage("(1, 1): foo expected");
 
         var notJustLetters = () => Keyword(" oops ");
-        notJustLetters.ShouldThrow<ArgumentException>("Keywords may only contain letters. (Parameter 'word')");
+        notJustLetters.ShouldThrow<ArgumentException>()
+            .Message.ShouldBe("Keywords may only contain letters. (Parameter 'word')");
     }
 
     public void ProvidesConveniencePrimitiveForDefiningOperators()

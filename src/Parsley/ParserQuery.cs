@@ -24,7 +24,7 @@ public static class ParserQuery
     }
 
     /// <summary>
-    /// Allows LINQ syntax to contruct a new parser from an ordered sequence of simpler parsers, using multiple 'from' clauses.
+    /// Allows LINQ syntax to construct a new parser from an ordered sequence of simpler parsers, using multiple 'from' clauses.
     /// </summary>
     public static IParser<V> SelectMany<T, U, V>(this IParser<T> parser, Func<T, IParser<U>> k, Func<T, U, V> s)
     {

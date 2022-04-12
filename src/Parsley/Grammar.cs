@@ -90,7 +90,7 @@ public static class Grammar
     /// If a parser fails without consuming input, the next parser
     /// is attempted.  If a parser fails after consuming input,
     /// subsequent parsers will not be attempted.  As long as
-    /// parsers conume no input, their error messages are merged.
+    /// parsers consume no input, their error messages are merged.
     ///
     /// Choice is 'predictive' since p[n+1] is only tried when
     /// p[n] didn't consume any input (i.e. the look-ahead is 1).

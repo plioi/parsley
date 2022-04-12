@@ -28,8 +28,10 @@ class ErrorTests
 
     public void ThrowsWhenAttemptingToGetParsedValue()
     {
-        Func<object> inspectParsedValue = () => new Error<object>(x, ErrorMessage.Unknown()).Value;
-        inspectParsedValue.ShouldThrow<MemberAccessException>("(1, 1): Parse error.");
+        var inspectParsedValue = () => new Error<object>(x, ErrorMessage.Unknown()).Value;
+        inspectParsedValue
+            .ShouldThrow<MemberAccessException>()
+            .Message.ShouldBe("(1, 1): Parse error.");
     }
 
     public void HasRemainingUnparsedInput()
