@@ -36,8 +36,13 @@ class ErrorTests
 
     public void HasRemainingUnparsedInput()
     {
-        new Error<object>(x, x.Position, x.EndOfInput, ErrorMessage.Unknown()).UnparsedInput.ShouldBe(x);
-        new Error<object>(endOfInput, endOfInput.Position, endOfInput.EndOfInput, ErrorMessage.Unknown()).UnparsedInput.ShouldBe(endOfInput);
+        var xError = new Error<object>(x, x.Position, x.EndOfInput, ErrorMessage.Unknown());
+        xError.Position.ShouldBe(x.Position);
+        xError.EndOfInput.ShouldBe(x.EndOfInput);
+
+        var endError = new Error<object>(endOfInput, endOfInput.Position, endOfInput.EndOfInput, ErrorMessage.Unknown());
+        endError.Position.ShouldBe(endOfInput.Position);
+        endError.EndOfInput.ShouldBe(endOfInput.EndOfInput);
     }
 
     public void ReportsErrorState()

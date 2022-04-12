@@ -30,7 +30,9 @@ class ParsedTests
 
     public void HasRemainingUnparsedInput()
     {
-        new Parsed<string>("parsed", unparsed, unparsed.Position, unparsed.EndOfInput).UnparsedInput.ShouldBe(unparsed);
+        var parsed = new Parsed<string>("parsed", unparsed, unparsed.Position, unparsed.EndOfInput);
+        parsed.Position.ShouldBe(unparsed.Position);
+        parsed.EndOfInput.ShouldBe(unparsed.EndOfInput);
     }
 
     public void ReportsNonerrorState()
