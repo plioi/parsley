@@ -11,7 +11,7 @@ class ParserQueryTests
     {
         var parser = 1.SucceedWithThisValue();
 
-        parser.PartiallyParses("input").LeavingUnparsedInput("input").WithValue(1);
+        parser.PartiallyParses("input", "input").WithValue(1);
     }
 
     public void CanBuildParserFromSingleSimplerParser()
@@ -19,7 +19,7 @@ class ParserQueryTests
         var parser = from x in Next
             select x.ToUpper(CultureInfo.InvariantCulture);
 
-        parser.PartiallyParses("xy").LeavingUnparsedInput("y").WithValue("X");
+        parser.PartiallyParses("xy", "y").WithValue("X");
     }
 
     public void CanBuildParserFromOrderedSequenceOfSimplerParsers()
@@ -29,7 +29,7 @@ class ParserQueryTests
             from c in Next
             select (a + b + c).ToUpper(CultureInfo.InvariantCulture));
 
-        parser.PartiallyParses("abcdef").LeavingUnparsedInput("def").WithValue("ABC");
+        parser.PartiallyParses("abcdef", "def").WithValue("ABC");
     }
 
     public void PropogatesErrorsWithoutRunningRemainingParsers()
@@ -39,16 +39,16 @@ class ParserQueryTests
         (from _ in Fail
             from x in Next
             from y in Next
-            select Tuple.Create(x, y)).FailsToParse("xy").LeavingUnparsedInput("xy");
+            select Tuple.Create(x, y)).FailsToParse("xy", "xy");
 
         (from x in Next
             from _ in Fail
             from y in Next
-            select Tuple.Create(x, y)).FailsToParse("xy").LeavingUnparsedInput("y");
+            select Tuple.Create(x, y)).FailsToParse("xy", "y");
 
         (from x in Next
             from y in Next
             from _ in Fail
-            select Tuple.Create(x, y)).FailsToParse("xy").AtEndOfInput();
+            select Tuple.Create(x, y)).FailsToParse("xy");
     }
 }

@@ -98,7 +98,7 @@ class OperatorPrecedenceParserTests
         //The "(" unit-parser is invoked but fails.  The next token, "*", has
         //high precedence, but that should not provoke parsing to continue.
             
-        expression.Parser.FailsToParse("(*").LeavingUnparsedInput("*").WithMessage("(1, 2): Parse error.");
+        expression.Parser.FailsToParse("(*", "*").WithMessage("(1, 2): Parse error.");
     }
 
     public void ProvidesErrorAtAppropriatePositionWhenExtendParsersFail()
@@ -110,7 +110,7 @@ class OperatorPrecedenceParserTests
         //is invoked and immediately fails.  The next token, "*", has
         //high precedence, but that should not provoke parsing to continue.
 
-        expression.Parser.FailsToParse("2-*").LeavingUnparsedInput("*").WithMessage("(1, 3): Parse error.");
+        expression.Parser.FailsToParse("2-*", "*").WithMessage("(1, 3): Parse error.");
     }
 
     void Parses(string input, string expectedTree)

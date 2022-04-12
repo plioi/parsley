@@ -104,10 +104,10 @@ class JsonGrammarTests
 
     public void RequiresEndOfInputAfterFirstValidJsonValue()
     {
-        JsonDocument.FailsToParse("true $garbage$").LeavingUnparsedInput("$garbage$").WithMessage("(1, 6): end of input expected");
-        JsonDocument.FailsToParse("10.123E-11  $garbage$").LeavingUnparsedInput("$garbage$").WithMessage("(1, 13): end of input expected");
-        JsonDocument.FailsToParse("\"garbage\" $garbage$").LeavingUnparsedInput("$garbage$").WithMessage("(1, 11): end of input expected");
-        JsonDocument.FailsToParse("[0, 1, 2] $garbage$").LeavingUnparsedInput("$garbage$").WithMessage("(1, 11): end of input expected");
-        JsonDocument.FailsToParse("{\"zero\" : 0} $garbage$").LeavingUnparsedInput("$garbage$").WithMessage("(1, 14): end of input expected");
+        JsonDocument.FailsToParse("true $garbage$", "$garbage$").WithMessage("(1, 6): end of input expected");
+        JsonDocument.FailsToParse("10.123E-11  $garbage$", "$garbage$").WithMessage("(1, 13): end of input expected");
+        JsonDocument.FailsToParse("\"garbage\" $garbage$", "$garbage$").WithMessage("(1, 11): end of input expected");
+        JsonDocument.FailsToParse("[0, 1, 2] $garbage$", "$garbage$").WithMessage("(1, 11): end of input expected");
+        JsonDocument.FailsToParse("{\"zero\" : 0} $garbage$", "$garbage$").WithMessage("(1, 14): end of input expected");
     }
 }

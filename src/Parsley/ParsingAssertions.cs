@@ -29,6 +29,20 @@ public static class ParsingAssertions
         if (reply.Success)
             throw new AssertionException("parser failure", "parser completed successfully");
 
+        reply.AtEndOfInput();
+        
+        return reply;
+    }
+
+    public static Reply<T> FailsToParse<T>(this Parser<T> parse, string input, string expectedUnparsedInput)
+    {
+        var reply = parse(new Text(input));
+            
+        if (reply.Success)
+            throw new AssertionException("parser failure", "parser completed successfully");
+
+        reply.LeavingUnparsedInput(expectedUnparsedInput);
+
         return reply;
     }
 
@@ -51,9 +65,9 @@ public static class ParsingAssertions
         return reply;
     }
 
-    public static Reply<T> PartiallyParses<T>(this Parser<T> parse, string input)
+    public static Reply<T> PartiallyParses<T>(this Parser<T> parse, string input, string expectedUnparsedInput)
     {
-        return parse(new Text(input)).Succeeds();
+        return parse(new Text(input)).Succeeds().LeavingUnparsedInput(expectedUnparsedInput);
     }
 
     public static Reply<T> Parses<T>(this Parser<T> parse, string input)
