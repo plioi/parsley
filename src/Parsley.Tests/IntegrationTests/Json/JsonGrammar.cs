@@ -41,8 +41,8 @@ public class JsonGrammar
             )?
         ");
 
-    public static readonly GrammarRule<object> Json = new(nameof(Json));
-    static readonly GrammarRule<object> JsonValue = new(nameof(JsonValue));
+    public static readonly IParser<object> Json;
+    static readonly IParser<object> JsonValue;
 
     static JsonGrammar()
     {
@@ -98,10 +98,10 @@ public class JsonGrammar
             from close in CloseDictionary
             select pairs.ToDictionary(x => x.Key, x => x.Value);
 
-        JsonValue.Rule =
+        JsonValue =
             Choice(True, False, Null, Number, String, Dictionary, Array);
 
-        Json.Rule =
+        Json =
             from leading in Whitespace
             from jsonValue in JsonValue
             from end in EndOfInput

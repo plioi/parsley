@@ -36,10 +36,6 @@ public class ErrorMessageList
 
     public override string ToString()
     {
-        var undefinedGrammarRule = All<UndefinedGrammarRuleErrorMessage>().FirstOrDefault();
-        if (undefinedGrammarRule != null)
-            return undefinedGrammarRule.ToString();
-
         var expectationErrors = new List<string>(All<ExpectedErrorMessage>()
             .Select(error => error.Expectation)
             .Distinct()
