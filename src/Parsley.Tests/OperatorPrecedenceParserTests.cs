@@ -16,7 +16,7 @@ class OperatorPrecedenceParserTests
 
         expression.Unit(LeftParen,
             from open in LeftParen
-            from expr in expression
+            from expr in expression.Parser
             from close in RightParen
             select expr);
 
@@ -31,7 +31,7 @@ class OperatorPrecedenceParserTests
 
         expression.Extend(LeftParen, 8, callable =>
             from open in LeftParen
-            from arguments in ZeroOrMore(expression, Comma)
+            from arguments in ZeroOrMore(expression.Parser, Comma)
             from close in RightParen
             select new Form(callable, arguments));
     }
@@ -98,7 +98,7 @@ class OperatorPrecedenceParserTests
         //The "(" unit-parser is invoked but fails.  The next token, "*", has
         //high precedence, but that should not provoke parsing to continue.
             
-        expression.FailsToParse("(*").LeavingUnparsedInput("*").WithMessage("(1, 2): Parse error.");
+        expression.Parser.FailsToParse("(*").LeavingUnparsedInput("*").WithMessage("(1, 2): Parse error.");
     }
 
     public void ProvidesErrorAtAppropriatePositionWhenExtendParsersFail()
@@ -110,12 +110,12 @@ class OperatorPrecedenceParserTests
         //is invoked and immediately fails.  The next token, "*", has
         //high precedence, but that should not provoke parsing to continue.
 
-        expression.FailsToParse("2-*").LeavingUnparsedInput("*").WithMessage("(1, 3): Parse error.");
+        expression.Parser.FailsToParse("2-*").LeavingUnparsedInput("*").WithMessage("(1, 3): Parse error.");
     }
 
     void Parses(string input, string expectedTree)
     {
-        expression.Parses(input).WithValue(e => e.ToString().ShouldBe(expectedTree));
+        expression.Parser.Parses(input).WithValue(e => e.ToString().ShouldBe(expectedTree));
     }
 
     static readonly Parser<string> Digit = Pattern("Digit", @"[0-9]");

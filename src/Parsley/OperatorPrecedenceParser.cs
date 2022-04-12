@@ -6,7 +6,7 @@ public delegate T UnaryNodeBuilder<T>(string symbol, T operand);
 public delegate T BinaryNodeBuilder<T>(T left, string symbol, T right);
 public enum Associativity { Left, Right }
 
-public class OperatorPrecedenceParser<T> : Parser<T>
+public class OperatorPrecedenceParser<T>
 {
     readonly List<(Parser<string>, Parser<T>)> unitParsers = new();
     readonly List<(Parser<string>, int precedence, ExtendParserBuilder<T>)> extendParsers = new();
@@ -53,10 +53,7 @@ public class OperatorPrecedenceParser<T> : Parser<T>
             select createBinaryNode(left, symbol, right));
     }
 
-    public Reply<T> Parse(Text input)
-    {
-        return Parse(input, 0);
-    }
+    public Parser<T> Parser => input => Parse(input, 0);
 
     Parser<T> OperandAtPrecedenceLevel(int precedence)
     {
