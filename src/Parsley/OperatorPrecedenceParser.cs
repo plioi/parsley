@@ -101,7 +101,9 @@ public class OperatorPrecedenceParser<T>
 
         foreach(var (kind, parser) in unitParsers)
         {
+            var snapshot = input.Snapshot();
             var reply = kind(input);
+            input.Restore(snapshot);
 
             if (reply.Success)
             {
@@ -120,7 +122,9 @@ public class OperatorPrecedenceParser<T>
 
         foreach (var (kind, precedence, extendParserBuilder) in extendParsers)
         {
+            var snapshot = input.Snapshot();
             var reply = kind(input);
+            input.Restore(snapshot);
 
             if (reply.Success)
             {

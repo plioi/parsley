@@ -1,5 +1,4 @@
 using System.Globalization;
-using static Parsley.Grammar;
 
 namespace Parsley.Tests;
 
@@ -7,9 +6,10 @@ class ParserQueryTests
 {
     static readonly Parser<string> Next = input =>
     {
-        var unparsedInput = input.Advance(1);
+        var next = input.Peek(1);
+        input.Advance(1);
 
-        return new Parsed<string>(input.Peek(1), unparsedInput, unparsedInput.Position, unparsedInput.EndOfInput);
+        return new Parsed<string>(next, input, input.Position, input.EndOfInput);
     };
 
     public void CanBuildParserWhichSimulatesSuccessfulParsingOfGivenValueWithoutConsumingInput()

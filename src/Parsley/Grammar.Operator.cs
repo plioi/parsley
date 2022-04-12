@@ -10,9 +10,9 @@ partial class Grammar
 
             if (peek == symbol)
             {
-                var unparsedInput = input.Advance(peek.Length);
+                input.Advance(peek.Length);
 
-                return new Parsed<string>(peek, unparsedInput, unparsedInput.Position, unparsedInput.EndOfInput);
+                return new Parsed<string>(peek, input, input.Position, input.EndOfInput);
             }
 
             return new Error<string>(input, input.Position, input.EndOfInput, ErrorMessage.Expected(symbol));
