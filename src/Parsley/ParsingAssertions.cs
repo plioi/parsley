@@ -24,24 +24,26 @@ public static class ParsingAssertions
 
     public static Reply<T> FailsToParse<T>(this Parser<T> parse, string input)
     {
-        var reply = parse(new Text(input));
+        var text = new Text(input);
+        var reply = parse(text);
             
         if (reply.Success)
             throw new AssertionException("parser failure", "parser completed successfully");
 
-        reply.AtEndOfInput();
+        text.AtEndOfInput();
         
         return reply;
     }
 
     public static Reply<T> FailsToParse<T>(this Parser<T> parse, string input, string expectedUnparsedInput)
     {
-        var reply = parse(new Text(input));
+        var text = new Text(input);
+        var reply = parse(text);
             
         if (reply.Success)
             throw new AssertionException("parser failure", "parser completed successfully");
 
-        reply.LeavingUnparsedInput(expectedUnparsedInput);
+        text.LeavingUnparsedInput(expectedUnparsedInput);
 
         return reply;
     }
@@ -67,12 +69,23 @@ public static class ParsingAssertions
 
     public static Reply<T> PartiallyParses<T>(this Parser<T> parse, string input, string expectedUnparsedInput)
     {
-        return parse(new Text(input)).Succeeds().LeavingUnparsedInput(expectedUnparsedInput);
+        var text = new Text(input);
+
+        var reply = parse(text).Succeeds();
+
+        text.LeavingUnparsedInput(expectedUnparsedInput);
+
+        return reply;
     }
 
     public static Reply<T> Parses<T>(this Parser<T> parse, string input)
     {
-        return parse(new Text(input)).Succeeds().AtEndOfInput();
+        var text = new Text(input);
+        var reply = parse(text).Succeeds();
+
+        text.AtEndOfInput();
+
+        return reply;
     }
 
     static Reply<T> Succeeds<T>(this Reply<T> reply)
@@ -88,24 +101,22 @@ public static class ParsingAssertions
         return reply;
     }
 
-    public static Reply<T> LeavingUnparsedInput<T>(this Reply<T> reply, string expectedUnparsedInput)
+    static void LeavingUnparsedInput(this Text text, string expectedUnparsedInput)
     {
-        var actualUnparsedInput = reply.UnparsedInput.ToString();
+        var actualUnparsedInput = text.ToString();
 
         if (actualUnparsedInput != expectedUnparsedInput)
             throw new AssertionException("Parse resulted in unexpected remaining unparsed input.",
                 expectedUnparsedInput,
                 actualUnparsedInput);
-
-        return reply;
     }
 
-    public static Reply<T> AtEndOfInput<T>(this Reply<T> reply)
+    static void AtEndOfInput(this Text text)
     {
-        if (!reply.EndOfInput)
-            throw new AssertionException("end of input", reply.UnparsedInput);
+        if (!text.EndOfInput)
+            throw new AssertionException("end of input", text.ToString());
 
-        return reply.LeavingUnparsedInput("");
+        text.LeavingUnparsedInput("");
     }
 
     public static Reply<T> WithValue<T>(this Reply<T> reply, T expected)

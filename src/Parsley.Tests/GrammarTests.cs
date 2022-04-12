@@ -79,7 +79,8 @@ class GrammarTests
     {
         var parser = OneOrMore(AB);
 
-        parser.FailsToParse("").AtEndOfInput().WithMessage("(1, 1): A expected");
+        parser.FailsToParse("")
+            .WithMessage("(1, 1): A expected");
 
         parser.PartiallyParses("AB!", "!")
             .WithValue(Literals("AB"));
@@ -106,20 +107,20 @@ class GrammarTests
         parser.Parses("AB").WithValue(Literals("AB"));
         parser.Parses("AB,AB").WithValue(Literals("AB", "AB"));
         parser.Parses("AB,AB,AB").WithValue(Literals("AB", "AB", "AB"));
-        parser.FailsToParse("AB,").AtEndOfInput().WithMessage("(1, 4): A expected");
-        parser.FailsToParse("AB,A").AtEndOfInput().WithMessage("(1, 5): B expected");
+        parser.FailsToParse("AB,").WithMessage("(1, 4): A expected");
+        parser.FailsToParse("AB,A").WithMessage("(1, 5): B expected");
     }
 
     public void ApplyingARuleOneOrMoreTimesInterspersedByASeparatorRule()
     {
         var parser = OneOrMore(AB, COMMA);
 
-        parser.FailsToParse("").AtEndOfInput().WithMessage("(1, 1): A expected");
+        parser.FailsToParse("").WithMessage("(1, 1): A expected");
         parser.Parses("AB").WithValue(Literals("AB"));
         parser.Parses("AB,AB").WithValue(Literals("AB", "AB"));
         parser.Parses("AB,AB,AB").WithValue(Literals("AB", "AB", "AB"));
-        parser.FailsToParse("AB,").AtEndOfInput().WithMessage("(1, 4): A expected");
-        parser.FailsToParse("AB,A").AtEndOfInput().WithMessage("(1, 5): B expected");
+        parser.FailsToParse("AB,").WithMessage("(1, 4): A expected");
+        parser.FailsToParse("AB,A").WithMessage("(1, 5): B expected");
     }
 
     public void ParsingAnOptionalRuleZeroOrOneTimes()
@@ -291,14 +292,14 @@ public class AlternationTests
             from b in B
             select a + b;
 
-        Choice(AB, NeverExecuted).FailsToParse("A").AtEndOfInput().WithMessage("(1, 2): B expected");
-        Choice(C, AB, NeverExecuted).FailsToParse("A").AtEndOfInput().WithMessage("(1, 2): B expected");
+        Choice(AB, NeverExecuted).FailsToParse("A").WithMessage("(1, 2): B expected");
+        Choice(C, AB, NeverExecuted).FailsToParse("A").WithMessage("(1, 2): B expected");
     }
 
     public void MergesErrorMessagesWhenParsersFailWithoutConsumingInput()
     {
-        Choice(A, B).FailsToParse("").AtEndOfInput().WithMessage("(1, 1): A or B expected");
-        Choice(A, B, C).FailsToParse("").AtEndOfInput().WithMessage("(1, 1): A, B or C expected");
+        Choice(A, B).FailsToParse("").WithMessage("(1, 1): A or B expected");
+        Choice(A, B, C).FailsToParse("").WithMessage("(1, 1): A, B or C expected");
     }
 
     public void MergesPotentialErrorMessagesWhenParserSucceedsWithoutConsumingInput()
