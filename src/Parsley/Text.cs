@@ -7,7 +7,7 @@ public class Text
     readonly int line;
 
     public Text(string input)
-        : this(NormalizeLineEndings(input), 0, 1) { }
+        : this(input, 0, 1) { }
 
     Text(string input, int index, int line)
     {
@@ -72,7 +72,4 @@ public class Text
 
     public override string ToString()
         => input.Substring(index);
-
-    static string NormalizeLineEndings(string input)
-        => input.Replace("\r\n", "\n").Replace('\r', '\n');
 }

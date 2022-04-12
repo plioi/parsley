@@ -22,25 +22,9 @@ public static class ParsingAssertions
             throw new AssertionException(expected, actual.Value);
     }
 
-    public static void ShouldBe(this Token actual, TokenKind expectedKind, string expectedLiteral, int expectedLine, int expectedColumn)
+    public static Reply<T> FailsToParse<T>(this IParser<T> parser, string input)
     {
-        actual.ShouldBe(expectedKind, expectedLiteral);
-
-        var expectedPosition = new Position(expectedLine, expectedColumn);
-        if (actual.Position != expectedPosition)
-            throw new AssertionException("token at position " + expectedPosition,
-                "token at position " + actual.Position);
-    }
-
-    public static void ShouldBe(this Token actual, TokenKind expectedKind, string expectedLiteral)
-    {
-        AssertEqual(expectedKind, actual.Kind);
-        AssertTokenLiteralsEqual(expectedLiteral, actual.Literal);
-    }
-
-    public static Reply<T> FailsToParse<T>(this IParser<T> parser, IEnumerable<Token> tokens)
-    {
-        var reply = parser.Parse(new TokenStream(tokens));
+        var reply = parser.Parse(new Text(input));
             
         if (reply.Success)
             throw new AssertionException("parser failure", "parser completed successfully");
@@ -50,7 +34,7 @@ public static class ParsingAssertions
 
     public static Reply<T> WithMessage<T>(this Reply<T> reply, string expectedMessage)
     {
-        var position = reply.UnparsedTokens.Position;
+        var position = reply.UnparsedInput.Position;
         var actual = position + ": " + reply.ErrorMessages;
             
         if (actual != expectedMessage)
@@ -67,21 +51,21 @@ public static class ParsingAssertions
         return reply;
     }
 
-    public static Reply<T> PartiallyParses<T>(this IParser<T> parser, IEnumerable<Token> tokens)
+    public static Reply<T> PartiallyParses<T>(this IParser<T> parser, string input)
     {
-        return parser.Parse(new TokenStream(tokens)).Succeeds();
+        return parser.Parse(new Text(input)).Succeeds();
     }
 
-    public static Reply<T> Parses<T>(this IParser<T> parser, IEnumerable<Token> tokens)
+    public static Reply<T> Parses<T>(this IParser<T> parser, string input)
     {
-        return parser.Parse(new TokenStream(tokens)).Succeeds().AtEndOfInput();
+        return parser.Parse(new Text(input)).Succeeds().AtEndOfInput();
     }
 
     static Reply<T> Succeeds<T>(this Reply<T> reply)
     {
         if (!reply.Success)
         {
-            var message = "Position: " + reply.UnparsedTokens.Position
+            var message = "Position: " + reply.UnparsedInput.Position
                                        + Environment.NewLine
                                        + "Error Message: " + reply.ErrorMessages;
             throw new AssertionException(message, "parser success", "parser failed");
@@ -90,40 +74,24 @@ public static class ParsingAssertions
         return reply;
     }
 
-    public static Reply<T> LeavingUnparsedTokens<T>(this Reply<T> reply, params string[] expectedLiterals)
+    public static Reply<T> LeavingUnparsedInput<T>(this Reply<T> reply, string expectedUnparsedInput)
     {
-        var stream = reply.UnparsedTokens;
+        var actualUnparsedInput = reply.UnparsedInput.ToString();
 
-        var actualLiterals = new List<string>();
-
-        while (stream.Current.Kind != TokenKind.EndOfInput)
-        {
-            actualLiterals.Add(stream.Current.Literal);
-            stream = stream.Advance();
-        }
-
-        var raiseError = () =>
-        {
-            throw new AssertionException("Parse resulted in unexpected remaining unparsed tokens.",
-                string.Join(", ", expectedLiterals),
-                string.Join(", ", actualLiterals));
-        };
-
-        if (actualLiterals.Count != expectedLiterals.Length)
-            raiseError();
-
-        for (int i = 0; i < actualLiterals.Count; i++)
-            if (actualLiterals[i] != expectedLiterals[i])
-                raiseError();
+        if (actualUnparsedInput != expectedUnparsedInput)
+            throw new AssertionException("Parse resulted in unexpected remaining unparsed input.",
+                expectedUnparsedInput,
+                actualUnparsedInput);
 
         return reply;
     }
 
     public static Reply<T> AtEndOfInput<T>(this Reply<T> reply)
     {
-        var nextTokenKind = reply.UnparsedTokens.Current.Kind;
-        AssertEqual(TokenKind.EndOfInput, nextTokenKind);
-        return reply.LeavingUnparsedTokens(Array.Empty<string>());
+        if (!reply.UnparsedInput.EndOfInput)
+            throw new AssertionException("end of input", reply.UnparsedInput);
+
+        return reply.LeavingUnparsedInput("");
     }
 
     public static Reply<T> WithValue<T>(this Reply<T> reply, T expected)
@@ -139,17 +107,5 @@ public static class ParsingAssertions
         assertParsedValue(reply.Value);
 
         return reply;
-    }
-
-    static void AssertTokenLiteralsEqual(string expected, string actual)
-    {
-        if (actual != expected)
-            throw new AssertionException($"token with literal \"{expected}\"", $"token with literal \"{actual}\"");
-    }
-
-    static void AssertEqual(TokenKind expected, TokenKind actual)
-    {
-        if (actual != expected)
-            throw new AssertionException($"<{expected}> token", $"<{actual}> token");
     }
 }

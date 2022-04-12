@@ -2,14 +2,13 @@ namespace Parsley.Tests;
 
 class ErrorTests
 {
-    readonly TokenStream x;
-    readonly TokenStream endOfInput;
+    readonly Text x;
+    readonly Text endOfInput;
 
     public ErrorTests()
     {
-        var lexer = new Lexer();
-        x = new TokenStream(lexer.Tokenize("x"));
-        endOfInput = new TokenStream(lexer.Tokenize(""));
+        x = new Text("x");
+        endOfInput = new Text("");
     }
 
     public void CanIndicateErrorsAtTheCurrentPosition()
@@ -33,10 +32,10 @@ class ErrorTests
         inspectParsedValue.ShouldThrow<MemberAccessException>("(1, 1): Parse error.");
     }
 
-    public void HasRemainingUnparsedTokens()
+    public void HasRemainingUnparsedInput()
     {
-        new Error<object>(x, ErrorMessage.Unknown()).UnparsedTokens.ShouldBe(x);
-        new Error<object>(endOfInput, ErrorMessage.Unknown()).UnparsedTokens.ShouldBe(endOfInput);
+        new Error<object>(x, ErrorMessage.Unknown()).UnparsedInput.ShouldBe(x);
+        new Error<object>(endOfInput, ErrorMessage.Unknown()).UnparsedInput.ShouldBe(endOfInput);
     }
 
     public void ReportsErrorState()

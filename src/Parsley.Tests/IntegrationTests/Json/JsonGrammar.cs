@@ -1,70 +1,106 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
+using static Parsley.Grammar;
 
 namespace Parsley.Tests.IntegrationTests.Json;
 
-public class JsonGrammar : Grammar
+public class JsonGrammar
 {
-    public static readonly GrammarRule<object> Json = new();
-    static readonly GrammarRule<object> JsonValue = new();
-    static readonly GrammarRule<object> True = new();
-    static readonly GrammarRule<object> False = new();
-    static readonly GrammarRule<object> Null = new();
-    static readonly GrammarRule<object> Number = new();
-    static readonly GrammarRule<string> Quotation = new();
-    static readonly GrammarRule<object[]> Array = new();
-    static readonly GrammarRule<KeyValuePair<string, object>> Pair = new();
-    static readonly GrammarRule<Dictionary<string, object>> Dictionary = new();
+    public static readonly IParser<object> JsonDocument;
+
+    static readonly IParser<object> Value;
 
     static JsonGrammar()
     {
-        True.Rule =
-            Constant(JsonLexer.@true, true);
+        var Whitespace = Optional(Pattern("whitespace", @"\s+"));
 
-        False.Rule =
-            Constant(JsonLexer.@false, false);
+        var Key =
+            from leading in Whitespace
+            from quote in Quote
+            from trailing in Whitespace
+            select Unquote(quote);
 
-        Null.Rule =
-            Constant(JsonLexer.@null, null);
-
-        Number.Rule =
-            from number in Token(JsonLexer.Number)
-            select (object) Decimal.Parse(number.Literal, NumberStyles.Any, CultureInfo.InvariantCulture);
-
-        Quotation.Rule =
-            from quotation in Token(JsonLexer.Quotation)
-            select Unescape(quotation.Literal);
-
-        Array.Rule =
-            from items in Between(Token("["), ZeroOrMore(JsonValue, Token(",")), Token("]"))
-            select items.ToArray();
-
-        Pair.Rule =
-            from key in Quotation
-            from colon in Token(":")
-            from value in JsonValue
+        var Pair =
+            from key in Key
+            from colon in Operator(":")
+            from value in Value
             select new KeyValuePair<string, object>(key, value);
 
-        Dictionary.Rule =
-            from pairs in Between(Token("{"), ZeroOrMore(Pair, Token(",")), Token("}"))
-            select ToDictionary(pairs);
+        Value =
+            from leading in Whitespace
+            from value in Choice(
+                from @true in Keyword("true")
+                select (object) true,
 
-        JsonValue.Rule = Choice(True, False, Null, Number, Quotation, Dictionary, Array);
+                from @false in Keyword("false")
+                select (object) false,
 
-        Json.Rule = from jsonValue in JsonValue
+                from @null in Keyword("null")
+                select (object) null,
+
+                from number in Number
+                select (object) decimal.Parse(number, NumberStyles.Any, CultureInfo.InvariantCulture),
+
+                from quotation in Quote
+                select Unquote(quotation),
+
+                from open in Operator("{")
+                from pairs in ZeroOrMore(Pair, Operator(","))
+                from close in Operator("}")
+                select pairs.ToDictionary(x => x.Key, x => x.Value),
+
+                from open in Operator("[")
+                from items in ZeroOrMore(Value, Operator(","))
+                from close in Operator("]")
+                select items.ToArray()
+            )
+            from trailing in Whitespace
+            select value;
+
+        JsonDocument =
+            from value in Value
             from end in EndOfInput
-            select jsonValue;
+            select value;
     }
 
-    static IParser<object> Constant(TokenKind kind, object constant)
-    {
-        return from _ in Token(kind)
-            select constant;
-    }
+    static readonly IParser<string> Number = Pattern("number", @"
+            # Look-ahead to confirm the whole-number part is either 0 or starts with 1-9:
+            (?=
+                0(?!\d)  |  [1-9]
+            )
 
-    static string Unescape(string quotation)
+            # Whole number part:
+            \d+
+
+            # Optional fractional part:
+            (\.\d+)?
+
+            # Optional exponent
+            (
+                [eE]
+                [+-]?
+                \d+
+            )?
+        ");
+
+    static readonly IParser<string> Quote = Pattern("string", @"
+            # Open quote:
+            ""
+
+            # Zero or more content characters:
+            (
+                      [^""\\]*             # Zero or more non-quote, non-slash characters.
+                |     \\ [""\\bfnrt\/]     # One of: slash-quote   \\   \b   \f   \n   \r   \t   \/
+                |     \\ u [0-9a-fA-F]{4}  # \u followed by four hex digits
+            )*
+
+            # Close quote:
+            ""
+        ");
+
+    static string Unquote(string quote)
     {
-        string result = quotation.Substring(1, quotation.Length - 2); //Remove leading and trailing quotation marks
+        string result = quote.Substring(1, quote.Length - 2); //Remove leading and trailing quotation marks
 
         result = Regex.Replace(result, @"\\u[0-9a-fA-F]{4}",
             match => char.ConvertFromUtf32(int.Parse(match.Value.Replace("\\u", ""), NumberStyles.HexNumber, CultureInfo.InvariantCulture)));
@@ -78,16 +114,6 @@ public class JsonGrammar : Grammar
             .Replace("\\r", "\r")
             .Replace("\\t", "\t")
             .Replace("\\/", "/");
-
-        return result;
-    }
-
-    static Dictionary<string, object> ToDictionary(IEnumerable<KeyValuePair<string, object>> pairs)
-    {
-        var result = new Dictionary<string, object>();
-
-        foreach (var pair in pairs)
-            result[pair.Key] = pair.Value;
 
         return result;
     }

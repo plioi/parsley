@@ -1,43 +1,25 @@
-using System.Reflection;
+using System.Text.RegularExpressions;
 using Parsley.Primitives;
 
 namespace Parsley;
 
-public abstract class Grammar
+public static class Grammar
 {
-    protected void InferGrammarRuleNames()
-    {
-        var grammarRules =
-            GetType()
-                .GetRuntimeFields()
-                .Where(rule =>
-                    rule.FieldType.GetTypeInfo().IsGenericType &&
-                    rule.FieldType.GetGenericTypeDefinition() == typeof (GrammarRule<>));
-
-        foreach (var rule in grammarRules)
-        {
-            var value = rule.GetValue(this);
-            if (value != null)
-            {
-                var nameProperty = value.GetType().GetRuntimeProperty("Name");
-                var name = nameProperty.GetValue(value, null);
-
-                if (name as string == null)
-                    nameProperty.SetValue(value, rule.Name, null);
-            }
-        }
-    }
-
     public static IParser<T> Fail<T>() => new FailingParser<T>();
 
-    public static IParser<Token> EndOfInput => Token(TokenKind.EndOfInput);
+    public static IParser<string> EndOfInput { get; } = new EndOfInputParser();
 
-    public static IParser<Token> Token(TokenKind kind) => new TokenByKindParser(kind);
+    public static IParser<string> Pattern(string name, string pattern, params RegexOptions[] regexOptions)
+        => new PatternParser(name, pattern, regexOptions);
 
-    public static IParser<Token> Token(string expectation) => new TokenByLiteralParser(expectation);
+    public static IParser<string> Keyword(string word)
+        => new KeywordParser(word);
+
+    public static IParser<string> Operator(string symbol)
+        => new OperatorParser(symbol);
 
     /// <summary>
-    /// ZeroOrMore(p) repeatedly applies an parser p until it fails, returing
+    /// ZeroOrMore(p) repeatedly applies an parser p until it fails, returning
     /// the list of values returned by successful applications of p.  At the
     /// end of the sequence, p must fail without consuming input, otherwise the
     /// sequence will fail with the error reported by p.
@@ -76,20 +58,6 @@ public abstract class Grammar
                 from next in item
                 select next)
             select List(first, rest);
-    }
-
-    /// <summary>
-    /// Between(left, goal, right) parses its arguments in order.  If all three
-    /// parsers succeed, the result of the goal parser is returned.
-    /// </summary>
-    public static IParser<TGoal> Between<TLeft, TGoal, TRight>(IParser<TLeft> left,
-                                                               IParser<TGoal> goal,
-                                                               IParser<TRight> right)
-    {
-        return from L in left
-            from G in goal
-            from R in right
-            select G;
     }
 
     /// <summary>

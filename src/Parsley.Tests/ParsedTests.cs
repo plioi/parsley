@@ -2,11 +2,11 @@ namespace Parsley.Tests;
 
 class ParsedTests
 {
-    readonly TokenStream unparsed;
+    readonly Text unparsed;
 
     public ParsedTests()
     {
-        unparsed = new TokenStream(new CharLexer().Tokenize("0"));
+        unparsed = new Text("0");
     }
 
     public void HasAParsedValue()
@@ -28,9 +28,9 @@ class ParsedTests
         new Parsed<object>("x", unparsed, potentialErrors).ErrorMessages.ShouldBe(potentialErrors);
     }
 
-    public void HasRemainingUnparsedTokens()
+    public void HasRemainingUnparsedInput()
     {
-        new Parsed<string>("parsed", unparsed).UnparsedTokens.ShouldBe(unparsed);
+        new Parsed<string>("parsed", unparsed).UnparsedInput.ShouldBe(unparsed);
     }
 
     public void ReportsNonerrorState()

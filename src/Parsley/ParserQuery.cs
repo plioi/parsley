@@ -12,7 +12,7 @@ public static class ParserQuery
     /// <param name="value">The value to treat as a parse result.</param>
     public static IParser<T> SucceedWithThisValue<T>(this T value)
     {
-        return new LambdaParser<T>(tokens => new Parsed<T>(value, tokens));
+        return new LambdaParser<T>(input => new Parsed<T>(value, input));
     }
 
     /// <summary>
@@ -39,14 +39,14 @@ public static class ParserQuery
     /// </remarks>
     static IParser<U> Bind<T, U>(this IParser<T> parser, Func<T, IParser<U>> constructNextParser)
     {
-        return new LambdaParser<U>(tokens =>
+        return new LambdaParser<U>(input =>
         {
-            var reply = parser.Parse(tokens);
+            var reply = parser.Parse(input);
 
             if (reply.Success)
-                return constructNextParser(reply.Value).Parse(reply.UnparsedTokens);
+                return constructNextParser(reply.Value).Parse(reply.UnparsedInput);
 
-            return new Error<U>(reply.UnparsedTokens, reply.ErrorMessages);
+            return new Error<U>(reply.UnparsedInput, reply.ErrorMessages);
         });
     }
 }

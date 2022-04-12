@@ -1,8 +1,9 @@
 using System.Globalization;
+using static Parsley.Grammar;
 
 namespace Parsley.Tests;
 
-class OperatorPrecedenceParserTests : Grammar
+class OperatorPrecedenceParserTests
 {
     readonly OperatorPrecedenceParser<IExpression> expression;
 
@@ -10,22 +11,28 @@ class OperatorPrecedenceParserTests : Grammar
     {
         expression = new OperatorPrecedenceParser<IExpression>();
 
-        expression.Atom(SampleLexer.Digit, token => new Constant(int.Parse(token.Literal, CultureInfo.InvariantCulture)));
-        expression.Atom(SampleLexer.Name, token => new Identifier(token.Literal));
+        expression.Atom(Digit, token => new Constant(int.Parse(token, CultureInfo.InvariantCulture)));
+        expression.Atom(Name, token => new Identifier(token));
 
-        expression.Unit(SampleLexer.LeftParen, Between(Token("("), expression, Token(")")));
+        expression.Unit(LeftParen,
+            from open in LeftParen
+            from expr in expression
+            from close in RightParen
+            select expr);
 
-        expression.Binary(SampleLexer.Add, 3, (left, symbol, right) => new Form(symbol, left, right));
-        expression.Binary(SampleLexer.Subtract, 3, (left, symbol, right) => new Form(symbol, left, right));
-        expression.Binary(SampleLexer.Multiply, 4, (left, symbol, right) => new Form(symbol, left, right));
-        expression.Binary(SampleLexer.Divide, 4, (left, symbol, right) => new Form(symbol, left, right));
-        expression.Binary(SampleLexer.Exponent, 5, (left, symbol, right) => new Form(symbol, left, right), Associativity.Right);
-        expression.Prefix(SampleLexer.Subtract, 6, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
-        expression.Postfix(SampleLexer.Increment, 7, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
-        expression.Postfix(SampleLexer.Decrement, 7, (symbol, operand) => new Form(new Identifier(symbol.Literal), operand));
+        expression.Postfix(Increment, 7, (symbol, operand) => new Form(new Identifier(symbol), operand));
+        expression.Postfix(Decrement, 7, (symbol, operand) => new Form(new Identifier(symbol), operand));
+        expression.Binary(Add, 3, (left, symbol, right) => new Form(symbol, left, right));
+        expression.Binary(Subtract, 3, (left, symbol, right) => new Form(symbol, left, right));
+        expression.Binary(Multiply, 4, (left, symbol, right) => new Form(symbol, left, right));
+        expression.Binary(Divide, 4, (left, symbol, right) => new Form(symbol, left, right));
+        expression.Binary(Exponent, 5, (left, symbol, right) => new Form(symbol, left, right), Associativity.Right);
+        expression.Prefix(Subtract, 6, (symbol, operand) => new Form(new Identifier(symbol), operand));
 
-        expression.Extend(SampleLexer.LeftParen, 8, callable =>
-            from arguments in Between(Token("("), ZeroOrMore(expression, Token(",")), Token(")"))
+        expression.Extend(LeftParen, 8, callable =>
+            from open in LeftParen
+            from arguments in ZeroOrMore(expression, Comma)
+            from close in RightParen
             select new Form(callable, arguments));
     }
 
@@ -91,7 +98,7 @@ class OperatorPrecedenceParserTests : Grammar
         //The "(" unit-parser is invoked but fails.  The next token, "*", has
         //high precedence, but that should not provoke parsing to continue.
             
-        expression.FailsToParse(Tokenize("(*")).LeavingUnparsedTokens("*").WithMessage("(1, 2): Parse error.");
+        expression.FailsToParse("(*").LeavingUnparsedInput("*").WithMessage("(1, 2): Parse error.");
     }
 
     public void ProvidesErrorAtAppropriatePositionWhenExtendParsersFail()
@@ -103,37 +110,26 @@ class OperatorPrecedenceParserTests : Grammar
         //is invoked and immediately fails.  The next token, "*", has
         //high precedence, but that should not provoke parsing to continue.
 
-        expression.FailsToParse(Tokenize("2-*")).LeavingUnparsedTokens("*").WithMessage("(1, 3): Parse error.");
+        expression.FailsToParse("2-*").LeavingUnparsedInput("*").WithMessage("(1, 3): Parse error.");
     }
 
     void Parses(string input, string expectedTree)
     {
-        expression.Parses(Tokenize(input)).WithValue(e => e.ToString().ShouldBe(expectedTree));
+        expression.Parses(input).WithValue(e => e.ToString().ShouldBe(expectedTree));
     }
 
-    static IEnumerable<Token> Tokenize(string input)
-        => new SampleLexer().Tokenize(input);
-
-    class SampleLexer : Lexer
-    {
-        public static readonly TokenKind Digit = new Pattern("Digit", @"[0-9]");
-        public static readonly TokenKind Name = new Pattern("Name", @"[a-z]+");
-        public static readonly TokenKind Increment = new Operator("++");
-        public static readonly TokenKind Decrement = new Operator("--");
-        public static readonly TokenKind Add = new Operator("+");
-        public static readonly TokenKind Subtract = new Operator("-");
-        public static readonly TokenKind Multiply = new Operator("*");
-        public static readonly TokenKind Divide = new Operator("/");
-        public static readonly TokenKind Exponent = new Operator("^");
-        public static readonly TokenKind LeftParen = new Operator("(");
-        public static readonly TokenKind RightParen = new Operator(")");
-        public static readonly TokenKind Comma = new Operator(",");
-
-        public SampleLexer()
-            : base(Digit, Name, Increment, Decrement, Add,
-                Subtract, Multiply, Divide, Exponent,
-                LeftParen, RightParen, Comma) { }
-    }
+    static readonly IParser<string> Digit = Pattern("Digit", @"[0-9]");
+    static readonly IParser<string> Name = Pattern("Name", @"[a-z]+");
+    static readonly IParser<string> Increment = Operator("++");
+    static readonly IParser<string> Decrement = Operator("--");
+    static readonly IParser<string> Add = Operator("+");
+    static readonly IParser<string> Subtract = Operator("-");
+    static readonly IParser<string> Multiply = Operator("*");
+    static readonly IParser<string> Divide = Operator("/");
+    static readonly IParser<string> Exponent = Operator("^");
+    static readonly IParser<string> LeftParen = Operator("(");
+    static readonly IParser<string> RightParen = Operator(")");
+    static readonly IParser<string> Comma = Operator(",");
 
     interface IExpression
     {
@@ -166,8 +162,8 @@ class OperatorPrecedenceParserTests : Grammar
         readonly IExpression head;
         readonly IEnumerable<IExpression> expressions;
 
-        public Form(Token head, params IExpression[] expressions)
-            : this(new Identifier(head.Literal), expressions) { }
+        public Form(string head, params IExpression[] expressions)
+            : this(new Identifier(head), expressions) { }
 
         public Form(IExpression head, params IExpression[] expressions)
             : this(head, (IEnumerable<IExpression>)expressions) { }

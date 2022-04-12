@@ -1,55 +1,46 @@
 namespace Parsley;
 
 public delegate IParser<T> ExtendParserBuilder<T>(T left);
-public delegate T AtomNodeBuilder<out T>(Token atom);
-public delegate T UnaryNodeBuilder<T>(Token symbol, T operand);
-public delegate T BinaryNodeBuilder<T>(T left, Token symbol, T right);
+public delegate T AtomNodeBuilder<out T>(string atom);
+public delegate T UnaryNodeBuilder<T>(string symbol, T operand);
+public delegate T BinaryNodeBuilder<T>(T left, string symbol, T right);
 public enum Associativity { Left, Right }
 
-public class OperatorPrecedenceParser<T> : Grammar, IParser<T>
+public class OperatorPrecedenceParser<T> : IParser<T>
 {
-    readonly IDictionary<TokenKind, IParser<T>> unitParsers;
-    readonly IDictionary<TokenKind, ExtendParserBuilder<T>> extendParsers;
-    readonly IDictionary<TokenKind, int> extendParserPrecedence;
+    readonly List<(IParser<string>, IParser<T>)> unitParsers = new();
+    readonly List<(IParser<string>, int precedence, ExtendParserBuilder<T>)> extendParsers = new();
 
-    public OperatorPrecedenceParser()
+    public void Unit(IParser<string> kind, IParser<T> unitParser)
     {
-        unitParsers = new Dictionary<TokenKind, IParser<T>>();
-        extendParsers = new Dictionary<TokenKind, ExtendParserBuilder<T>>();
-        extendParserPrecedence = new Dictionary<TokenKind, int>();
+        unitParsers.Add((kind, unitParser));
     }
 
-    public void Unit(TokenKind kind, IParser<T> unitParser)
+    public void Atom(IParser<string> kind, AtomNodeBuilder<T> createAtomNode)
     {
-        unitParsers[kind] = unitParser;
-    }
-
-    public void Atom(TokenKind kind, AtomNodeBuilder<T> createAtomNode)
-    {
-        Unit(kind, from token in Token(kind)
+        Unit(kind, from token in kind
             select createAtomNode(token));
     }
 
-    public void Prefix(TokenKind operation, int precedence, UnaryNodeBuilder<T> createUnaryNode)
+    public void Prefix(IParser<string> operation, int precedence, UnaryNodeBuilder<T> createUnaryNode)
     {
-        Unit(operation, from symbol in Token(operation)
+        Unit(operation, from symbol in operation
             from operand in OperandAtPrecedenceLevel(precedence)
             select createUnaryNode(symbol, operand));
     }
 
-    public void Extend(TokenKind operation, int precedence, ExtendParserBuilder<T> createExtendParser)
+    public void Extend(IParser<string> operation, int precedence, ExtendParserBuilder<T> createExtendParser)
     {
-        extendParsers[operation] = createExtendParser;
-        extendParserPrecedence[operation] = precedence;
+        extendParsers.Add((operation, precedence, createExtendParser));
     }
 
-    public void Postfix(TokenKind operation, int precedence, UnaryNodeBuilder<T> createUnaryNode)
+    public void Postfix(IParser<string> operation, int precedence, UnaryNodeBuilder<T> createUnaryNode)
     {
-        Extend(operation, precedence, left => from symbol in Token(operation)
+        Extend(operation, precedence, left => from symbol in operation
             select createUnaryNode(symbol, left));
     }
 
-    public void Binary(TokenKind operation, int precedence, BinaryNodeBuilder<T> createBinaryNode,
+    public void Binary(IParser<string> operation, int precedence, BinaryNodeBuilder<T> createBinaryNode,
                        Associativity associativity = Associativity.Left)
     {
         int rightOperandPrecedence = precedence;
@@ -57,58 +48,91 @@ public class OperatorPrecedenceParser<T> : Grammar, IParser<T>
         if (associativity == Associativity.Right)
             rightOperandPrecedence = precedence - 1;
 
-        Extend(operation, precedence, left => from symbol in Token(operation)
+        Extend(operation, precedence, left => from symbol in operation
             from right in OperandAtPrecedenceLevel(rightOperandPrecedence)
             select createBinaryNode(left, symbol, right));
     }
 
-    public Reply<T> Parse(TokenStream tokens)
+    public Reply<T> Parse(Text input)
     {
-        return Parse(tokens, 0);
+        return Parse(input, 0);
     }
 
     IParser<T> OperandAtPrecedenceLevel(int precedence)
     {
-        return new LambdaParser<T>(tokens => Parse(tokens, precedence));
+        return new LambdaParser<T>(input => Parse(input, precedence));
     }
 
-    Reply<T> Parse(TokenStream tokens, int precedence)
+    Reply<T> Parse(Text input, int precedence)
     {
-        var token = tokens.Current;
+        var matchingUnitParser = FirstMatchingUnitParserOrNull(input, out var token);
 
-        if (!unitParsers.ContainsKey(token.Kind))
-            return new Error<T>(tokens, ErrorMessage.Unknown());
+        if (matchingUnitParser == null)
+            return new Error<T>(input, ErrorMessage.Unknown());
 
-        var reply = unitParsers[token.Kind].Parse(tokens);
+        var reply = matchingUnitParser.Parse(input);
 
         if (!reply.Success)
             return reply;
 
-        tokens = reply.UnparsedTokens;
-        token = tokens.Current;
+        input = reply.UnparsedInput;
 
-        while (precedence < GetPrecedence(token))
+        var matchingExtendParserBuilder = FirstMatchingExtendParserBuilderOrNull(input, out token, out int? tokenPrecedence);
+
+        while (matchingExtendParserBuilder != null && precedence < tokenPrecedence)
         {
             //Continue parsing at this precedence level.
 
-            reply = extendParsers[token.Kind](reply.Value).Parse(tokens);
+            var extendParser = matchingExtendParserBuilder(reply.Value);
+
+            reply = extendParser.Parse(input);
 
             if (!reply.Success)
                 return reply;
 
-            tokens = reply.UnparsedTokens;
-            token = tokens.Current;
+            input = reply.UnparsedInput;
+
+            matchingExtendParserBuilder = FirstMatchingExtendParserBuilderOrNull(input, out token, out tokenPrecedence);
         }
 
         return reply;
     }
 
-    int GetPrecedence(Token token)
+    IParser<T> FirstMatchingUnitParserOrNull(Text input, out string token)
     {
-        var kind = token.Kind;
-        if (extendParserPrecedence.ContainsKey(kind))
-            return extendParserPrecedence[kind];
+        token = null;
 
-        return 0;
+        foreach(var (kind, parser) in unitParsers)
+        {
+            var reply = kind.Parse(input);
+
+            if (reply.Success)
+            {
+                token = reply.Value;
+                return parser;
+            }
+        }
+
+        return null;
+    }
+
+    ExtendParserBuilder<T> FirstMatchingExtendParserBuilderOrNull(Text input, out string token, out int? tokenPrecedence)
+    {
+        token = null;
+        tokenPrecedence = null;
+
+        foreach (var (kind, precedence, extendParserBuilder) in extendParsers)
+        {
+            var reply = kind.Parse(input);
+
+            if (reply.Success)
+            {
+                token = reply.Value;
+                tokenPrecedence = precedence;
+                return extendParserBuilder;
+            }
+        }
+
+        return null;
     }
 }

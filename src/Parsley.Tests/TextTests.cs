@@ -96,12 +96,6 @@ class TextTests
         abc123.Advance(6).Match(alphanumerics).ShouldFail();
     }
 
-    public void NormalizesLineEndingsToSingleLineFeedCharacter()
-    {
-        var multiline = new Text("Line 1\rLine 2\nLine 3\r\nLine 4");
-        multiline.ToString().ShouldBe("Line 1\nLine 2\nLine 3\nLine 4");
-    }
-
     public void CanGetCurrentPosition()
     {
         var empty = new Text("");
@@ -109,9 +103,9 @@ class TextTests
         empty.Advance(1).Position.ShouldBe(new Position(1, 1));
 
         var lines = new StringBuilder()
-            .AppendLine("Line 1")//Index 0-5, \n
-            .AppendLine("Line 2")//Index 7-12, \n
-            .AppendLine("Line 3");//Index 14-19, \n
+            .Append("Line 1\n")//Index 0-5, \n
+            .Append("Line 2\n")//Index 7-12, \n
+            .Append("Line 3\n");//Index 14-19, \n
         var list = new Text(lines.ToString());
 
         list.Advance(0).Position.ShouldBe(new Position(1, 1));

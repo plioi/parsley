@@ -9,11 +9,11 @@ class ZeroOrMoreParser<T> : IParser<IEnumerable<T>>
         this.item = item;
     }
 
-    public Reply<IEnumerable<T>> Parse(TokenStream tokens)
+    public Reply<IEnumerable<T>> Parse(Text input)
     {
-        var oldPosition = tokens.Position;
-        var reply = item.Parse(tokens);
-        var newPosition = reply.UnparsedTokens.Position;
+        var oldPosition = input.Position;
+        var reply = item.Parse(input);
+        var newPosition = reply.UnparsedInput.Position;
 
         var list = new List<T>();
 
@@ -24,15 +24,15 @@ class ZeroOrMoreParser<T> : IParser<IEnumerable<T>>
 
             list.Add(reply.Value);
             oldPosition = newPosition;
-            reply = item.Parse(reply.UnparsedTokens);
-            newPosition = reply.UnparsedTokens.Position;
+            reply = item.Parse(reply.UnparsedInput);
+            newPosition = reply.UnparsedInput.Position;
         }
 
         //The item parser finally failed.
 
         if (oldPosition != newPosition)
-            return new Error<IEnumerable<T>>(reply.UnparsedTokens, reply.ErrorMessages);
+            return new Error<IEnumerable<T>>(reply.UnparsedInput, reply.ErrorMessages);
 
-        return new Parsed<IEnumerable<T>>(list, reply.UnparsedTokens, reply.ErrorMessages);
+        return new Parsed<IEnumerable<T>>(list, reply.UnparsedInput, reply.ErrorMessages);
     }
 }

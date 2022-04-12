@@ -11,17 +11,17 @@ class LabeledParser<T> : IParser<T>
         errors = ErrorMessageList.Empty.With(ErrorMessage.Expected(expectation));
     }
 
-    public Reply<T> Parse(TokenStream tokens)
+    public Reply<T> Parse(Text input)
     {
-        var start = tokens.Position;
-        var reply = parser.Parse(tokens);
-        var newPosition = reply.UnparsedTokens.Position;
+        var start = input.Position;
+        var reply = parser.Parse(input);
+        var newPosition = reply.UnparsedInput.Position;
         if (start == newPosition)
         {
             if (reply.Success)
-                reply = new Parsed<T>(reply.Value, reply.UnparsedTokens, errors);
+                reply = new Parsed<T>(reply.Value, reply.UnparsedInput, errors);
             else
-                reply = new Error<T>(reply.UnparsedTokens, errors);
+                reply = new Error<T>(reply.UnparsedInput, errors);
         }
         return reply;
     }

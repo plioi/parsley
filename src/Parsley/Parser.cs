@@ -2,5 +2,5 @@ namespace Parsley;
 
 public interface IParser<out T>
 {
-    Reply<T> Parse(TokenStream tokens);
+    Reply<T> Parse(Text input);
 }
