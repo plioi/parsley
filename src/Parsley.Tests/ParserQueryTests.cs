@@ -5,7 +5,7 @@ namespace Parsley.Tests;
 
 class ParserQueryTests
 {
-    static readonly IParser<string> Next = new LambdaParser<string>(input => new Parsed<string>(input.Peek(1), input.Advance(1)));
+    static readonly Parser<string> Next = input => new Parsed<string>(input.Peek(1), input.Advance(1));
 
     public void CanBuildParserWhichSimulatesSuccessfulParsingOfGivenValueWithoutConsumingInput()
     {
@@ -34,7 +34,7 @@ class ParserQueryTests
 
     public void PropogatesErrorsWithoutRunningRemainingParsers()
     {
-        var Fail = Fail<string>();
+        var Fail = Grammar<string>.Fail;
 
         (from _ in Fail
             from x in Next

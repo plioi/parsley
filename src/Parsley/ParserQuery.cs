@@ -10,15 +10,15 @@ public static class ParserQuery
     /// </remarks>
     /// <typeparam name="T">The type of the value to treat as a parse result.</typeparam>
     /// <param name="value">The value to treat as a parse result.</param>
-    public static IParser<T> SucceedWithThisValue<T>(this T value)
+    public static Parser<T> SucceedWithThisValue<T>(this T value)
     {
-        return new LambdaParser<T>(input => new Parsed<T>(value, input));
+        return input => new Parsed<T>(value, input);
     }
 
     /// <summary>
     /// Allows LINQ syntax to construct a new parser from a simpler parser, using a single 'from' clause.
     /// </summary>
-    public static IParser<U> Select<T, U>(this IParser<T> parser, Func<T, U> constructResult)
+    public static Parser<U> Select<T, U>(this Parser<T> parser, Func<T, U> constructResult)
     {
         return parser.Bind(t => constructResult(t).SucceedWithThisValue());
     }
@@ -26,7 +26,7 @@ public static class ParserQuery
     /// <summary>
     /// Allows LINQ syntax to construct a new parser from an ordered sequence of simpler parsers, using multiple 'from' clauses.
     /// </summary>
-    public static IParser<V> SelectMany<T, U, V>(this IParser<T> parser, Func<T, IParser<U>> k, Func<T, U, V> s)
+    public static Parser<V> SelectMany<T, U, V>(this Parser<T> parser, Func<T, Parser<U>> k, Func<T, U, V> s)
     {
         return parser.Bind(x => k(x).Bind(y => s(x, y).SucceedWithThisValue()));
     }
@@ -37,16 +37,16 @@ public static class ParserQuery
     /// <remarks>
     /// In monadic terms, this is the 'Bind' function.
     /// </remarks>
-    static IParser<U> Bind<T, U>(this IParser<T> parser, Func<T, IParser<U>> constructNextParser)
+    static Parser<U> Bind<T, U>(this Parser<T> parse, Func<T, Parser<U>> constructNextParser)
     {
-        return new LambdaParser<U>(input =>
+        return input =>
         {
-            var reply = parser.Parse(input);
+            var reply = parse(input);
 
             if (reply.Success)
-                return constructNextParser(reply.Value).Parse(reply.UnparsedInput);
+                return constructNextParser(reply.Value)(reply.UnparsedInput);
 
             return new Error<U>(reply.UnparsedInput, reply.ErrorMessages);
-        });
+        };
     }
 }

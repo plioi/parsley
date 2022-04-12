@@ -16,7 +16,7 @@ class OperatorPrecedenceParserTests
 
         expression.Unit(LeftParen,
             from open in LeftParen
-            from expr in expression
+            from expr in expression.Parser
             from close in RightParen
             select expr);
 
@@ -31,7 +31,7 @@ class OperatorPrecedenceParserTests
 
         expression.Extend(LeftParen, 8, callable =>
             from open in LeftParen
-            from arguments in ZeroOrMore(expression, Comma)
+            from arguments in ZeroOrMore(expression.Parser, Comma)
             from close in RightParen
             select new Form(callable, arguments));
     }
@@ -98,7 +98,7 @@ class OperatorPrecedenceParserTests
         //The "(" unit-parser is invoked but fails.  The next token, "*", has
         //high precedence, but that should not provoke parsing to continue.
             
-        expression.FailsToParse("(*").LeavingUnparsedInput("*").WithMessage("(1, 2): Parse error.");
+        expression.Parser.FailsToParse("(*").LeavingUnparsedInput("*").WithMessage("(1, 2): Parse error.");
     }
 
     public void ProvidesErrorAtAppropriatePositionWhenExtendParsersFail()
@@ -110,26 +110,26 @@ class OperatorPrecedenceParserTests
         //is invoked and immediately fails.  The next token, "*", has
         //high precedence, but that should not provoke parsing to continue.
 
-        expression.FailsToParse("2-*").LeavingUnparsedInput("*").WithMessage("(1, 3): Parse error.");
+        expression.Parser.FailsToParse("2-*").LeavingUnparsedInput("*").WithMessage("(1, 3): Parse error.");
     }
 
     void Parses(string input, string expectedTree)
     {
-        expression.Parses(input).WithValue(e => e.ToString().ShouldBe(expectedTree));
+        expression.Parser.Parses(input).WithValue(e => e.ToString().ShouldBe(expectedTree));
     }
 
-    static readonly IParser<string> Digit = Pattern("Digit", @"[0-9]");
-    static readonly IParser<string> Name = Pattern("Name", @"[a-z]+");
-    static readonly IParser<string> Increment = Operator("++");
-    static readonly IParser<string> Decrement = Operator("--");
-    static readonly IParser<string> Add = Operator("+");
-    static readonly IParser<string> Subtract = Operator("-");
-    static readonly IParser<string> Multiply = Operator("*");
-    static readonly IParser<string> Divide = Operator("/");
-    static readonly IParser<string> Exponent = Operator("^");
-    static readonly IParser<string> LeftParen = Operator("(");
-    static readonly IParser<string> RightParen = Operator(")");
-    static readonly IParser<string> Comma = Operator(",");
+    static readonly Parser<string> Digit = Pattern("Digit", @"[0-9]");
+    static readonly Parser<string> Name = Pattern("Name", @"[a-z]+");
+    static readonly Parser<string> Increment = Operator("++");
+    static readonly Parser<string> Decrement = Operator("--");
+    static readonly Parser<string> Add = Operator("+");
+    static readonly Parser<string> Subtract = Operator("-");
+    static readonly Parser<string> Multiply = Operator("*");
+    static readonly Parser<string> Divide = Operator("/");
+    static readonly Parser<string> Exponent = Operator("^");
+    static readonly Parser<string> LeftParen = Operator("(");
+    static readonly Parser<string> RightParen = Operator(")");
+    static readonly Parser<string> Comma = Operator(",");
 
     interface IExpression
     {
