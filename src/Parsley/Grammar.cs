@@ -61,20 +61,6 @@ public static class Grammar
     }
 
     /// <summary>
-    /// Between(left, goal, right) parses its arguments in order.  If all three
-    /// parsers succeed, the result of the goal parser is returned.
-    /// </summary>
-    public static IParser<TGoal> Between<TLeft, TGoal, TRight>(IParser<TLeft> left,
-                                                               IParser<TGoal> goal,
-                                                               IParser<TRight> right)
-    {
-        return from L in left
-            from G in goal
-            from R in right
-            select G;
-    }
-
-    /// <summary>
     /// Optional(p) is equivalent to p whenever p succeeds or when p fails after consuming input.
     /// If p fails without consuming input, Optional(p) succeeds.
     /// </summary>

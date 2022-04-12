@@ -14,7 +14,11 @@ class OperatorPrecedenceParserTests
         expression.Atom(Digit, token => new Constant(int.Parse(token, CultureInfo.InvariantCulture)));
         expression.Atom(Name, token => new Identifier(token));
 
-        expression.Unit(LeftParen, Between(LeftParen, expression, RightParen));
+        expression.Unit(LeftParen,
+            from open in LeftParen
+            from expr in expression
+            from close in RightParen
+            select expr);
 
         expression.Postfix(Increment, 7, (symbol, operand) => new Form(new Identifier(symbol), operand));
         expression.Postfix(Decrement, 7, (symbol, operand) => new Form(new Identifier(symbol), operand));
@@ -26,7 +30,9 @@ class OperatorPrecedenceParserTests
         expression.Prefix(Subtract, 6, (symbol, operand) => new Form(new Identifier(symbol), operand));
 
         expression.Extend(LeftParen, 8, callable =>
-            from arguments in Between(LeftParen, ZeroOrMore(expression, Comma), RightParen)
+            from open in LeftParen
+            from arguments in ZeroOrMore(expression, Comma)
+            from close in RightParen
             select new Form(callable, arguments));
     }
 

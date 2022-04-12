@@ -122,19 +122,6 @@ class GrammarTests
         parser.FailsToParse("AB,A").AtEndOfInput().WithMessage("(1, 5): B expected");
     }
 
-    public void ApplyingARuleBetweenTwoOtherRules()
-    {
-        var parser = Between(A, B, A);
-
-        parser.FailsToParse("").AtEndOfInput().WithMessage("(1, 1): A expected");
-        parser.FailsToParse("B").LeavingUnparsedInput("B").WithMessage("(1, 1): A expected");
-        parser.FailsToParse("A").AtEndOfInput().WithMessage("(1, 2): B expected");
-        parser.FailsToParse("AA").LeavingUnparsedInput("A").WithMessage("(1, 2): B expected");
-        parser.FailsToParse("AB").AtEndOfInput().WithMessage("(1, 3): A expected");
-        parser.FailsToParse("ABB").LeavingUnparsedInput("B").WithMessage("(1, 3): A expected");
-        parser.Parses("ABA").WithValue("B");
-    }
-
     public void ParsingAnOptionalRuleZeroOrOneTimes()
     {
         Optional(AB).PartiallyParses("AB.").LeavingUnparsedInput(".").WithValue("AB");
