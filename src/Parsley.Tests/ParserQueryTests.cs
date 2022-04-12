@@ -34,7 +34,7 @@ class ParserQueryTests
 
     public void PropogatesErrorsWithoutRunningRemainingParsers()
     {
-        var Fail = Fail<string>();
+        var Fail = Grammar<string>.Fail;
 
         (from _ in Fail
             from x in Next

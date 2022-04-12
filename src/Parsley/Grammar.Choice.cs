@@ -23,7 +23,7 @@ partial class Grammar
     public static Parser<T> Choice<T>(params Parser<T>[] parsers)
     {
         if (parsers.Length == 0)
-            return Fail<T>();
+            return Grammar<T>.Fail;
 
         return input =>
         {

@@ -27,7 +27,7 @@ class GrammarTests
 
     public void CanFailWithoutConsumingInput()
     {
-        Fail<string>().FailsToParse("ABC").LeavingUnparsedInput("ABC");
+        Grammar<string>.Fail.FailsToParse("ABC").LeavingUnparsedInput("ABC");
     }
 
     public void CanDetectTheEndOfInputWithoutAdvancing()

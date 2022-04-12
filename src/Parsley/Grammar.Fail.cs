@@ -1,9 +1,6 @@
 namespace Parsley;
 
-partial class Grammar
+public partial class Grammar<T>
 {
-    public static Parser<T> Fail<T>()
-    {
-        return input => new Error<T>(input, ErrorMessage.Unknown());
-    }
+    public static readonly Parser<T> Fail = input => new Error<T>(input, ErrorMessage.Unknown());
 }
