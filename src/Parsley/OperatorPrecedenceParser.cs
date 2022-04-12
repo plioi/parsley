@@ -72,8 +72,6 @@ public class OperatorPrecedenceParser<T>
         if (!reply.Success)
             return reply;
 
-        input = reply.UnparsedInput;
-
         var matchingExtendParserBuilder = FirstMatchingExtendParserBuilderOrNull(input, out token, out int? tokenPrecedence);
 
         while (matchingExtendParserBuilder != null && precedence < tokenPrecedence)
@@ -86,8 +84,6 @@ public class OperatorPrecedenceParser<T>
 
             if (!reply.Success)
                 return reply;
-
-            input = reply.UnparsedInput;
 
             matchingExtendParserBuilder = FirstMatchingExtendParserBuilderOrNull(input, out token, out tokenPrecedence);
         }
