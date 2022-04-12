@@ -1,6 +1,3 @@
 namespace Parsley;
 
-public interface Parser<out T>
-{
-    Reply<T> Parse(Text input);
-}
+public delegate Reply<T> Parser<out T>(Text input);
