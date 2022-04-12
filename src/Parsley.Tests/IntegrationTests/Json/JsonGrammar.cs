@@ -6,42 +6,8 @@ namespace Parsley.Tests.IntegrationTests.Json;
 
 public class JsonGrammar
 {
-    static readonly IParser<string> Quote = Pattern("string", @"
-            # Open quote:
-            ""
-
-            # Zero or more content characters:
-            (
-                      [^""\\]*             # Zero or more non-quote, non-slash characters.
-                |     \\ [""\\bfnrt\/]     # One of: slash-quote   \\   \b   \f   \n   \r   \t   \/
-                |     \\ u [0-9a-fA-F]{4}  # \u followed by four hex digits
-            )*
-
-            # Close quote:
-            ""
-        ");
-
-    static readonly IParser<string> Number = Pattern("number", @"
-            # Look-ahead to confirm the whole-number part is either 0 or starts with 1-9:
-            (?=
-                0(?!\d)  |  [1-9]
-            )
-
-            # Whole number part:
-            \d+
-
-            # Optional fractional part:
-            (\.\d+)?
-
-            # Optional exponent
-            (
-                [eE]
-                [+-]?
-                \d+
-            )?
-        ");
-
     public static readonly IParser<object> JsonDocument;
+
     static readonly IParser<object> Value;
 
     static JsonGrammar()
@@ -96,6 +62,41 @@ public class JsonGrammar
             from end in EndOfInput
             select value;
     }
+
+    static readonly IParser<string> Number = Pattern("number", @"
+            # Look-ahead to confirm the whole-number part is either 0 or starts with 1-9:
+            (?=
+                0(?!\d)  |  [1-9]
+            )
+
+            # Whole number part:
+            \d+
+
+            # Optional fractional part:
+            (\.\d+)?
+
+            # Optional exponent
+            (
+                [eE]
+                [+-]?
+                \d+
+            )?
+        ");
+
+    static readonly IParser<string> Quote = Pattern("string", @"
+            # Open quote:
+            ""
+
+            # Zero or more content characters:
+            (
+                      [^""\\]*             # Zero or more non-quote, non-slash characters.
+                |     \\ [""\\bfnrt\/]     # One of: slash-quote   \\   \b   \f   \n   \r   \t   \/
+                |     \\ u [0-9a-fA-F]{4}  # \u followed by four hex digits
+            )*
+
+            # Close quote:
+            ""
+        ");
 
     static string Unquote(string quote)
     {
