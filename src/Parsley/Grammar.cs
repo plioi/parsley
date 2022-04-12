@@ -1,34 +1,7 @@
-using System.Text.RegularExpressions;
-using Parsley.Primitives;
-
 namespace Parsley;
 
-public static class Grammar
+public static partial class Grammar
 {
-    public static Parser<T> Fail<T>() => new FailingParser<T>();
-
-    public static Parser<string> EndOfInput { get; } = new EndOfInputParser();
-
-    public static Parser<string> Pattern(string name, string pattern, params RegexOptions[] regexOptions)
-        => new PatternParser(name, pattern, regexOptions);
-
-    public static Parser<string> Keyword(string word)
-        => new KeywordParser(word);
-
-    public static Parser<string> Operator(string symbol)
-        => new OperatorParser(symbol);
-
-    /// <summary>
-    /// ZeroOrMore(p) repeatedly applies an parser p until it fails, returning
-    /// the list of values returned by successful applications of p.  At the
-    /// end of the sequence, p must fail without consuming input, otherwise the
-    /// sequence will fail with the error reported by p.
-    /// </summary>
-    public static Parser<IEnumerable<T>> ZeroOrMore<T>(Parser<T> item)
-    {
-        return new ZeroOrMoreParser<T>(item);
-    }
-
     /// <summary>
     /// OneOrMore(p) behaves like ZeroOrMore(p), except that p must succeed at least one time.
     /// </summary>
@@ -68,52 +41,6 @@ public static class Grammar
     {
         var nothing = default(T).SucceedWithThisValue();
         return Choice(parser, nothing);
-    }
-
-    /// <summary>
-    /// The parser Attempt(p) behaves like parser p, except that it pretends
-    /// that it hasn't consumed any input when an error occurs. This combinator
-    /// is used whenever arbitrary look ahead is needed.
-    /// </summary>
-    public static Parser<T> Attempt<T>(Parser<T> parse)
-    {
-        return new AttemptParser<T>(parse);
-    }
-
-    /// <summary>
-    /// Choice() always fails without consuming input.
-    /// 
-    /// Choice(p) is equivalent to p.
-    /// 
-    /// For 2 or more inputs, parsers are applied from left
-    /// to right.  If a parser succeeds, its reply is returned.
-    /// If a parser fails without consuming input, the next parser
-    /// is attempted.  If a parser fails after consuming input,
-    /// subsequent parsers will not be attempted.  As long as
-    /// parsers consume no input, their error messages are merged.
-    ///
-    /// Choice is 'predictive' since p[n+1] is only tried when
-    /// p[n] didn't consume any input (i.e. the look-ahead is 1).
-    /// This non-backtracking behaviour allows for both an efficient
-    /// implementation of the parser combinators and the generation
-    /// of good error messages.
-    /// </summary>
-    public static Parser<T> Choice<T>(params Parser<T>[] parsers)
-    {
-        if (parsers.Length == 0)
-            return Fail<T>();
-
-        return new ChoiceParser<T>(parsers);
-    }
-
-    /// <summary>
-    /// When parser p consumes any input, Label(p, e) is the same as p.
-    /// When parser p does not consume any input, Label(p, e) is the same
-    /// as p, except any messages are replaced with expectation e.
-    /// </summary>
-    public static Parser<T> Label<T>(Parser<T> parser, string expectation)
-    {
-        return new LabeledParser<T>(parser, expectation);
     }
 
     static IEnumerable<T> List<T>(T first, IEnumerable<T> rest)

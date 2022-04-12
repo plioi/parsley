@@ -1,18 +1,16 @@
-namespace Parsley.Primitives;
+namespace Parsley;
 
-public class OperatorParser : Parser<string>
+partial class Grammar
 {
-    readonly string symbol;
-
-    public OperatorParser(string symbol)
-        => this.symbol = symbol;
-
-    public Reply<string> Parse(Text input)
+    public static Parser<string> Operator(string symbol)
     {
-        var peek = input.Peek(symbol.Length);
+        return input =>
+        {
+            var peek = input.Peek(symbol.Length);
 
-        return peek == symbol
-            ? new Parsed<string>(peek, input.Advance(peek.Length))
-            : new Error<string>(input, ErrorMessage.Expected(symbol));
+            return peek == symbol
+                ? new Parsed<string>(peek, input.Advance(peek.Length))
+                : new Error<string>(input, ErrorMessage.Expected(symbol));
+        };
     }
 }

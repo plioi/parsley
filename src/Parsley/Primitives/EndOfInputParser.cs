@@ -1,8 +1,8 @@
-namespace Parsley.Primitives;
+namespace Parsley;
 
-class EndOfInputParser : Parser<string>
+partial class Grammar
 {
-    public Reply<string> Parse(Text input)
+    public static Reply<string> EndOfInput(Text input)
         => input.EndOfInput
             ? new Parsed<string>("", input)
             : new Error<string>(input, ErrorMessage.Expected("end of input"));

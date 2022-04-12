@@ -1,23 +1,24 @@
-namespace Parsley.Primitives;
+namespace Parsley;
 
-class AttemptParser<T> : Parser<T>
+partial class Grammar
 {
-    readonly Parser<T> parse;
-
-    public AttemptParser(Parser<T> parse)
+    /// <summary>
+    /// The parser Attempt(p) behaves like parser p, except that it pretends
+    /// that it hasn't consumed any input when an error occurs. This combinator
+    /// is used whenever arbitrary look ahead is needed.
+    /// </summary>
+    public static Parser<T> Attempt<T>(Parser<T> parse)
     {
-        this.parse = parse;
-    }
+        return input =>
+        {
+            var start = input.Position;
+            var reply = parse(input);
+            var newPosition = reply.UnparsedInput.Position;
 
-    public Reply<T> Parse(Text input)
-    {
-        var start = input.Position;
-        var reply = parse(input);
-        var newPosition = reply.UnparsedInput.Position;
+            if (reply.Success || start == newPosition)
+                return reply;
 
-        if (reply.Success || start == newPosition)
-            return reply;
-
-        return new Error<T>(input, ErrorMessage.Backtrack(newPosition, reply.ErrorMessages));
+            return new Error<T>(input, ErrorMessage.Backtrack(newPosition, reply.ErrorMessages));
+        };
     }
 }

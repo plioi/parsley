@@ -1,7 +1,9 @@
-namespace Parsley.Primitives;
+namespace Parsley;
 
-class FailingParser<T> : Parser<T>
+partial class Grammar
 {
-    public Reply<T> Parse(Text input)
-        => new Error<T>(input, ErrorMessage.Unknown());
+    public static Parser<T> Fail<T>()
+    {
+        return input => new Error<T>(input, ErrorMessage.Unknown());
+    }
 }

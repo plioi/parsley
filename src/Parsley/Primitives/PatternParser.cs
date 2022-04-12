@@ -1,24 +1,21 @@
 using System.Text.RegularExpressions;
 
-namespace Parsley.Primitives;
+namespace Parsley;
 
-class PatternParser : Parser<string>
+partial class Grammar
 {
-    readonly string name;
-    readonly TokenRegex regex;
-
-    public PatternParser(string name, string pattern, params RegexOptions[] regexOptions)
+    public static Parser<string> Pattern(string name, string pattern, params RegexOptions[] regexOptions)
     {
-        this.name = name;
-        regex = new TokenRegex(pattern, regexOptions);
-    }
+        var regex = new TokenRegex(pattern, regexOptions);
 
-    public Reply<string> Parse(Text input)
-    {
-        var match = input.Match(regex);
+        return input =>
+        {
+            var match = input.Match(regex);
 
-        return match.Success
-            ? new Parsed<string>(match.Value, input.Advance(match.Value.Length))
-            : new Error<string>(input, ErrorMessage.Expected(name));
+            return match.Success
+                ? new Parsed<string>(match.Value, input.Advance(match.Value.Length))
+                : new Error<string>(input, ErrorMessage.Expected(name));
+        };
     }
 }
+

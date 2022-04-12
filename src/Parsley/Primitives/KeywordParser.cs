@@ -1,11 +1,12 @@
-namespace Parsley.Primitives;
+namespace Parsley;
 
-class KeywordParser : PatternParser
+partial class Grammar
 {
-    public KeywordParser(string word)
-        : base(word, word + @"\b")
+    public static Parser<string> Keyword(string word)
     {
         if (word.Any(ch => !char.IsLetter(ch)))
             throw new ArgumentException("Keywords may only contain letters.", nameof(word));
+
+        return Pattern(word, word + @"\b");
     }
 }
