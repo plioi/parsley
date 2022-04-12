@@ -41,10 +41,10 @@ public static class ParserQuery
     {
         return new LambdaParser<U>(input =>
         {
-            var reply = parser.Parse(input);
+            var reply = parser(input);
 
             if (reply.Success)
-                return constructNextParser(reply.Value).Parse(reply.UnparsedInput);
+                return constructNextParser(reply.Value)(reply.UnparsedInput);
 
             return new Error<U>(reply.UnparsedInput, reply.ErrorMessages);
         });

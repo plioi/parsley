@@ -12,7 +12,7 @@ class AttemptParser<T> : Parser<T>
     public Reply<T> Parse(Text input)
     {
         var start = input.Position;
-        var reply = parse.Parse(input);
+        var reply = parse(input);
         var newPosition = reply.UnparsedInput.Position;
 
         if (reply.Success || start == newPosition)

@@ -12,7 +12,7 @@ class ZeroOrMoreParser<T> : Parser<IEnumerable<T>>
     public Reply<IEnumerable<T>> Parse(Text input)
     {
         var oldPosition = input.Position;
-        var reply = item.Parse(input);
+        var reply = item(input);
         var newPosition = reply.UnparsedInput.Position;
 
         var list = new List<T>();
@@ -24,7 +24,7 @@ class ZeroOrMoreParser<T> : Parser<IEnumerable<T>>
 
             list.Add(reply.Value);
             oldPosition = newPosition;
-            reply = item.Parse(reply.UnparsedInput);
+            reply = item(reply.UnparsedInput);
             newPosition = reply.UnparsedInput.Position;
         }
 

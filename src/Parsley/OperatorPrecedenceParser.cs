@@ -70,7 +70,7 @@ public class OperatorPrecedenceParser<T> : Parser<T>
         if (matchingUnitParser == null)
             return new Error<T>(input, ErrorMessage.Unknown());
 
-        var reply = matchingUnitParser.Parse(input);
+        var reply = matchingUnitParser(input);
 
         if (!reply.Success)
             return reply;
@@ -85,7 +85,7 @@ public class OperatorPrecedenceParser<T> : Parser<T>
 
             var extendParser = matchingExtendParserBuilder(reply.Value);
 
-            reply = extendParser.Parse(input);
+            reply = extendParser(input);
 
             if (!reply.Success)
                 return reply;
@@ -104,7 +104,7 @@ public class OperatorPrecedenceParser<T> : Parser<T>
 
         foreach(var (kind, parser) in unitParsers)
         {
-            var reply = kind.Parse(input);
+            var reply = kind(input);
 
             if (reply.Success)
             {
@@ -123,7 +123,7 @@ public class OperatorPrecedenceParser<T> : Parser<T>
 
         foreach (var (kind, precedence, extendParserBuilder) in extendParsers)
         {
-            var reply = kind.Parse(input);
+            var reply = kind(input);
 
             if (reply.Success)
             {

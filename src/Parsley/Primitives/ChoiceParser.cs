@@ -12,7 +12,7 @@ class ChoiceParser<T> : Parser<T>
     public Reply<T> Parse(Text input)
     {
         var start = input.Position;
-        var reply = parsers[0].Parse(input);
+        var reply = parsers[0](input);
         var newPosition = reply.UnparsedInput.Position;
 
         var errors = ErrorMessageList.Empty;
@@ -20,7 +20,7 @@ class ChoiceParser<T> : Parser<T>
         while (!reply.Success && (start == newPosition) && i < parsers.Length)
         {
             errors = errors.Merge(reply.ErrorMessages);
-            reply = parsers[i].Parse(input);
+            reply = parsers[i](input);
             newPosition = reply.UnparsedInput.Position;
             i++;
         }

@@ -71,7 +71,7 @@ class GrammarTests
             .WithMessage("(1, 6): B expected");
 
         Parser<string> succeedWithoutConsuming = new LambdaParser<string>(input => new Parsed<string>(null, input));
-        Action infiniteLoop = () => ZeroOrMore(succeedWithoutConsuming).Parse(new Text(""));
+        Action infiniteLoop = () => ZeroOrMore(succeedWithoutConsuming)(new Text(""));
 
         infiniteLoop
             .ShouldThrow<Exception>()
@@ -97,7 +97,7 @@ class GrammarTests
             .WithMessage("(1, 6): B expected");
 
         Parser<string> succeedWithoutConsuming = new LambdaParser<string>(input => new Parsed<string>(null, input));
-        Action infiniteLoop = () => OneOrMore(succeedWithoutConsuming).Parse(new Text(""));
+        Action infiniteLoop = () => OneOrMore(succeedWithoutConsuming)(new Text(""));
 
         infiniteLoop
             .ShouldThrow<Exception>()

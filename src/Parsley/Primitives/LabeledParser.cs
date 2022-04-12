@@ -14,7 +14,7 @@ class LabeledParser<T> : Parser<T>
     public Reply<T> Parse(Text input)
     {
         var start = input.Position;
-        var reply = parser.Parse(input);
+        var reply = parser(input);
         var newPosition = reply.UnparsedInput.Position;
         if (start == newPosition)
         {
