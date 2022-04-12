@@ -18,7 +18,7 @@ partial class Grammar
             if (reply.Success || start == newPosition)
                 return reply;
 
-            return new Error<T>(input, ErrorMessage.Backtrack(newPosition, reply.ErrorMessages));
+            return new Error<T>(input, input.Position, input.EndOfInput, ErrorMessage.Backtrack(newPosition, reply.ErrorMessages));
         };
     }
 }

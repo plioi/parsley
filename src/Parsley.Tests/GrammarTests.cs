@@ -67,7 +67,7 @@ class GrammarTests
         parser.FailsToParse("ABABA!", "!")
             .WithMessage("(1, 6): B expected");
 
-        Parser<string> succeedWithoutConsuming = input => new Parsed<string>(null, input);
+        Parser<string> succeedWithoutConsuming = input => new Parsed<string>(null, input, input.Position, input.EndOfInput);
         Action infiniteLoop = () => ZeroOrMore(succeedWithoutConsuming)(new Text(""));
 
         infiniteLoop
@@ -90,7 +90,7 @@ class GrammarTests
         parser.FailsToParse("ABABA!", "!")
             .WithMessage("(1, 6): B expected");
 
-        Parser<string> succeedWithoutConsuming = input => new Parsed<string>(null, input);
+        Parser<string> succeedWithoutConsuming = input => new Parsed<string>(null, input, input.Position, input.EndOfInput);
         Action infiniteLoop = () => OneOrMore(succeedWithoutConsuming)(new Text(""));
 
         infiniteLoop
@@ -307,7 +307,7 @@ public class AlternationTests
         //consuming input.  These tests simply describe the behavior under that
         //unusual situation.
 
-        Parser<string> succeedWithoutConsuming = input => new Parsed<string>(null, input);
+        Parser<string> succeedWithoutConsuming = input => new Parsed<string>(null, input, input.Position, input.EndOfInput);
 
         var reply = Choice(A, succeedWithoutConsuming).Parses("");
         reply.ErrorMessages.ToString().ShouldBe("A expected");

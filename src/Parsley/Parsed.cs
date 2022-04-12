@@ -2,15 +2,15 @@ namespace Parsley;
 
 public class Parsed<T> : Reply<T>
 {
-    public Parsed(T value, Text unparsedInput)
-        :this(value, unparsedInput, ErrorMessageList.Empty) { }
+    public Parsed(T value, Text unparsedInput, Position position, bool endOfInput)
+        :this(value, unparsedInput, position, endOfInput, ErrorMessageList.Empty) { }
 
-    public Parsed(T value, Text unparsedInput, ErrorMessageList potentialErrors)
+    public Parsed(T value, Text unparsedInput, Position position, bool endOfInput, ErrorMessageList potentialErrors)
     {
         Value = value;
         UnparsedInput = unparsedInput;
-        Position = unparsedInput.Position;
-        EndOfInput = unparsedInput.EndOfInput;
+        Position = position;
+        EndOfInput = endOfInput;
         ErrorMessages = potentialErrors;
     }
 

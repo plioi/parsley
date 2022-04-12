@@ -5,7 +5,12 @@ namespace Parsley.Tests;
 
 class ParserQueryTests
 {
-    static readonly Parser<string> Next = input => new Parsed<string>(input.Peek(1), input.Advance(1));
+    static readonly Parser<string> Next = input =>
+    {
+        var unparsedInput = input.Advance(1);
+
+        return new Parsed<string>(input.Peek(1), unparsedInput, unparsedInput.Position, unparsedInput.EndOfInput);
+    };
 
     public void CanBuildParserWhichSimulatesSuccessfulParsingOfGivenValueWithoutConsumingInput()
     {

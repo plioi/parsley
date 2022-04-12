@@ -11,12 +11,12 @@ class ParsedTests
 
     public void HasAParsedValue()
     {
-        new Parsed<string>("parsed", unparsed).Value.ShouldBe("parsed");
+        new Parsed<string>("parsed", unparsed, unparsed.Position, unparsed.EndOfInput).Value.ShouldBe("parsed");
     }
 
     public void HasNoErrorMessageByDefault()
     {
-        new Parsed<string>("x", unparsed).ErrorMessages.ShouldBe(ErrorMessageList.Empty);
+        new Parsed<string>("x", unparsed, unparsed.Position, unparsed.EndOfInput).ErrorMessages.ShouldBe(ErrorMessageList.Empty);
     }
 
     public void CanIndicatePotentialErrors()
@@ -25,16 +25,16 @@ class ParsedTests
             .With(ErrorMessage.Expected("A"))
             .With(ErrorMessage.Expected("B"));
 
-        new Parsed<object>("x", unparsed, potentialErrors).ErrorMessages.ShouldBe(potentialErrors);
+        new Parsed<object>("x", unparsed, unparsed.Position, unparsed.EndOfInput, potentialErrors).ErrorMessages.ShouldBe(potentialErrors);
     }
 
     public void HasRemainingUnparsedInput()
     {
-        new Parsed<string>("parsed", unparsed).UnparsedInput.ShouldBe(unparsed);
+        new Parsed<string>("parsed", unparsed, unparsed.Position, unparsed.EndOfInput).UnparsedInput.ShouldBe(unparsed);
     }
 
     public void ReportsNonerrorState()
     {
-        new Parsed<string>("parsed", unparsed).Success.ShouldBeTrue();
+        new Parsed<string>("parsed", unparsed, unparsed.Position, unparsed.EndOfInput).Success.ShouldBeTrue();
     }
 }
