@@ -6,13 +6,6 @@ namespace Parsley.Tests.IntegrationTests.Json;
 
 public class JsonGrammar
 {
-    static readonly IParser<string> Comma = Symbol(",");
-    static readonly IParser<string> OpenArray = Symbol("[");
-    static readonly IParser<string> CloseArray = Symbol("]");
-    static readonly IParser<string> OpenDictionary = Symbol("{");
-    static readonly IParser<string> CloseDictionary = Symbol("}");
-    static readonly IParser<string> Colon = Symbol(":");
-
     static readonly IParser<string> StringLiteral = Pattern("string", @"
             # Open quote:
             ""
@@ -49,56 +42,64 @@ public class JsonGrammar
         ");
 
     public static readonly GrammarRule<object> Json = new(nameof(Json));
-    static readonly GrammarRule<string> Whitespace = new(nameof(Whitespace));
     static readonly GrammarRule<object> JsonValue = new(nameof(JsonValue));
-    static readonly GrammarRule<object> True = new(nameof(True));
-    static readonly GrammarRule<object> False = new(nameof(False));
-    static readonly GrammarRule<object> Null = new(nameof(Null));
-    static readonly GrammarRule<object> Number = new(nameof(Number));
-    static readonly GrammarRule<string> String = new(nameof(String));
-    static readonly GrammarRule<object[]> Array = new(nameof(Array));
-    static readonly GrammarRule<KeyValuePair<string, object>> Pair = new(nameof(Pair));
-    static readonly GrammarRule<Dictionary<string, object>> Dictionary = new(nameof(Dictionary));
 
     static JsonGrammar()
     {
-        Whitespace.Rule =
-            Optional(Pattern("whitespace", @"\s+"));
+        var Whitespace = Optional(Pattern("whitespace", @"\s+"));
 
-        True.Rule =
-            KeywordConstant("true", true);
+        var Comma = Symbol(",");
+        var OpenArray = Symbol("[");
+        var CloseArray = Symbol("]");
+        var OpenDictionary = Symbol("{");
+        var CloseDictionary = Symbol("}");
+        var Colon = Symbol(":");
 
-        False.Rule =
-            KeywordConstant("false", false);
+        var True =
+            from _ in Keyword("true")
+            from trailing in Whitespace
+            select (object)true;
 
-        Null.Rule =
-            KeywordConstant("null", null);
+        var False =
+            from _ in Keyword("false")
+            from trailing in Whitespace
+            select (object)false;
 
-        Number.Rule =
+        var Null =
+            from _ in Keyword("null")
+            from trailing in Whitespace
+            select (object)null;
+
+        var Number =
             from number in NumberLiteral
             from trailing in Whitespace
             select (object) decimal.Parse(number, NumberStyles.Any, CultureInfo.InvariantCulture);
 
-        String.Rule =
+        var String =
             from quotation in StringLiteral
             from trailing in Whitespace
             select Unescape(quotation);
 
-        Array.Rule =
-            from items in Between(OpenArray, ZeroOrMore(JsonValue, Comma), CloseArray)
+        var Array =
+            from open in OpenArray
+            from items in ZeroOrMore(JsonValue, Comma)
+            from close in CloseArray
             select items.ToArray();
 
-        Pair.Rule =
+        var Pair =
             from key in String
             from colon in Colon
             from value in JsonValue
             select new KeyValuePair<string, object>(key, value);
 
-        Dictionary.Rule =
-            from pairs in Between(OpenDictionary, ZeroOrMore(Pair, Comma), CloseDictionary)
+        var Dictionary =
+            from open in OpenDictionary
+            from pairs in ZeroOrMore(Pair, Comma)
+            from close in CloseDictionary
             select ToDictionary(pairs);
 
-        JsonValue.Rule = Choice(True, False, Null, Number, String, Dictionary, Array);
+        JsonValue.Rule =
+            Choice(True, False, Null, Number, String, Dictionary, Array);
 
         Json.Rule =
             from leading in Whitespace
@@ -106,18 +107,9 @@ public class JsonGrammar
             from end in EndOfInput
             from trailing in Whitespace
             select jsonValue;
-    }
 
-    static IParser<object> KeywordConstant(string keyword, object constant)
-    {
-        return from _ in Keyword(keyword)
-            from trailing in Whitespace
-            select constant;
-    }
-
-    static IParser<string> Symbol(string symbol)
-    {
-        return from s in Operator(symbol)
+        IParser<string> Symbol(string symbol) =>
+            from s in Operator(symbol)
             from trailing in Whitespace
             select s;
     }
