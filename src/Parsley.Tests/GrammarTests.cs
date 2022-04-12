@@ -70,7 +70,7 @@ class GrammarTests
             .LeavingUnparsedInput("!")
             .WithMessage("(1, 6): B expected");
 
-        Parser<string> succeedWithoutConsuming = new LambdaParser<string>(input => new Parsed<string>(null, input));
+        Parser<string> succeedWithoutConsuming = input => new Parsed<string>(null, input);
         Action infiniteLoop = () => ZeroOrMore(succeedWithoutConsuming)(new Text(""));
 
         infiniteLoop
@@ -96,7 +96,7 @@ class GrammarTests
             .LeavingUnparsedInput("!")
             .WithMessage("(1, 6): B expected");
 
-        Parser<string> succeedWithoutConsuming = new LambdaParser<string>(input => new Parsed<string>(null, input));
+        Parser<string> succeedWithoutConsuming = input => new Parsed<string>(null, input);
         Action infiniteLoop = () => OneOrMore(succeedWithoutConsuming)(new Text(""));
 
         infiniteLoop
@@ -329,7 +329,7 @@ public class AlternationTests
         //consuming input.  These tests simply describe the behavior under that
         //unusual situation.
 
-        Parser<string> succeedWithoutConsuming = new LambdaParser<string>(input => new Parsed<string>(null, input));
+        Parser<string> succeedWithoutConsuming = input => new Parsed<string>(null, input);
 
         var reply = Choice(A, succeedWithoutConsuming).Parses("");
         reply.ErrorMessages.ToString().ShouldBe("A expected");
@@ -341,8 +341,6 @@ public class AlternationTests
         reply.ErrorMessages.ToString().ShouldBe("A expected");
     }
 
-    static readonly Parser<string> NeverExecuted = new LambdaParser<string>(input =>
-    {
-        throw new Exception("Parser 'NeverExecuted' should not have been executed.");
-    });
+    static readonly Parser<string> NeverExecuted =
+        input => throw new Exception("Parser 'NeverExecuted' should not have been executed.");
 }

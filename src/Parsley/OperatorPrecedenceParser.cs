@@ -60,7 +60,7 @@ public class OperatorPrecedenceParser<T> : Parser<T>
 
     Parser<T> OperandAtPrecedenceLevel(int precedence)
     {
-        return new LambdaParser<T>(input => Parse(input, precedence));
+        return input => Parse(input, precedence);
     }
 
     Reply<T> Parse(Text input, int precedence)
