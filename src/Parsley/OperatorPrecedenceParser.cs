@@ -65,7 +65,7 @@ public class OperatorPrecedenceParser<T>
         var matchingUnitParser = FirstMatchingUnitParserOrNull(input, out var token);
 
         if (matchingUnitParser == null)
-            return new Error<T>(input.Position, input.EndOfInput, ErrorMessage.Unknown());
+            return new Error<T>(input.Position, ErrorMessage.Unknown());
 
         var reply = matchingUnitParser(input);
 

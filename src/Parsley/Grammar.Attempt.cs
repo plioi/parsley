@@ -20,7 +20,7 @@ partial class Grammar
                 return reply;
 
             input.Restore(snapshot);
-            return new Error<T>(input.Position, input.EndOfInput, ErrorMessage.Backtrack(newPosition, reply.ErrorMessages));
+            return new Error<T>(input.Position, ErrorMessage.Backtrack(newPosition, reply.ErrorMessages));
         };
     }
 }

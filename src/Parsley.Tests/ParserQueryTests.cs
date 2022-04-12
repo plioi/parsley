@@ -9,7 +9,7 @@ class ParserQueryTests
         var next = input.Peek(1);
         input.Advance(1);
 
-        return new Parsed<string>(next, input.Position, input.EndOfInput);
+        return new Parsed<string>(next, input.Position);
     };
 
     public void CanBuildParserWhichSimulatesSuccessfulParsingOfGivenValueWithoutConsumingInput()

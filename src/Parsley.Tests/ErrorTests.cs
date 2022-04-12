@@ -13,8 +13,8 @@ class ErrorTests
 
     public void CanIndicateErrorsAtTheCurrentPosition()
     {
-        new Error<object>(endOfInput.Position, endOfInput.EndOfInput, ErrorMessage.Unknown()).ErrorMessages.ToString().ShouldBe("Parse error.");
-        new Error<object>(endOfInput.Position, endOfInput.EndOfInput, ErrorMessage.Expected("statement")).ErrorMessages.ToString().ShouldBe("statement expected");
+        new Error<object>(endOfInput.Position, ErrorMessage.Unknown()).ErrorMessages.ToString().ShouldBe("Parse error.");
+        new Error<object>(endOfInput.Position, ErrorMessage.Expected("statement")).ErrorMessages.ToString().ShouldBe("statement expected");
     }
 
     public void CanIndicateMultipleErrorsAtTheCurrentPosition()
@@ -23,12 +23,12 @@ class ErrorTests
             .With(ErrorMessage.Expected("A"))
             .With(ErrorMessage.Expected("B"));
 
-        new Error<object>(endOfInput.Position, endOfInput.EndOfInput, errors).ErrorMessages.ToString().ShouldBe("A or B expected");
+        new Error<object>(endOfInput.Position, errors).ErrorMessages.ToString().ShouldBe("A or B expected");
     }
 
     public void ThrowsWhenAttemptingToGetParsedValue()
     {
-        var inspectParsedValue = () => new Error<object>(x.Position, x.EndOfInput, ErrorMessage.Unknown()).Value;
+        var inspectParsedValue = () => new Error<object>(x.Position, ErrorMessage.Unknown()).Value;
         inspectParsedValue
             .ShouldThrow<MemberAccessException>()
             .Message.ShouldBe("(1, 1): Parse error.");
@@ -36,17 +36,15 @@ class ErrorTests
 
     public void HasRemainingUnparsedInput()
     {
-        var xError = new Error<object>(x.Position, x.EndOfInput, ErrorMessage.Unknown());
+        var xError = new Error<object>(x.Position, ErrorMessage.Unknown());
         xError.Position.ShouldBe(x.Position);
-        xError.EndOfInput.ShouldBe(x.EndOfInput);
 
-        var endError = new Error<object>(endOfInput.Position, endOfInput.EndOfInput, ErrorMessage.Unknown());
+        var endError = new Error<object>(endOfInput.Position, ErrorMessage.Unknown());
         endError.Position.ShouldBe(endOfInput.Position);
-        endError.EndOfInput.ShouldBe(endOfInput.EndOfInput);
     }
 
     public void ReportsErrorState()
     {
-        new Error<object>(x.Position, x.EndOfInput, ErrorMessage.Unknown()).Success.ShouldBeFalse();
+        new Error<object>(x.Position, ErrorMessage.Unknown()).Success.ShouldBeFalse();
     }
 }

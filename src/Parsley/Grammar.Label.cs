@@ -20,9 +20,9 @@ partial class Grammar
             if (start == newPosition)
             {
                 if (reply.Success)
-                    reply = new Parsed<T>(reply.Value, reply.Position, reply.EndOfInput, errors);
+                    reply = new Parsed<T>(reply.Value, reply.Position, errors);
                 else
-                    reply = new Error<T>(reply.Position, reply.EndOfInput, errors);
+                    reply = new Error<T>(reply.Position, errors);
             }
 
             return reply;
