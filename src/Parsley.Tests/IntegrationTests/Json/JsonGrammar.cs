@@ -96,7 +96,7 @@ public class JsonGrammar
             from open in OpenDictionary
             from pairs in ZeroOrMore(Pair, Comma)
             from close in CloseDictionary
-            select ToDictionary(pairs);
+            select pairs.ToDictionary(x => x.Key, x => x.Value);
 
         JsonValue.Rule =
             Choice(True, False, Null, Number, String, Dictionary, Array);
@@ -130,16 +130,6 @@ public class JsonGrammar
             .Replace("\\r", "\r")
             .Replace("\\t", "\t")
             .Replace("\\/", "/");
-
-        return result;
-    }
-
-    static Dictionary<string, object> ToDictionary(IEnumerable<KeyValuePair<string, object>> pairs)
-    {
-        var result = new Dictionary<string, object>();
-
-        foreach (var pair in pairs)
-            result[pair.Key] = pair.Value;
 
         return result;
     }
