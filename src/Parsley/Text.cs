@@ -42,8 +42,6 @@ public class Text
 
     public bool EndOfInput => index >= input.Length;
 
-    public MatchResult Match(TokenRegex regex) => regex.Match(input, index);
-
     public MatchResult Match(Predicate<char> test)
     {
         int i = index;

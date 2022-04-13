@@ -12,13 +12,13 @@ public class JsonGrammar
 
     static JsonGrammar()
     {
-        var Whitespace = Optional(Pattern("whitespace", @"\s+"));
+        var Whitespace = Optional(OneOrMore(char.IsWhiteSpace, "whitespace"));
 
         var Key =
             from leading in Whitespace
             from quote in Quote
             from trailing in Whitespace
-            select Unquote(quote);
+            select quote;
 
         var Pair =
             from key in Key
@@ -42,7 +42,7 @@ public class JsonGrammar
                 select (object) decimal.Parse(number, NumberStyles.Any, CultureInfo.InvariantCulture),
 
                 from quotation in Quote
-                select Unquote(quotation),
+                select quotation,
 
                 from open in Operator("{")
                 from pairs in ZeroOrMore(Pair, Operator(","))
@@ -63,58 +63,57 @@ public class JsonGrammar
             select value;
     }
 
-    static readonly Parser<string> Number = Pattern("number", @"
-            # Look-ahead to confirm the whole-number part is either 0 or starts with 1-9:
-            (?=
-                0(?!\d)  |  [1-9]
-            )
+    static readonly Parser<string> Digits = OneOrMore(char.IsDigit, "0..9");
 
-            # Whole number part:
-            \d+
+    static readonly Parser<string> Number =
 
-            # Optional fractional part:
-            (\.\d+)?
+        from leading in Digits
 
-            # Optional exponent
-            (
-                [eE]
-                [+-]?
-                \d+
-            )?
-        ");
+        from optionalFraction in Optional(
+            from dot in Character('.')
+            from digits in Digits
+            select dot + digits)
 
-    static readonly Parser<string> Quote = Pattern("string", @"
-            # Open quote:
-            ""
+        from optionalExponent in Optional(
+            from e in Character(x => x is 'e' or 'E', "exponent")
+            from sign in Optional(Character(x => x is '+' or '-', "sign").Select(x => x.ToString()))
+            from digits in Digits
+            select $"{e}{sign}{digits}")
 
-            # Zero or more content characters:
-            (
-                      [^""\\]*             # Zero or more non-quote, non-slash characters.
-                |     \\ [""\\bfnrt\/]     # One of: slash-quote   \\   \b   \f   \n   \r   \t   \/
-                |     \\ u [0-9a-fA-F]{4}  # \u followed by four hex digits
-            )*
+        select $"{leading}{optionalFraction}{optionalExponent}";
 
-            # Close quote:
-            ""
-        ");
+    static readonly Parser<char> LetterOrDigit = Character(char.IsLetterOrDigit, "letter or digit");
 
-    static string Unquote(string quote)
-    {
-        string result = quote.Substring(1, quote.Length - 2); //Remove leading and trailing quotation marks
+    static readonly Parser<string> Quote =
 
-        result = Regex.Replace(result, @"\\u[0-9a-fA-F]{4}",
-            match => char.ConvertFromUtf32(int.Parse(match.Value.Replace("\\u", ""), NumberStyles.HexNumber, CultureInfo.InvariantCulture)));
+        from open in Character('"')
+        from content in ZeroOrMore(
+            Choice(
+                Attempt(from slash in Character('\\')
+                from escape in Character(c => "\"\\bfnrt/".Contains(c), "escape")
+                select $"{escape}"
+                    .Replace("\"", "\"")
+                    .Replace("\\", "\\")
+                    .Replace("b", "\b")
+                    .Replace("f", "\f")
+                    .Replace("n", "\n")
+                    .Replace("r", "\r")
+                    .Replace("t", "\t")
+                    .Replace("/", "/")),
 
-        result = result
-            .Replace("\\\"", "\"")
-            .Replace("\\\\", "\\")
-            .Replace("\\b", "\b")
-            .Replace("\\f", "\f")
-            .Replace("\\n", "\n")
-            .Replace("\\r", "\r")
-            .Replace("\\t", "\t")
-            .Replace("\\/", "/");
+                from slash in Character('\\')
+                from u in Character('u')
+                from _0 in LetterOrDigit
+                from _1 in LetterOrDigit
+                from _2 in LetterOrDigit
+                from _3 in LetterOrDigit
+                select char.ConvertFromUtf32(
+                    int.Parse($"{_0}{_1}{_2}{_3}",
+                        NumberStyles.HexNumber,
+                        CultureInfo.InvariantCulture)),
 
-        return result;
-    }
+                Character(c => c != '"' && c != '\\', "non-quote, not-slash character").Select(x => x.ToString())
+            ))
+        from close in Character('"')
+        select string.Join("", content);
 }

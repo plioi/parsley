@@ -61,38 +61,6 @@ class TextTests
         new Text("").EndOfInput.ShouldBeTrue();
     }
 
-    public void CanMatchLeadingCharactersByTokenRegex()
-    {
-        var end = new TokenRegex(@"$");
-        var letters = new TokenRegex(@"[a-z]+");
-        var digits = new TokenRegex(@"[0-9]+");
-        var alphanumerics = new TokenRegex(@"[a-z0-9]+");
-
-        var empty = new Text("");
-        empty.Match(letters).ShouldFail();
-        empty.Match(end).ShouldSucceed("");
-
-        var abc123 = new Text("abc123");
-        abc123.Match(digits).ShouldFail();
-        abc123.Match(letters).ShouldSucceed("abc");
-        abc123.Match(alphanumerics).ShouldSucceed("abc123");
-
-        abc123.Advance(2);
-        abc123.Match(digits).ShouldFail();
-        abc123.Match(letters).ShouldSucceed("c");
-        abc123.Match(alphanumerics).ShouldSucceed("c123");
-
-        abc123.Advance(1);
-        abc123.Match(digits).ShouldSucceed("123");
-        abc123.Match(letters).ShouldFail();
-        abc123.Match(alphanumerics).ShouldSucceed("123");
-
-        abc123.Advance(3);
-        abc123.Match(digits).ShouldFail();
-        abc123.Match(letters).ShouldFail();
-        abc123.Match(alphanumerics).ShouldFail();
-    }
-
     public void CanMatchLeadingCharactersByPredicate()
     {
         Predicate<char> letters = char.IsLetter;
