@@ -42,19 +42,16 @@ public class Text
 
     public bool EndOfInput => index >= input.Length;
 
-    public MatchResult Match(Predicate<char> test)
+    public bool TryMatch(Predicate<char> test, out string value)
     {
         int i = index;
 
         while (i < input.Length && test(input[i]))
             i++;
 
-        var value = Peek(i - index);
+        value = Peek(i - index);
 
-        if (value.Length > 0)
-            return MatchResult.Succeed(value);
-
-        return MatchResult.Fail;
+        return value.Length > 0;
     }
 
     int Column

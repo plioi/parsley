@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Text.RegularExpressions;
 using static Parsley.Grammar;
 
 namespace Parsley.Tests.IntegrationTests.Json;

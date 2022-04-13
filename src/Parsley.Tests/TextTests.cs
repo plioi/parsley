@@ -68,27 +68,40 @@ class TextTests
         Predicate<char> alphanumerics = char.IsLetterOrDigit;
 
         var empty = new Text("");
-        empty.Match(letters).ShouldFail();
+        empty.TryMatch(letters, out var value).ShouldBe(false);
+        value.ShouldBe("");
 
         var abc123 = new Text("abc123");
-        abc123.Match(digits).ShouldFail();
-        abc123.Match(letters).ShouldSucceed("abc");
-        abc123.Match(alphanumerics).ShouldSucceed("abc123");
+        abc123.TryMatch(digits, out value).ShouldBe(false);
+        value.ShouldBe("");
+        abc123.TryMatch(letters, out value).ShouldBe(true);
+        value.ShouldBe("abc");
+        abc123.TryMatch(alphanumerics, out value).ShouldBe(true);
+        value.ShouldBe("abc123");
 
         abc123.Advance(2);
-        abc123.Match(digits).ShouldFail();
-        abc123.Match(letters).ShouldSucceed("c");
-        abc123.Match(alphanumerics).ShouldSucceed("c123");
+        abc123.TryMatch(digits, out value).ShouldBe(false);
+        value.ShouldBe("");
+        abc123.TryMatch(letters, out value).ShouldBe(true);
+        value.ShouldBe("c");
+        abc123.TryMatch(alphanumerics, out value).ShouldBe(true);
+        value.ShouldBe("c123");
 
         abc123.Advance(1);
-        abc123.Match(digits).ShouldSucceed("123");
-        abc123.Match(letters).ShouldFail();
-        abc123.Match(alphanumerics).ShouldSucceed("123");
+        abc123.TryMatch(digits, out value).ShouldBe(true);
+        value.ShouldBe("123");
+        abc123.TryMatch(letters, out value).ShouldBe(false);
+        value.ShouldBe("");
+        abc123.TryMatch(alphanumerics, out value).ShouldBe(true);
+        value.ShouldBe("123");
 
         abc123.Advance(3);
-        abc123.Match(digits).ShouldFail();
-        abc123.Match(letters).ShouldFail();
-        abc123.Match(alphanumerics).ShouldFail();
+        abc123.TryMatch(digits, out value).ShouldBe(false);
+        value.ShouldBe("");
+        abc123.TryMatch(letters, out value).ShouldBe(false);
+        value.ShouldBe("");
+        abc123.TryMatch(alphanumerics, out value).ShouldBe(false);
+        value.ShouldBe("");
     }
 
     public void CanGetCurrentPosition()

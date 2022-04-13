@@ -2,26 +2,6 @@ namespace Parsley;
 
 public static class ParsingAssertions
 {
-    public static void ShouldSucceed(this MatchResult actual, string expected)
-    {
-        if (!actual.Success)
-            throw new AssertionException("successful match", "match failed");
-
-        if (actual.Value != expected)
-            throw new AssertionException(expected, actual.Value);
-    }
-
-    public static void ShouldFail(this MatchResult actual)
-    {
-        if (actual.Success)
-            throw new AssertionException("match failure", "successful match");
-
-        const string expected = "";
-
-        if (actual.Value != expected)
-            throw new AssertionException(expected, actual.Value);
-    }
-
     public static Reply<T> FailsToParse<T>(this Parser<T> parse, string input, string expectedUnparsedInput, string expectedMessage)
     {
         var text = new Text(input);

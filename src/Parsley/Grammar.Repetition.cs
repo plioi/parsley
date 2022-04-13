@@ -73,13 +73,11 @@ partial class Grammar
     {
         return input =>
         {
-            var match = input.Match(test);
-
-            if (match.Success)
+            if (input.TryMatch(test, out var value))
             {
-                input.Advance(match.Value.Length);
+                input.Advance(value.Length);
 
-                return new Parsed<string>(match.Value, input.Position);
+                return new Parsed<string>(value, input.Position);
             }
 
             return new Parsed<string>("", input.Position);
@@ -90,13 +88,11 @@ partial class Grammar
     {
         return input =>
         {
-            var match = input.Match(test);
-
-            if (match.Success)
+            if (input.TryMatch(test, out var value))
             {
-                input.Advance(match.Value.Length);
+                input.Advance(value.Length);
 
-                return new Parsed<string>(match.Value, input.Position);
+                return new Parsed<string>(value, input.Position);
             }
 
             return new Error<string>(input.Position, ErrorMessage.Expected(name));
