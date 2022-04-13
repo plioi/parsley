@@ -122,9 +122,7 @@ class GrammarTests
 
     public void ParsingAnOptionalRuleZeroOrOneTimes()
     {
-        var charOrNull = Optional(Character(x => true, "Any Character"));
-
-        //Reference Type to Reference Type
+        //Reference Type to Nullable Reference Type
         Optional(AB).PartiallyParses("AB.", ".").WithValue("AB");
         Optional(AB).PartiallyParses(".", ".").WithValue((string?)null);
         Optional(AB).FailsToParse("AC.", "C.", "(1, 2): B expected");
@@ -135,10 +133,15 @@ class GrammarTests
         Optional(B).PartiallyParses("A", "A").WithValue((char?)null);
         Optional(B).PartiallyParses("", "").WithValue((char?)null);
 
-        //Nullable Value Type to Nullable Value Type
-        Optional(charOrNull).PartiallyParses("AB.", "B.").WithValue('A');
-        Optional(charOrNull).PartiallyParses(".", "").WithValue('.');
-        Optional(charOrNull).PartiallyParses("", "").WithValue((char?)null);
+        //Alternate possibilities are not supported when nullable
+        //reference types are enabled:
+        //
+        //  Nullable Reference Type to Nullable Reference Type
+        //  Nullable Value Type to Nullable Value Type
+        //
+        //These are not supported because these use cases arise
+        //from the construction Optional(Optional(...)), which is
+        //suspect to begin with.
     }
 
     public void AttemptingToParseRuleButBacktrackingUponFailure()
