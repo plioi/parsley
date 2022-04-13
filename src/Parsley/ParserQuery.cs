@@ -12,7 +12,7 @@ public static class ParserQuery
     /// <param name="value">The value to treat as a parse result.</param>
     public static Parser<T> SucceedWithThisValue<T>(this T value)
     {
-        return input => new Parsed<T>(value, input);
+        return input => new Parsed<T>(value, input.Position);
     }
 
     /// <summary>
@@ -44,9 +44,9 @@ public static class ParserQuery
             var reply = parse(input);
 
             if (reply.Success)
-                return constructNextParser(reply.Value)(reply.UnparsedInput);
+                return constructNextParser(reply.Value)(input);
 
-            return new Error<U>(reply.UnparsedInput, reply.ErrorMessages);
+            return new Error<U>(reply.Position, reply.ErrorMessages);
         };
     }
 }

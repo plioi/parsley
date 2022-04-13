@@ -11,14 +11,16 @@ partial class Grammar
     {
         return input =>
         {
+            var snapshot = input.Snapshot();
             var start = input.Position;
             var reply = parse(input);
-            var newPosition = reply.UnparsedInput.Position;
+            var newPosition = input.Position;
 
             if (reply.Success || start == newPosition)
                 return reply;
 
-            return new Error<T>(input, ErrorMessage.Backtrack(newPosition, reply.ErrorMessages));
+            input.Restore(snapshot);
+            return new Error<T>(input.Position, ErrorMessage.Backtrack(newPosition, reply.ErrorMessages));
         };
     }
 }

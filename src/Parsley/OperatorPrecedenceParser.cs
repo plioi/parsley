@@ -65,14 +65,12 @@ public class OperatorPrecedenceParser<T>
         var matchingUnitParser = FirstMatchingUnitParserOrNull(input, out var token);
 
         if (matchingUnitParser == null)
-            return new Error<T>(input, ErrorMessage.Unknown());
+            return new Error<T>(input.Position, ErrorMessage.Unknown());
 
         var reply = matchingUnitParser(input);
 
         if (!reply.Success)
             return reply;
-
-        input = reply.UnparsedInput;
 
         var matchingExtendParserBuilder = FirstMatchingExtendParserBuilderOrNull(input, out token, out int? tokenPrecedence);
 
@@ -87,8 +85,6 @@ public class OperatorPrecedenceParser<T>
             if (!reply.Success)
                 return reply;
 
-            input = reply.UnparsedInput;
-
             matchingExtendParserBuilder = FirstMatchingExtendParserBuilderOrNull(input, out token, out tokenPrecedence);
         }
 
@@ -101,7 +97,9 @@ public class OperatorPrecedenceParser<T>
 
         foreach(var (kind, parser) in unitParsers)
         {
+            var snapshot = input.Snapshot();
             var reply = kind(input);
+            input.Restore(snapshot);
 
             if (reply.Success)
             {
@@ -120,7 +118,9 @@ public class OperatorPrecedenceParser<T>
 
         foreach (var (kind, precedence, extendParserBuilder) in extendParsers)
         {
+            var snapshot = input.Snapshot();
             var reply = kind(input);
+            input.Restore(snapshot);
 
             if (reply.Success)
             {

@@ -29,7 +29,7 @@ partial class Grammar
         {
             var start = input.Position;
             var reply = parsers[0](input);
-            var newPosition = reply.UnparsedInput.Position;
+            var newPosition = input.Position;
 
             var errors = ErrorMessageList.Empty;
             var i = 1;
@@ -38,7 +38,7 @@ partial class Grammar
             {
                 errors = errors.Merge(reply.ErrorMessages);
                 reply = parsers[i](input);
-                newPosition = reply.UnparsedInput.Position;
+                newPosition = input.Position;
                 i++;
             }
 
@@ -47,9 +47,9 @@ partial class Grammar
                 errors = errors.Merge(reply.ErrorMessages);
 
                 if (reply.Success)
-                    reply = new Parsed<T>(reply.Value, reply.UnparsedInput, errors);
+                    reply = new Parsed<T>(reply.Value, reply.Position, errors);
                 else
-                    reply = new Error<T>(reply.UnparsedInput, errors);
+                    reply = new Error<T>(reply.Position, errors);
             }
 
             return reply;

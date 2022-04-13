@@ -1,11 +1,16 @@
 using System.Globalization;
-using static Parsley.Grammar;
 
 namespace Parsley.Tests;
 
 class ParserQueryTests
 {
-    static readonly Parser<string> Next = input => new Parsed<string>(input.Peek(1), input.Advance(1));
+    static readonly Parser<string> Next = input =>
+    {
+        var next = input.Peek(1);
+        input.Advance(1);
+
+        return new Parsed<string>(next, input.Position);
+    };
 
     public void CanBuildParserWhichSimulatesSuccessfulParsingOfGivenValueWithoutConsumingInput()
     {
@@ -39,16 +44,16 @@ class ParserQueryTests
         (from _ in Fail
             from x in Next
             from y in Next
-            select Tuple.Create(x, y)).FailsToParse("xy", "xy");
+            select Tuple.Create(x, y)).FailsToParse("xy", "xy", "(1, 1): Parse error.");
 
         (from x in Next
             from _ in Fail
             from y in Next
-            select Tuple.Create(x, y)).FailsToParse("xy", "y");
+            select Tuple.Create(x, y)).FailsToParse("xy", "y", "(1, 2): Parse error.");
 
         (from x in Next
             from y in Next
             from _ in Fail
-            select Tuple.Create(x, y)).FailsToParse("xy");
+            select Tuple.Create(x, y)).FailsToParse("xy", "", "(1, 3): Parse error.");
     }
 }

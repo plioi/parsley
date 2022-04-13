@@ -2,9 +2,9 @@ namespace Parsley;
 
 public class Text
 {
-    readonly int index;
+    int index;
     readonly string input;
-    readonly int line;
+    int line;
 
     public Text(string input)
         : this(input, 0, 1) { }
@@ -25,15 +25,19 @@ public class Text
             ? input.Substring(index)
             : input.Substring(index, characters);
 
-    public Text Advance(int characters)
+    public void Advance(int characters)
     {
         if (characters == 0)
-            return this;
+            return;
 
         int newIndex = index + characters;
         int newLineNumber = line + Peek(characters).Cast<char>().Count(ch => ch == '\n');
-            
-        return new Text(input, newIndex, newLineNumber);
+
+        index = newIndex;
+        line = newLineNumber;
+
+        if (index > input.Length)
+            index = input.Length;
     }
 
     public bool EndOfInput => index >= input.Length;
@@ -69,6 +73,15 @@ public class Text
 
     public Position Position
         => new(line, Column);
+
+    public (int index, int line) Snapshot()
+        => (index, line);
+
+    public void Restore((int index, int line) snapshot)
+    {
+        index = snapshot.index;
+        line = snapshot.line;
+    }
 
     public override string ToString()
         => input.Substring(index);

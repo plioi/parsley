@@ -13,8 +13,8 @@ class ErrorTests
 
     public void CanIndicateErrorsAtTheCurrentPosition()
     {
-        new Error<object>(endOfInput, ErrorMessage.Unknown()).ErrorMessages.ToString().ShouldBe("Parse error.");
-        new Error<object>(endOfInput, ErrorMessage.Expected("statement")).ErrorMessages.ToString().ShouldBe("statement expected");
+        new Error<object>(endOfInput.Position, ErrorMessage.Unknown()).ErrorMessages.ToString().ShouldBe("Parse error.");
+        new Error<object>(endOfInput.Position, ErrorMessage.Expected("statement")).ErrorMessages.ToString().ShouldBe("statement expected");
     }
 
     public void CanIndicateMultipleErrorsAtTheCurrentPosition()
@@ -23,12 +23,12 @@ class ErrorTests
             .With(ErrorMessage.Expected("A"))
             .With(ErrorMessage.Expected("B"));
 
-        new Error<object>(endOfInput, errors).ErrorMessages.ToString().ShouldBe("A or B expected");
+        new Error<object>(endOfInput.Position, errors).ErrorMessages.ToString().ShouldBe("A or B expected");
     }
 
     public void ThrowsWhenAttemptingToGetParsedValue()
     {
-        var inspectParsedValue = () => new Error<object>(x, ErrorMessage.Unknown()).Value;
+        var inspectParsedValue = () => new Error<object>(x.Position, ErrorMessage.Unknown()).Value;
         inspectParsedValue
             .ShouldThrow<MemberAccessException>()
             .Message.ShouldBe("(1, 1): Parse error.");
@@ -36,12 +36,15 @@ class ErrorTests
 
     public void HasRemainingUnparsedInput()
     {
-        new Error<object>(x, ErrorMessage.Unknown()).UnparsedInput.ShouldBe(x);
-        new Error<object>(endOfInput, ErrorMessage.Unknown()).UnparsedInput.ShouldBe(endOfInput);
+        var xError = new Error<object>(x.Position, ErrorMessage.Unknown());
+        xError.Position.ShouldBe(x.Position);
+
+        var endError = new Error<object>(endOfInput.Position, ErrorMessage.Unknown());
+        endError.Position.ShouldBe(endOfInput.Position);
     }
 
     public void ReportsErrorState()
     {
-        new Error<object>(x, ErrorMessage.Unknown()).Success.ShouldBeFalse();
+        new Error<object>(x.Position, ErrorMessage.Unknown()).Success.ShouldBeFalse();
     }
 }

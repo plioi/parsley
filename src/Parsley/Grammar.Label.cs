@@ -15,14 +15,14 @@ partial class Grammar
         {
             var start = input.Position;
             var reply = parse(input);
-            var newPosition = reply.UnparsedInput.Position;
+            var newPosition = input.Position;
 
             if (start == newPosition)
             {
                 if (reply.Success)
-                    reply = new Parsed<T>(reply.Value, reply.UnparsedInput, errors);
+                    reply = new Parsed<T>(reply.Value, reply.Position, errors);
                 else
-                    reply = new Error<T>(reply.UnparsedInput, errors);
+                    reply = new Error<T>(reply.Position, errors);
             }
 
             return reply;

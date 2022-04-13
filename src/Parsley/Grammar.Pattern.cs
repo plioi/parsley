@@ -12,9 +12,15 @@ partial class Grammar
         {
             var match = input.Match(regex);
 
-            return match.Success
-                ? new Parsed<string>(match.Value, input.Advance(match.Value.Length))
-                : new Error<string>(input, ErrorMessage.Expected(name));
+
+            if (match.Success)
+            {
+                input.Advance(match.Value.Length);
+
+                return new Parsed<string>(match.Value, input.Position);
+            }
+
+            return new Error<string>(input.Position, ErrorMessage.Expected(name));
         };
     }
 }
