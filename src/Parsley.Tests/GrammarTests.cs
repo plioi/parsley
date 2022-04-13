@@ -22,9 +22,6 @@ class GrammarTests
         COMMA = Character(',');
     }
 
-    static Action<IEnumerable<string>> Literals(params string[] expectedLiterals)
-        => actualLiterals => actualLiterals.ShouldBe(expectedLiterals);
-
     public void CanFailWithoutConsumingInput()
     {
         Grammar<string>.Fail.FailsToParse("ABC", "ABC", "(1, 1): Parse error.");
@@ -59,10 +56,10 @@ class GrammarTests
         parser.Parses("").Value.ShouldBeEmpty();
 
         parser.PartiallyParses("AB!", "!")
-            .WithValue(Literals("AB"));
+            .Value.Single().ShouldBe("AB");
 
         parser.PartiallyParses("ABAB!", "!")
-            .WithValue(Literals("AB", "AB"));
+            .Value.ShouldBe(new[] { "AB", "AB" });
 
         parser.FailsToParse("ABABA!", "!", "(1, 6): B expected");
 
@@ -81,10 +78,10 @@ class GrammarTests
         parser.FailsToParse("", "", "(1, 1): A expected");
 
         parser.PartiallyParses("AB!", "!")
-            .WithValue(Literals("AB"));
+            .Value.Single().ShouldBe("AB");
 
         parser.PartiallyParses("ABAB!", "!")
-            .WithValue(Literals("AB", "AB"));
+            .Value.ShouldBe(new[] { "AB", "AB" });
 
         parser.FailsToParse("ABABA!", "!", "(1, 6): B expected");
 
@@ -101,9 +98,9 @@ class GrammarTests
         var parser = ZeroOrMore(AB, COMMA);
 
         parser.Parses("").Value.ShouldBeEmpty();
-        parser.Parses("AB").WithValue(Literals("AB"));
-        parser.Parses("AB,AB").WithValue(Literals("AB", "AB"));
-        parser.Parses("AB,AB,AB").WithValue(Literals("AB", "AB", "AB"));
+        parser.Parses("AB").Value.Single().ShouldBe("AB");
+        parser.Parses("AB,AB").Value.ShouldBe(new[] { "AB", "AB" });
+        parser.Parses("AB,AB,AB").Value.ShouldBe(new[] { "AB", "AB", "AB" });
         parser.FailsToParse("AB,", "", "(1, 4): A expected");
         parser.FailsToParse("AB,A", "", "(1, 5): B expected");
     }
@@ -113,9 +110,9 @@ class GrammarTests
         var parser = OneOrMore(AB, COMMA);
 
         parser.FailsToParse("", "", "(1, 1): A expected");
-        parser.Parses("AB").WithValue(Literals("AB"));
-        parser.Parses("AB,AB").WithValue(Literals("AB", "AB"));
-        parser.Parses("AB,AB,AB").WithValue(Literals("AB", "AB", "AB"));
+        parser.Parses("AB").Value.Single().ShouldBe("AB");
+        parser.Parses("AB,AB").Value.ShouldBe(new[] { "AB", "AB" });
+        parser.Parses("AB,AB,AB").Value.ShouldBe(new[] { "AB", "AB", "AB" });
         parser.FailsToParse("AB,", "", "(1, 4): A expected");
         parser.FailsToParse("AB,A", "", "(1, 5): B expected");
     }
@@ -124,14 +121,14 @@ class GrammarTests
     {
         //Reference Type to Nullable Reference Type
         Optional(AB).PartiallyParses("AB.", ".").WithValue("AB");
-        Optional(AB).PartiallyParses(".", ".").WithValue((string?)null);
+        Optional(AB).PartiallyParses(".", ".").WithValue(null);
         Optional(AB).FailsToParse("AC.", "C.", "(1, 2): B expected");
 
         //Value Type to Nullable Value Type
         Optional(A).PartiallyParses("AB.", "B.").WithValue('A');
-        Optional(A).PartiallyParses(".", ".").WithValue((char?)null);
-        Optional(B).PartiallyParses("A", "A").WithValue((char?)null);
-        Optional(B).PartiallyParses("", "").WithValue((char?)null);
+        Optional(A).PartiallyParses(".", ".").WithValue(null);
+        Optional(B).PartiallyParses("A", "A").WithValue(null);
+        Optional(B).PartiallyParses("", "").WithValue(null);
 
         //Alternate possibilities are not supported when nullable
         //reference types are enabled:

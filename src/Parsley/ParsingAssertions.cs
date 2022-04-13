@@ -98,11 +98,4 @@ public static class ParsingAssertions
 
         return reply;
     }
-
-    public static Reply<T> WithValue<T>(this Reply<T> reply, Action<T> assertParsedValue)
-    {
-        assertParsedValue(reply.Value);
-
-        return reply;
-    }
 }

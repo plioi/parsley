@@ -16,7 +16,7 @@ class JsonGrammarTests
 
     public void ParsesNullLiteral()
     {
-        JsonDocument.Parses("null").WithValue((object?)null);
+        JsonDocument.Parses("null").WithValue(null);
     }
 
     public void ParsesNumbers()
@@ -50,14 +50,13 @@ class JsonGrammarTests
         var empty = "[]";
         var filled = "[0, 1, 2]";
 
-        JsonDocument.Parses(empty).WithValue(value =>
-        {
-            value.ShouldNotBeNull();
+        var emptyValue = JsonDocument.Parses(empty).Value;
+        emptyValue.ShouldNotBeNull();
+        ((object[]) emptyValue).ShouldBeEmpty();
 
-            ((object[]) value).ShouldBeEmpty();
-        });
-
-        JsonDocument.Parses(filled).WithValue(value => value.ShouldBe(new[] { 0m, 1m, 2m }));
+        var value = JsonDocument.Parses(filled).Value;
+        value.ShouldNotBeNull();
+        ((object[]) value).ShouldBe(new object[] { 0m, 1m, 2m });
     }
 
     public void ParsesDictionaries()
@@ -65,22 +64,18 @@ class JsonGrammarTests
         var empty = "{}";
         var filled = "{\"zero\" : 0, \"one\" : 1, \"two\" : 2}";
 
-        JsonDocument.Parses(empty).WithValue(value =>
-        {
-            value.ShouldNotBeNull();
+        var emptyValue = JsonDocument.Parses(empty).Value;
+        emptyValue.ShouldNotBeNull();
+        ((Dictionary<string, object>) emptyValue).Count.ShouldBe(0);
 
-            ((Dictionary<string, object>) value).Count.ShouldBe(0);
-        });
+        var value = JsonDocument.Parses(filled).Value;
+        value.ShouldNotBeNull();
 
-        JsonDocument.Parses(filled).WithValue(value =>
-        {
-            value.ShouldNotBeNull();
-
-            var dictionary = (Dictionary<string, object>) value;
-            dictionary["zero"].ShouldBe(0m);
-            dictionary["one"].ShouldBe(1m);
-            dictionary["two"].ShouldBe(2m);
-        });
+        var dictionary = (Dictionary<string, object>) value;
+        dictionary.Count.ShouldBe(3);
+        dictionary["zero"].ShouldBe(0m);
+        dictionary["one"].ShouldBe(1m);
+        dictionary["two"].ShouldBe(2m);
     }
 
     public void ParsesComplexJsonValuesSkippingOptionalWhitespace()
@@ -101,19 +96,17 @@ class JsonGrammarTests
 
             " + whitespaceCharacters;
 
-        JsonDocument.Parses(complex).WithValue(value =>
-        {
-            value.ShouldNotBeNull();
+        var value = JsonDocument.Parses(complex).Value;
+        value.ShouldNotBeNull();
 
-            var json = (Dictionary<string, object>)value;
-            json["numbers"].ShouldBe(new[] {10m, 20m, 30m});
+        var json = (Dictionary<string, object>) value;
+        json["numbers"].ShouldBe(new[] { 10m, 20m, 30m });
 
-            var window = (Dictionary<string, object>) json["window"];
-            window["title"].ShouldBe("Sample Widget");
-            window["parent"].ShouldBeNull();
-            window["maximized"].ShouldBe(true);
-            window["transparent"].ShouldBe(false);
-        });
+        var window = (Dictionary<string, object>) json["window"];
+        window["title"].ShouldBe("Sample Widget");
+        window["parent"].ShouldBeNull();
+        window["maximized"].ShouldBe(true);
+        window["transparent"].ShouldBe(false);
     }
 
     public void RequiresEndOfInputAfterFirstValidJsonValue()

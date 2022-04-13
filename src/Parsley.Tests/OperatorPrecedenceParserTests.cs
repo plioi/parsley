@@ -115,7 +115,8 @@ class OperatorPrecedenceParserTests
 
     void Parses(string input, string expectedTree)
     {
-        expression.Parser.Parses(input).WithValue(e => e.ToString().ShouldBe(expectedTree));
+        var value = expression.Parser.Parses(input).Value;
+        value.ToString().ShouldBe(expectedTree);
     }
 
     static readonly Parser<string> Digit = from c in Character(char.IsDigit, "Digit") select c.ToString();
