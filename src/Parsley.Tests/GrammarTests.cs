@@ -1,4 +1,3 @@
-#nullable disable
 using static Parsley.Grammar;
 
 namespace Parsley.Tests;
@@ -123,23 +122,23 @@ class GrammarTests
 
     public void ParsingAnOptionalRuleZeroOrOneTimes()
     {
-        var charOrDefault = Optional(Character(x => true, "Any Character"));
+        var charOrNull = Optional(Character(x => true, "Any Character"));
 
         //Reference Type to Reference Type
         Optional(AB).PartiallyParses("AB.", ".").WithValue("AB");
-        Optional(AB).PartiallyParses(".", ".").WithValue((string)null);
+        Optional(AB).PartiallyParses(".", ".").WithValue((string?)null);
         Optional(AB).FailsToParse("AC.", "C.", "(1, 2): B expected");
 
-        //Characterization coverage in anticipation of: Value Type to Nullable Value Type
+        //Value Type to Nullable Value Type
         Optional(A).PartiallyParses("AB.", "B.").WithValue('A');
-        Optional(A).PartiallyParses(".", ".").WithValue(default(char));
-        Optional(B).PartiallyParses("A", "A").WithValue(default(char));
-        Optional(B).PartiallyParses("", "").WithValue(default(char));
+        Optional(A).PartiallyParses(".", ".").WithValue((char?)null);
+        Optional(B).PartiallyParses("A", "A").WithValue((char?)null);
+        Optional(B).PartiallyParses("", "").WithValue((char?)null);
 
-        //Characterization coverage in anticipation of: Nullable Value Type to Nullable Value Type
-        Optional(charOrDefault).PartiallyParses("AB.", "B.").WithValue('A');
-        Optional(charOrDefault).PartiallyParses(".", "").WithValue('.');
-        Optional(charOrDefault).PartiallyParses("", "").WithValue(default(char));
+        //Nullable Value Type to Nullable Value Type
+        Optional(charOrNull).PartiallyParses("AB.", "B.").WithValue('A');
+        Optional(charOrNull).PartiallyParses(".", "").WithValue('.');
+        Optional(charOrNull).PartiallyParses("", "").WithValue((char?)null);
     }
 
     public void AttemptingToParseRuleButBacktrackingUponFailure()
