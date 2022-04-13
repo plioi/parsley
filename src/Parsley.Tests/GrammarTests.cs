@@ -350,7 +350,7 @@ public class AlternationTests
             select $"{a}{b}";
 
         Choice(AB, NeverExecuted).FailsToParse("A", "", "(1, 2): B expected");
-        Choice(from c in C select c.ToString(), AB, NeverExecuted).FailsToParse("A", "", "(1, 2): B expected");
+        Choice(C, AB, NeverExecuted).FailsToParse("A", "", "(1, 2): B expected");
     }
 
     public void MergesErrorMessagesWhenParsersFailWithoutConsumingInput()
