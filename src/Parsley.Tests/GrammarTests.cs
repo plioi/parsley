@@ -12,14 +12,14 @@ class GrammarTests
 
     public GrammarTests()
     {
-        A = Character(x => x == 'A', "A");
-        B = Character(x => x == 'B', "B");
+        A = Character('A');
+        B = Character('B');
 
         AB = from a in A
             from b in B
             select $"{a}{b}";
 
-        COMMA = Character(x => x == ',', "COMMA");
+        COMMA = Character(',');
     }
 
     static Action<IEnumerable<string>> Literals(params string[] expectedLiterals)
@@ -313,9 +313,9 @@ public class AlternationTests
 
     public AlternationTests()
     {
-        A = from c in Character(x => x == 'A', "A") select c.ToString();
-        B = from c in Character(x => x == 'B', "B") select c.ToString();
-        C = from c in Character(x => x == 'C', "C") select c.ToString();
+        A = from c in Character('A') select c.ToString();
+        B = from c in Character('B') select c.ToString();
+        C = from c in Character('C') select c.ToString();
     }
 
     public void ChoosingBetweenZeroAlternativesAlwaysFails()
