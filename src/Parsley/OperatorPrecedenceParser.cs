@@ -63,9 +63,7 @@ public class OperatorPrecedenceParser<T>
 
     Reply<T> Parse(Text input, int precedence)
     {
-        var matchingUnitParser = FirstMatchingUnitParserOrNull(input, out var token);
-
-        if (matchingUnitParser == null)
+        if (!TryFindMatchingUnitParser(input, out var matchingUnitParser, out var token))
             return new Error<T>(input.Position, ErrorMessage.Unknown());
 
         var reply = matchingUnitParser(input);
@@ -73,9 +71,7 @@ public class OperatorPrecedenceParser<T>
         if (!reply.Success)
             return reply;
 
-        var matchingExtendParserBuilder = FirstMatchingExtendParserBuilderOrNull(input, out token, out int? tokenPrecedence);
-
-        while (matchingExtendParserBuilder != null && precedence < tokenPrecedence)
+        while (TryFindMatchingExtendParserBuilder(input, out var matchingExtendParserBuilder, out token, out int? tokenPrecedence) && precedence < tokenPrecedence)
         {
             //Continue parsing at this precedence level.
 
@@ -85,15 +81,14 @@ public class OperatorPrecedenceParser<T>
 
             if (!reply.Success)
                 return reply;
-
-            matchingExtendParserBuilder = FirstMatchingExtendParserBuilderOrNull(input, out token, out tokenPrecedence);
         }
 
         return reply;
     }
 
-    Parser<T> FirstMatchingUnitParserOrNull(Text input, out string token)
+    bool TryFindMatchingUnitParser(Text input, out Parser<T> found, out string token)
     {
+        found = null;
         token = null;
 
         foreach(var (kind, parser) in unitParsers)
@@ -105,15 +100,17 @@ public class OperatorPrecedenceParser<T>
             if (reply.Success)
             {
                 token = reply.Value;
-                return parser;
+                found = parser;
+                return true;
             }
         }
 
-        return null;
+        return false;
     }
 
-    ExtendParserBuilder<T> FirstMatchingExtendParserBuilderOrNull(Text input, out string token, out int? tokenPrecedence)
+    bool TryFindMatchingExtendParserBuilder(Text input, out ExtendParserBuilder<T> found, out string token, out int? tokenPrecedence)
     {
+        found = null;
         token = null;
         tokenPrecedence = null;
 
@@ -127,10 +124,11 @@ public class OperatorPrecedenceParser<T>
             {
                 token = reply.Value;
                 tokenPrecedence = precedence;
-                return extendParserBuilder;
+                found = extendParserBuilder;
+                return true;
             }
         }
 
-        return null;
+        return false;
     }
 }
