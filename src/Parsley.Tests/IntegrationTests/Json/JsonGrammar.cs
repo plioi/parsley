@@ -89,35 +89,31 @@ public class JsonGrammar
         from open in Character('"')
         from content in ZeroOrMore(
             Choice(
-                from slash in Character('\\')
-                from escape in Choice(
-                    Character(c => "\"\\bfnrt/".Contains(c), "escape").Select(x => x.ToString()),
+                Attempt(from slash in Character('\\')
+                from escape in Character(c => "\"\\bfnrt/".Contains(c), "escape")
+                select $"{escape}"
+                    .Replace("\"", "\"")
+                    .Replace("\\", "\\")
+                    .Replace("b", "\b")
+                    .Replace("f", "\f")
+                    .Replace("n", "\n")
+                    .Replace("r", "\r")
+                    .Replace("t", "\t")
+                    .Replace("/", "/")),
 
-                    from u in Character('u')
-                    from _0 in LetterOrDigit
-                    from _1 in LetterOrDigit
-                    from _2 in LetterOrDigit
-                    from _3 in LetterOrDigit
-                    select $"{u}{_0}{_1}{_2}{_3}"
-                    )
-                select $"{slash}{escape}",
+                from slash in Character('\\')
+                from u in Character('u')
+                from _0 in LetterOrDigit
+                from _1 in LetterOrDigit
+                from _2 in LetterOrDigit
+                from _3 in LetterOrDigit
+                select char.ConvertFromUtf32(
+                    int.Parse($"{_0}{_1}{_2}{_3}",
+                        NumberStyles.HexNumber,
+                        CultureInfo.InvariantCulture)),
 
                 Character(c => c != '"' && c != '\\', "non-quote, not-slash character").Select(x => x.ToString())
             ))
         from close in Character('"')
-        select Unescape(string.Join("", content));
-
-    static string Unescape(string quote)
-    {
-        return Regex.Replace(quote, @"\\u[0-9a-fA-F]{4}",
-                match => char.ConvertFromUtf32(int.Parse(match.Value.Replace("\\u", ""), NumberStyles.HexNumber, CultureInfo.InvariantCulture)))
-            .Replace("\\\"", "\"")
-            .Replace("\\\\", "\\")
-            .Replace("\\b", "\b")
-            .Replace("\\f", "\f")
-            .Replace("\\n", "\n")
-            .Replace("\\r", "\r")
-            .Replace("\\t", "\t")
-            .Replace("\\/", "/");
-    }
+        select string.Join("", content);
 }
