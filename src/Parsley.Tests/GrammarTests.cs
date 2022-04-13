@@ -213,13 +213,15 @@ class GrammarTests
     {
         var foo = Keyword("foo");
 
+        foo.FailsToParse("", "", "(1, 1): foo expected");
+        
         foo.FailsToParse("bar", "bar", "(1, 1): foo expected");
+        foo.FailsToParse("fo", "fo", "(1, 1): foo expected");
 
-        foo.Parses("foo")
-            .WithValue("foo");
+        foo.PartiallyParses("foo ", " ").WithValue("foo");
+        foo.Parses("foo").WithValue("foo");
 
-        foo.PartiallyParses("foo bar", " bar")
-            .WithValue("foo");
+        foo.PartiallyParses("foo bar", " bar").WithValue("foo");
 
         foo.FailsToParse("foobar", "foobar", "(1, 1): foo expected");
 
