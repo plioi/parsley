@@ -66,7 +66,7 @@ class GrammarTests
 
         parser.FailsToParse("ABABA!", "!", "(1, 6): B expected");
 
-        Parser<string> succeedWithoutConsuming = input => new Parsed<string>(null, input.Position);
+        Parser<string> succeedWithoutConsuming = input => new Parsed<string>("ignored value", input.Position);
         Action infiniteLoop = () => ZeroOrMore(succeedWithoutConsuming)(new Text(""));
 
         infiniteLoop
@@ -88,7 +88,7 @@ class GrammarTests
 
         parser.FailsToParse("ABABA!", "!", "(1, 6): B expected");
 
-        Parser<string> succeedWithoutConsuming = input => new Parsed<string>(null, input.Position);
+        Parser<string> succeedWithoutConsuming = input => new Parsed<string>("ignored value", input.Position);
         Action infiniteLoop = () => OneOrMore(succeedWithoutConsuming)(new Text(""));
 
         infiniteLoop
@@ -122,9 +122,26 @@ class GrammarTests
 
     public void ParsingAnOptionalRuleZeroOrOneTimes()
     {
+        //Reference Type to Nullable Reference Type
         Optional(AB).PartiallyParses("AB.", ".").WithValue("AB");
-        Optional(AB).PartiallyParses(".", ".").WithValue((string)null);
+        Optional(AB).PartiallyParses(".", ".").WithValue((string?)null);
         Optional(AB).FailsToParse("AC.", "C.", "(1, 2): B expected");
+
+        //Value Type to Nullable Value Type
+        Optional(A).PartiallyParses("AB.", "B.").WithValue('A');
+        Optional(A).PartiallyParses(".", ".").WithValue((char?)null);
+        Optional(B).PartiallyParses("A", "A").WithValue((char?)null);
+        Optional(B).PartiallyParses("", "").WithValue((char?)null);
+
+        //Alternate possibilities are not supported when nullable
+        //reference types are enabled:
+        //
+        //  Nullable Reference Type to Nullable Reference Type
+        //  Nullable Value Type to Nullable Value Type
+        //
+        //These are not supported because these use cases arise
+        //from the construction Optional(Optional(...)), which is
+        //suspect to begin with.
     }
 
     public void AttemptingToParseRuleButBacktrackingUponFailure()
@@ -345,10 +362,10 @@ public class AlternationTests
     public void MergesPotentialErrorMessagesWhenParserSucceedsWithoutConsumingInput()
     {
         //Choice really shouldn't be used with parsers that can succeed without
-        //consuming input.  These tests simply describe the behavior under that
+        //consuming input. These tests simply describe the behavior under that
         //unusual situation.
 
-        Parser<string> succeedWithoutConsuming = input => new Parsed<string>(null, input.Position);
+        Parser<string> succeedWithoutConsuming = input => new Parsed<string>("ignored value", input.Position);
 
         var reply = Choice(A, succeedWithoutConsuming).Parses("");
         reply.ErrorMessages.ToString().ShouldBe("A expected");

@@ -4,8 +4,8 @@ public class ErrorMessageList
 {
     public static readonly ErrorMessageList Empty = new();
 
-    readonly ErrorMessage head;
-    readonly ErrorMessageList tail;
+    readonly ErrorMessage? head;
+    readonly ErrorMessageList? tail;
 
     ErrorMessageList()
     {
@@ -76,12 +76,11 @@ public class ErrorMessageList
 
     IEnumerable<T> All<T>() where T : ErrorMessage
     {
-        if (this != Empty)
-        {
-            if (head is T match)
-                yield return match;
+        if (head is T match)
+            yield return match;
+
+        if (tail != null)
             foreach (var message in tail.All<T>())
                 yield return message;
-        }
     }
 }

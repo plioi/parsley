@@ -5,10 +5,10 @@ namespace Parsley.Tests.IntegrationTests.Json;
 
 public class JsonGrammar
 {
-    public static readonly Parser<object> JsonDocument;
+    public static readonly Parser<object?> JsonDocument;
 
-    static readonly Parser<object> Value;
-
+    static readonly Parser<object?> Value = default!;
+    
     static JsonGrammar()
     {
         var Whitespace = Optional(OneOrMore(char.IsWhiteSpace, "whitespace"));
@@ -35,7 +35,7 @@ public class JsonGrammar
                 select (object) false,
 
                 from @null in Keyword("null")
-                select (object) null,
+                select (object?) null,
 
                 from number in Number
                 select (object) decimal.Parse(number, NumberStyles.Any, CultureInfo.InvariantCulture),
