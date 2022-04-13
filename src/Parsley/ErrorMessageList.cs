@@ -1,3 +1,4 @@
+#nullable disable
 namespace Parsley;
 
 public class ErrorMessageList

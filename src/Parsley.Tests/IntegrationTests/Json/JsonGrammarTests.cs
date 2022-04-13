@@ -1,3 +1,4 @@
+#nullable disable
 namespace Parsley.Tests.IntegrationTests.Json;
 
 using static JsonGrammar;

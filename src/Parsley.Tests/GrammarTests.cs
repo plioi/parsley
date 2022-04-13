@@ -1,3 +1,4 @@
+#nullable disable
 using static Parsley.Grammar;
 
 namespace Parsley.Tests;

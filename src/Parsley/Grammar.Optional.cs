@@ -1,3 +1,4 @@
+#nullable disable
 namespace Parsley;
 
 public static partial class Grammar

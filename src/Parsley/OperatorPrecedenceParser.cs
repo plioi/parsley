@@ -1,3 +1,4 @@
+#nullable disable
 namespace Parsley;
 
 public delegate Parser<T> ExtendParserBuilder<T>(T left);
