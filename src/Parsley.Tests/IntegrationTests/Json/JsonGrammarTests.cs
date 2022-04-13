@@ -1,4 +1,3 @@
-#nullable disable
 namespace Parsley.Tests.IntegrationTests.Json;
 
 using static JsonGrammar;
@@ -17,7 +16,7 @@ class JsonGrammarTests
 
     public void ParsesNullLiteral()
     {
-        JsonDocument.Parses("null").WithValue((object)null);
+        JsonDocument.Parses("null").WithValue((object?)null);
     }
 
     public void ParsesNumbers()
@@ -51,7 +50,12 @@ class JsonGrammarTests
         var empty = "[]";
         var filled = "[0, 1, 2]";
 
-        JsonDocument.Parses(empty).WithValue(value => ((object[])value).ShouldBeEmpty());
+        JsonDocument.Parses(empty).WithValue(value =>
+        {
+            value.ShouldNotBeNull();
+
+            ((object[]) value).ShouldBeEmpty();
+        });
 
         JsonDocument.Parses(filled).WithValue(value => value.ShouldBe(new[] { 0m, 1m, 2m }));
     }
@@ -61,10 +65,17 @@ class JsonGrammarTests
         var empty = "{}";
         var filled = "{\"zero\" : 0, \"one\" : 1, \"two\" : 2}";
 
-        JsonDocument.Parses(empty).WithValue(value => ((Dictionary<string, object>)value).Count.ShouldBe(0));
+        JsonDocument.Parses(empty).WithValue(value =>
+        {
+            value.ShouldNotBeNull();
+
+            ((Dictionary<string, object>) value).Count.ShouldBe(0);
+        });
 
         JsonDocument.Parses(filled).WithValue(value =>
         {
+            value.ShouldNotBeNull();
+
             var dictionary = (Dictionary<string, object>) value;
             dictionary["zero"].ShouldBe(0m);
             dictionary["one"].ShouldBe(1m);
@@ -92,6 +103,8 @@ class JsonGrammarTests
 
         JsonDocument.Parses(complex).WithValue(value =>
         {
+            value.ShouldNotBeNull();
+
             var json = (Dictionary<string, object>)value;
             json["numbers"].ShouldBe(new[] {10m, 20m, 30m});
 
