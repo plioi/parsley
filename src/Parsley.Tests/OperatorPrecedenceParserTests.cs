@@ -118,7 +118,7 @@ class OperatorPrecedenceParserTests
         expression.Parser.Parses(input).WithValue(e => e.ToString().ShouldBe(expectedTree));
     }
 
-    static readonly Parser<string> Digit = Pattern("Digit", @"[0-9]");
+    static readonly Parser<string> Digit = from c in Character(char.IsDigit, "Digit") select c.ToString();
     static readonly Parser<string> Name = OneOrMore(char.IsLetter, "Name");
     static readonly Parser<string> Increment = Operator("++");
     static readonly Parser<string> Decrement = Operator("--");

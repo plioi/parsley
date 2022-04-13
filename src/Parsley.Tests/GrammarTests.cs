@@ -4,21 +4,22 @@ namespace Parsley.Tests;
 
 class GrammarTests
 {
-    static readonly Parser<string> Digit = Pattern("Digit", @"[0-9]");
-    static readonly Parser<string> Letter = Pattern("Letter", @"[a-zA-Z]");
+    static readonly Parser<char> Digit = Character(char.IsDigit, "Digit");
+    static readonly Parser<char> Letter = Character(char.IsLetter, "Letter");
 
-    readonly Parser<string> A, B, AB, COMMA;
+    readonly Parser<char> A, B, COMMA;
+    readonly Parser<string> AB;
 
     public GrammarTests()
     {
-        A = Pattern("A", @"A");
-        B = Pattern("B", @"B");
+        A = Character(x => x == 'A', "A");
+        B = Character(x => x == 'B', "B");
 
         AB = from a in A
             from b in B
-            select a + b;
+            select $"{a}{b}";
 
-        COMMA = Pattern("COMMA", @",");
+        COMMA = Character(x => x == ',', "COMMA");
     }
 
     static Action<IEnumerable<string>> Literals(params string[] expectedLiterals)
@@ -37,17 +38,17 @@ class GrammarTests
 
     public void CanDemandThatAGivenParserRecognizesTheNextConsumableInput()
     {
-        Letter.Parses("A").WithValue("A");
+        Letter.Parses("A").WithValue('A');
         Letter.FailsToParse("0", "0", "(1, 1): Letter expected");
 
         Digit.FailsToParse("A", "A", "(1, 1): Digit expected");
-        Digit.Parses("0").WithValue("0");
+        Digit.Parses("0").WithValue('0');
     }
 
     public void CanDemandThatAGivenTokenLiteralAppearsNext()
     {
-        A.Parses("A").WithValue("A");
-        A.PartiallyParses("A!", "!").WithValue("A");
+        A.Parses("A").WithValue('A');
+        A.PartiallyParses("A!", "!").WithValue('A');
         A.FailsToParse("B", "B", "(1, 1): A expected");
     }
 
@@ -166,7 +167,28 @@ class GrammarTests
         labeled.FailsToParse("!", "!", "(1, 1): 'A' followed by 'B' expected");
     }
 
-    public void ProvidesConveniencePrimitiveRecognizingNamedNonemptySequencesOfCharactersSatisfyingSomePredicate()
+    public void ProvidesConveniencePrimitiveRecognizingOneCharacterSatisfyingSomePredicate()
+    {
+        var lower = Character(char.IsLower, "Lowercase");
+        var upper = Character(char.IsUpper, "Uppercase");
+        var caseInsensitive = Character(char.IsLetter, "Case Insensitive");
+
+        lower.FailsToParse("", "", "(1, 1): Lowercase expected");
+
+        lower.FailsToParse("ABCdef", "ABCdef", "(1, 1): Lowercase expected");
+
+        upper.FailsToParse("abcDEF", "abcDEF", "(1, 1): Uppercase expected");
+
+        caseInsensitive.FailsToParse("!abcDEF", "!abcDEF", "(1, 1): Case Insensitive expected");
+
+        lower.PartiallyParses("abcDEF", "bcDEF").WithValue('a');
+
+        upper.PartiallyParses("DEF", "EF").WithValue('D');
+
+        caseInsensitive.PartiallyParses("abcDEF", "bcDEF").WithValue('a');
+    }
+
+    public void ProvidesConveniencePrimitiveRecognizingNonemptySequencesOfCharactersSatisfyingSomePredicate()
     {
         var lower = OneOrMore(char.IsLower, "Lowercase");
         var upper = OneOrMore(char.IsUpper, "Uppercase");
@@ -242,9 +264,9 @@ public class AlternationTests
 
     public AlternationTests()
     {
-        A = Pattern("A", @"A");
-        B = Pattern("B", @"B");
-        C = Pattern("C", @"C");
+        A = from c in Character(x => x == 'A', "A") select c.ToString();
+        B = from c in Character(x => x == 'B', "B") select c.ToString();
+        C = from c in Character(x => x == 'C', "C") select c.ToString();
     }
 
     public void ChoosingBetweenZeroAlternativesAlwaysFails()
@@ -276,10 +298,10 @@ public class AlternationTests
 
         var AB = from a in A
             from b in B
-            select a + b;
+            select $"{a}{b}";
 
         Choice(AB, NeverExecuted).FailsToParse("A", "", "(1, 2): B expected");
-        Choice(C, AB, NeverExecuted).FailsToParse("A", "", "(1, 2): B expected");
+        Choice(from c in C select c.ToString(), AB, NeverExecuted).FailsToParse("A", "", "(1, 2): B expected");
     }
 
     public void MergesErrorMessagesWhenParsersFailWithoutConsumingInput()
