@@ -1,4 +1,5 @@
-#nullable disable
+using System.Diagnostics.CodeAnalysis;
+
 namespace Parsley;
 
 public delegate Parser<T> ExtendParserBuilder<T>(T left);
@@ -86,7 +87,7 @@ public class OperatorPrecedenceParser<T>
         return reply;
     }
 
-    bool TryFindMatchingUnitParser(Text input, out Parser<T> found, out string token)
+    bool TryFindMatchingUnitParser(Text input, [NotNullWhen(true)] out Parser<T>? found, out string? token)
     {
         found = null;
         token = null;
@@ -108,7 +109,7 @@ public class OperatorPrecedenceParser<T>
         return false;
     }
 
-    bool TryFindMatchingExtendParserBuilder(Text input, out ExtendParserBuilder<T> found, out string token, out int? tokenPrecedence)
+    bool TryFindMatchingExtendParserBuilder(Text input, [NotNullWhen(true)] out ExtendParserBuilder<T>? found, out string? token, out int? tokenPrecedence)
     {
         found = null;
         token = null;
