@@ -167,6 +167,15 @@ class GrammarTests
         labeled.FailsToParse("!", "!", "(1, 1): 'A' followed by 'B' expected");
     }
 
+    public void ProvidesConveniencePrimitiveRecognizingOneExpectedCharacter()
+    {
+        var x = Character('x');
+
+        x.FailsToParse("", "", "(1, 1): x expected");
+        x.FailsToParse("yz", "yz", "(1, 1): x expected");
+        x.PartiallyParses("xyz", "yz").WithValue('x');
+    }
+
     public void ProvidesConveniencePrimitiveRecognizingOneCharacterSatisfyingSomePredicate()
     {
         var lower = Character(char.IsLower, "Lowercase");

@@ -2,6 +2,11 @@ namespace Parsley;
 
 partial class Grammar
 {
+    public static Parser<char> Character(char expected)
+    {
+        return Character(x => x == expected, expected.ToString());
+    }
+
     public static Parser<char> Character(Predicate<char> test, string name)
     {
         return input =>
