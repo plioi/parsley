@@ -197,6 +197,27 @@ class GrammarTests
         caseInsensitive.PartiallyParses("abcDEF", "bcDEF").WithValue('a');
     }
 
+    public void ProvidesConveniencePrimitiveRecognizingOptionalSequencesOfCharactersSatisfyingSomePredicate()
+    {
+        var lower = ZeroOrMore(char.IsLower, "Lowercase");
+        var upper = ZeroOrMore(char.IsUpper, "Uppercase");
+        var caseInsensitive = ZeroOrMore(char.IsLetter, "Case Insensitive");
+
+        lower.Parses("").WithValue("");
+
+        lower.PartiallyParses("ABCdef", "ABCdef").WithValue("");
+
+        upper.PartiallyParses("abcDEF", "abcDEF").WithValue("");
+
+        caseInsensitive.PartiallyParses("!abcDEF", "!abcDEF").WithValue("");
+
+        lower.PartiallyParses("abcDEF", "DEF").WithValue("abc");
+
+        upper.Parses("DEF").WithValue("DEF");
+
+        caseInsensitive.Parses("abcDEF").WithValue("abcDEF");
+    }
+
     public void ProvidesConveniencePrimitiveRecognizingNonemptySequencesOfCharactersSatisfyingSomePredicate()
     {
         var lower = OneOrMore(char.IsLower, "Lowercase");
