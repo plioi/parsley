@@ -12,7 +12,7 @@ public class JsonGrammar
 
     static JsonGrammar()
     {
-        var Whitespace = Optional(Pattern("whitespace", @"\s+"));
+        var Whitespace = Optional(OneOrMore(char.IsWhiteSpace, "whitespace"));
 
         var Key =
             from leading in Whitespace

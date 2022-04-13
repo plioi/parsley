@@ -69,6 +69,23 @@ partial class Grammar
             select List(first, rest);
     }
 
+    public static Parser<string> OneOrMore(Predicate<char> test, string name)
+    {
+        return input =>
+        {
+            var match = input.Match(test);
+
+            if (match.Success)
+            {
+                input.Advance(match.Value.Length);
+
+                return new Parsed<string>(match.Value, input.Position);
+            }
+
+            return new Error<string>(input.Position, ErrorMessage.Expected(name));
+        };
+    }
+
     static Parser<IEnumerable<T>> Zero<T>()
     {
         return Enumerable.Empty<T>().SucceedWithThisValue();

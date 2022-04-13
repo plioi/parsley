@@ -119,7 +119,7 @@ class OperatorPrecedenceParserTests
     }
 
     static readonly Parser<string> Digit = Pattern("Digit", @"[0-9]");
-    static readonly Parser<string> Name = Pattern("Name", @"[a-z]+");
+    static readonly Parser<string> Name = OneOrMore(char.IsLetter, "Name");
     static readonly Parser<string> Increment = Operator("++");
     static readonly Parser<string> Decrement = Operator("--");
     static readonly Parser<string> Add = Operator("+");

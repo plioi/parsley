@@ -12,7 +12,6 @@ partial class Grammar
         {
             var match = input.Match(regex);
 
-
             if (match.Success)
             {
                 input.Advance(match.Value.Length);

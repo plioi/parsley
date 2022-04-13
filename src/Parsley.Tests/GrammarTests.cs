@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using static Parsley.Grammar;
 
 namespace Parsley.Tests;
@@ -167,26 +166,25 @@ class GrammarTests
         labeled.FailsToParse("!", "!", "(1, 1): 'A' followed by 'B' expected");
     }
 
-    public void ProvidesConveniencePrimitiveForRecognizingNamedRegexPatterns()
+    public void ProvidesConveniencePrimitiveRecognizingNamedNonemptySequencesOfCharactersSatisfyingSomePredicate()
     {
-        var lower = Pattern("Lowercase", @"[a-z]+");
-        var upper = Pattern("Uppercase", @"[A-Z]+");
-        var caseInsensitive = Pattern("Case Insensitive", @"[a-z]+", RegexOptions.IgnoreCase);
+        var lower = OneOrMore(char.IsLower, "Lowercase");
+        var upper = OneOrMore(char.IsUpper, "Uppercase");
+        var caseInsensitive = OneOrMore(char.IsLetter, "Case Insensitive");
 
+        lower.FailsToParse("", "", "(1, 1): Lowercase expected");
+        
         lower.FailsToParse("ABCdef", "ABCdef", "(1, 1): Lowercase expected");
 
         upper.FailsToParse("abcDEF", "abcDEF", "(1, 1): Uppercase expected");
 
         caseInsensitive.FailsToParse("!abcDEF", "!abcDEF", "(1, 1): Case Insensitive expected");
 
-        lower.PartiallyParses("abcDEF", "DEF")
-            .WithValue("abc");
+        lower.PartiallyParses("abcDEF", "DEF").WithValue("abc");
 
-        upper.Parses("DEF")
-            .WithValue("DEF");
+        upper.Parses("DEF").WithValue("DEF");
 
-        caseInsensitive.Parses("abcDEF")
-            .WithValue("abcDEF");
+        caseInsensitive.Parses("abcDEF").WithValue("abcDEF");
     }
 
     public void ProvidesConveniencePrimitiveForDefiningKeywords()
