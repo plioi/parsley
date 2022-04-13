@@ -11,7 +11,7 @@ public class JsonGrammar
     
     static JsonGrammar()
     {
-        var Whitespace = Optional(OneOrMore(char.IsWhiteSpace, "whitespace"));
+        var Whitespace = ZeroOrMore(char.IsWhiteSpace);
 
         var Key =
             from leading in Whitespace

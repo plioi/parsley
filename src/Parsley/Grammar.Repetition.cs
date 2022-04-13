@@ -69,7 +69,7 @@ partial class Grammar
             select List(first, rest);
     }
 
-    public static Parser<string> ZeroOrMore(Predicate<char> test, string name)
+    public static Parser<string> ZeroOrMore(Predicate<char> test)
     {
         return input =>
         {

@@ -216,9 +216,9 @@ class GrammarTests
 
     public void ProvidesConveniencePrimitiveRecognizingOptionalSequencesOfCharactersSatisfyingSomePredicate()
     {
-        var lower = ZeroOrMore(char.IsLower, "Lowercase");
-        var upper = ZeroOrMore(char.IsUpper, "Uppercase");
-        var caseInsensitive = ZeroOrMore(char.IsLetter, "Case Insensitive");
+        var lower = ZeroOrMore(char.IsLower);
+        var upper = ZeroOrMore(char.IsUpper);
+        var caseInsensitive = ZeroOrMore(char.IsLetter);
 
         lower.Parses("").WithValue("");
 
