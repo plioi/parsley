@@ -2,33 +2,25 @@ namespace Parsley.Tests;
 
 class ParsedTests
 {
-    public void HasAParsedValue()
+    public void CanIndicateSuccessfullyParsedValueAtTheCurrentPosition()
     {
-        new Parsed<string>("parsed", new(1, 1)).Value.ShouldBe("parsed");
+        var parsed = new Parsed<string>("parsed", new(12, 34));
+        parsed.Success.ShouldBe(true);
+        parsed.Value.ShouldBe("parsed");
+        parsed.ErrorMessages.ShouldBe(ErrorMessageList.Empty);
+        parsed.Position.ShouldBe(new(12, 34));
     }
 
-    public void HasNoErrorMessageByDefault()
-    {
-        new Parsed<string>("x", new(1, 1)).ErrorMessages.ShouldBe(ErrorMessageList.Empty);
-    }
-
-    public void CanIndicatePotentialErrors()
+    public void CanIndicatePotentialErrorMessagesAtTheCurrentPosition()
     {
         var potentialErrors = ErrorMessageList.Empty
             .With(ErrorMessage.Expected("A"))
             .With(ErrorMessage.Expected("B"));
 
-        new Parsed<object>("x", new(1, 1), potentialErrors).ErrorMessages.ShouldBe(potentialErrors);
-    }
-
-    public void HasRemainingUnparsedInput()
-    {
-        var parsed = new Parsed<string>("parsed", new(12, 34));
-        parsed.Position.ShouldBe(new (12, 34));
-    }
-
-    public void ReportsNonerrorState()
-    {
-        new Parsed<string>("parsed", new(1, 1)).Success.ShouldBeTrue();
+        var parsed = new Parsed<object>("parsed", new(12, 34), potentialErrors);
+        parsed.Success.ShouldBe(true);
+        parsed.Value.ShouldBe("parsed");
+        parsed.ErrorMessages.ShouldBe(potentialErrors);
+        parsed.Position.ShouldBe(new(12, 34));
     }
 }
