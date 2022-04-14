@@ -8,7 +8,7 @@ partial class Grammar
         {
             var peek = input.Peek(symbol.Length);
 
-            if (peek == symbol)
+            if (peek.Equals(symbol, StringComparison.Ordinal))
             {
                 input.Advance(symbol.Length);
 
