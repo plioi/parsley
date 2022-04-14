@@ -20,7 +20,7 @@ public class Text
         this.line = line;
     }
 
-    public string Peek(int characters)
+    public ReadOnlySpan<char> Peek(int characters)
         => index + characters >= input.Length
             ? input.Substring(index)
             : input.Substring(index, characters);
@@ -55,7 +55,7 @@ public class Text
         while (i < input.Length && test(input[i]))
             i++;
 
-        value = Peek(i - index);
+        value = Peek(i - index).ToString();
 
         return value.Length > 0;
     }
