@@ -1,6 +1,6 @@
 namespace Parsley;
 
-public class Text
+public ref struct Text
 {
     int index;
     readonly string input;
