@@ -10,10 +10,10 @@ partial class Grammar
     /// </summary>
     public static Parser<IEnumerable<T>> ZeroOrMore<T>(Parser<T> item)
     {
-        return input =>
+        return (ref Text input) =>
         {
             var oldPosition = input.Position;
-            var reply = item(input);
+            var reply = item(ref input);
             var newPosition = input.Position;
 
             var list = new List<T>();
@@ -25,7 +25,7 @@ partial class Grammar
 
                 list.Add(reply.Value);
                 oldPosition = newPosition;
-                reply = item(input);
+                reply = item(ref input);
                 newPosition = input.Position;
             }
 
@@ -71,7 +71,7 @@ partial class Grammar
 
     public static Parser<string> ZeroOrMore(Predicate<char> test)
     {
-        return input =>
+        return (ref Text input) =>
         {
             if (input.TryMatch(test, out var value))
             {
@@ -86,7 +86,7 @@ partial class Grammar
 
     public static Parser<string> OneOrMore(Predicate<char> test, string name)
     {
-        return input =>
+        return (ref Text input) =>
         {
             if (input.TryMatch(test, out var value))
             {

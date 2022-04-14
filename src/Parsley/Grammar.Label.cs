@@ -11,10 +11,10 @@ partial class Grammar
     {
         var errors = ErrorMessageList.Empty.With(ErrorMessage.Expected(expectation));
 
-        return input =>
+        return (ref Text input) =>
         {
             var start = input.Position;
-            var reply = parse(input);
+            var reply = parse(ref input);
             var newPosition = input.Position;
 
             if (start == newPosition)

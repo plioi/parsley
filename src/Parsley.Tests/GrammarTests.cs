@@ -63,8 +63,12 @@ class GrammarTests
 
         parser.FailsToParse("ABABA!", "!", "(1, 6): B expected");
 
-        Parser<string> succeedWithoutConsuming = input => new Parsed<string>("ignored value", input.Position);
-        Action infiniteLoop = () => ZeroOrMore(succeedWithoutConsuming)(new Text(""));
+        Parser<string> succeedWithoutConsuming = (ref Text input) => new Parsed<string>("ignored value", input.Position);
+        Action infiniteLoop = () =>
+        {
+            var input = new Text("");
+            ZeroOrMore(succeedWithoutConsuming)(ref input);
+        };
 
         infiniteLoop
             .ShouldThrow<Exception>()
@@ -85,8 +89,12 @@ class GrammarTests
 
         parser.FailsToParse("ABABA!", "!", "(1, 6): B expected");
 
-        Parser<string> succeedWithoutConsuming = input => new Parsed<string>("ignored value", input.Position);
-        Action infiniteLoop = () => OneOrMore(succeedWithoutConsuming)(new Text(""));
+        Parser<string> succeedWithoutConsuming = (ref Text input) => new Parsed<string>("ignored value", input.Position);
+        Action infiniteLoop = () =>
+        {
+            var input = new Text("");
+            OneOrMore(succeedWithoutConsuming)(ref input);
+        };
 
         infiniteLoop
             .ShouldThrow<Exception>()
@@ -362,7 +370,7 @@ public class AlternationTests
         //consuming input. These tests simply describe the behavior under that
         //unusual situation.
 
-        Parser<string> succeedWithoutConsuming = input => new Parsed<string>("ignored value", input.Position);
+        Parser<string> succeedWithoutConsuming = (ref Text input) => new Parsed<string>("ignored value", input.Position);
 
         var reply = Choice(A, succeedWithoutConsuming).Parses("");
         reply.ErrorMessages.ToString().ShouldBe("A expected");
@@ -375,5 +383,5 @@ public class AlternationTests
     }
 
     static readonly Parser<string> NeverExecuted =
-        input => throw new Exception("Parser 'NeverExecuted' should not have been executed.");
+        (ref Text input) => throw new Exception("Parser 'NeverExecuted' should not have been executed.");
 }

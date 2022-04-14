@@ -5,7 +5,7 @@ public static class Assertions
     public static Reply<T> FailsToParse<T>(this Parser<T> parse, string input, string expectedUnparsedInput, string expectedMessage)
     {
         var text = new Text(input);
-        var reply = parse(text);
+        var reply = parse(ref text);
             
         if (reply.Success)
             throw new AssertionException("parser failure", "parser completed successfully");
@@ -43,7 +43,7 @@ public static class Assertions
     {
         var text = new Text(input);
 
-        var reply = parse(text).Succeeds();
+        var reply = parse(ref text).Succeeds();
 
         text.LeavingUnparsedInput(expectedUnparsedInput);
 
@@ -53,7 +53,7 @@ public static class Assertions
     public static Reply<T> Parses<T>(this Parser<T> parse, string input)
     {
         var text = new Text(input);
-        var reply = parse(text).Succeeds();
+        var reply = parse(ref text).Succeeds();
 
         text.AtEndOfInput();
 

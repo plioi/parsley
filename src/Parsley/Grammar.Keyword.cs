@@ -7,7 +7,7 @@ partial class Grammar
         if (word.Any(ch => !char.IsLetter(ch)))
             throw new ArgumentException("Keywords may only contain letters.", nameof(word));
 
-        return input =>
+        return (ref Text input) =>
         {
             var peek = input.Peek(word.Length + 1);
 

@@ -9,7 +9,7 @@ partial class Grammar
 
     public static Parser<char> Character(Predicate<char> test, string name)
     {
-        return input =>
+        return (ref Text input) =>
         {
             var next = input.Peek(1);
 
