@@ -20,10 +20,10 @@ public class Text
         this.line = line;
     }
 
-    public string Peek(int characters)
+    public ReadOnlySpan<char> Peek(int characters)
         => index + characters >= input.Length
-            ? input.Substring(index)
-            : input.Substring(index, characters);
+            ? input.AsSpan().Slice(index)
+            : input.AsSpan().Slice(index, characters);
 
     public void Advance(int characters)
     {
@@ -31,7 +31,13 @@ public class Text
             return;
 
         int newIndex = index + characters;
-        int newLineNumber = line + Peek(characters).Cast<char>().Count(ch => ch == '\n');
+        int countNewLines = 0;
+
+        foreach (var ch in Peek(characters))
+            if (ch == '\n')
+                countNewLines++;
+
+        int newLineNumber = line + countNewLines;
 
         index = newIndex;
         line = newLineNumber;
@@ -49,7 +55,7 @@ public class Text
         while (i < input.Length && test(input[i]))
             i++;
 
-        value = Peek(i - index);
+        value = Peek(i - index).ToString();
 
         return value.Length > 0;
     }

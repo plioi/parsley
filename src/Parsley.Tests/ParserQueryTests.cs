@@ -4,12 +4,20 @@ namespace Parsley.Tests;
 
 class ParserQueryTests
 {
-    static readonly Parser<string> Next = input =>
+    static readonly Parser<char> Next = input =>
     {
         var next = input.Peek(1);
-        input.Advance(1);
 
-        return new Parsed<string>(next, input.Position);
+        if (next.Length == 1)
+        {
+            char c = next[0];
+
+            input.Advance(1);
+
+            return new Parsed<char>(c, input.Position);
+        }
+
+        return new Error<char>(input.Position, ErrorMessage.Expected("character"));
     };
 
     public void CanBuildParserWhichSimulatesSuccessfulParsingOfGivenValueWithoutConsumingInput()
@@ -22,9 +30,9 @@ class ParserQueryTests
     public void CanBuildParserFromSingleSimplerParser()
     {
         var parser = from x in Next
-            select x.ToUpper(CultureInfo.InvariantCulture);
+            select char.ToUpper(x, CultureInfo.InvariantCulture);
 
-        parser.PartiallyParses("xy", "y").Value.ShouldBe("X");
+        parser.PartiallyParses("xy", "y").Value.ShouldBe('X');
     }
 
     public void CanBuildParserFromOrderedSequenceOfSimplerParsers()
@@ -32,7 +40,7 @@ class ParserQueryTests
         var parser = (from a in Next
             from b in Next
             from c in Next
-            select (a + b + c).ToUpper(CultureInfo.InvariantCulture));
+            select $"{a}{b}{c}".ToUpper(CultureInfo.InvariantCulture));
 
         parser.PartiallyParses("abcdef", "def").Value.ShouldBe("ABC");
     }

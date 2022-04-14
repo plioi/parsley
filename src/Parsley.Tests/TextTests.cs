@@ -7,16 +7,16 @@ class TextTests
     public void CanPeekAheadNCharacters()
     {
         var empty = new Text("");
-        empty.Peek(0).ShouldBe("");
-        empty.Peek(1).ShouldBe("");
+        empty.Peek(0).ToString().ShouldBe("");
+        empty.Peek(1).ToString().ShouldBe("");
 
         var abc = new Text("abc");
-        abc.Peek(0).ShouldBe("");
-        abc.Peek(1).ShouldBe("a");
-        abc.Peek(2).ShouldBe("ab");
-        abc.Peek(3).ShouldBe("abc");
-        abc.Peek(4).ShouldBe("abc");
-        abc.Peek(100).ShouldBe("abc");
+        abc.Peek(0).ToString().ShouldBe("");
+        abc.Peek(1).ToString().ShouldBe("a");
+        abc.Peek(2).ToString().ShouldBe("ab");
+        abc.Peek(3).ToString().ShouldBe("abc");
+        abc.Peek(4).ToString().ShouldBe("abc");
+        abc.Peek(100).ToString().ShouldBe("abc");
     }
 
     public void CanAdvanceAheadNCharactersWithSnapshotBacktracking()

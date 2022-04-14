@@ -8,11 +8,11 @@ partial class Grammar
         {
             var peek = input.Peek(symbol.Length);
 
-            if (peek == symbol)
+            if (peek.Equals(symbol, StringComparison.Ordinal))
             {
-                input.Advance(peek.Length);
+                input.Advance(symbol.Length);
 
-                return new Parsed<string>(peek, input.Position);
+                return new Parsed<string>(symbol, input.Position);
             }
 
             return new Error<string>(input.Position, ErrorMessage.Expected(symbol));
