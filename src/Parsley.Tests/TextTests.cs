@@ -69,39 +69,39 @@ class TextTests
 
         var empty = new Text("");
         empty.TryMatch(letters, out var value).ShouldBe(false);
-        value.ShouldBe("");
+        value.ToString().ShouldBe("");
 
         var abc123 = new Text("abc123");
         abc123.TryMatch(digits, out value).ShouldBe(false);
-        value.ShouldBe("");
+        value.ToString().ShouldBe("");
         abc123.TryMatch(letters, out value).ShouldBe(true);
-        value.ShouldBe("abc");
+        value.ToString().ShouldBe("abc");
         abc123.TryMatch(alphanumerics, out value).ShouldBe(true);
-        value.ShouldBe("abc123");
+        value.ToString().ShouldBe("abc123");
 
         abc123.Advance(2);
         abc123.TryMatch(digits, out value).ShouldBe(false);
-        value.ShouldBe("");
+        value.ToString().ShouldBe("");
         abc123.TryMatch(letters, out value).ShouldBe(true);
-        value.ShouldBe("c");
+        value.ToString().ShouldBe("c");
         abc123.TryMatch(alphanumerics, out value).ShouldBe(true);
-        value.ShouldBe("c123");
+        value.ToString().ShouldBe("c123");
 
         abc123.Advance(1);
         abc123.TryMatch(digits, out value).ShouldBe(true);
-        value.ShouldBe("123");
+        value.ToString().ShouldBe("123");
         abc123.TryMatch(letters, out value).ShouldBe(false);
-        value.ShouldBe("");
+        value.ToString().ShouldBe("");
         abc123.TryMatch(alphanumerics, out value).ShouldBe(true);
-        value.ShouldBe("123");
+        value.ToString().ShouldBe("123");
 
         abc123.Advance(3);
         abc123.TryMatch(digits, out value).ShouldBe(false);
-        value.ShouldBe("");
+        value.ToString().ShouldBe("");
         abc123.TryMatch(letters, out value).ShouldBe(false);
-        value.ShouldBe("");
+        value.ToString().ShouldBe("");
         abc123.TryMatch(alphanumerics, out value).ShouldBe(false);
-        value.ShouldBe("");
+        value.ToString().ShouldBe("");
     }
 
     public void CanGetCurrentPosition()

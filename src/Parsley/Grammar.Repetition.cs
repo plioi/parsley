@@ -77,7 +77,7 @@ partial class Grammar
             {
                 input.Advance(value.Length);
 
-                return new Parsed<string>(value, input.Position);
+                return new Parsed<string>(value.ToString(), input.Position);
             }
 
             return new Parsed<string>("", input.Position);
@@ -92,7 +92,7 @@ partial class Grammar
             {
                 input.Advance(value.Length);
 
-                return new Parsed<string>(value, input.Position);
+                return new Parsed<string>(value.ToString(), input.Position);
             }
 
             return new Error<string>(input.Position, ErrorMessage.Expected(name));

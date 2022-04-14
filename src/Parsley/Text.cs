@@ -48,14 +48,14 @@ public ref struct Text
 
     public bool EndOfInput => index >= input.Length;
 
-    public bool TryMatch(Predicate<char> test, out string value)
+    public bool TryMatch(Predicate<char> test, out ReadOnlySpan<char> value)
     {
         int i = index;
 
         while (i < input.Length && test(input[i]))
             i++;
 
-        value = Peek(i - index).ToString();
+        value = Peek(i - index);
 
         return value.Length > 0;
     }
