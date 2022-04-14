@@ -16,7 +16,7 @@ class ParserQueryTests
     {
         var parser = 1.SucceedWithThisValue();
 
-        parser.PartiallyParses("input", "input").WithValue(1);
+        parser.PartiallyParses("input", "input").Value.ShouldBe(1);
     }
 
     public void CanBuildParserFromSingleSimplerParser()
@@ -24,7 +24,7 @@ class ParserQueryTests
         var parser = from x in Next
             select x.ToUpper(CultureInfo.InvariantCulture);
 
-        parser.PartiallyParses("xy", "y").WithValue("X");
+        parser.PartiallyParses("xy", "y").Value.ShouldBe("X");
     }
 
     public void CanBuildParserFromOrderedSequenceOfSimplerParsers()
@@ -34,7 +34,7 @@ class ParserQueryTests
             from c in Next
             select (a + b + c).ToUpper(CultureInfo.InvariantCulture));
 
-        parser.PartiallyParses("abcdef", "def").WithValue("ABC");
+        parser.PartiallyParses("abcdef", "def").Value.ShouldBe("ABC");
     }
 
     public void PropogatesErrorsWithoutRunningRemainingParsers()

@@ -6,33 +6,33 @@ class JsonGrammarTests
 {
     public void ParsesTrueLiteral()
     {
-        JsonDocument.Parses("true").WithValue(true);
+        JsonDocument.Parses("true").Value.ShouldBe(true);
     }
 
     public void ParsesFalseLiteral()
     {
-        JsonDocument.Parses("false").WithValue(false);
+        JsonDocument.Parses("false").Value.ShouldBe(false);
     }
 
     public void ParsesNullLiteral()
     {
-        JsonDocument.Parses("null").WithValue(null);
+        JsonDocument.Parses("null").Value.ShouldBe(null);
     }
 
     public void ParsesNumbers()
     {
-        JsonDocument.Parses("0").WithValue(0m);
-        JsonDocument.Parses("12345").WithValue(12345m);
-        JsonDocument.Parses("0.012").WithValue(0.012m);
-        JsonDocument.Parses("0e1").WithValue(0e1m);
-        JsonDocument.Parses("0e+1").WithValue(0e+1m);
-        JsonDocument.Parses("0e-1").WithValue(0e-1m);
-        JsonDocument.Parses("0E1").WithValue(0E1m);
-        JsonDocument.Parses("0E+1").WithValue(0E+1m);
-        JsonDocument.Parses("0E-1").WithValue(0E-1m);
-        JsonDocument.Parses("10e11").WithValue(10e11m);
-        JsonDocument.Parses("10.123e11").WithValue(10.123e11m);
-        JsonDocument.Parses("10.123E-11").WithValue(10.123E-11m);
+        JsonDocument.Parses("0").Value.ShouldBe(0m);
+        JsonDocument.Parses("12345").Value.ShouldBe(12345m);
+        JsonDocument.Parses("0.012").Value.ShouldBe(0.012m);
+        JsonDocument.Parses("0e1").Value.ShouldBe(0e1m);
+        JsonDocument.Parses("0e+1").Value.ShouldBe(0e+1m);
+        JsonDocument.Parses("0e-1").Value.ShouldBe(0e-1m);
+        JsonDocument.Parses("0E1").Value.ShouldBe(0E1m);
+        JsonDocument.Parses("0E+1").Value.ShouldBe(0E+1m);
+        JsonDocument.Parses("0E-1").Value.ShouldBe(0E-1m);
+        JsonDocument.Parses("10e11").Value.ShouldBe(10e11m);
+        JsonDocument.Parses("10.123e11").Value.ShouldBe(10.123e11m);
+        JsonDocument.Parses("10.123E-11").Value.ShouldBe(10.123E-11m);
     }
 
     public void ParsesQuotations()
@@ -41,8 +41,8 @@ class JsonGrammarTests
         var filled = "\"abc \\\" \\\\ \\/ \\b \\f \\n \\r \\t \\u263a def\"";
         const string expected = "abc \" \\ / \b \f \n \r \t ☺ def";
 
-        JsonDocument.Parses(empty).WithValue("");
-        JsonDocument.Parses(filled).WithValue(expected);
+        JsonDocument.Parses(empty).Value.ShouldBe("");
+        JsonDocument.Parses(filled).Value.ShouldBe(expected);
     }
 
     public void ParsesArrays()

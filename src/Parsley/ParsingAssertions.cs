@@ -90,12 +90,4 @@ public static class ParsingAssertions
 
         text.LeavingUnparsedInput("");
     }
-
-    public static Reply<T> WithValue<T>(this Reply<T> reply, T expected)
-    {
-        if (!Equals(expected, reply.Value))
-            throw new AssertionException($"parsed value: {expected}", $"parsed value: {reply.Value}");
-
-        return reply;
-    }
 }
