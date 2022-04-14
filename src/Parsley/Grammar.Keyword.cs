@@ -11,7 +11,7 @@ partial class Grammar
         {
             var peek = input.Peek(word.Length + 1);
 
-            if (peek.StartsWith(word, StringComparison.Ordinal))
+            if (peek.StartsWith(word))
             {
                 if (peek.Length == word.Length || !char.IsLetter(peek[^1]))
                 {
