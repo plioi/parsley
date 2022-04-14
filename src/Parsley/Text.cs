@@ -31,7 +31,13 @@ public class Text
             return;
 
         int newIndex = index + characters;
-        int newLineNumber = line + Peek(characters).Cast<char>().Count(ch => ch == '\n');
+        int countNewLines = 0;
+
+        foreach (var ch in Peek(characters))
+            if (ch == '\n')
+                countNewLines++;
+
+        int newLineNumber = line + countNewLines;
 
         index = newIndex;
         line = newLineNumber;
