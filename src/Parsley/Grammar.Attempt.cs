@@ -11,7 +11,7 @@ partial class Grammar
     {
         return (ref Text input) =>
         {
-            var snapshot = input.Snapshot();
+            var snapshot = input;
             var start = input.Position;
             var reply = parse(ref input);
             var newPosition = input.Position;
@@ -19,7 +19,7 @@ partial class Grammar
             if (reply.Success || start == newPosition)
                 return reply;
 
-            input.Restore(snapshot);
+            input = snapshot;
             return new Error<T>(input.Position, ErrorMessage.Backtrack(newPosition, reply.ErrorMessages));
         };
     }

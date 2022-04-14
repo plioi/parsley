@@ -75,15 +75,6 @@ public ref struct Text
     public Position Position
         => new(line, Column);
 
-    public (int index, int line) Snapshot()
-        => (index, line);
-
-    public void Restore((int index, int line) snapshot)
-    {
-        index = snapshot.index;
-        line = snapshot.line;
-    }
-
     public override string ToString()
         => input.Slice(index).ToString();
 }
