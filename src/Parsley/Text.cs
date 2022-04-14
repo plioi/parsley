@@ -48,16 +48,14 @@ public ref struct Text
 
     public readonly bool EndOfInput => index >= input.Length;
 
-    public readonly bool TryMatch(Predicate<char> test, out ReadOnlySpan<char> value)
+    public readonly ReadOnlySpan<char> TakeWhile(Predicate<char> test)
     {
         int i = index;
 
         while (i < input.Length && test(input[i]))
             i++;
 
-        value = Peek(i - index);
-
-        return value.Length > 0;
+        return Peek(i - index);
     }
 
     readonly int Column

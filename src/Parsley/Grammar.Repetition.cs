@@ -73,7 +73,9 @@ partial class Grammar
     {
         return (ref Text input) =>
         {
-            if (input.TryMatch(test, out var value))
+            var value = input.TakeWhile(test);
+
+            if (value.Length > 0)
             {
                 input.Advance(value.Length);
 
@@ -88,7 +90,9 @@ partial class Grammar
     {
         return (ref Text input) =>
         {
-            if (input.TryMatch(test, out var value))
+            var value = input.TakeWhile(test);
+
+            if (value.Length > 0)
             {
                 input.Advance(value.Length);
 

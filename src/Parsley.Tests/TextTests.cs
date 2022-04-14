@@ -68,40 +68,27 @@ class TextTests
         Predicate<char> alphanumerics = char.IsLetterOrDigit;
 
         var empty = new Text("");
-        empty.TryMatch(letters, out var value).ShouldBe(false);
-        value.ToString().ShouldBe("");
+        empty.TakeWhile(letters).ToString().ShouldBe("");
 
         var abc123 = new Text("abc123");
-        abc123.TryMatch(digits, out value).ShouldBe(false);
-        value.ToString().ShouldBe("");
-        abc123.TryMatch(letters, out value).ShouldBe(true);
-        value.ToString().ShouldBe("abc");
-        abc123.TryMatch(alphanumerics, out value).ShouldBe(true);
-        value.ToString().ShouldBe("abc123");
+        abc123.TakeWhile(digits).ToString().ShouldBe("");
+        abc123.TakeWhile(letters).ToString().ShouldBe("abc");
+        abc123.TakeWhile(alphanumerics).ToString().ShouldBe("abc123");
 
         abc123.Advance(2);
-        abc123.TryMatch(digits, out value).ShouldBe(false);
-        value.ToString().ShouldBe("");
-        abc123.TryMatch(letters, out value).ShouldBe(true);
-        value.ToString().ShouldBe("c");
-        abc123.TryMatch(alphanumerics, out value).ShouldBe(true);
-        value.ToString().ShouldBe("c123");
+        abc123.TakeWhile(digits).ToString().ShouldBe("");
+        abc123.TakeWhile(letters).ToString().ShouldBe("c");
+        abc123.TakeWhile(alphanumerics).ToString().ShouldBe("c123");
 
         abc123.Advance(1);
-        abc123.TryMatch(digits, out value).ShouldBe(true);
-        value.ToString().ShouldBe("123");
-        abc123.TryMatch(letters, out value).ShouldBe(false);
-        value.ToString().ShouldBe("");
-        abc123.TryMatch(alphanumerics, out value).ShouldBe(true);
-        value.ToString().ShouldBe("123");
+        abc123.TakeWhile(digits).ToString().ShouldBe("123");
+        abc123.TakeWhile(letters).ToString().ShouldBe("");
+        abc123.TakeWhile(alphanumerics).ToString().ShouldBe("123");
 
         abc123.Advance(3);
-        abc123.TryMatch(digits, out value).ShouldBe(false);
-        value.ToString().ShouldBe("");
-        abc123.TryMatch(letters, out value).ShouldBe(false);
-        value.ToString().ShouldBe("");
-        abc123.TryMatch(alphanumerics, out value).ShouldBe(false);
-        value.ToString().ShouldBe("");
+        abc123.TakeWhile(digits).ToString().ShouldBe("");
+        abc123.TakeWhile(letters).ToString().ShouldBe("");
+        abc123.TakeWhile(alphanumerics).ToString().ShouldBe("");
     }
 
     public void CanGetCurrentPosition()
