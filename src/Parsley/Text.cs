@@ -20,7 +20,7 @@ public ref struct Text
         this.line = line;
     }
 
-    public ReadOnlySpan<char> Peek(int characters)
+    public readonly ReadOnlySpan<char> Peek(int characters)
         => index + characters >= input.Length
             ? input.Slice(index)
             : input.Slice(index, characters);
@@ -46,9 +46,9 @@ public ref struct Text
             index = input.Length;
     }
 
-    public bool EndOfInput => index >= input.Length;
+    public readonly bool EndOfInput => index >= input.Length;
 
-    public bool TryMatch(Predicate<char> test, out ReadOnlySpan<char> value)
+    public readonly bool TryMatch(Predicate<char> test, out ReadOnlySpan<char> value)
     {
         int i = index;
 
@@ -60,7 +60,7 @@ public ref struct Text
         return value.Length > 0;
     }
 
-    int Column
+    readonly int Column
     {
         get
         {
@@ -72,9 +72,9 @@ public ref struct Text
         }
     }
 
-    public Position Position
+    public readonly Position Position
         => new(line, Column);
 
-    public override string ToString()
+    public readonly override string ToString()
         => input.Slice(index).ToString();
 }
