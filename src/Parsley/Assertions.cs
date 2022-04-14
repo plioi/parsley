@@ -1,6 +1,6 @@
 namespace Parsley;
 
-public static class ParsingAssertions
+public static class Assertions
 {
     public static Reply<T> FailsToParse<T>(this Parser<T> parse, string input, string expectedUnparsedInput, string expectedMessage)
     {
