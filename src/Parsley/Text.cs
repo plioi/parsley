@@ -3,7 +3,7 @@ namespace Parsley;
 public ref struct Text
 {
     int index;
-    readonly string input;
+    readonly ReadOnlySpan<char> input;
     int line;
 
     public Text(string input)
@@ -22,8 +22,8 @@ public ref struct Text
 
     public ReadOnlySpan<char> Peek(int characters)
         => index + characters >= input.Length
-            ? input.AsSpan().Slice(index)
-            : input.AsSpan().Slice(index, characters);
+            ? input.Slice(index)
+            : input.Slice(index, characters);
 
     public void Advance(int characters)
     {
@@ -67,7 +67,7 @@ public ref struct Text
             if (index == 0)
                 return 1;
 
-            int indexOfPreviousNewLine = input.LastIndexOf('\n', index - 1);
+            int indexOfPreviousNewLine = input[..index].LastIndexOf('\n');
             return index - indexOfPreviousNewLine;
         }
     }
@@ -85,5 +85,5 @@ public ref struct Text
     }
 
     public override string ToString()
-        => input.Substring(index);
+        => input.Slice(index).ToString();
 }
