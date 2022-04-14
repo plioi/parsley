@@ -6,10 +6,10 @@ public ref struct Text
     readonly ReadOnlySpan<char> input;
     int line;
 
-    public Text(string input)
+    public Text(ReadOnlySpan<char> input)
         : this(input, 0, 1) { }
 
-    Text(string input, int index, int line)
+    Text(ReadOnlySpan<char> input, int index, int line)
     {
         this.input = input;
         this.index = index;
