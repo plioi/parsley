@@ -22,8 +22,8 @@ public class Text
 
     public ReadOnlySpan<char> Peek(int characters)
         => index + characters >= input.Length
-            ? input.Substring(index)
-            : input.Substring(index, characters);
+            ? input.AsSpan().Slice(index)
+            : input.AsSpan().Slice(index, characters);
 
     public void Advance(int characters)
     {
