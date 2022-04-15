@@ -368,16 +368,11 @@ public class AlternationTests
         //consuming input. These tests simply describe the behavior under that
         //unusual situation.
 
-        Parser<string> succeedWithoutConsuming = (ref Text input) => new Parsed<string>("ignored value", input.Position);
+        Parser<string> succeedWithoutConsuming = (ref Text input) => new Parsed<string>("atypical value", input.Position);
 
-        var reply = Choice(A, succeedWithoutConsuming).Parses("", "(1, 1): A expected");
-        reply.ErrorMessages.ToString().ShouldBe("A expected");
-
-        reply = Choice(A, B, succeedWithoutConsuming).Parses("", "(1, 1): A or B expected");
-        reply.ErrorMessages.ToString().ShouldBe("A or B expected");
-
-        reply = Choice(A, succeedWithoutConsuming, B).Parses("", "(1, 1): A expected");
-        reply.ErrorMessages.ToString().ShouldBe("A expected");
+        Choice(A, succeedWithoutConsuming).Parses("", "(1, 1): A expected").Value.ShouldBe("atypical value");
+        Choice(A, B, succeedWithoutConsuming).Parses("", "(1, 1): A or B expected").Value.ShouldBe("atypical value");
+        Choice(A, succeedWithoutConsuming, B).Parses("", "(1, 1): A expected").Value.ShouldBe("atypical value");
     }
 
     static readonly Parser<string> NeverExecuted =

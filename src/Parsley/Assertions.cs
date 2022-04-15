@@ -5,36 +5,12 @@ public static class Assertions
     public static Reply<T> FailsToParse<T>(this Parser<T> parse, string input, string expectedUnparsedInput, string expectedMessage)
     {
         var text = new Text(input);
-        var reply = parse(ref text);
-            
-        if (reply.Success)
-            throw new AssertionException("parser failure", "parser completed successfully");
-
-        text.LeavingUnparsedInput(expectedUnparsedInput);
+        var reply = parse(ref text).Fails(expectedMessage);
         
         if (expectedUnparsedInput == "")
             text.AtEndOfInput();
-
-        reply.WithMessage(expectedMessage);
-        
-        return reply;
-    }
-
-    public static Reply<T> WithMessage<T>(this Reply<T> reply, string expectedMessage)
-    {
-        var position = reply.Position;
-        var actual = position + ": " + reply.ErrorMessages;
-            
-        if (actual != expectedMessage)
-            throw new AssertionException($"message at {expectedMessage}", $"message at {actual}");
-
-        return reply;
-    }
-
-    public static Reply<T> WithNoMessage<T>(this Reply<T> reply)
-    {
-        if (reply.ErrorMessages != ErrorMessageList.Empty)
-            throw new AssertionException("no error message", reply.ErrorMessages);
+        else
+            text.LeavingUnparsedInput(expectedUnparsedInput);
 
         return reply;
     }
@@ -42,15 +18,9 @@ public static class Assertions
     public static Reply<T> PartiallyParses<T>(this Parser<T> parse, string input, string expectedUnparsedInput, string? expectedMessage = null)
     {
         var text = new Text(input);
-
-        var reply = parse(ref text).Succeeds();
+        var reply = parse(ref text).Succeeds(expectedMessage);
 
         text.LeavingUnparsedInput(expectedUnparsedInput);
-
-        if (expectedMessage == null)
-            reply.WithNoMessage();
-        else
-            reply.WithMessage(expectedMessage);
 
         return reply;
     }
@@ -58,29 +28,54 @@ public static class Assertions
     public static Reply<T> Parses<T>(this Parser<T> parse, string input, string? expectedMessage = null)
     {
         var text = new Text(input);
-        var reply = parse(ref text).Succeeds();
+        var reply = parse(ref text).Succeeds(expectedMessage);
 
         text.AtEndOfInput();
-
-        if (expectedMessage == null)
-            reply.WithNoMessage();
-        else
-            reply.WithMessage(expectedMessage);
 
         return reply;
     }
 
-    static Reply<T> Succeeds<T>(this Reply<T> reply)
+    static Reply<T> Fails<T>(this Reply<T> reply, string expectedMessage)
+    {
+        if (reply.Success)
+            throw new AssertionException("parser failure", "parser completed successfully");
+
+        reply.WithMessage(expectedMessage);
+
+        return reply;
+    }
+
+    static Reply<T> Succeeds<T>(this Reply<T> reply, string? expectedMessage = null)
     {
         if (!reply.Success)
         {
             var message = "Position: " + reply.Position
                                        + Environment.NewLine
                                        + "Error Message: " + reply.ErrorMessages;
+
             throw new AssertionException(message, "parser success", "parser failed");
         }
 
+        reply.WithMessage(expectedMessage);
+
         return reply;
+    }
+
+    static void WithMessage<T>(this Reply<T> reply, string? expectedMessage)
+    {
+        if (expectedMessage == null)
+        {
+            if (reply.ErrorMessages != ErrorMessageList.Empty)
+                throw new AssertionException("no error message", reply.ErrorMessages);
+        }
+        else
+        {
+            var position = reply.Position;
+            var actual = position + ": " + reply.ErrorMessages;
+            
+            if (actual != expectedMessage)
+                throw new AssertionException($"message at {expectedMessage}", $"message at {actual}");
+        }
     }
 
     static void LeavingUnparsedInput(this Text text, string expectedUnparsedInput)
