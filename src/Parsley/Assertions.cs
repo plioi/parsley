@@ -55,12 +55,17 @@ public static class Assertions
         return reply;
     }
 
-    public static Reply<T> Parses<T>(this Parser<T> parse, string input)
+    public static Reply<T> Parses<T>(this Parser<T> parse, string input, string? expectedMessage = null)
     {
         var text = new Text(input);
         var reply = parse(ref text).Succeeds();
 
         text.AtEndOfInput();
+
+        if (expectedMessage == null)
+            reply.WithNoMessage();
+        else
+            reply.WithMessage(expectedMessage);
 
         return reply;
     }

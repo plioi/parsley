@@ -53,7 +53,7 @@ class GrammarTests
     {
         var parser = ZeroOrMore(AB);
 
-        parser.Parses("").Value.ShouldBeEmpty();
+        parser.Parses("", "(1, 1): A expected").Value.ShouldBeEmpty();
 
         parser.PartiallyParses("AB!", "!", "(1, 3): A expected")
             .Value.Single().ShouldBe("AB");
@@ -105,7 +105,7 @@ class GrammarTests
     {
         var parser = ZeroOrMore(AB, COMMA);
 
-        parser.Parses("").Value.ShouldBeEmpty();
+        parser.Parses("", "(1, 1): A expected").Value.ShouldBeEmpty();
         parser.Parses("AB").Value.Single().ShouldBe("AB");
         parser.Parses("AB,AB").Value.ShouldBe(new[] { "AB", "AB" });
         parser.Parses("AB,AB,AB").Value.ShouldBe(new[] { "AB", "AB", "AB" });
@@ -166,8 +166,8 @@ class GrammarTests
         var labeled = Label(AB, "'A' followed by 'B'");
 
         //When p succeeds after consuming input, Label(p) is the same as p.
-        AB.Parses("AB").WithNoMessage().Value.ShouldBe("AB");
-        labeled.Parses("AB").WithNoMessage().Value.ShouldBe("AB");
+        AB.Parses("AB").Value.ShouldBe("AB");
+        labeled.Parses("AB").Value.ShouldBe("AB");
 
         //When p fails after consuming input, Label(p) is the same as p.
         AB.FailsToParse("A!", "!", "(1, 2): B expected");
@@ -177,7 +177,6 @@ class GrammarTests
         var succeedWithoutConsuming = "$".SucceedWithThisValue();
         succeedWithoutConsuming
             .PartiallyParses("!", "!")
-            .WithNoMessage()
             .Value.ShouldBe("$");
         Label(succeedWithoutConsuming, "nothing")
             .PartiallyParses("!", "!", "(1, 1): nothing expected")
@@ -371,13 +370,13 @@ public class AlternationTests
 
         Parser<string> succeedWithoutConsuming = (ref Text input) => new Parsed<string>("ignored value", input.Position);
 
-        var reply = Choice(A, succeedWithoutConsuming).Parses("");
+        var reply = Choice(A, succeedWithoutConsuming).Parses("", "(1, 1): A expected");
         reply.ErrorMessages.ToString().ShouldBe("A expected");
 
-        reply = Choice(A, B, succeedWithoutConsuming).Parses("");
+        reply = Choice(A, B, succeedWithoutConsuming).Parses("", "(1, 1): A or B expected");
         reply.ErrorMessages.ToString().ShouldBe("A or B expected");
 
-        reply = Choice(A, succeedWithoutConsuming, B).Parses("");
+        reply = Choice(A, succeedWithoutConsuming, B).Parses("", "(1, 1): A expected");
         reply.ErrorMessages.ToString().ShouldBe("A expected");
     }
 
