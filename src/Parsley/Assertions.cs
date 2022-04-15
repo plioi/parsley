@@ -5,7 +5,7 @@ public static class Assertions
     public static Reply<T> FailsToParse<T>(this Parser<T> parse, string input, string expectedUnparsedInput, string expectedMessage)
     {
         var text = new Text(input);
-        var reply = parse(ref text).Fails(expectedMessage);
+        var reply = parse(ref text).Fails(ref text, expectedMessage);
         
         if (expectedUnparsedInput == "")
             text.AtEndOfInput();
@@ -18,7 +18,7 @@ public static class Assertions
     public static Reply<T> PartiallyParses<T>(this Parser<T> parse, string input, string expectedUnparsedInput, string? expectedMessage = null)
     {
         var text = new Text(input);
-        var reply = parse(ref text).Succeeds(expectedMessage);
+        var reply = parse(ref text).Succeeds(ref text, expectedMessage);
 
         if (expectedUnparsedInput == "")
             throw new ArgumentException($"{nameof(expectedUnparsedInput)} must be nonempty when calling {nameof(PartiallyParses)}.");
@@ -31,40 +31,40 @@ public static class Assertions
     public static Reply<T> Parses<T>(this Parser<T> parse, string input, string? expectedMessage = null)
     {
         var text = new Text(input);
-        var reply = parse(ref text).Succeeds(expectedMessage);
+        var reply = parse(ref text).Succeeds(ref text, expectedMessage);
 
         text.AtEndOfInput();
 
         return reply;
     }
 
-    static Reply<T> Fails<T>(this Reply<T> reply, string expectedMessage)
+    static Reply<T> Fails<T>(this Reply<T> reply, ref Text text, string expectedMessage)
     {
         if (reply.Success)
             throw new AssertionException("parser failure", "parser completed successfully");
 
-        reply.WithMessage(expectedMessage);
+        reply.WithMessage(ref text, expectedMessage);
 
         return reply;
     }
 
-    static Reply<T> Succeeds<T>(this Reply<T> reply, string? expectedMessage = null)
+    static Reply<T> Succeeds<T>(this Reply<T> reply, ref Text text, string? expectedMessage = null)
     {
         if (!reply.Success)
         {
-            var message = "Position: " + reply.Position
+            var message = "Position: " + text.Position
                                        + Environment.NewLine
                                        + "Error Message: " + reply.ErrorMessages;
 
             throw new AssertionException(message, "parser success", "parser failed");
         }
 
-        reply.WithMessage(expectedMessage);
+        reply.WithMessage(ref text, expectedMessage);
 
         return reply;
     }
 
-    static void WithMessage<T>(this Reply<T> reply, string? expectedMessage)
+    static void WithMessage<T>(this Reply<T> reply, ref Text text, string? expectedMessage)
     {
         if (expectedMessage == null)
         {
@@ -73,7 +73,7 @@ public static class Assertions
         }
         else
         {
-            var position = reply.Position;
+            var position = text.Position;
             var actual = position + ": " + reply.ErrorMessages;
             
             if (actual != expectedMessage)
