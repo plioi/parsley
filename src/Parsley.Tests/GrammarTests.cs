@@ -55,10 +55,10 @@ class GrammarTests
 
         parser.Parses("").Value.ShouldBeEmpty();
 
-        parser.PartiallyParses("AB!", "!")
+        parser.PartiallyParses("AB!", "!", "(1, 3): A expected")
             .Value.Single().ShouldBe("AB");
 
-        parser.PartiallyParses("ABAB!", "!")
+        parser.PartiallyParses("ABAB!", "!", "(1, 5): A expected")
             .Value.ShouldBe(new[] { "AB", "AB" });
 
         parser.FailsToParse("ABABA!", "!", "(1, 6): B expected");
@@ -129,14 +129,14 @@ class GrammarTests
     {
         //Reference Type to Nullable Reference Type
         Optional(AB).PartiallyParses("AB.", ".").Value.ShouldBe("AB");
-        Optional(AB).PartiallyParses(".", ".").Value.ShouldBe(null);
+        Optional(AB).PartiallyParses(".", ".", "(1, 1): A expected").Value.ShouldBe(null);
         Optional(AB).FailsToParse("AC.", "C.", "(1, 2): B expected");
 
         //Value Type to Nullable Value Type
         Optional(A).PartiallyParses("AB.", "B.").Value.ShouldBe('A');
-        Optional(A).PartiallyParses(".", ".").Value.ShouldBe(null);
-        Optional(B).PartiallyParses("A", "A").Value.ShouldBe(null);
-        Optional(B).PartiallyParses("", "").Value.ShouldBe(null);
+        Optional(A).PartiallyParses(".", ".", "(1, 1): A expected").Value.ShouldBe(null);
+        Optional(B).PartiallyParses("A", "A", "(1, 1): B expected").Value.ShouldBe(null);
+        Optional(B).PartiallyParses("", "", "(1, 1): B expected").Value.ShouldBe(null);
 
         //Alternate possibilities are not supported when nullable
         //reference types are enabled:
@@ -180,8 +180,7 @@ class GrammarTests
             .WithNoMessage()
             .Value.ShouldBe("$");
         Label(succeedWithoutConsuming, "nothing")
-            .PartiallyParses("!", "!")
-            .WithMessage("(1, 1): nothing expected")
+            .PartiallyParses("!", "!", "(1, 1): nothing expected")
             .Value.ShouldBe("$");
 
         //When p fails but does not consume input, Label(p) fails with the given expectation.

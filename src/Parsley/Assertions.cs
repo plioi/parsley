@@ -39,13 +39,18 @@ public static class Assertions
         return reply;
     }
 
-    public static Reply<T> PartiallyParses<T>(this Parser<T> parse, string input, string expectedUnparsedInput)
+    public static Reply<T> PartiallyParses<T>(this Parser<T> parse, string input, string expectedUnparsedInput, string? expectedMessage = null)
     {
         var text = new Text(input);
 
         var reply = parse(ref text).Succeeds();
 
         text.LeavingUnparsedInput(expectedUnparsedInput);
+
+        if (expectedMessage == null)
+            reply.WithNoMessage();
+        else
+            reply.WithMessage(expectedMessage);
 
         return reply;
     }
