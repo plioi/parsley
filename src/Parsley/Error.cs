@@ -11,7 +11,7 @@ public class Error<T> : Reply<T>
         ErrorMessages = errors;
     }
 
-    public T Value => throw new MemberAccessException($"{Position}: {ErrorMessages}");
+    public T Value => throw new MemberAccessException($"{ErrorMessages}");
     public Position Position { get; }
     public bool Success => false;
     public ErrorMessageList ErrorMessages { get; }

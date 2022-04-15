@@ -32,6 +32,6 @@ class ErrorTests
         var inspectParsedValue = () => new Error<object>(new(12, 34), ErrorMessage.Unknown()).Value;
         inspectParsedValue
             .ShouldThrow<MemberAccessException>()
-            .Message.ShouldBe("(12, 34): Parse error.");
+            .Message.ShouldBe("Parse error.");
     }
 }
