@@ -34,23 +34,23 @@ class TextTests
         abc.Advance(0);
         abc.ToString().ShouldBe("abc");
 
-        var snapshot = abc.Snapshot();
+        var snapshot = abc;
         abc.Advance(1);
         abc.ToString().ShouldBe("bc");
 
-        abc.Restore(snapshot);
+        abc = snapshot;
         abc.Advance(2);
         abc.ToString().ShouldBe("c");
 
-        abc.Restore(snapshot);
+        abc = snapshot;
         abc.Advance(3);
         abc.ToString().ShouldBe("");
 
-        abc.Restore(snapshot);
+        abc = snapshot;
         abc.Advance(4);
         abc.ToString().ShouldBe("");
 
-        abc.Restore(snapshot);
+        abc = snapshot;
         abc.Advance(100);
         abc.ToString().ShouldBe("");
     }
@@ -68,40 +68,27 @@ class TextTests
         Predicate<char> alphanumerics = char.IsLetterOrDigit;
 
         var empty = new Text("");
-        empty.TryMatch(letters, out var value).ShouldBe(false);
-        value.ShouldBe("");
+        empty.TakeWhile(letters).ToString().ShouldBe("");
 
         var abc123 = new Text("abc123");
-        abc123.TryMatch(digits, out value).ShouldBe(false);
-        value.ShouldBe("");
-        abc123.TryMatch(letters, out value).ShouldBe(true);
-        value.ShouldBe("abc");
-        abc123.TryMatch(alphanumerics, out value).ShouldBe(true);
-        value.ShouldBe("abc123");
+        abc123.TakeWhile(digits).ToString().ShouldBe("");
+        abc123.TakeWhile(letters).ToString().ShouldBe("abc");
+        abc123.TakeWhile(alphanumerics).ToString().ShouldBe("abc123");
 
         abc123.Advance(2);
-        abc123.TryMatch(digits, out value).ShouldBe(false);
-        value.ShouldBe("");
-        abc123.TryMatch(letters, out value).ShouldBe(true);
-        value.ShouldBe("c");
-        abc123.TryMatch(alphanumerics, out value).ShouldBe(true);
-        value.ShouldBe("c123");
+        abc123.TakeWhile(digits).ToString().ShouldBe("");
+        abc123.TakeWhile(letters).ToString().ShouldBe("c");
+        abc123.TakeWhile(alphanumerics).ToString().ShouldBe("c123");
 
         abc123.Advance(1);
-        abc123.TryMatch(digits, out value).ShouldBe(true);
-        value.ShouldBe("123");
-        abc123.TryMatch(letters, out value).ShouldBe(false);
-        value.ShouldBe("");
-        abc123.TryMatch(alphanumerics, out value).ShouldBe(true);
-        value.ShouldBe("123");
+        abc123.TakeWhile(digits).ToString().ShouldBe("123");
+        abc123.TakeWhile(letters).ToString().ShouldBe("");
+        abc123.TakeWhile(alphanumerics).ToString().ShouldBe("123");
 
         abc123.Advance(3);
-        abc123.TryMatch(digits, out value).ShouldBe(false);
-        value.ShouldBe("");
-        abc123.TryMatch(letters, out value).ShouldBe(false);
-        value.ShouldBe("");
-        abc123.TryMatch(alphanumerics, out value).ShouldBe(false);
-        value.ShouldBe("");
+        abc123.TakeWhile(digits).ToString().ShouldBe("");
+        abc123.TakeWhile(letters).ToString().ShouldBe("");
+        abc123.TakeWhile(alphanumerics).ToString().ShouldBe("");
     }
 
     public void CanGetCurrentPosition()
@@ -116,50 +103,50 @@ class TextTests
             .Append("Line 3\n");//Index 14-19, \n
         var list = new Text(lines.ToString());
 
-        var snapshot = list.Snapshot();
+        var snapshot = list;
         list.Advance(0);
         list.Position.ShouldBe(new Position(1, 1));
 
-        list.Restore(snapshot);
+        list = snapshot;
         list.Advance(5);
         list.Position.ShouldBe(new Position(1, 6));
 
-        list.Restore(snapshot);
+        list = snapshot;
         list.Advance(6);
         list.Position.ShouldBe(new Position(1, 7));
 
 
-        list.Restore(snapshot);
+        list = snapshot;
         list.Advance(7);
         list.Position.ShouldBe(new Position(2, 1));
 
-        list.Restore(snapshot);
+        list = snapshot;
         list.Advance(12);
         list.Position.ShouldBe(new Position(2, 6));
 
-        list.Restore(snapshot);
+        list = snapshot;
         list.Advance(13);
         list.Position.ShouldBe(new Position(2, 7));
 
 
-        list.Restore(snapshot);
+        list = snapshot;
         list.Advance(14);
         list.Position.ShouldBe(new Position(3, 1));
 
-        list.Restore(snapshot);
+        list = snapshot;
         list.Advance(19);
         list.Position.ShouldBe(new Position(3, 6));
 
-        list.Restore(snapshot);
+        list = snapshot;
         list.Advance(20);
         list.Position.ShouldBe(new Position(3, 7));
 
 
-        list.Restore(snapshot);
+        list = snapshot;
         list.Advance(21);
         list.Position.ShouldBe(new Position(4, 1));
 
-        list.Restore(snapshot);
+        list = snapshot;
         list.Advance(1000);
         list.Position.ShouldBe(new Position(4, 1));
     }

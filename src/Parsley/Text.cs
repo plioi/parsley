@@ -1,15 +1,15 @@
 namespace Parsley;
 
-public class Text
+public ref struct Text
 {
     int index;
-    readonly string input;
+    readonly ReadOnlySpan<char> input;
     int line;
 
-    public Text(string input)
+    public Text(ReadOnlySpan<char> input)
         : this(input, 0, 1) { }
 
-    Text(string input, int index, int line)
+    Text(ReadOnlySpan<char> input, int index, int line)
     {
         this.input = input;
         this.index = index;
@@ -20,10 +20,10 @@ public class Text
         this.line = line;
     }
 
-    public ReadOnlySpan<char> Peek(int characters)
+    public readonly ReadOnlySpan<char> Peek(int characters)
         => index + characters >= input.Length
-            ? input.AsSpan().Slice(index)
-            : input.AsSpan().Slice(index, characters);
+            ? input.Slice(index)
+            : input.Slice(index, characters);
 
     public void Advance(int characters)
     {
@@ -46,44 +46,33 @@ public class Text
             index = input.Length;
     }
 
-    public bool EndOfInput => index >= input.Length;
+    public readonly bool EndOfInput => index >= input.Length;
 
-    public bool TryMatch(Predicate<char> test, out string value)
+    public readonly ReadOnlySpan<char> TakeWhile(Predicate<char> test)
     {
         int i = index;
 
         while (i < input.Length && test(input[i]))
             i++;
 
-        value = Peek(i - index).ToString();
-
-        return value.Length > 0;
+        return Peek(i - index);
     }
 
-    int Column
+    readonly int Column
     {
         get
         {
             if (index == 0)
                 return 1;
 
-            int indexOfPreviousNewLine = input.LastIndexOf('\n', index - 1);
+            int indexOfPreviousNewLine = input[..index].LastIndexOf('\n');
             return index - indexOfPreviousNewLine;
         }
     }
 
-    public Position Position
+    public readonly Position Position
         => new(line, Column);
 
-    public (int index, int line) Snapshot()
-        => (index, line);
-
-    public void Restore((int index, int line) snapshot)
-    {
-        index = snapshot.index;
-        line = snapshot.line;
-    }
-
-    public override string ToString()
-        => input.Substring(index);
+    public readonly override string ToString()
+        => input.Slice(index).ToString();
 }

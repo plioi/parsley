@@ -55,30 +55,30 @@ public class OperatorPrecedenceParser<T>
             select createBinaryNode(left, symbol, right));
     }
 
-    public Parser<T> Parser => input => Parse(input, 0);
+    public Parser<T> Parser => (ref Text input) => Parse(ref input, 0);
 
     Parser<T> OperandAtPrecedenceLevel(int precedence)
     {
-        return input => Parse(input, precedence);
+        return (ref Text input) => Parse(ref input, precedence);
     }
 
-    Reply<T> Parse(Text input, int precedence)
+    Reply<T> Parse(ref Text input, int precedence)
     {
-        if (!TryFindMatchingUnitParser(input, out var matchingUnitParser, out var token))
+        if (!TryFindMatchingUnitParser(ref input, out var matchingUnitParser, out var token))
             return new Error<T>(input.Position, ErrorMessage.Unknown());
 
-        var reply = matchingUnitParser(input);
+        var reply = matchingUnitParser(ref input);
 
         if (!reply.Success)
             return reply;
 
-        while (TryFindMatchingExtendParserBuilder(input, out var matchingExtendParserBuilder, out token, out int? tokenPrecedence) && precedence < tokenPrecedence)
+        while (TryFindMatchingExtendParserBuilder(ref input, out var matchingExtendParserBuilder, out token, out int? tokenPrecedence) && precedence < tokenPrecedence)
         {
             //Continue parsing at this precedence level.
 
             var extendParser = matchingExtendParserBuilder(reply.Value);
 
-            reply = extendParser(input);
+            reply = extendParser(ref input);
 
             if (!reply.Success)
                 return reply;
@@ -87,16 +87,16 @@ public class OperatorPrecedenceParser<T>
         return reply;
     }
 
-    bool TryFindMatchingUnitParser(Text input, [NotNullWhen(true)] out Parser<T>? found, out string? token)
+    bool TryFindMatchingUnitParser(ref Text input, [NotNullWhen(true)] out Parser<T>? found, out string? token)
     {
         found = null;
         token = null;
 
         foreach(var (kind, parser) in unitParsers)
         {
-            var snapshot = input.Snapshot();
-            var reply = kind(input);
-            input.Restore(snapshot);
+            var snapshot = input;
+            var reply = kind(ref input);
+            input = snapshot;
 
             if (reply.Success)
             {
@@ -109,7 +109,7 @@ public class OperatorPrecedenceParser<T>
         return false;
     }
 
-    bool TryFindMatchingExtendParserBuilder(Text input, [NotNullWhen(true)] out ExtendParserBuilder<T>? found, out string? token, out int? tokenPrecedence)
+    bool TryFindMatchingExtendParserBuilder(ref Text input, [NotNullWhen(true)] out ExtendParserBuilder<T>? found, out string? token, out int? tokenPrecedence)
     {
         found = null;
         token = null;
@@ -117,9 +117,9 @@ public class OperatorPrecedenceParser<T>
 
         foreach (var (kind, precedence, extendParserBuilder) in extendParsers)
         {
-            var snapshot = input.Snapshot();
-            var reply = kind(input);
-            input.Restore(snapshot);
+            var snapshot = input;
+            var reply = kind(ref input);
+            input = snapshot;
 
             if (reply.Success)
             {

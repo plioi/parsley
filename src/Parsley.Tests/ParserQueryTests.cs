@@ -4,7 +4,7 @@ namespace Parsley.Tests;
 
 class ParserQueryTests
 {
-    static readonly Parser<char> Next = input =>
+    static readonly Parser<char> Next = (ref Text input) =>
     {
         var next = input.Peek(1);
 

@@ -25,10 +25,10 @@ partial class Grammar
         if (parsers.Length == 0)
             return Grammar<T>.Fail;
 
-        return input =>
+        return (ref Text input) =>
         {
             var start = input.Position;
-            var reply = parsers[0](input);
+            var reply = parsers[0](ref input);
             var newPosition = input.Position;
 
             var errors = ErrorMessageList.Empty;
@@ -37,7 +37,7 @@ partial class Grammar
             while (!reply.Success && (start == newPosition) && i < parsers.Length)
             {
                 errors = errors.Merge(reply.ErrorMessages);
-                reply = parsers[i](input);
+                reply = parsers[i](ref input);
                 newPosition = input.Position;
                 i++;
             }

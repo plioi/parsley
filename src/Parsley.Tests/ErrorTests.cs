@@ -2,49 +2,36 @@ namespace Parsley.Tests;
 
 class ErrorTests
 {
-    readonly Text x;
-    readonly Text endOfInput;
-
-    public ErrorTests()
-    {
-        x = new Text("x");
-        endOfInput = new Text("");
-    }
-
     public void CanIndicateErrorsAtTheCurrentPosition()
     {
-        new Error<object>(endOfInput.Position, ErrorMessage.Unknown()).ErrorMessages.ToString().ShouldBe("Parse error.");
-        new Error<object>(endOfInput.Position, ErrorMessage.Expected("statement")).ErrorMessages.ToString().ShouldBe("statement expected");
+        var error = new Error<object>(new(12, 34), ErrorMessage.Unknown());
+        error.Success.ShouldBe(false);
+        error.ErrorMessages.ToString().ShouldBe("Parse error.");
+        error.Position.ShouldBe(new(12, 34));
+
+        error = new Error<object>(new(23, 45), ErrorMessage.Expected("statement"));
+        error.Success.ShouldBe(false);
+        error.ErrorMessages.ToString().ShouldBe("statement expected");
+        error.Position.ShouldBe(new(23, 45));
     }
 
     public void CanIndicateMultipleErrorsAtTheCurrentPosition()
     {
-        var errors = ErrorMessageList.Empty
+       var errors = ErrorMessageList.Empty
             .With(ErrorMessage.Expected("A"))
             .With(ErrorMessage.Expected("B"));
 
-        new Error<object>(endOfInput.Position, errors).ErrorMessages.ToString().ShouldBe("A or B expected");
+       var error = new Error<object>(new(12, 34), errors);
+       error.Success.ShouldBe(false);
+       error.ErrorMessages.ToString().ShouldBe("A or B expected");
+       error.Position.ShouldBe(new(12, 34));
     }
 
     public void ThrowsWhenAttemptingToGetParsedValue()
     {
-        var inspectParsedValue = () => new Error<object>(x.Position, ErrorMessage.Unknown()).Value;
+        var inspectParsedValue = () => new Error<object>(new(12, 34), ErrorMessage.Unknown()).Value;
         inspectParsedValue
             .ShouldThrow<MemberAccessException>()
-            .Message.ShouldBe("(1, 1): Parse error.");
-    }
-
-    public void HasRemainingUnparsedInput()
-    {
-        var xError = new Error<object>(x.Position, ErrorMessage.Unknown());
-        xError.Position.ShouldBe(x.Position);
-
-        var endError = new Error<object>(endOfInput.Position, ErrorMessage.Unknown());
-        endError.Position.ShouldBe(endOfInput.Position);
-    }
-
-    public void ReportsErrorState()
-    {
-        new Error<object>(x.Position, ErrorMessage.Unknown()).Success.ShouldBeFalse();
+            .Message.ShouldBe("(12, 34): Parse error.");
     }
 }

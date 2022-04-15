@@ -4,7 +4,7 @@ partial class Grammar
 {
     public static Parser<string> Operator(string symbol)
     {
-        return input =>
+        return (ref Text input) =>
         {
             var peek = input.Peek(symbol.Length);
 
