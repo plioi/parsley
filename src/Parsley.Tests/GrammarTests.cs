@@ -63,7 +63,7 @@ class GrammarTests
 
         parser.FailsToParse("ABABA!", "!", "(1, 6): B expected");
 
-        Parser<string> succeedWithoutConsuming = (ref Text input) => new Parsed<string>("ignored value", input.Position);
+        Parser<string> succeedWithoutConsuming = (ref Text input) => new Parsed<string>("ignored value");
         Action infiniteLoop = () =>
         {
             var input = new Text("");
@@ -89,7 +89,7 @@ class GrammarTests
 
         parser.FailsToParse("ABABA!", "!", "(1, 6): B expected");
 
-        Parser<string> succeedWithoutConsuming = (ref Text input) => new Parsed<string>("ignored value", input.Position);
+        Parser<string> succeedWithoutConsuming = (ref Text input) => new Parsed<string>("ignored value");
         Action infiniteLoop = () =>
         {
             var input = new Text("");
@@ -368,7 +368,7 @@ public class AlternationTests
         //consuming input. These tests simply describe the behavior under that
         //unusual situation.
 
-        Parser<string> succeedWithoutConsuming = (ref Text input) => new Parsed<string>("atypical value", input.Position);
+        Parser<string> succeedWithoutConsuming = (ref Text input) => new Parsed<string>("atypical value");
 
         Choice(A, succeedWithoutConsuming).Parses("", "(1, 1): A expected").Value.ShouldBe("atypical value");
         Choice(A, B, succeedWithoutConsuming).Parses("", "(1, 1): A or B expected").Value.ShouldBe("atypical value");

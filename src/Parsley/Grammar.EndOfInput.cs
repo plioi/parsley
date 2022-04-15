@@ -4,6 +4,6 @@ partial class Grammar
 {
     public static readonly Parser<string> EndOfInput =
         (ref Text input) => input.EndOfInput
-            ? new Parsed<string>("", input.Position)
-            : new Error<string>(input.Position, ErrorMessage.Expected("end of input"));
+            ? new Parsed<string>("")
+            : new Error<string>(ErrorMessage.Expected("end of input"));
 }

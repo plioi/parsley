@@ -32,9 +32,9 @@ partial class Grammar
             //The item parser finally failed.
 
             if (oldPosition != newPosition)
-                return new Error<IEnumerable<T>>(reply.Position, reply.ErrorMessages);
+                return new Error<IEnumerable<T>>(reply.ErrorMessages);
 
-            return new Parsed<IEnumerable<T>>(list, reply.Position, reply.ErrorMessages);
+            return new Parsed<IEnumerable<T>>(list, reply.ErrorMessages);
         };
     }
 
@@ -79,10 +79,10 @@ partial class Grammar
             {
                 input.Advance(value.Length);
 
-                return new Parsed<string>(value.ToString(), input.Position);
+                return new Parsed<string>(value.ToString());
             }
 
-            return new Parsed<string>("", input.Position);
+            return new Parsed<string>("");
         };
     }
 
@@ -96,10 +96,10 @@ partial class Grammar
             {
                 input.Advance(value.Length);
 
-                return new Parsed<string>(value.ToString(), input.Position);
+                return new Parsed<string>(value.ToString());
             }
 
-            return new Error<string>(input.Position, ErrorMessage.Expected(name));
+            return new Error<string>(ErrorMessage.Expected(name));
         };
     }
 
