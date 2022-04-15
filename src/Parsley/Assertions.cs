@@ -20,6 +20,9 @@ public static class Assertions
         var text = new Text(input);
         var reply = parse(ref text).Succeeds(expectedMessage);
 
+        if (expectedUnparsedInput == "")
+            throw new ArgumentException($"{nameof(expectedUnparsedInput)} must be nonempty when calling {nameof(PartiallyParses)}.");
+
         text.LeavingUnparsedInput(expectedUnparsedInput);
 
         return reply;

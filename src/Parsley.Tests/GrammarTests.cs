@@ -136,7 +136,7 @@ class GrammarTests
         Optional(A).PartiallyParses("AB.", "B.").Value.ShouldBe('A');
         Optional(A).PartiallyParses(".", ".", "(1, 1): A expected").Value.ShouldBe(null);
         Optional(B).PartiallyParses("A", "A", "(1, 1): B expected").Value.ShouldBe(null);
-        Optional(B).PartiallyParses("", "", "(1, 1): B expected").Value.ShouldBe(null);
+        Optional(B).Parses("", "(1, 1): B expected").Value.ShouldBe(null);
 
         //Alternate possibilities are not supported when nullable
         //reference types are enabled:
