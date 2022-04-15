@@ -2,25 +2,23 @@ namespace Parsley.Tests;
 
 class ParsedTests
 {
-    public void CanIndicateSuccessfullyParsedValueAtTheCurrentPosition()
+    public void CanIndicateSuccessfullyParsedValue()
     {
-        var parsed = new Parsed<string>("parsed", new(12, 34));
+        var parsed = new Parsed<string>("parsed");
         parsed.Success.ShouldBe(true);
         parsed.Value.ShouldBe("parsed");
         parsed.ErrorMessages.ShouldBe(ErrorMessageList.Empty);
-        parsed.Position.ShouldBe(new(12, 34));
     }
 
-    public void CanIndicatePotentialErrorMessagesAtTheCurrentPosition()
+    public void CanIndicatePotentialErrorMessages()
     {
         var potentialErrors = ErrorMessageList.Empty
             .With(ErrorMessage.Expected("A"))
             .With(ErrorMessage.Expected("B"));
 
-        var parsed = new Parsed<object>("parsed", new(12, 34), potentialErrors);
+        var parsed = new Parsed<object>("parsed", potentialErrors);
         parsed.Success.ShouldBe(true);
         parsed.Value.ShouldBe("parsed");
         parsed.ErrorMessages.ShouldBe(potentialErrors);
-        parsed.Position.ShouldBe(new(12, 34));
     }
 }

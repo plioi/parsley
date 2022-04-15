@@ -47,9 +47,9 @@ partial class Grammar
                 errors = errors.Merge(reply.ErrorMessages);
 
                 if (reply.Success)
-                    reply = new Parsed<T>(reply.Value, reply.Position, errors);
+                    reply = new Parsed<T>(reply.Value, errors);
                 else
-                    reply = new Error<T>(reply.Position, errors);
+                    reply = new Error<T>(errors);
             }
 
             return reply;

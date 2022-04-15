@@ -53,17 +53,17 @@ class GrammarTests
     {
         var parser = ZeroOrMore(AB);
 
-        parser.Parses("").Value.ShouldBeEmpty();
+        parser.Parses("", "(1, 1): A expected").Value.ShouldBeEmpty();
 
-        parser.PartiallyParses("AB!", "!")
+        parser.PartiallyParses("AB!", "!", "(1, 3): A expected")
             .Value.Single().ShouldBe("AB");
 
-        parser.PartiallyParses("ABAB!", "!")
+        parser.PartiallyParses("ABAB!", "!", "(1, 5): A expected")
             .Value.ShouldBe(new[] { "AB", "AB" });
 
         parser.FailsToParse("ABABA!", "!", "(1, 6): B expected");
 
-        Parser<string> succeedWithoutConsuming = (ref Text input) => new Parsed<string>("ignored value", input.Position);
+        Parser<string> succeedWithoutConsuming = (ref Text input) => new Parsed<string>("ignored value");
         Action infiniteLoop = () =>
         {
             var input = new Text("");
@@ -89,7 +89,7 @@ class GrammarTests
 
         parser.FailsToParse("ABABA!", "!", "(1, 6): B expected");
 
-        Parser<string> succeedWithoutConsuming = (ref Text input) => new Parsed<string>("ignored value", input.Position);
+        Parser<string> succeedWithoutConsuming = (ref Text input) => new Parsed<string>("ignored value");
         Action infiniteLoop = () =>
         {
             var input = new Text("");
@@ -105,7 +105,7 @@ class GrammarTests
     {
         var parser = ZeroOrMore(AB, COMMA);
 
-        parser.Parses("").Value.ShouldBeEmpty();
+        parser.Parses("", "(1, 1): A expected").Value.ShouldBeEmpty();
         parser.Parses("AB").Value.Single().ShouldBe("AB");
         parser.Parses("AB,AB").Value.ShouldBe(new[] { "AB", "AB" });
         parser.Parses("AB,AB,AB").Value.ShouldBe(new[] { "AB", "AB", "AB" });
@@ -129,14 +129,14 @@ class GrammarTests
     {
         //Reference Type to Nullable Reference Type
         Optional(AB).PartiallyParses("AB.", ".").Value.ShouldBe("AB");
-        Optional(AB).PartiallyParses(".", ".").Value.ShouldBe(null);
+        Optional(AB).PartiallyParses(".", ".", "(1, 1): A expected").Value.ShouldBe(null);
         Optional(AB).FailsToParse("AC.", "C.", "(1, 2): B expected");
 
         //Value Type to Nullable Value Type
         Optional(A).PartiallyParses("AB.", "B.").Value.ShouldBe('A');
-        Optional(A).PartiallyParses(".", ".").Value.ShouldBe(null);
-        Optional(B).PartiallyParses("A", "A").Value.ShouldBe(null);
-        Optional(B).PartiallyParses("", "").Value.ShouldBe(null);
+        Optional(A).PartiallyParses(".", ".", "(1, 1): A expected").Value.ShouldBe(null);
+        Optional(B).PartiallyParses("A", "A", "(1, 1): B expected").Value.ShouldBe(null);
+        Optional(B).Parses("", "(1, 1): B expected").Value.ShouldBe(null);
 
         //Alternate possibilities are not supported when nullable
         //reference types are enabled:
@@ -166,8 +166,8 @@ class GrammarTests
         var labeled = Label(AB, "'A' followed by 'B'");
 
         //When p succeeds after consuming input, Label(p) is the same as p.
-        AB.Parses("AB").WithNoMessage().Value.ShouldBe("AB");
-        labeled.Parses("AB").WithNoMessage().Value.ShouldBe("AB");
+        AB.Parses("AB").Value.ShouldBe("AB");
+        labeled.Parses("AB").Value.ShouldBe("AB");
 
         //When p fails after consuming input, Label(p) is the same as p.
         AB.FailsToParse("A!", "!", "(1, 2): B expected");
@@ -177,11 +177,9 @@ class GrammarTests
         var succeedWithoutConsuming = "$".SucceedWithThisValue();
         succeedWithoutConsuming
             .PartiallyParses("!", "!")
-            .WithNoMessage()
             .Value.ShouldBe("$");
         Label(succeedWithoutConsuming, "nothing")
-            .PartiallyParses("!", "!")
-            .WithMessage("(1, 1): nothing expected")
+            .PartiallyParses("!", "!", "(1, 1): nothing expected")
             .Value.ShouldBe("$");
 
         //When p fails but does not consume input, Label(p) fails with the given expectation.
@@ -370,16 +368,11 @@ public class AlternationTests
         //consuming input. These tests simply describe the behavior under that
         //unusual situation.
 
-        Parser<string> succeedWithoutConsuming = (ref Text input) => new Parsed<string>("ignored value", input.Position);
+        Parser<string> succeedWithoutConsuming = (ref Text input) => new Parsed<string>("atypical value");
 
-        var reply = Choice(A, succeedWithoutConsuming).Parses("");
-        reply.ErrorMessages.ToString().ShouldBe("A expected");
-
-        reply = Choice(A, B, succeedWithoutConsuming).Parses("");
-        reply.ErrorMessages.ToString().ShouldBe("A or B expected");
-
-        reply = Choice(A, succeedWithoutConsuming, B).Parses("");
-        reply.ErrorMessages.ToString().ShouldBe("A expected");
+        Choice(A, succeedWithoutConsuming).Parses("", "(1, 1): A expected").Value.ShouldBe("atypical value");
+        Choice(A, B, succeedWithoutConsuming).Parses("", "(1, 1): A or B expected").Value.ShouldBe("atypical value");
+        Choice(A, succeedWithoutConsuming, B).Parses("", "(1, 1): A expected").Value.ShouldBe("atypical value");
     }
 
     static readonly Parser<string> NeverExecuted =

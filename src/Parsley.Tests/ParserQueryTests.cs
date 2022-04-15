@@ -14,10 +14,10 @@ class ParserQueryTests
 
             input.Advance(1);
 
-            return new Parsed<char>(c, input.Position);
+            return new Parsed<char>(c);
         }
 
-        return new Error<char>(input.Position, ErrorMessage.Expected("character"));
+        return new Error<char>(ErrorMessage.Expected("character"));
     };
 
     public void CanBuildParserWhichSimulatesSuccessfulParsingOfGivenValueWithoutConsumingInput()

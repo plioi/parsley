@@ -20,11 +20,11 @@ partial class Grammar
                 {
                     input.Advance(1);
 
-                    return new Parsed<char>(c, input.Position);
+                    return new Parsed<char>(c);
                 }
             }
 
-            return new Error<char>(input.Position, ErrorMessage.Expected(name));
+            return new Error<char>(ErrorMessage.Expected(name));
         };
     }
 }

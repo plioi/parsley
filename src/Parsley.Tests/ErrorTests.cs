@@ -2,36 +2,33 @@ namespace Parsley.Tests;
 
 class ErrorTests
 {
-    public void CanIndicateErrorsAtTheCurrentPosition()
+    public void CanIndicateErrors()
     {
-        var error = new Error<object>(new(12, 34), ErrorMessage.Unknown());
+        var error = new Error<object>(ErrorMessage.Unknown());
         error.Success.ShouldBe(false);
         error.ErrorMessages.ToString().ShouldBe("Parse error.");
-        error.Position.ShouldBe(new(12, 34));
 
-        error = new Error<object>(new(23, 45), ErrorMessage.Expected("statement"));
+        error = new Error<object>(ErrorMessage.Expected("statement"));
         error.Success.ShouldBe(false);
         error.ErrorMessages.ToString().ShouldBe("statement expected");
-        error.Position.ShouldBe(new(23, 45));
     }
 
-    public void CanIndicateMultipleErrorsAtTheCurrentPosition()
+    public void CanIndicateMultipleErrors()
     {
        var errors = ErrorMessageList.Empty
             .With(ErrorMessage.Expected("A"))
             .With(ErrorMessage.Expected("B"));
 
-       var error = new Error<object>(new(12, 34), errors);
+       var error = new Error<object>(errors);
        error.Success.ShouldBe(false);
        error.ErrorMessages.ToString().ShouldBe("A or B expected");
-       error.Position.ShouldBe(new(12, 34));
     }
 
     public void ThrowsWhenAttemptingToGetParsedValue()
     {
-        var inspectParsedValue = () => new Error<object>(new(12, 34), ErrorMessage.Unknown()).Value;
+        var inspectParsedValue = () => new Error<object>(ErrorMessage.Unknown()).Value;
         inspectParsedValue
             .ShouldThrow<MemberAccessException>()
-            .Message.ShouldBe("(12, 34): Parse error.");
+            .Message.ShouldBe("Parse error.");
     }
 }
