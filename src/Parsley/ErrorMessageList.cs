@@ -46,9 +46,6 @@ public class ErrorMessageList
 
         var backtrackErrors = All<BacktrackErrorMessage>().ToArray();
 
-        if (!expectationErrors.Any() && !backtrackErrors.Any())
-            return "Parse error.";
-
         var parts = new List<string>();
 
         if (expectationErrors.Any())
@@ -61,7 +58,7 @@ public class ErrorMessageList
         if (backtrackErrors.Any())
             parts.Add(string.Join(" ", backtrackErrors.Select(backtrack => $"[{backtrack.Position}: {backtrack.Errors}]")));
 
-        return string.Join(" ", parts);
+        return parts.Count > 0 ? string.Join(" ", parts) : "Parse error.";
     }
 
     static IEnumerable<string> Separators(int count)
