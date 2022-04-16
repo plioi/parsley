@@ -190,6 +190,129 @@ class GrammarTests
         labeled.FailsToParse("!", "!", "(1, 1): 'A' followed by 'B' expected");
     }
 
+    public void ProvidesBacktrackingTraceUponExtremeFailureOfLookaheadParsers()
+    {
+        var sequence = (char first, char second) =>
+            from char1 in Character(first)
+            from char2 in Character(second)
+            select $"{char1}{char2}";
+
+        var ab = sequence('A', 'B');
+        var ac = sequence('A', 'C');
+        var ad = sequence('A', 'D');
+        var ae = sequence('A', 'E');
+
+        Choice(
+                ab, //Since we fail here while consuming a, we fail here.
+                Choice(
+                    ac,
+                    ad
+                ),
+                ae
+            ).FailsToParse("AE", "E", "(1, 2): B expected");
+
+        Choice(
+            Attempt(ab), //Allow rewinding the consumption of a...
+            Choice(
+                ac, //...arriving at the failure to find c.
+                ad
+            ),
+            ae
+        ).FailsToParse("AE", "E", "(1, 2): C expected");
+
+        Choice(
+            Attempt(ab),
+            Choice(
+                Attempt(ac), //Allow rewinding the consumption of c...
+                ad //...arriving at the failure to find d.
+            ),
+            ae
+        ).FailsToParse("AE", "E", "(1, 2): D expected");
+
+        Choice(
+            Attempt(ab),
+            Choice(
+                Attempt(ac),
+                Attempt(ad) //Allow rewinding the consumption of d...
+            ),
+            ae //...arriving at the success of finding e.
+        ).Parses("AE"); //Note intermediate error information is discarded by this point.
+
+        // Now try that again but for input that will still fail...
+
+        Choice(
+            Attempt(ab),
+            Choice(
+                Attempt(ac),
+                Attempt(ad) //Allow rewinding the consumption of d...
+            ),
+            ae //...arriving at the failure to find e.
+        ).FailsToParse("AF", "F", "(1, 2): E expected");
+
+        Choice(
+            Attempt(ab),
+            Choice(
+                Attempt(ac),
+                Attempt(ad)
+            ),
+            Attempt(ae) //Allow rewinding the consumption of e (and a since all a-consuming choices allow rewind)...
+        ).FailsToParse("AF", "AF", //...arriving at the failure to find f, having consumed nothing.
+
+            //Note intermediate error information is preserved, to guide
+            //troubleshooting catastrophic failure. The order indicates
+            //the order that the problems were handled.
+
+            "(1, 1):" +
+            " [(1, 2): E expected]" +
+            " [(1, 2): C expected]" +
+            " [(1, 2): D expected]" +
+            " [(1, 2): B expected]");
+
+        Attempt( //Excessively attempt the non-consuming choice itself...
+            Choice(
+                Attempt(ab),
+                Choice(
+                    Attempt(ac),
+                    Attempt(ad)
+                ),
+                Attempt(ae)
+            )
+        ).FailsToParse("AF", "AF", //... demonstrating the intermediate error information is NOT discarded.
+
+            //Note intermediate error information is preserved, to guide
+            //troubleshooting catastrophic failure. The order indicates
+            //the order that the problems were handled.
+
+            "(1, 1):" +
+            " [(1, 2): E expected]" +
+            " [(1, 2): C expected]" +
+            " [(1, 2): D expected]" +
+            " [(1, 2): B expected]");
+
+        Choice( //Phase out that irrelevant outermost Attempt...
+            Attempt(ab),
+            Label(Choice( //... instead labeling the nested pattern in an attempt to improve error messages...
+                Attempt(ac),
+                Attempt(ad)
+            ), "A[C|D]"),
+            Attempt(ae)
+        ).FailsToParse("AF", "AF", //... demonstrating how the intermediate error information is affected.
+
+            //Note intermediate error information is preserved, to guide
+            //troubleshooting catastrophic failure, but that the Label
+            //is respected to simplify that segment.
+
+            //BUG: It is surprising that we're presenting the A[C|D] aspect first,
+            //      and presenting it at a primary expectation, when in fact it was
+            //      the middle of the 3 choices at that level. That is NOT intentional.
+            //      This assertion merely provides characterization coverage for the
+            //      buggy behavior.
+
+            "(1, 1): A[C|D] expected" +
+            " [(1, 2): E expected]" +
+            " [(1, 2): B expected]");
+    }
+
     public void ProvidesConveniencePrimitiveRecognizingOneExpectedCharacter()
     {
         var x = Character('x');
