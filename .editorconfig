@@ -53,6 +53,7 @@ dotnet_analyzer_diagnostic.category-CodeQuality.severity = error
 dotnet_diagnostic.CS0612.severity = warning # '...' is obsolete
 dotnet_diagnostic.CS1591.severity = none # Missing XML comment for publicly visible type or member '...'
 dotnet_diagnostic.CS0162.severity = warning # Unreachable code detected
+dotnet_diagnostic.CA1305.severity = none # Specify IFormatProvider (This is raised in far too many valid scenarios such as `stringBuilder.Append($"{'A'}{'B'}")`).
 dotnet_diagnostic.CA2201.severity = none # Do not raise reserved exception types
 dotnet_diagnostic.CA1041.severity = none # Provide ObsoleteAttribute message
 

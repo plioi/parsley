@@ -8,7 +8,7 @@ class AssertionException : Exception
     }
 
     public AssertionException(string message, object expected, object actual)
-        : base(Environment.NewLine + message + ExpectationDetails(expected, actual))
+        : base(ExpectationDetails(expected, actual) + Environment.NewLine + Environment.NewLine + message)
     {
     }
 

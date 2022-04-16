@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace Parsley;
 
 public static class Assertions
@@ -52,11 +54,18 @@ public static class Assertions
     {
         if (!reply.Success)
         {
-            var message = "Position: " + text.Position
-                                       + Environment.NewLine
-                                       + "Error Message: " + reply.ErrorMessages;
+            var peek = text.Peek(20).ToString();
 
-            throw new AssertionException(message, "parser success", "parser failed");
+            var offendingCharacter = peek[0];
+            var displayFriendlyTrailingCharacters = new string(peek.Skip(1).TakeWhile(x => !char.IsControl(x)).ToArray());
+
+            var message = new StringBuilder();
+            message.AppendLine(text.Position + ": " + reply.ErrorMessages);
+            message.AppendLine();
+            message.AppendLine($"\t{offendingCharacter}{displayFriendlyTrailingCharacters}");
+            message.AppendLine("\t^");
+
+            throw new AssertionException(message.ToString(), "parser success", "parser failure");
         }
 
         reply.WithMessage(ref text, expectedMessage);
