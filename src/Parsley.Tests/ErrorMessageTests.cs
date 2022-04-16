@@ -23,6 +23,5 @@ class ErrorMessageTests
         var error = (BacktrackErrorMessage) ErrorMessage.Backtrack(position, errors);
         error.Position.ShouldBe(position);
         error.Errors.ShouldBe(errors);
-        error.ToString().ShouldBe("(3, 4): a or b expected");
     }
 }

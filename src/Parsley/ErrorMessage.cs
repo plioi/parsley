@@ -44,7 +44,4 @@ public class BacktrackErrorMessage : ErrorMessage
 
     public Position Position { get; }
     public ErrorMessageList Errors { get; }
-
-    public override string ToString()
-        => $"{Position}: {Errors}";
 }

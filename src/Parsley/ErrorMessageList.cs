@@ -56,7 +56,7 @@ public class ErrorMessageList
         }
 
         if (backtrackErrors.Any())
-            parts.Add(string.Join(" ", backtrackErrors.Select(backtrack => $"[{backtrack}]")));
+            parts.Add(string.Join(" ", backtrackErrors.Select(backtrack => $"[{backtrack.Position}: {backtrack.Errors}]")));
 
         return string.Join(" ", parts);
     }
