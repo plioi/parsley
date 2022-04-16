@@ -152,12 +152,15 @@ class GrammarTests
     public void AttemptingToParseRuleButBacktrackingUponFailure()
     {
         //When p succeeds, Attempt(p) is the same as p.
+        AB.Parses("AB").Value.ShouldBe("AB");
         Attempt(AB).Parses("AB").Value.ShouldBe("AB");
 
         //When p fails without consuming input, Attempt(p) is the same as p.
+        AB.FailsToParse("!", "!", "(1, 1): A expected");
         Attempt(AB).FailsToParse("!", "!", "(1, 1): A expected");
 
         //When p fails after consuming input, Attempt(p) backtracks before reporting failure.
+        AB.FailsToParse("A!", "!", "(1, 2): B expected");
         Attempt(AB).FailsToParse("A!", "A!", "(1, 1): [(1, 2): B expected]");
     }
 
