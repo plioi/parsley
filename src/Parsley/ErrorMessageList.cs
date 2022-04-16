@@ -42,7 +42,7 @@ public class ErrorMessageList
         var expectationErrors = new List<string>(All<ExpectedErrorMessage>()
             .Select(error => error.Expectation)
             .Distinct()
-            .OrderBy(expectation => expectation));
+            .Reverse());
 
         var backtrackErrors = All<BacktrackErrorMessage>().ToArray();
 

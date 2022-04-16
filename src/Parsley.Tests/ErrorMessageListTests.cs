@@ -59,7 +59,7 @@ class ErrorMessageListTests
             .With(ErrorMessage.Expected("C"))
             .With(ErrorMessage.Expected("C"))
             .With(ErrorMessage.Expected("A"))
-            .ToString().ShouldBe("A, B or C expected");
+            .ToString().ShouldBe("B, C or A expected");
     }
 
     public void CanIncludeBacktrackErrors()
@@ -111,7 +111,7 @@ class ErrorMessageListTests
             .With(ErrorMessage.Expected("E"));
 
         first.Merge(second)
-            .ToString().ShouldBe("A, B, C, D or E expected");
+            .ToString().ShouldBe("A, C, E, B or D expected");
     }
 
     public void OmitsUnknownErrorsWhenAdditionalErrorsExist()
