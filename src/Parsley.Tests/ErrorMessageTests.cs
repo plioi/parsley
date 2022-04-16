@@ -11,7 +11,6 @@ class ErrorMessageTests
     {
         var error = (ExpectedErrorMessage)ErrorMessage.Expected("statement");
         error.Expectation.ShouldBe("statement");
-        error.ToString().ShouldBe("statement expected");
     }
 
     public void CanIndicateErrorsWhichCausedBacktracking()

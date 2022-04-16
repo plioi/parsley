@@ -27,9 +27,6 @@ public class ExpectedErrorMessage : ErrorMessage
     }
 
     public string Expectation { get; }
-
-    public override string ToString()
-        => Expectation + " expected";
 }
 
 /// <summary>
