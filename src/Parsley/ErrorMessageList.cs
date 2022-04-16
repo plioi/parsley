@@ -36,6 +36,9 @@ public class ErrorMessageList
 
     public override string ToString()
     {
+        if (this == Empty)
+            return "";
+
         var expectationErrors = new List<string>(All<ExpectedErrorMessage>()
             .Select(error => error.Expectation)
             .Distinct()
@@ -44,7 +47,7 @@ public class ErrorMessageList
         var backtrackErrors = All<BacktrackErrorMessage>().ToArray();
 
         if (!expectationErrors.Any() && !backtrackErrors.Any())
-            return All<UnknownErrorMessage>().Any() ? "Parse error." : "";
+            return "Parse error.";
 
         var parts = new List<string>();
 
