@@ -44,13 +44,7 @@ public class ErrorMessageList
         var backtrackErrors = All<BacktrackErrorMessage>().ToArray();
 
         if (!expectationErrors.Any() && !backtrackErrors.Any())
-        {
-            var unknownError = All<UnknownErrorMessage>().FirstOrDefault();
-            if (unknownError != null)
-                return unknownError.ToString();
-
-            return "";
-        }
+            return All<UnknownErrorMessage>().Any() ? "Parse error." : "";
 
         var parts = new List<string>();
 

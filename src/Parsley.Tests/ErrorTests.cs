@@ -4,7 +4,7 @@ class ErrorTests
 {
     public void CanIndicateErrors()
     {
-        var error = new Error<object>(ErrorMessage.Unknown());
+        var error = new Error<object>(ErrorMessage.Unknown);
         error.Success.ShouldBe(false);
         error.ErrorMessages.ToString().ShouldBe("Parse error.");
 
@@ -26,7 +26,7 @@ class ErrorTests
 
     public void ThrowsWhenAttemptingToGetParsedValue()
     {
-        var inspectParsedValue = () => new Error<object>(ErrorMessage.Unknown()).Value;
+        var inspectParsedValue = () => new Error<object>(ErrorMessage.Unknown).Value;
         inspectParsedValue
             .ShouldThrow<MemberAccessException>()
             .Message.ShouldBe("Parse error.");

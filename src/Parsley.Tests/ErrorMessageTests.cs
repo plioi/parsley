@@ -4,8 +4,7 @@ class ErrorMessageTests
 {
     public void CanIndicateGenericErrors()
     {
-        var error = ErrorMessage.Unknown();
-        error.ToString().ShouldBe("Parse error.");
+        ErrorMessage.Unknown.ShouldBeSameAs(ErrorMessage.Unknown);
     }
 
     public void CanIndicateSpecificExpectation()

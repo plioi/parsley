@@ -23,7 +23,7 @@ class ErrorMessageListTests
     public void CanIncludeUnknownErrors()
     {
         ErrorMessageList.Empty
-            .With(ErrorMessage.Unknown())
+            .With(ErrorMessage.Unknown)
             .ToString().ShouldBe("Parse error.");
     }
 
@@ -55,7 +55,7 @@ class ErrorMessageListTests
             .With(ErrorMessage.Expected("A"))
             .With(ErrorMessage.Expected("B"))
             .With(ErrorMessage.Expected("C"))
-            .With(ErrorMessage.Unknown())
+            .With(ErrorMessage.Unknown)
             .With(ErrorMessage.Expected("C"))
             .With(ErrorMessage.Expected("C"))
             .With(ErrorMessage.Expected("A"))
@@ -101,13 +101,13 @@ class ErrorMessageListTests
         var first = ErrorMessageList.Empty
             .With(ErrorMessage.Expected("A"))
             .With(ErrorMessage.Expected("B"))
-            .With(ErrorMessage.Unknown())
+            .With(ErrorMessage.Unknown)
             .With(ErrorMessage.Expected("C"));
 
         var second = ErrorMessageList.Empty
             .With(ErrorMessage.Expected("D"))
             .With(ErrorMessage.Expected("B"))
-            .With(ErrorMessage.Unknown())
+            .With(ErrorMessage.Unknown)
             .With(ErrorMessage.Expected("E"));
 
         first.Merge(second)
@@ -119,7 +119,7 @@ class ErrorMessageListTests
         ErrorMessageList.Empty
             .With(ErrorMessage.Expected("A"))
             .With(ErrorMessage.Expected("B"))
-            .With(ErrorMessage.Unknown())
+            .With(ErrorMessage.Unknown)
             .With(ErrorMessage.Expected("C"))
             .ToString().ShouldBe("A, B or C expected");
     }

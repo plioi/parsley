@@ -2,8 +2,7 @@ namespace Parsley;
 
 public abstract class ErrorMessage
 {
-    public static ErrorMessage Unknown()
-        => new UnknownErrorMessage();
+    public static readonly ErrorMessage Unknown = new UnknownErrorMessage();
 
     public static ErrorMessage Expected(string expectation)
         => new ExpectedErrorMessage(expectation);
@@ -15,9 +14,6 @@ public abstract class ErrorMessage
 public class UnknownErrorMessage : ErrorMessage
 {
     internal UnknownErrorMessage() { }
-
-    public override string ToString()
-        => "Parse error.";
 }
 
 /// <summary>
