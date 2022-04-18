@@ -3,9 +3,11 @@ namespace Parsley;
 partial class Grammar
 {
     /// <summary>
-    /// Choice() always fails without consuming input.
+    /// Choice() with zero parsers is an invalid request, and will
+    /// throw an exception.
     /// 
-    /// Choice(p) is equivalent to p.
+    /// Choice(p) with one parser would be wastefully equivalent to p,
+    /// and will throw an exception.
     /// 
     /// For 2 or more inputs, parsers are applied from left
     /// to right.  If a parser succeeds, its reply is returned.
@@ -22,8 +24,9 @@ partial class Grammar
     /// </summary>
     public static Parser<T> Choice<T>(params Parser<T>[] parsers)
     {
-        if (parsers.Length == 0)
-            return Grammar<T>.Fail;
+        if (parsers.Length <= 1)
+            throw new ArgumentException(
+                $"{nameof(Choice)} requires at least two parsers to choose between.", nameof(parsers));
 
         return (ref Text input) =>
         {

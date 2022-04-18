@@ -431,16 +431,17 @@ public class AlternationTests
         C = from c in Character('C') select c.ToString();
     }
 
-    public void ChoosingBetweenZeroAlternativesAlwaysFails()
+    public void ChoosingRequiresAtLeastTwoParsersToChooseBetween()
     {
-        Choice<string>().FailsToParse("ABC", "ABC", "(1, 1): Parse error.");
-    }
+        var attemptChoiceBetweenZeroAlternatives = () => Choice<string>();
+        attemptChoiceBetweenZeroAlternatives
+            .ShouldThrow<ArgumentException>()
+            .Message.ShouldBe("Choice requires at least two parsers to choose between. (Parameter 'parsers')");
 
-    public void ChoosingBetweenOneAlternativeParserIsEquivalentToThatParser()
-    {
-        Choice(A).Parses("A").Value.ShouldBe("A");
-        Choice(A).PartiallyParses("AB", "B").Value.ShouldBe("A");
-        Choice(A).FailsToParse("B", "B", "(1, 1): A expected");
+        var attemptChoiceBetweenOneAlternatives = () => Choice(A);
+        attemptChoiceBetweenOneAlternatives
+            .ShouldThrow<ArgumentException>()
+            .Message.ShouldBe("Choice requires at least two parsers to choose between. (Parameter 'parsers')");
     }
 
     public void FirstParserCanSucceedWithoutExecutingOtherAlternatives()
