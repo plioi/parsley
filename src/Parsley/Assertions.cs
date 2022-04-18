@@ -1,77 +1,70 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace Parsley;
 
 public static class Assertions
 {
-    public static Reply<T> FailsToParse<T>(this Parser<T> parse, string input, string expectedUnparsedInput, string expectedMessage)
+    public static void FailsToParse<T>(this Parser<T> parse, string input, string expectedUnparsedInput, string expectedMessage)
     {
         var text = new Text(input);
-        var reply = parse(ref text).Fails(ref text, expectedMessage);
+
+        if (parse(ref text, out var value, out var expectation))
+            throw new AssertionException("parser failure", "parser completed successfully");
+
+        var actual = expectation + " expected";
+            
+        if (actual != expectedMessage)
+            throw new MessageAssertionException(expectedMessage, actual);
         
         if (expectedUnparsedInput == "")
             text.AtEndOfInput();
         else
             text.LeavingUnparsedInput(expectedUnparsedInput);
-
-        return reply;
     }
 
-    public static Reply<T> PartiallyParses<T>(this Parser<T> parse, string input, string expectedUnparsedInput)
+    public static T PartiallyParses<T>(this Parser<T> parse, string input, string expectedUnparsedInput)
     {
         var text = new Text(input);
-        var reply = parse(ref text).Succeeds(ref text);
+
+        if (!parse(ref text, out var value, out var expectation))
+            UnexpectedFailure(ref text, expectation);
 
         if (expectedUnparsedInput == "")
             throw new ArgumentException($"{nameof(expectedUnparsedInput)} must be nonempty when calling {nameof(PartiallyParses)}.");
 
         text.LeavingUnparsedInput(expectedUnparsedInput);
 
-        return reply;
+        return value;
     }
 
-    public static Reply<T> Parses<T>(this Parser<T> parse, string input)
+    public static T Parses<T>(this Parser<T> parse, string input)
     {
         var text = new Text(input);
-        var reply = parse(ref text).Succeeds(ref text);
+
+        if (!parse(ref text, out var value, out var expectation))
+            UnexpectedFailure(ref text, expectation);
 
         text.AtEndOfInput();
 
-        return reply;
+        return value;
     }
 
-    static Reply<T> Fails<T>(this Reply<T> reply, ref Text text, string expectedMessage)
+    [DoesNotReturn]
+    static void UnexpectedFailure(ref Text text, string expectation)
     {
-        if (reply.Success)
-            throw new AssertionException("parser failure", "parser completed successfully");
+        var peek = text.Peek(20).ToString();
 
-        var actual = reply.Expectation + " expected";
-            
-        if (actual != expectedMessage)
-            throw new MessageAssertionException(expectedMessage, actual);
+        var offendingCharacter = peek[0];
+        var displayFriendlyTrailingCharacters = new string(peek.Skip(1).TakeWhile(x => !char.IsControl(x)).ToArray());
 
-        return reply;
-    }
+        var message = new StringBuilder();
+        message.AppendLine(text.Position + ": " + expectation + " expected");
+        message.AppendLine();
+        message.AppendLine($"\t{offendingCharacter}{displayFriendlyTrailingCharacters}");
+        message.AppendLine("\t^");
 
-    static Reply<T> Succeeds<T>(this Reply<T> reply, ref Text text)
-    {
-        if (!reply.Success)
-        {
-            var peek = text.Peek(20).ToString();
-
-            var offendingCharacter = peek[0];
-            var displayFriendlyTrailingCharacters = new string(peek.Skip(1).TakeWhile(x => !char.IsControl(x)).ToArray());
-
-            var message = new StringBuilder();
-            message.AppendLine(text.Position + ": " + reply.Expectation + " expected");
-            message.AppendLine();
-            message.AppendLine($"\t{offendingCharacter}{displayFriendlyTrailingCharacters}");
-            message.AppendLine("\t^");
-
-            throw new AssertionException(message.ToString(), "parser success", "parser failure");
-        }
-
-        return reply;
+        throw new AssertionException(message.ToString(), "parser success", "parser failure");
     }
 
     static void LeavingUnparsedInput(this Text text, string expectedUnparsedInput)

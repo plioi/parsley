@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Parsley;
 
 public static class ParserQuery
 {
     /// <summary>
-    /// Converts any value into a parser that always succeeds with the given value in its reply.
+    /// Converts any value into a parser that always succeeds with the given value.
     /// </summary>
     /// <remarks>
     /// In monadic terms, this is the 'Unit' function.
@@ -12,7 +14,12 @@ public static class ParserQuery
     /// <param name="value">The value to treat as a parse result.</param>
     public static Parser<T> SucceedWithThisValue<T>(this T value)
     {
-        return (ref Text input) => new Parsed<T>(value);
+        return (ref Text input, [NotNullWhen(true)] out T? succeedingValue, [NotNullWhen(false)] out string? expectation) =>
+        {
+            expectation = null;
+            succeedingValue = value!;
+            return true;
+        };
     }
 
     /// <summary>
@@ -39,14 +46,13 @@ public static class ParserQuery
     /// </remarks>
     static Parser<U> Bind<T, U>(this Parser<T> parse, Func<T, Parser<U>> constructNextParser)
     {
-        return (ref Text input) =>
+        return (ref Text input, [NotNullWhen(true)] out U? uValue, [NotNullWhen(false)] out string? expectation) =>
         {
-            var reply = parse(ref input);
+            if (parse(ref input, out var tValue, out expectation))
+                return constructNextParser(tValue)(ref input, out uValue, out expectation);
 
-            if (reply.Success)
-                return constructNextParser(reply.Value)(ref input);
-
-            return new Error<U>(reply.Expectation);
+            uValue = default;
+            return false;
         };
     }
 }

@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Parsley;
 
 partial class Grammar
@@ -10,31 +12,37 @@ partial class Grammar
     /// </summary>
     public static Parser<IEnumerable<T>> ZeroOrMore<T>(Parser<T> item)
     {
-        return (ref Text input) =>
+        return (ref Text input, [NotNullWhen(true)] out IEnumerable<T>? values, [NotNullWhen(false)] out string? expectation) =>
         {
             var oldPosition = input.Position;
-            var reply = item(ref input);
+            var succeeded = item(ref input, out var itemValue, out var itemExpectation);
             var newPosition = input.Position;
 
             var list = new List<T>();
 
-            while (reply.Success)
+            while (succeeded)
             {
                 if (oldPosition == newPosition)
                     throw new Exception($"Parser encountered a potential infinite loop at position {newPosition}.");
 
-                list.Add(reply.Value);
+                list.Add(itemValue!);
                 oldPosition = newPosition;
-                reply = item(ref input);
+                succeeded = item(ref input, out itemValue, out itemExpectation);
                 newPosition = input.Position;
             }
 
             //The item parser finally failed.
 
             if (oldPosition != newPosition)
-                return new Error<IEnumerable<T>>(reply.Expectation);
+            {
+                expectation = itemExpectation!;
+                values = null;
+                return false;
+            }
 
-            return new Parsed<IEnumerable<T>>(list);
+            expectation = null;
+            values = list;
+            return true;
         };
     }
 
@@ -71,35 +79,43 @@ partial class Grammar
 
     public static Parser<string> ZeroOrMore(Predicate<char> test)
     {
-        return (ref Text input) =>
+        return (ref Text input, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {
-            var value = input.TakeWhile(test);
+            var span = input.TakeWhile(test);
 
-            if (value.Length > 0)
+            if (span.Length > 0)
             {
-                input.Advance(value.Length);
+                input.Advance(span.Length);
 
-                return new Parsed<string>(value.ToString());
+                expectation = null;
+                value = span.ToString();
+                return true;
             }
 
-            return new Parsed<string>("");
+            expectation = null;
+            value = "";
+            return true;
         };
     }
 
     public static Parser<string> OneOrMore(Predicate<char> test, string name)
     {
-        return (ref Text input) =>
+        return (ref Text input, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {
-            var value = input.TakeWhile(test);
+            var span = input.TakeWhile(test);
 
-            if (value.Length > 0)
+            if (span.Length > 0)
             {
-                input.Advance(value.Length);
+                input.Advance(span.Length);
 
-                return new Parsed<string>(value.ToString());
+                expectation = null;
+                value = span.ToString();
+                return true;
             }
 
-            return new Error<string>(name);
+            expectation = name;
+            value = null;
+            return false;
         };
     }
 

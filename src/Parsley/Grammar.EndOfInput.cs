@@ -1,9 +1,21 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Parsley;
 
 partial class Grammar
 {
     public static readonly Parser<string> EndOfInput =
-        (ref Text input) => input.EndOfInput
-            ? new Parsed<string>("")
-            : new Error<string>("end of input");
+        (ref Text input, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+        {
+            if (input.EndOfInput)
+            {
+                expectation = null;
+                value = "";
+                return true;
+            }
+
+            expectation = "end of input";
+            value = null;
+            return false;
+        };
 }

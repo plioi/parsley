@@ -41,17 +41,17 @@ public class JsonGrammar
                 select (object) decimal.Parse(number, NumberStyles.Any, CultureInfo.InvariantCulture),
 
                 from quotation in Quote
-                select quotation,
+                select (object) quotation,
 
                 from open in Operator("{")
                 from pairs in ZeroOrMore(Pair, Operator(","))
                 from close in Operator("}")
-                select pairs.ToDictionary(x => x.Key, x => x.Value),
+                select (object) pairs.ToDictionary(x => x.Key, x => x.Value),
 
                 from open in Operator("[")
                 from items in ZeroOrMore(Value, Operator(","))
                 from close in Operator("]")
-                select items.ToArray()
+                select (object) items.ToArray()
             )
             from trailing in Whitespace
             select value;

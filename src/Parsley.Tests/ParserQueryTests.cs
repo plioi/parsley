@@ -1,10 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace Parsley.Tests;
 
 class ParserQueryTests
 {
-    static readonly Parser<char> Next = (ref Text input) =>
+    static readonly Parser<char> Next = (ref Text input, [NotNullWhen(true)] out char value, [NotNullWhen(false)] out string? expectation) =>
     {
         var next = input.Peek(1);
 
@@ -14,20 +15,28 @@ class ParserQueryTests
 
             input.Advance(1);
 
-            return new Parsed<char>(c);
+            expectation = null;
+            value = c;
+            return true;
         }
 
-        return new Error<char>("character");
+        expectation = "character";
+        value = default;
+        return false;
     };
 
-    static readonly Parser<string> Fail = (ref Text input) =>
-        new Error<string>("unsatisfiable expectation");
+    static readonly Parser<string> Fail = (ref Text input, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+    {
+        expectation = "unsatisfiable expectation";
+        value = null;
+        return false;
+    };
 
     public void CanBuildParserWhichSimulatesSuccessfulParsingOfGivenValueWithoutConsumingInput()
     {
         var parser = 1.SucceedWithThisValue();
 
-        parser.PartiallyParses("input", "input").Value.ShouldBe(1);
+        parser.PartiallyParses("input", "input").ShouldBe(1);
     }
 
     public void CanBuildParserFromSingleSimplerParser()
@@ -35,7 +44,7 @@ class ParserQueryTests
         var parser = from x in Next
             select char.ToUpper(x, CultureInfo.InvariantCulture);
 
-        parser.PartiallyParses("xy", "y").Value.ShouldBe('X');
+        parser.PartiallyParses("xy", "y").ShouldBe('X');
     }
 
     public void CanBuildParserFromOrderedSequenceOfSimplerParsers()
@@ -45,7 +54,7 @@ class ParserQueryTests
             from c in Next
             select $"{a}{b}{c}".ToUpper(CultureInfo.InvariantCulture));
 
-        parser.PartiallyParses("abcdef", "def").Value.ShouldBe("ABC");
+        parser.PartiallyParses("abcdef", "def").ShouldBe("ABC");
     }
 
     public void PropogatesErrorsWithoutRunningRemainingParsers()

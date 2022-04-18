@@ -1,3 +1,6 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Text;
+
 namespace Parsley;
 
 partial class Grammar
@@ -10,10 +13,10 @@ partial class Grammar
     /// and will throw an exception.
     /// 
     /// For 2 or more inputs, parsers are applied from left
-    /// to right.  If a parser succeeds, its reply is returned.
+    /// to right.  If a parser succeeds, that result wins.
     /// If a parser fails without consuming input, the next parser
     /// is attempted.  If a parser fails after consuming input,
-    /// subsequent parsers will not be attempted.  As long as
+    /// subsequent parsers will not be attempted. As long as
     /// parsers consume no input, their error messages are merged.
     ///
     /// Choice is 'predictive' since p[n+1] is only tried when
@@ -28,31 +31,68 @@ partial class Grammar
             throw new ArgumentException(
                 $"{nameof(Choice)} requires at least two parsers to choose between.", nameof(parsers));
 
-        return (ref Text input) =>
+        return (ref Text input, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation) =>
         {
             var start = input.Position;
-            var reply = parsers[0](ref input);
+            var succeeded = parsers[0](ref input, out value, out expectation);
             var newPosition = input.Position;
 
             var expectations = new List<string>();
             var i = 1;
 
-            while (!reply.Success && (start == newPosition) && i < parsers.Length)
+            while (!succeeded && (start == newPosition) && i < parsers.Length)
             {
-                expectations.Add(reply.Expectation);
-                reply = parsers[i](ref input);
+                if (expectation != null)
+                    expectations.Add(expectation);
+                succeeded = parsers[i](ref input, out value, out expectation);
                 newPosition = input.Position;
                 i++;
             }
 
-            if (!reply.Success && start == newPosition)
+            if (!succeeded && start == newPosition)
             {
-                expectations.Add(reply.Expectation);
+                if (expectation != null)
+                    expectations.Add(expectation);
 
-                return new Error<T>(expectations);
+                expectation = CompoundExpectation(expectations);
+                value = default;
+                return false;
             }
 
-            return reply;
+            return succeeded;
         };
+    }
+
+    static string CompoundExpectation(IReadOnlyList<string> expectations)
+    {
+        if (expectations.Count == 1)
+            return expectations[0];
+
+        if (expectations.Count == 2)
+            return $"({expectations[0]} or {expectations[1]})";
+
+        var combined = new StringBuilder();
+
+        combined.Append('(');
+
+        for (var i = 0; i < expectations.Count; i++)
+        {
+            if (i == 0)
+            {
+                combined.Append(expectations[i]);
+            }
+            else
+            {
+                var separator = i == expectations.Count - 1
+                    ? ", or "
+                    : ", ";
+
+                combined.Append(separator + expectations[i]);
+            }
+        }
+
+        combined.Append(')');
+
+        return combined.ToString();
     }
 }
