@@ -182,7 +182,7 @@ class GrammarTests
             .PartiallyParses("!", "!")
             .Value.ShouldBe("$");
         Label(succeedWithoutConsuming, "nothing")
-            .PartiallyParses("!", "!", "(1, 1): nothing expected")
+            .PartiallyParses("!", "!")
             .Value.ShouldBe("$");
 
         //When p fails but does not consume input, Label(p) fails with the given expectation.

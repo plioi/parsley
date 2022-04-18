@@ -9,8 +9,6 @@ partial class Grammar
     /// </summary>
     public static Parser<T> Label<T>(Parser<T> parse, string expectation)
     {
-        var errors = ErrorMessageList.Empty.With(ErrorMessage.Expected(expectation));
-
         return (ref Text input) =>
         {
             var start = input.Position;
@@ -20,9 +18,9 @@ partial class Grammar
             if (start == newPosition)
             {
                 if (reply.Success)
-                    reply = new Parsed<T>(reply.Value, errors);
+                    reply = new Parsed<T>(reply.Value);
                 else
-                    reply = new Error<T>(errors);
+                    reply = new Error<T>(ErrorMessage.Expected(expectation));
             }
 
             return reply;
