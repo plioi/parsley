@@ -20,7 +20,7 @@ partial class Grammar
                 if (reply.Success)
                     reply = new Parsed<T>(reply.Value);
                 else
-                    reply = new Error<T>(ErrorMessage.Expected(expectation));
+                    reply = new Error<T>(expectation);
             }
 
             return reply;

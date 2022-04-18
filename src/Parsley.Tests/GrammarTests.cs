@@ -161,7 +161,7 @@ class GrammarTests
 
         //When p fails after consuming input, Attempt(p) backtracks before reporting failure.
         AB.FailsToParse("A!", "!", "(1, 2): B expected");
-        Attempt(AB).FailsToParse("A!", "A!", "(1, 1): [(1, 2): B expected]");
+        Attempt(AB).FailsToParse("A!", "A!", "(1, 1): B at (1, 2) expected");
     }
 
     public void ImprovingDefaultMessagesWithAKnownExpectation()
@@ -262,11 +262,7 @@ class GrammarTests
             //troubleshooting catastrophic failure. The order indicates
             //the order that the problems were handled.
 
-            "(1, 1):" +
-            " [(1, 2): E expected]" +
-            " [(1, 2): C expected]" +
-            " [(1, 2): D expected]" +
-            " [(1, 2): B expected]");
+            "(1, 1): (B at (1, 2), (C at (1, 2) or D at (1, 2)), or E at (1, 2)) expected");
 
         Attempt( //Excessively attempt the non-consuming choice itself...
             Choice(
@@ -283,11 +279,7 @@ class GrammarTests
             //troubleshooting catastrophic failure. The order indicates
             //the order that the problems were handled.
 
-            "(1, 1):" +
-            " [(1, 2): E expected]" +
-            " [(1, 2): C expected]" +
-            " [(1, 2): D expected]" +
-            " [(1, 2): B expected]");
+            "(1, 1): (B at (1, 2), (C at (1, 2) or D at (1, 2)), or E at (1, 2)) expected");
 
         Choice( //Phase out that irrelevant outermost Attempt...
             Attempt(ab),
@@ -302,15 +294,7 @@ class GrammarTests
             //troubleshooting catastrophic failure, but that the Label
             //is respected to simplify that segment.
 
-            //BUG: It is surprising that we're presenting the A[C|D] aspect first,
-            //      and presenting it at a primary expectation, when in fact it was
-            //      the middle of the 3 choices at that level. That is NOT intentional.
-            //      This assertion merely provides characterization coverage for the
-            //      buggy behavior.
-
-            "(1, 1): A[C|D] expected" +
-            " [(1, 2): E expected]" +
-            " [(1, 2): B expected]");
+            "(1, 1): (B at (1, 2), A[C|D], or E at (1, 2)) expected");
     }
 
     public void ProvidesConveniencePrimitiveRecognizingOneExpectedCharacter()
@@ -484,8 +468,8 @@ public class AlternationTests
 
     public void MergesErrorMessagesWhenParsersFailWithoutConsumingInput()
     {
-        Choice(A, B).FailsToParse("", "", "(1, 1): A or B expected");
-        Choice(A, B, C).FailsToParse("", "", "(1, 1): A, B or C expected");
+        Choice(A, B).FailsToParse("", "", "(1, 1): (A or B) expected");
+        Choice(A, B, C).FailsToParse("", "", "(1, 1): (A, B, or C) expected");
     }
 
     public void MergesPotentialErrorMessagesWhenParserSucceedsWithoutConsumingInput()

@@ -4,5 +4,5 @@ public interface Reply<out T>
 {
     T Value { get; }
     bool Success { get; }
-    ErrorMessageList ErrorMessages { get; }
+    string Expectation { get; }
 }

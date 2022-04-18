@@ -2,33 +2,29 @@ namespace Parsley.Tests;
 
 class ErrorTests
 {
-    public void CanIndicateErrors()
+    public void CanIndicateMissedExpectations()
     {
-        var error = new Error<object>(ErrorMessage.Unknown);
+        var error = new Error<object>();
         error.Success.ShouldBe(false);
-        error.ErrorMessages.ToString().ShouldBe("Parse error.");
+        error.Expectation.ShouldBe("");
 
-        error = new Error<object>(ErrorMessage.Expected("statement"));
+        error = new Error<object>("statement");
         error.Success.ShouldBe(false);
-        error.ErrorMessages.ToString().ShouldBe("statement expected");
+        error.Expectation.ShouldBe("statement");
     }
 
-    public void CanIndicateMultipleErrors()
+    public void CanIndicateMultipleMissedExpectations()
     {
-       var errors = ErrorMessageList.Empty
-            .With(ErrorMessage.Expected("A"))
-            .With(ErrorMessage.Expected("B"));
-
-       var error = new Error<object>(errors);
+        var error = new Error<object>(new[] { "A", "B" });
        error.Success.ShouldBe(false);
-       error.ErrorMessages.ToString().ShouldBe("A or B expected");
+       error.Expectation.ShouldBe("(A or B)");
     }
 
     public void ThrowsWhenAttemptingToGetParsedValue()
     {
-        var inspectParsedValue = () => new Error<object>(ErrorMessage.Unknown).Value;
+        var inspectParsedValue = () => new Error<object>().Value;
         inspectParsedValue
             .ShouldThrow<MemberAccessException>()
-            .Message.ShouldBe("Parse error.");
+            .Message.ShouldBe("Cannot access Value for an Error reply.");
     }
 }

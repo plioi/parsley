@@ -65,7 +65,7 @@ public class OperatorPrecedenceParser<T>
     Reply<T> Parse(ref Text input, int precedence)
     {
         if (!TryFindMatchingUnitParser(ref input, out var matchingUnitParser, out var token))
-            return new Error<T>(ErrorMessage.Unknown);
+            return new Error<T>();
 
         var reply = matchingUnitParser(ref input);
 

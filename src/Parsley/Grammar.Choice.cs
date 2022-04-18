@@ -31,12 +31,12 @@ partial class Grammar
             var reply = parsers[0](ref input);
             var newPosition = input.Position;
 
-            var errors = ErrorMessageList.Empty;
+            var expectations = new List<string>();
             var i = 1;
 
             while (!reply.Success && (start == newPosition) && i < parsers.Length)
             {
-                errors = errors.Merge(reply.ErrorMessages);
+                expectations.Add(reply.Expectation);
                 reply = parsers[i](ref input);
                 newPosition = input.Position;
                 i++;
@@ -44,12 +44,14 @@ partial class Grammar
 
             if (start == newPosition)
             {
-                errors = errors.Merge(reply.ErrorMessages);
-
                 if (reply.Success)
                     reply = new Parsed<T>(reply.Value);
                 else
-                    reply = new Error<T>(errors);
+                {
+                    expectations.Add(reply.Expectation);
+
+                    reply = new Error<T>(expectations);
+                }
             }
 
             return reply;

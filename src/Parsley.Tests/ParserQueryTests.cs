@@ -17,7 +17,7 @@ class ParserQueryTests
             return new Parsed<char>(c);
         }
 
-        return new Error<char>(ErrorMessage.Expected("character"));
+        return new Error<char>("character");
     };
 
     public void CanBuildParserWhichSimulatesSuccessfulParsingOfGivenValueWithoutConsumingInput()

@@ -46,7 +46,11 @@ public static class Assertions
             throw new AssertionException("parser failure", "parser completed successfully");
 
         var position = text.Position;
-        var actual = position + ": " + reply.ErrorMessages;
+
+        var actual = position + ": " +
+            (reply.Expectation == ""
+                ? "Parse error."
+                : reply.Expectation + " expected");
             
         if (actual != expectedMessage)
             throw new AssertionException($"message at {expectedMessage}", $"message at {actual}");
@@ -64,16 +68,13 @@ public static class Assertions
             var displayFriendlyTrailingCharacters = new string(peek.Skip(1).TakeWhile(x => !char.IsControl(x)).ToArray());
 
             var message = new StringBuilder();
-            message.AppendLine(text.Position + ": " + reply.ErrorMessages);
+            message.AppendLine(text.Position + ": " + reply.Expectation);
             message.AppendLine();
             message.AppendLine($"\t{offendingCharacter}{displayFriendlyTrailingCharacters}");
             message.AppendLine("\t^");
 
             throw new AssertionException(message.ToString(), "parser success", "parser failure");
         }
-
-        if (reply.ErrorMessages != ErrorMessageList.Empty)
-            throw new AssertionException("no error message", reply.ErrorMessages);
 
         return reply;
     }

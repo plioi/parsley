@@ -3,11 +3,9 @@ namespace Parsley;
 public class Parsed<T> : Reply<T>
 {
     public Parsed(T value)
-    {
-        Value = value;
-    }
+        => Value = value;
 
     public T Value { get; }
     public bool Success => true;
-    public ErrorMessageList ErrorMessages => ErrorMessageList.Empty;
+    public string Expectation => throw new MemberAccessException("Cannot access Expectation for a Parsed reply.");
 }
