@@ -21,7 +21,7 @@ class ParserQueryTests
     };
 
     static readonly Parser<string> Fail = (ref Text input) =>
-        new Error<string>();
+        new Error<string>("unsatisfiable expectation");
 
     public void CanBuildParserWhichSimulatesSuccessfulParsingOfGivenValueWithoutConsumingInput()
     {
@@ -53,16 +53,16 @@ class ParserQueryTests
         (from _ in Fail
             from x in Next
             from y in Next
-            select Tuple.Create(x, y)).FailsToParse("xy", "xy", "(1, 1): Parse error.");
+            select Tuple.Create(x, y)).FailsToParse("xy", "xy", "(1, 1): unsatisfiable expectation expected");
 
         (from x in Next
             from _ in Fail
             from y in Next
-            select Tuple.Create(x, y)).FailsToParse("xy", "y", "(1, 2): Parse error.");
+            select Tuple.Create(x, y)).FailsToParse("xy", "y", "(1, 2): unsatisfiable expectation expected");
 
         (from x in Next
             from y in Next
             from _ in Fail
-            select Tuple.Create(x, y)).FailsToParse("xy", "", "(1, 3): Parse error.");
+            select Tuple.Create(x, y)).FailsToParse("xy", "", "(1, 3): unsatisfiable expectation expected");
     }
 }

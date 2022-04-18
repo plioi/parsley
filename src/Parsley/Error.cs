@@ -4,9 +4,6 @@ namespace Parsley;
 
 public class Error<T> : Reply<T>
 {
-    public Error()
-        => Expectation = ""; //Some unknown parse error.
-
     public Error(string expectation)
         => Expectation = expectation;
 

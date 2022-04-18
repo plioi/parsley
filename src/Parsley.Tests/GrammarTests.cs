@@ -4,7 +4,7 @@ namespace Parsley.Tests;
 
 class GrammarTests
 {
-    static readonly Parser<string> Fail = (ref Text input) => new Error<string>();
+    static readonly Parser<string> Fail = (ref Text input) => new Error<string>("unsatisfiable expectation");
     static readonly Parser<char> Digit = Character(char.IsDigit, "Digit");
     static readonly Parser<char> Letter = Character(char.IsLetter, "Letter");
 
@@ -25,7 +25,7 @@ class GrammarTests
 
     public void CanFailWithoutConsumingInput()
     {
-        Fail.FailsToParse("ABC", "ABC", "(1, 1): Parse error.");
+        Fail.FailsToParse("ABC", "ABC", "(1, 1): unsatisfiable expectation expected");
     }
 
     public void CanDetectTheEndOfInputWithoutAdvancing()

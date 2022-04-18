@@ -47,10 +47,7 @@ public static class Assertions
 
         var position = text.Position;
 
-        var actual = position + ": " +
-            (reply.Expectation == ""
-                ? "Parse error."
-                : reply.Expectation + " expected");
+        var actual = position + ": " + reply.Expectation + " expected";
             
         if (actual != expectedMessage)
             throw new AssertionException($"message at {expectedMessage}", $"message at {actual}");
