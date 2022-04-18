@@ -111,10 +111,10 @@ class JsonGrammarTests
 
     public void RequiresEndOfInputAfterFirstValidJsonValue()
     {
-        JsonDocument.FailsToParse("true $garbage$", "$garbage$", "(1, 6): end of input expected");
-        JsonDocument.FailsToParse("10.123E-11  $garbage$", "$garbage$", "(1, 13): end of input expected");
-        JsonDocument.FailsToParse("\"garbage\" $garbage$", "$garbage$", "(1, 11): end of input expected");
-        JsonDocument.FailsToParse("[0, 1, 2] $garbage$", "$garbage$", "(1, 11): end of input expected");
-        JsonDocument.FailsToParse("{\"zero\" : 0} $garbage$", "$garbage$", "(1, 14): end of input expected");
+        JsonDocument.FailsToParse("true $garbage$", "$garbage$", "end of input expected");
+        JsonDocument.FailsToParse("10.123E-11  $garbage$", "$garbage$", "end of input expected");
+        JsonDocument.FailsToParse("\"garbage\" $garbage$", "$garbage$", "end of input expected");
+        JsonDocument.FailsToParse("[0, 1, 2] $garbage$", "$garbage$", "end of input expected");
+        JsonDocument.FailsToParse("{\"zero\" : 0} $garbage$", "$garbage$", "end of input expected");
     }
 }

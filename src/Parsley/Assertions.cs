@@ -45,9 +45,7 @@ public static class Assertions
         if (reply.Success)
             throw new AssertionException("parser failure", "parser completed successfully");
 
-        var position = text.Position;
-
-        var actual = position + ": " + reply.Expectation + " expected";
+        var actual = reply.Expectation + " expected";
             
         if (actual != expectedMessage)
             throw new AssertionException($"message at {expectedMessage}", $"message at {actual}");

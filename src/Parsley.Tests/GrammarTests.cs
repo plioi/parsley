@@ -25,21 +25,21 @@ class GrammarTests
 
     public void CanFailWithoutConsumingInput()
     {
-        Fail.FailsToParse("ABC", "ABC", "(1, 1): unsatisfiable expectation expected");
+        Fail.FailsToParse("ABC", "ABC", "unsatisfiable expectation expected");
     }
 
     public void CanDetectTheEndOfInputWithoutAdvancing()
     {
         EndOfInput.Parses("").Value.ShouldBe("");
-        EndOfInput.FailsToParse("!", "!", "(1, 1): end of input expected");
+        EndOfInput.FailsToParse("!", "!", "end of input expected");
     }
 
     public void CanDemandThatAGivenParserRecognizesTheNextConsumableInput()
     {
         Letter.Parses("A").Value.ShouldBe('A');
-        Letter.FailsToParse("0", "0", "(1, 1): Letter expected");
+        Letter.FailsToParse("0", "0", "Letter expected");
 
-        Digit.FailsToParse("A", "A", "(1, 1): Digit expected");
+        Digit.FailsToParse("A", "A", "Digit expected");
         Digit.Parses("0").Value.ShouldBe('0');
     }
 
@@ -47,7 +47,7 @@ class GrammarTests
     {
         A.Parses("A").Value.ShouldBe('A');
         A.PartiallyParses("A!", "!").Value.ShouldBe('A');
-        A.FailsToParse("B", "B", "(1, 1): A expected");
+        A.FailsToParse("B", "B", "A expected");
     }
 
     public void ApplyingARuleZeroOrMoreTimes()
@@ -62,7 +62,7 @@ class GrammarTests
         parser.PartiallyParses("ABAB!", "!")
             .Value.ShouldBe(new[] { "AB", "AB" });
 
-        parser.FailsToParse("ABABA!", "!", "(1, 6): B expected");
+        parser.FailsToParse("ABABA!", "!", "B expected");
 
         Parser<string> succeedWithoutConsuming = (ref Text input) => new Parsed<string>("ignored value");
         Action infiniteLoop = () =>
@@ -80,7 +80,7 @@ class GrammarTests
     {
         var parser = OneOrMore(AB);
 
-        parser.FailsToParse("", "", "(1, 1): A expected");
+        parser.FailsToParse("", "", "A expected");
 
         parser.PartiallyParses("AB!", "!")
             .Value.Single().ShouldBe("AB");
@@ -88,7 +88,7 @@ class GrammarTests
         parser.PartiallyParses("ABAB!", "!")
             .Value.ShouldBe(new[] { "AB", "AB" });
 
-        parser.FailsToParse("ABABA!", "!", "(1, 6): B expected");
+        parser.FailsToParse("ABABA!", "!", "B expected");
 
         Parser<string> succeedWithoutConsuming = (ref Text input) => new Parsed<string>("ignored value");
         Action infiniteLoop = () =>
@@ -110,20 +110,20 @@ class GrammarTests
         parser.Parses("AB").Value.Single().ShouldBe("AB");
         parser.Parses("AB,AB").Value.ShouldBe(new[] { "AB", "AB" });
         parser.Parses("AB,AB,AB").Value.ShouldBe(new[] { "AB", "AB", "AB" });
-        parser.FailsToParse("AB,", "", "(1, 4): A expected");
-        parser.FailsToParse("AB,A", "", "(1, 5): B expected");
+        parser.FailsToParse("AB,", "", "A expected");
+        parser.FailsToParse("AB,A", "", "B expected");
     }
 
     public void ApplyingARuleOneOrMoreTimesInterspersedByASeparatorRule()
     {
         var parser = OneOrMore(AB, COMMA);
 
-        parser.FailsToParse("", "", "(1, 1): A expected");
+        parser.FailsToParse("", "", "A expected");
         parser.Parses("AB").Value.Single().ShouldBe("AB");
         parser.Parses("AB,AB").Value.ShouldBe(new[] { "AB", "AB" });
         parser.Parses("AB,AB,AB").Value.ShouldBe(new[] { "AB", "AB", "AB" });
-        parser.FailsToParse("AB,", "", "(1, 4): A expected");
-        parser.FailsToParse("AB,A", "", "(1, 5): B expected");
+        parser.FailsToParse("AB,", "", "A expected");
+        parser.FailsToParse("AB,A", "", "B expected");
     }
 
     public void ParsingAnOptionalRuleZeroOrOneTimes()
@@ -131,7 +131,7 @@ class GrammarTests
         //Reference Type to Nullable Reference Type
         Optional(AB).PartiallyParses("AB.", ".").Value.ShouldBe("AB");
         Optional(AB).PartiallyParses(".", ".").Value.ShouldBe(null);
-        Optional(AB).FailsToParse("AC.", "C.", "(1, 2): B expected");
+        Optional(AB).FailsToParse("AC.", "C.", "B expected");
 
         //Value Type to Nullable Value Type
         Optional(A).PartiallyParses("AB.", "B.").Value.ShouldBe('A');
@@ -157,12 +157,12 @@ class GrammarTests
         Attempt(AB).Parses("AB").Value.ShouldBe("AB");
 
         //When p fails without consuming input, Attempt(p) is the same as p.
-        AB.FailsToParse("!", "!", "(1, 1): A expected");
-        Attempt(AB).FailsToParse("!", "!", "(1, 1): A expected");
+        AB.FailsToParse("!", "!", "A expected");
+        Attempt(AB).FailsToParse("!", "!", "A expected");
 
         //When p fails after consuming input, Attempt(p) backtracks before reporting failure.
-        AB.FailsToParse("A!", "!", "(1, 2): B expected");
-        Attempt(AB).FailsToParse("A!", "A!", "(1, 1): B at (1, 2) expected");
+        AB.FailsToParse("A!", "!", "B expected");
+        Attempt(AB).FailsToParse("A!", "A!", "B at (1, 2) expected");
     }
 
     public void ImprovingDefaultMessagesWithAKnownExpectation()
@@ -174,8 +174,8 @@ class GrammarTests
         labeled.Parses("AB").Value.ShouldBe("AB");
 
         //When p fails after consuming input, Label(p) is the same as p.
-        AB.FailsToParse("A!", "!", "(1, 2): B expected");
-        labeled.FailsToParse("A!", "!", "(1, 2): B expected");
+        AB.FailsToParse("A!", "!", "B expected");
+        labeled.FailsToParse("A!", "!", "B expected");
 
         //When p succeeds but does not consume input, Label(p) still succeeds but the potential error is included.
         var succeedWithoutConsuming = "$".SucceedWithThisValue();
@@ -187,8 +187,8 @@ class GrammarTests
             .Value.ShouldBe("$");
 
         //When p fails but does not consume input, Label(p) fails with the given expectation.
-        AB.FailsToParse("!", "!", "(1, 1): A expected");
-        labeled.FailsToParse("!", "!", "(1, 1): 'A' followed by 'B' expected");
+        AB.FailsToParse("!", "!", "A expected");
+        labeled.FailsToParse("!", "!", "'A' followed by 'B' expected");
     }
 
     public void ProvidesBacktrackingTraceUponExtremeFailureOfLookaheadParsers()
@@ -210,7 +210,7 @@ class GrammarTests
                     ad
                 ),
                 ae
-            ).FailsToParse("AE", "E", "(1, 2): B expected");
+            ).FailsToParse("AE", "E", "B expected");
 
         Choice(
             Attempt(ab), //Allow rewinding the consumption of a...
@@ -219,7 +219,7 @@ class GrammarTests
                 ad
             ),
             ae
-        ).FailsToParse("AE", "E", "(1, 2): C expected");
+        ).FailsToParse("AE", "E", "C expected");
 
         Choice(
             Attempt(ab),
@@ -228,7 +228,7 @@ class GrammarTests
                 ad //...arriving at the failure to find d.
             ),
             ae
-        ).FailsToParse("AE", "E", "(1, 2): D expected");
+        ).FailsToParse("AE", "E", "D expected");
 
         Choice(
             Attempt(ab),
@@ -248,7 +248,7 @@ class GrammarTests
                 Attempt(ad) //Allow rewinding the consumption of d...
             ),
             ae //...arriving at the failure to find e.
-        ).FailsToParse("AF", "F", "(1, 2): E expected");
+        ).FailsToParse("AF", "F", "E expected");
 
         Choice(
             Attempt(ab),
@@ -263,7 +263,7 @@ class GrammarTests
             //troubleshooting catastrophic failure. The order indicates
             //the order that the problems were handled.
 
-            "(1, 1): (B at (1, 2), (C at (1, 2) or D at (1, 2)), or E at (1, 2)) expected");
+            "(B at (1, 2), (C at (1, 2) or D at (1, 2)), or E at (1, 2)) expected");
 
         Attempt( //Excessively attempt the non-consuming choice itself...
             Choice(
@@ -280,7 +280,7 @@ class GrammarTests
             //troubleshooting catastrophic failure. The order indicates
             //the order that the problems were handled.
 
-            "(1, 1): (B at (1, 2), (C at (1, 2) or D at (1, 2)), or E at (1, 2)) expected");
+            "(B at (1, 2), (C at (1, 2) or D at (1, 2)), or E at (1, 2)) expected");
 
         Choice( //Phase out that irrelevant outermost Attempt...
             Attempt(ab),
@@ -295,15 +295,15 @@ class GrammarTests
             //troubleshooting catastrophic failure, but that the Label
             //is respected to simplify that segment.
 
-            "(1, 1): (B at (1, 2), A[C|D], or E at (1, 2)) expected");
+            "(B at (1, 2), A[C|D], or E at (1, 2)) expected");
     }
 
     public void ProvidesConveniencePrimitiveRecognizingOneExpectedCharacter()
     {
         var x = Character('x');
 
-        x.FailsToParse("", "", "(1, 1): x expected");
-        x.FailsToParse("yz", "yz", "(1, 1): x expected");
+        x.FailsToParse("", "", "x expected");
+        x.FailsToParse("yz", "yz", "x expected");
         x.PartiallyParses("xyz", "yz").Value.ShouldBe('x');
     }
 
@@ -313,13 +313,13 @@ class GrammarTests
         var upper = Character(char.IsUpper, "Uppercase");
         var caseInsensitive = Character(char.IsLetter, "Case Insensitive");
 
-        lower.FailsToParse("", "", "(1, 1): Lowercase expected");
+        lower.FailsToParse("", "", "Lowercase expected");
 
-        lower.FailsToParse("ABCdef", "ABCdef", "(1, 1): Lowercase expected");
+        lower.FailsToParse("ABCdef", "ABCdef", "Lowercase expected");
 
-        upper.FailsToParse("abcDEF", "abcDEF", "(1, 1): Uppercase expected");
+        upper.FailsToParse("abcDEF", "abcDEF", "Uppercase expected");
 
-        caseInsensitive.FailsToParse("!abcDEF", "!abcDEF", "(1, 1): Case Insensitive expected");
+        caseInsensitive.FailsToParse("!abcDEF", "!abcDEF", "Case Insensitive expected");
 
         lower.PartiallyParses("abcDEF", "bcDEF").Value.ShouldBe('a');
 
@@ -355,13 +355,13 @@ class GrammarTests
         var upper = OneOrMore(char.IsUpper, "Uppercase");
         var caseInsensitive = OneOrMore(char.IsLetter, "Case Insensitive");
 
-        lower.FailsToParse("", "", "(1, 1): Lowercase expected");
+        lower.FailsToParse("", "", "Lowercase expected");
         
-        lower.FailsToParse("ABCdef", "ABCdef", "(1, 1): Lowercase expected");
+        lower.FailsToParse("ABCdef", "ABCdef", "Lowercase expected");
 
-        upper.FailsToParse("abcDEF", "abcDEF", "(1, 1): Uppercase expected");
+        upper.FailsToParse("abcDEF", "abcDEF", "Uppercase expected");
 
-        caseInsensitive.FailsToParse("!abcDEF", "!abcDEF", "(1, 1): Case Insensitive expected");
+        caseInsensitive.FailsToParse("!abcDEF", "!abcDEF", "Case Insensitive expected");
 
         lower.PartiallyParses("abcDEF", "DEF").Value.ShouldBe("abc");
 
@@ -374,17 +374,17 @@ class GrammarTests
     {
         var foo = Keyword("foo");
 
-        foo.FailsToParse("", "", "(1, 1): foo expected");
+        foo.FailsToParse("", "", "foo expected");
         
-        foo.FailsToParse("bar", "bar", "(1, 1): foo expected");
-        foo.FailsToParse("fo", "fo", "(1, 1): foo expected");
+        foo.FailsToParse("bar", "bar", "foo expected");
+        foo.FailsToParse("fo", "fo", "foo expected");
 
         foo.PartiallyParses("foo ", " ").Value.ShouldBe("foo");
         foo.Parses("foo").Value.ShouldBe("foo");
 
         foo.PartiallyParses("foo bar", " bar").Value.ShouldBe("foo");
 
-        foo.FailsToParse("foobar", "foobar", "(1, 1): foo expected");
+        foo.FailsToParse("foobar", "foobar", "foo expected");
 
         var notJustLetters = () => Keyword(" oops ");
         notJustLetters.ShouldThrow<ArgumentException>()
@@ -396,7 +396,7 @@ class GrammarTests
         var star = Operator("*");
         var doubleStar = Operator("**");
 
-        star.FailsToParse("a", "a", "(1, 1): * expected");
+        star.FailsToParse("a", "a", "* expected");
 
         star.Parses("*")
             .Value.ShouldBe("*");
@@ -407,11 +407,11 @@ class GrammarTests
         star.PartiallyParses("**", "*")
             .Value.ShouldBe("*");
 
-        doubleStar.FailsToParse("a", "a", "(1, 1): ** expected");
+        doubleStar.FailsToParse("a", "a", "** expected");
 
-        doubleStar.FailsToParse("*", "*", "(1, 1): ** expected");
+        doubleStar.FailsToParse("*", "*", "** expected");
 
-        doubleStar.FailsToParse("* *", "* *", "(1, 1): ** expected");
+        doubleStar.FailsToParse("* *", "* *", "** expected");
 
         doubleStar.Parses("**")
             .Value.ShouldBe("**");
@@ -464,14 +464,14 @@ public class AlternationTests
             from b in B
             select $"{a}{b}";
 
-        Choice(AB, NeverExecuted).FailsToParse("A", "", "(1, 2): B expected");
-        Choice(C, AB, NeverExecuted).FailsToParse("A", "", "(1, 2): B expected");
+        Choice(AB, NeverExecuted).FailsToParse("A", "", "B expected");
+        Choice(C, AB, NeverExecuted).FailsToParse("A", "", "B expected");
     }
 
     public void MergesErrorMessagesWhenParsersFailWithoutConsumingInput()
     {
-        Choice(A, B).FailsToParse("", "", "(1, 1): (A or B) expected");
-        Choice(A, B, C).FailsToParse("", "", "(1, 1): (A, B, or C) expected");
+        Choice(A, B).FailsToParse("", "", "(A or B) expected");
+        Choice(A, B, C).FailsToParse("", "", "(A, B, or C) expected");
     }
 
     public void MergesPotentialErrorMessagesWhenParserSucceedsWithoutConsumingInput()
