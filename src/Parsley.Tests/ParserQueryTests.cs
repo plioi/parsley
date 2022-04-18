@@ -20,6 +20,9 @@ class ParserQueryTests
         return new Error<char>("character");
     };
 
+    static readonly Parser<string> Fail = (ref Text input) =>
+        new Error<string>();
+
     public void CanBuildParserWhichSimulatesSuccessfulParsingOfGivenValueWithoutConsumingInput()
     {
         var parser = 1.SucceedWithThisValue();
@@ -47,8 +50,6 @@ class ParserQueryTests
 
     public void PropogatesErrorsWithoutRunningRemainingParsers()
     {
-        var Fail = Grammar<string>.Fail;
-
         (from _ in Fail
             from x in Next
             from y in Next

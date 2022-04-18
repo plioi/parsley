@@ -4,6 +4,7 @@ namespace Parsley.Tests;
 
 class GrammarTests
 {
+    static readonly Parser<string> Fail = (ref Text input) => new Error<string>();
     static readonly Parser<char> Digit = Character(char.IsDigit, "Digit");
     static readonly Parser<char> Letter = Character(char.IsLetter, "Letter");
 
@@ -24,7 +25,7 @@ class GrammarTests
 
     public void CanFailWithoutConsumingInput()
     {
-        Grammar<string>.Fail.FailsToParse("ABC", "ABC", "(1, 1): Parse error.");
+        Fail.FailsToParse("ABC", "ABC", "(1, 1): Parse error.");
     }
 
     public void CanDetectTheEndOfInputWithoutAdvancing()
