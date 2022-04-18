@@ -34,7 +34,7 @@ partial class Grammar
             if (oldPosition != newPosition)
                 return new Error<IEnumerable<T>>(reply.ErrorMessages);
 
-            return new Parsed<IEnumerable<T>>(list, reply.ErrorMessages);
+            return new Parsed<IEnumerable<T>>(list);
         };
     }
 

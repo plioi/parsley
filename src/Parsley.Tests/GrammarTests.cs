@@ -53,12 +53,12 @@ class GrammarTests
     {
         var parser = ZeroOrMore(AB);
 
-        parser.Parses("", "(1, 1): A expected").Value.ShouldBeEmpty();
+        parser.Parses("").Value.ShouldBeEmpty();
 
-        parser.PartiallyParses("AB!", "!", "(1, 3): A expected")
+        parser.PartiallyParses("AB!", "!")
             .Value.Single().ShouldBe("AB");
 
-        parser.PartiallyParses("ABAB!", "!", "(1, 5): A expected")
+        parser.PartiallyParses("ABAB!", "!")
             .Value.ShouldBe(new[] { "AB", "AB" });
 
         parser.FailsToParse("ABABA!", "!", "(1, 6): B expected");
