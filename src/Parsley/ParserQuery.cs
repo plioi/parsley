@@ -46,7 +46,7 @@ public static class ParserQuery
             if (reply.Success)
                 return constructNextParser(reply.Value)(ref input);
 
-            return new Error<U>(reply.ErrorMessages);
+            return new Error<U>(reply.Expectation);
         };
     }
 }

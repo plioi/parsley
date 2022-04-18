@@ -7,18 +7,13 @@ class ParsedTests
         var parsed = new Parsed<string>("parsed");
         parsed.Success.ShouldBe(true);
         parsed.Value.ShouldBe("parsed");
-        parsed.ErrorMessages.ShouldBe(ErrorMessageList.Empty);
     }
 
-    public void CanIndicatePotentialErrorMessages()
+    public void ThrowsWhenAttemptingToGetFailedExpectation()
     {
-        var potentialErrors = ErrorMessageList.Empty
-            .With(ErrorMessage.Expected("A"))
-            .With(ErrorMessage.Expected("B"));
-
-        var parsed = new Parsed<object>("parsed", potentialErrors);
-        parsed.Success.ShouldBe(true);
-        parsed.Value.ShouldBe("parsed");
-        parsed.ErrorMessages.ShouldBe(potentialErrors);
+        var inspectExpectation = () =>new Parsed<string>("parsed").Expectation;
+        inspectExpectation
+            .ShouldThrow<MemberAccessException>()
+            .Message.ShouldBe("Cannot access Expectation for a Parsed reply.");
     }
 }

@@ -15,7 +15,7 @@ partial class Grammar
                 return new Parsed<string>(symbol);
             }
 
-            return new Error<string>(ErrorMessage.Expected(symbol));
+            return new Error<string>(symbol);
         };
     }
 }

@@ -3,15 +3,9 @@ namespace Parsley;
 public class Parsed<T> : Reply<T>
 {
     public Parsed(T value)
-        :this(value, ErrorMessageList.Empty) { }
-
-    public Parsed(T value, ErrorMessageList potentialErrors)
-    {
-        Value = value;
-        ErrorMessages = potentialErrors;
-    }
+        => Value = value;
 
     public T Value { get; }
     public bool Success => true;
-    public ErrorMessageList ErrorMessages { get; }
+    public string Expectation => throw new MemberAccessException("Cannot access Expectation for a Parsed reply.");
 }

@@ -88,29 +88,30 @@ public class JsonGrammar
         from open in Character('"')
         from content in ZeroOrMore(
             Choice(
-                Attempt(from slash in Character('\\')
-                from escape in Character(c => "\"\\bfnrt/".Contains(c), "escape")
-                select $"{escape}"
-                    .Replace("\"", "\"")
-                    .Replace("\\", "\\")
-                    .Replace("b", "\b")
-                    .Replace("f", "\f")
-                    .Replace("n", "\n")
-                    .Replace("r", "\r")
-                    .Replace("t", "\t")
-                    .Replace("/", "/")),
-
                 from slash in Character('\\')
-                from u in Character('u')
-                from _0 in LetterOrDigit
-                from _1 in LetterOrDigit
-                from _2 in LetterOrDigit
-                from _3 in LetterOrDigit
-                select char.ConvertFromUtf32(
-                    int.Parse($"{_0}{_1}{_2}{_3}",
-                        NumberStyles.HexNumber,
-                        CultureInfo.InvariantCulture)),
+                from unescaped in Choice(
+                    from escape in Character(c => "\"\\bfnrt/".Contains(c), "escape character")
+                    select $"{escape}"
+                        .Replace("\"", "\"")
+                        .Replace("\\", "\\")
+                        .Replace("b", "\b")
+                        .Replace("f", "\f")
+                        .Replace("n", "\n")
+                        .Replace("r", "\r")
+                        .Replace("t", "\t")
+                        .Replace("/", "/"),
 
+                    from u in Label(Character('u'), "unicode escape sequence")
+                    from _0 in LetterOrDigit
+                    from _1 in LetterOrDigit
+                    from _2 in LetterOrDigit
+                    from _3 in LetterOrDigit
+                    select char.ConvertFromUtf32(
+                        int.Parse($"{_0}{_1}{_2}{_3}",
+                            NumberStyles.HexNumber,
+                            CultureInfo.InvariantCulture))
+                )
+                select unescaped,
                 Character(c => c != '"' && c != '\\', "non-quote, not-slash character").Select(x => x.ToString())
             ))
         from close in Character('"')

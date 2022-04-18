@@ -24,7 +24,7 @@ partial class Grammar
                 }
             }
 
-            return new Error<char>(ErrorMessage.Expected(name));
+            return new Error<char>(name);
         };
     }
 }

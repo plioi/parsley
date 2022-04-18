@@ -1,3 +1,5 @@
+using static System.Environment;
+
 namespace Parsley;
 
 class AssertionException : Exception
@@ -8,10 +10,22 @@ class AssertionException : Exception
     }
 
     public AssertionException(string message, object expected, object actual)
-        : base(Environment.NewLine + message + ExpectationDetails(expected, actual))
+        : base(ExpectationDetails(expected, actual) + NewLine + NewLine + message)
     {
     }
 
     static string ExpectationDetails(object expected, object actual)
-        => $"{Environment.NewLine}Expected: {expected}{Environment.NewLine}But was:  {actual}";
+        => $"{NewLine}Expected: {expected}{NewLine}But was:  {actual}";
 }
+
+class MessageAssertionException : Exception
+{
+    public MessageAssertionException(string expectedMessage, string actualMessage)
+        : base(ExpectationDetails(expectedMessage, actualMessage))
+    {
+    }
+    
+    static string ExpectationDetails(string expectedMessage, string actualMessage)
+        => $"{NewLine}Expected message:{NewLine}\t{expectedMessage}{NewLine}But was message:{NewLine}\t{actualMessage}";
+}
+

@@ -109,12 +109,35 @@ class JsonGrammarTests
         window["transparent"].ShouldBe(false);
     }
 
+    public void ProvidesUsefulErrorMessagesForDeeplyPlacedErrors()
+    {
+        const string whitespaceCharacters = "\r\n\t";
+        const string invalidSlashP = whitespaceCharacters + @"
+
+                {
+                    ""numbers"" : [ 10, 20, 30 ],
+                    ""window"":
+                    {
+                        ""title"": ""Sample Widget""," + whitespaceCharacters + @"
+                        ""parent"": null,
+                        ""maximized"": true  ,
+                        ""trans\parent"": false
+                    }
+                }";
+
+        JsonDocument.FailsToParse(invalidSlashP,
+            @"parent"": false
+                    }
+                }",
+            "(escape character or unicode escape sequence) expected");
+    }
+
     public void RequiresEndOfInputAfterFirstValidJsonValue()
     {
-        JsonDocument.FailsToParse("true $garbage$", "$garbage$", "(1, 6): end of input expected");
-        JsonDocument.FailsToParse("10.123E-11  $garbage$", "$garbage$", "(1, 13): end of input expected");
-        JsonDocument.FailsToParse("\"garbage\" $garbage$", "$garbage$", "(1, 11): end of input expected");
-        JsonDocument.FailsToParse("[0, 1, 2] $garbage$", "$garbage$", "(1, 11): end of input expected");
-        JsonDocument.FailsToParse("{\"zero\" : 0} $garbage$", "$garbage$", "(1, 14): end of input expected");
+        JsonDocument.FailsToParse("true $garbage$", "$garbage$", "end of input expected");
+        JsonDocument.FailsToParse("10.123E-11  $garbage$", "$garbage$", "end of input expected");
+        JsonDocument.FailsToParse("\"garbage\" $garbage$", "$garbage$", "end of input expected");
+        JsonDocument.FailsToParse("[0, 1, 2] $garbage$", "$garbage$", "end of input expected");
+        JsonDocument.FailsToParse("{\"zero\" : 0} $garbage$", "$garbage$", "end of input expected");
     }
 }
