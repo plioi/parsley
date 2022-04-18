@@ -109,6 +109,29 @@ class JsonGrammarTests
         window["transparent"].ShouldBe(false);
     }
 
+    public void ProvidesUsefulErrorMessagesForDeeplyPlacedErrors()
+    {
+        const string whitespaceCharacters = "\r\n\t";
+        const string invalidSlashP = whitespaceCharacters + @"
+
+                {
+                    ""numbers"" : [ 10, 20, 30 ],
+                    ""window"":
+                    {
+                        ""title"": ""Sample Widget""," + whitespaceCharacters + @"
+                        ""parent"": null,
+                        ""maximized"": true  ,
+                        ""trans\parent"": false
+                    }
+                }";
+
+        JsonDocument.FailsToParse(invalidSlashP,
+            @"parent"": false
+                    }
+                }",
+            "(escape character or unicode escape sequence) expected");
+    }
+
     public void RequiresEndOfInputAfterFirstValidJsonValue()
     {
         JsonDocument.FailsToParse("true $garbage$", "$garbage$", "end of input expected");
