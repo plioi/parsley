@@ -105,7 +105,7 @@ class GrammarTests
     {
         var parser = ZeroOrMore(AB, COMMA);
 
-        parser.Parses("", "(1, 1): A expected").Value.ShouldBeEmpty();
+        parser.Parses("").Value.ShouldBeEmpty();
         parser.Parses("AB").Value.Single().ShouldBe("AB");
         parser.Parses("AB,AB").Value.ShouldBe(new[] { "AB", "AB" });
         parser.Parses("AB,AB,AB").Value.ShouldBe(new[] { "AB", "AB", "AB" });
@@ -129,14 +129,14 @@ class GrammarTests
     {
         //Reference Type to Nullable Reference Type
         Optional(AB).PartiallyParses("AB.", ".").Value.ShouldBe("AB");
-        Optional(AB).PartiallyParses(".", ".", "(1, 1): A expected").Value.ShouldBe(null);
+        Optional(AB).PartiallyParses(".", ".").Value.ShouldBe(null);
         Optional(AB).FailsToParse("AC.", "C.", "(1, 2): B expected");
 
         //Value Type to Nullable Value Type
         Optional(A).PartiallyParses("AB.", "B.").Value.ShouldBe('A');
-        Optional(A).PartiallyParses(".", ".", "(1, 1): A expected").Value.ShouldBe(null);
-        Optional(B).PartiallyParses("A", "A", "(1, 1): B expected").Value.ShouldBe(null);
-        Optional(B).Parses("", "(1, 1): B expected").Value.ShouldBe(null);
+        Optional(A).PartiallyParses(".", ".").Value.ShouldBe(null);
+        Optional(B).PartiallyParses("A", "A").Value.ShouldBe(null);
+        Optional(B).Parses("").Value.ShouldBe(null);
 
         //Alternate possibilities are not supported when nullable
         //reference types are enabled:
@@ -496,9 +496,9 @@ public class AlternationTests
 
         Parser<string> succeedWithoutConsuming = (ref Text input) => new Parsed<string>("atypical value");
 
-        Choice(A, succeedWithoutConsuming).Parses("", "(1, 1): A expected").Value.ShouldBe("atypical value");
-        Choice(A, B, succeedWithoutConsuming).Parses("", "(1, 1): A or B expected").Value.ShouldBe("atypical value");
-        Choice(A, succeedWithoutConsuming, B).Parses("", "(1, 1): A expected").Value.ShouldBe("atypical value");
+        Choice(A, succeedWithoutConsuming).Parses("").Value.ShouldBe("atypical value");
+        Choice(A, B, succeedWithoutConsuming).Parses("").Value.ShouldBe("atypical value");
+        Choice(A, succeedWithoutConsuming, B).Parses("").Value.ShouldBe("atypical value");
     }
 
     static readonly Parser<string> NeverExecuted =
