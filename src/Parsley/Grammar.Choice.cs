@@ -45,16 +45,11 @@ partial class Grammar
                 i++;
             }
 
-            if (start == newPosition)
+            if (!reply.Success && start == newPosition)
             {
-                if (reply.Success)
-                    reply = new Parsed<T>(reply.Value);
-                else
-                {
-                    expectations.Add(reply.Expectation);
+                expectations.Add(reply.Expectation);
 
-                    reply = new Error<T>(expectations);
-                }
+                return new Error<T>(expectations);
             }
 
             return reply;

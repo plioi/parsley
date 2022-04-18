@@ -15,13 +15,8 @@ partial class Grammar
             var reply = parse(ref input);
             var newPosition = input.Position;
 
-            if (start == newPosition)
-            {
-                if (reply.Success)
-                    reply = new Parsed<T>(reply.Value);
-                else
-                    reply = new Error<T>(expectation);
-            }
+            if (!reply.Success && start == newPosition)
+                return new Error<T>(expectation);
 
             return reply;
         };
