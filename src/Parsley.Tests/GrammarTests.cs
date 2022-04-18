@@ -161,8 +161,13 @@ class GrammarTests
         Attempt(AB).FailsToParse("!", "!", "A expected");
 
         //When p fails after consuming input, Attempt(p) backtracks before reporting failure.
+        //This error message is naturally disappointing on its own as it describe an expectation
+        //at a deeper location than we stopped at. In practice, this is part of some larger
+        //Choice where either another option's message will supersede this one, or the entire
+        //Choice fails without consuming input, in which case you're better off applying a Label
+        //on the options which will again supersede this message.
         AB.FailsToParse("A!", "!", "B expected");
-        Attempt(AB).FailsToParse("A!", "A!", "B at (1, 2) expected");
+        Attempt(AB).FailsToParse("A!", "A!", "B expected");
     }
 
     public void ImprovingDefaultMessagesWithAKnownExpectation()
@@ -259,11 +264,13 @@ class GrammarTests
             Attempt(ae) //Allow rewinding the consumption of e (and a since all a-consuming choices allow rewind)...
         ).FailsToParse("AF", "AF", //...arriving at the failure to find f, having consumed nothing.
 
-            //Note intermediate error information is preserved, to guide
-            //troubleshooting catastrophic failure. The order indicates
-            //the order that the problems were handled.
+            //Note intermediate expectations are preserved, but describe
+            //some deeper location in the input than the current position.
+            //The order indicates the order that the problems were handled.
+            //It is recommended that such extreme usages of Attempt be supplemented
+            //with Label in order to better describe the error.
 
-            "(B at (1, 2), (C at (1, 2) or D at (1, 2)), or E at (1, 2)) expected");
+            "(B, (C or D), or E) expected");
 
         Attempt( //Excessively attempt the non-consuming choice itself...
             Choice(
@@ -276,11 +283,13 @@ class GrammarTests
             )
         ).FailsToParse("AF", "AF", //... demonstrating the intermediate error information is NOT discarded.
 
-            //Note intermediate error information is preserved, to guide
-            //troubleshooting catastrophic failure. The order indicates
-            //the order that the problems were handled.
+            //Note intermediate expectations are preserved, but describe
+            //some deeper location in the input than the current position.
+            //The order indicates the order that the problems were handled.
+            //It is recommended that such extreme usages of Attempt be supplemented
+            //with Label in order to better describe the error.
 
-            "(B at (1, 2), (C at (1, 2) or D at (1, 2)), or E at (1, 2)) expected");
+            "(B, (C or D), or E) expected");
 
         Choice( //Phase out that irrelevant outermost Attempt...
             Attempt(ab),
@@ -291,11 +300,28 @@ class GrammarTests
             Attempt(ae)
         ).FailsToParse("AF", "AF", //... demonstrating how the intermediate error information is affected.
 
-            //Note intermediate error information is preserved, to guide
-            //troubleshooting catastrophic failure, but that the Label
-            //is respected to simplify that segment.
+            //Note the first and third intermediate expectations are preserved, but
+            //describe some deeper location in the input than the current position.
+            //Note that the second expectation is improved, appropriate to the current
+            //position. The order indicates the order that the problems were handled.
+            //It is recommended that such extreme usages of Attempt be supplemented
+            //with more Label calls in order to better describe the error.
 
-            "(B at (1, 2), A[C|D], or E at (1, 2)) expected");
+            "(B, A[C|D], or E) expected");
+
+        Choice(
+            //Label all of the backtracking choices in an attempt to improve error messages...
+            Label(Attempt(ab), "AB"),
+            Label(Choice(
+                Attempt(ac),
+                Attempt(ad)
+            ), "A[C|D]"),
+            Label(Attempt(ae), "AE")
+        ).FailsToParse("AF", "AF", //... demonstrating how the error message once again respects the overall location.
+
+            //Note how the full error message now respects the current position.
+
+            "(AB, A[C|D], or AE) expected");
     }
 
     public void ProvidesConveniencePrimitiveRecognizingOneExpectedCharacter()
