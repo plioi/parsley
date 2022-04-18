@@ -48,7 +48,7 @@ public static class Assertions
         var actual = reply.Expectation + " expected";
             
         if (actual != expectedMessage)
-            throw new AssertionException($"message at {expectedMessage}", $"message at {actual}");
+            throw new MessageAssertionException(expectedMessage, actual);
 
         return reply;
     }
@@ -63,7 +63,7 @@ public static class Assertions
             var displayFriendlyTrailingCharacters = new string(peek.Skip(1).TakeWhile(x => !char.IsControl(x)).ToArray());
 
             var message = new StringBuilder();
-            message.AppendLine(text.Position + ": " + reply.Expectation);
+            message.AppendLine(text.Position + ": " + reply.Expectation + " expected");
             message.AppendLine();
             message.AppendLine($"\t{offendingCharacter}{displayFriendlyTrailingCharacters}");
             message.AppendLine("\t^");
