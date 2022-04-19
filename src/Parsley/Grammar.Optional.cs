@@ -12,7 +12,9 @@ public static partial class Grammar
         where T : class
     {
         var nothing = default(T).SucceedWithThisValue();
-        return Choice(parser, nothing);
+        return Choice(
+            from x in parser
+            select (T?)x, nothing);
     }
 
     /// <summary>

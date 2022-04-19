@@ -1,7 +1,16 @@
 namespace Parsley;
 
-public record Position(int Line, int Column)
+public readonly ref struct Position
 {
+    public Position(int line, int column)
+    {
+        Line = line;
+        Column = column;
+    }
+
+    public int Line { get; init; }
+    public int Column { get; init; }
+
     public override string ToString()
         => $"({Line}, {Column})";
 }

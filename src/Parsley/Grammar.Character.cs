@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Parsley;
 
 partial class Grammar
@@ -9,7 +11,7 @@ partial class Grammar
 
     public static Parser<char> Character(Predicate<char> test, string name)
     {
-        return (ref Text input) =>
+        return (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out char value, [NotNullWhen(false)] out string? expectation) =>
         {
             var next = input.Peek(1);
 
@@ -18,13 +20,17 @@ partial class Grammar
                 char c = next[0];
                 if (test(c))
                 {
-                    input.Advance(1);
+                    input.Advance(ref position, 1);
 
-                    return new Parsed<char>(c);
+                    expectation = null;
+                    value = c;
+                    return true;
                 }
             }
 
-            return new Error<char>(name);
+            expectation = name;
+            value = default;
+            return false;
         };
     }
 }

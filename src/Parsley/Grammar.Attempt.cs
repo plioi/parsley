@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Parsley;
 
 partial class Grammar
@@ -9,18 +11,21 @@ partial class Grammar
     /// </summary>
     public static Parser<T> Attempt<T>(Parser<T> parse)
     {
-        return (ref Text input) =>
+        return (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation) =>
         {
-            var snapshot = input;
-            var start = input.Position;
-            var reply = parse(ref input);
-            var newPosition = input.Position;
+            var originalInput = input;
+            var originalPosition = position;
 
-            if (!reply.Success)
-                if (start != newPosition)
-                    input = snapshot;
+            if (parse(ref input, ref position, out value, out expectation))
+                return true;
 
-            return reply;
+            if (originalInput != input)
+            {
+                input = originalInput;
+                position = originalPosition;
+            }
+
+            return false;
         };
     }
 }

@@ -1,3 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Parsley;
 
-public delegate Reply<T> Parser<out T>(ref Text input);
+public delegate bool Parser<T>(ref ReadOnlySpan<char> input,
+                               ref Position position,
+                               [NotNullWhen(true)] out T? value,
+                               [NotNullWhen(false)] out string? expectation);

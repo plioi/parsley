@@ -1,24 +1,27 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Parsley;
 
 partial class Grammar
 {
     /// <summary>
-    /// When parser p consumes any input, Label(p, e) is the same as p.
-    /// When parser p does not consume any input, Label(p, e) is the same
-    /// as p, except any messages are replaced with expectation e.
+    /// When parser p consumes any input, Label(p, l) is the same as p.
+    /// When parser p does not consume any input, Label(p, l) is the same
+    /// as p, except any messages are replaced with expectation label l.
     /// </summary>
-    public static Parser<T> Label<T>(Parser<T> parse, string expectation)
+    public static Parser<T> Label<T>(Parser<T> parse, string label)
     {
-        return (ref Text input) =>
+        return (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation) =>
         {
-            var start = input.Position;
-            var reply = parse(ref input);
-            var newPosition = input.Position;
+            var originalInput = input;
 
-            if (!reply.Success && start == newPosition)
-                return new Error<T>(expectation);
+            if (parse(ref input, ref position, out value, out expectation))
+                return true;
 
-            return reply;
+            if (originalInput == input)
+                expectation = label;
+
+            return false;
         };
     }
 }
