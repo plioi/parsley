@@ -11,18 +11,19 @@ partial class Grammar
     /// </summary>
     public static Parser<T> Attempt<T>(Parser<T> parse)
     {
-        return (ref Text input, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation) =>
+        return (ref Text input, ref Position position, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation) =>
         {
             var snapshot = input;
-            var start = input.Position;
+            var originalPosition = position;
 
-            if (parse(ref input, out value, out expectation))
+            if (parse(ref input, ref position, out value, out expectation))
                 return true;
 
-            var newPosition = input.Position;
-
-            if (start != newPosition)
+            if (originalPosition != position)
+            {
                 input = snapshot;
+                position = originalPosition;
+            }
 
             return false;
         };

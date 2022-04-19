@@ -8,8 +8,9 @@ public static class Assertions
     public static void FailsToParse<T>(this Parser<T> parse, string input, string expectedUnparsedInput, string expectedMessage)
     {
         var text = new Text(input);
+        var position = new Position(1, 1);
 
-        if (parse(ref text, out var value, out var expectation))
+        if (parse(ref text, ref position, out var value, out var expectation))
             throw new AssertionException("parser failure", "parser completed successfully");
 
         var actual = expectation + " expected";
@@ -26,9 +27,10 @@ public static class Assertions
     public static T PartiallyParses<T>(this Parser<T> parse, string input, string expectedUnparsedInput)
     {
         var text = new Text(input);
+        var position = new Position(1, 1);
 
-        if (!parse(ref text, out var value, out var expectation))
-            UnexpectedFailure(ref text, expectation);
+        if (!parse(ref text, ref position, out var value, out var expectation))
+            UnexpectedFailure(ref text, ref position, expectation);
 
         if (expectedUnparsedInput == "")
             throw new ArgumentException($"{nameof(expectedUnparsedInput)} must be nonempty when calling {nameof(PartiallyParses)}.");
@@ -41,9 +43,10 @@ public static class Assertions
     public static T Parses<T>(this Parser<T> parse, string input)
     {
         var text = new Text(input);
+        var position = new Position(1, 1);
 
-        if (!parse(ref text, out var value, out var expectation))
-            UnexpectedFailure(ref text, expectation);
+        if (!parse(ref text, ref position, out var value, out var expectation))
+            UnexpectedFailure(ref text, ref position, expectation);
 
         text.AtEndOfInput();
 
@@ -51,7 +54,7 @@ public static class Assertions
     }
 
     [DoesNotReturn]
-    static void UnexpectedFailure(ref Text text, string expectation)
+    static void UnexpectedFailure(ref Text text, ref Position position, string expectation)
     {
         var peek = text.Peek(20).ToString();
 
@@ -59,7 +62,7 @@ public static class Assertions
         var displayFriendlyTrailingCharacters = new string(peek.Skip(1).TakeWhile(x => !char.IsControl(x)).ToArray());
 
         var message = new StringBuilder();
-        message.AppendLine(text.Position + ": " + expectation + " expected");
+        message.AppendLine(position + ": " + expectation + " expected");
         message.AppendLine();
         message.AppendLine($"\t{offendingCharacter}{displayFriendlyTrailingCharacters}");
         message.AppendLine("\t^");

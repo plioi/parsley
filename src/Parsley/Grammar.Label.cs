@@ -11,16 +11,14 @@ partial class Grammar
     /// </summary>
     public static Parser<T> Label<T>(Parser<T> parse, string label)
     {
-        return (ref Text input, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation) =>
+        return (ref Text input, ref Position position, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation) =>
         {
-            var start = input.Position;
+            var start = position;
 
-            if (parse(ref input, out value, out expectation))
+            if (parse(ref input, ref position, out value, out expectation))
                 return true;
 
-            var newPosition = input.Position;
-
-            if (start == newPosition)
+            if (start == position)
             {
                 expectation = label;
                 value = default;

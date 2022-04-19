@@ -31,11 +31,11 @@ partial class Grammar
             throw new ArgumentException(
                 $"{nameof(Choice)} requires at least two parsers to choose between.", nameof(parsers));
 
-        return (ref Text input, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation) =>
+        return (ref Text input, ref Position position, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation) =>
         {
-            var start = input.Position;
-            var succeeded = parsers[0](ref input, out value, out expectation);
-            var newPosition = input.Position;
+            var start = position;
+            var succeeded = parsers[0](ref input, ref position, out value, out expectation);
+            var newPosition = position;
 
             var expectations = new List<string>();
             var i = 1;
@@ -44,8 +44,8 @@ partial class Grammar
             {
                 if (expectation != null)
                     expectations.Add(expectation);
-                succeeded = parsers[i](ref input, out value, out expectation);
-                newPosition = input.Position;
+                succeeded = parsers[i](ref input, ref position, out value, out expectation);
+                newPosition = position;
                 i++;
             }
 

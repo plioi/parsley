@@ -91,67 +91,105 @@ class TextTests
         abc123.TakeWhile(alphanumerics).ToString().ShouldBe("");
     }
 
-    public void CanGetCurrentPosition()
+    public void CanTrackCurrentPosition()
     {
         var empty = new Text("");
+        var position = new Position(1, 1);
 
-        empty.Advance(0).ShouldBe((0, 0));
-        empty.Position.ShouldBe(new Position(1, 1));
+        var delta = empty.Advance(0);
+        delta.ShouldBe((0, 0));
+        position.Move(delta);
+        position.ShouldBe(new Position(1, 1));
 
-        empty.Advance(1).ShouldBe((0, 0));
-        empty.Position.ShouldBe(new Position(1, 1));
+        delta = empty.Advance(1);
+        delta.ShouldBe((0, 0));
+        position.Move(delta);
+        position.ShouldBe(new Position(1, 1));
 
         var lines = new StringBuilder()
             .Append("Line 1\n")//Index 0-5, \n
             .Append("Line 2\n")//Index 7-12, \n
             .Append("Line 3\n");//Index 14-19, \n
         var list = new Text(lines.ToString());
+        position = new Position(1, 1);
 
         var snapshot = list;
-        list.Advance(0).ShouldBe((0, 0));
-        list.Position.ShouldBe(new Position(1, 1));
+        delta = list.Advance(0);
+        delta.ShouldBe((0, 0));
+        position.Move(delta);
+        position.ShouldBe(new Position(1, 1));
 
         list = snapshot;
-        list.Advance(5).ShouldBe((0, 5));
-        list.Position.ShouldBe(new Position(1, 6));
+        position = new(1, 1);
+        delta = list.Advance(5);
+        delta.ShouldBe((0, 5));
+        position.Move(delta);
+        position.ShouldBe(new Position(1, 6));
 
         list = snapshot;
-        list.Advance(6).ShouldBe((0, 6));
-        list.Position.ShouldBe(new Position(1, 7));
-
-
-        list = snapshot;
-        list.Advance(7).ShouldBe((1, 0));
-        list.Position.ShouldBe(new Position(2, 1));
-
-        list = snapshot;
-        list.Advance(12).ShouldBe((1, 5));
-        list.Position.ShouldBe(new Position(2, 6));
-
-        list = snapshot;
-        list.Advance(13).ShouldBe((1, 6));
-        list.Position.ShouldBe(new Position(2, 7));
+        position = new(1, 1);
+        delta = list.Advance(6);
+        delta.ShouldBe((0, 6));
+        position.Move(delta);
+        position.ShouldBe(new Position(1, 7));
 
 
         list = snapshot;
-        list.Advance(14).ShouldBe((2, 0));
-        list.Position.ShouldBe(new Position(3, 1));
+        position = new(1, 1);
+        delta = list.Advance(7);
+        delta.ShouldBe((1, 0));
+        position.Move(delta);
+        position.ShouldBe(new Position(2, 1));
 
         list = snapshot;
-        list.Advance(19).ShouldBe((2, 5));
-        list.Position.ShouldBe(new Position(3, 6));
+        position = new(1, 1);
+        delta = list.Advance(12);
+        delta.ShouldBe((1, 5));
+        position.Move(delta);
+        position.ShouldBe(new Position(2, 6));
 
         list = snapshot;
-        list.Advance(20).ShouldBe((2, 6));
-        list.Position.ShouldBe(new Position(3, 7));
+        position = new(1, 1);
+        delta = list.Advance(13);
+        delta.ShouldBe((1, 6));
+        position.Move(delta);
+        position.ShouldBe(new Position(2, 7));
 
 
         list = snapshot;
-        list.Advance(21).ShouldBe((3, 0));
-        list.Position.ShouldBe(new Position(4, 1));
+        position = new(1, 1);
+        delta = list.Advance(14);
+        delta.ShouldBe((2, 0));
+        position.Move(delta);
+        position.ShouldBe(new Position(3, 1));
 
         list = snapshot;
-        list.Advance(1000).ShouldBe((3, 0));
-        list.Position.ShouldBe(new Position(4, 1));
+        position = new(1, 1);
+        delta = list.Advance(19);
+        delta.ShouldBe((2, 5));
+        position.Move(delta);
+        position.ShouldBe(new Position(3, 6));
+
+        list = snapshot;
+        position = new(1, 1);
+        delta = list.Advance(20);
+        delta.ShouldBe((2, 6));
+        position.Move(delta);
+        position.ShouldBe(new Position(3, 7));
+
+
+        list = snapshot;
+        position = new(1, 1);
+        delta = list.Advance(21);
+        delta.ShouldBe((3, 0));
+        position.Move(delta);
+        position.ShouldBe(new Position(4, 1));
+
+        list = snapshot;
+        position = new(1, 1);
+        delta = list.Advance(1000);
+        delta.ShouldBe((3, 0));
+        position.Move(delta);
+        position.ShouldBe(new Position(4, 1));
     }
 }

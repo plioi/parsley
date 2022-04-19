@@ -14,7 +14,7 @@ public static class ParserQuery
     /// <param name="value">The value to treat as a parse result.</param>
     public static Parser<T> SucceedWithThisValue<T>(this T value)
     {
-        return (ref Text input, [NotNullWhen(true)] out T? succeedingValue, [NotNullWhen(false)] out string? expectation) =>
+        return (ref Text input, ref Position position, [NotNullWhen(true)] out T? succeedingValue, [NotNullWhen(false)] out string? expectation) =>
         {
             expectation = null;
             succeedingValue = value!;
@@ -46,10 +46,10 @@ public static class ParserQuery
     /// </remarks>
     static Parser<U> Bind<T, U>(this Parser<T> parse, Func<T, Parser<U>> constructNextParser)
     {
-        return (ref Text input, [NotNullWhen(true)] out U? uValue, [NotNullWhen(false)] out string? expectation) =>
+        return (ref Text input, ref Position position, [NotNullWhen(true)] out U? uValue, [NotNullWhen(false)] out string? expectation) =>
         {
-            if (parse(ref input, out var tValue, out expectation))
-                return constructNextParser(tValue)(ref input, out uValue, out expectation);
+            if (parse(ref input, ref position, out var tValue, out expectation))
+                return constructNextParser(tValue)(ref input, ref position, out uValue, out expectation);
 
             uValue = default;
             return false;

@@ -73,9 +73,6 @@ public ref struct Text
         }
     }
 
-    public readonly Position Position
-        => new(line, Column);
-
     public readonly override string ToString()
         => input.Slice(index).ToString();
 }

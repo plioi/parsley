@@ -56,31 +56,31 @@ public class OperatorPrecedenceParser<T>
     }
 
     public Parser<T> Parser
-        => (ref Text input, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation)
-                => Parse(ref input, 0, out value, out expectation);
+        => (ref Text input, ref Position position, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation)
+                => Parse(ref input, ref position, 0, out value, out expectation);
 
     Parser<T> OperandAtPrecedenceLevel(int precedence)
-        => (ref Text input, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation)
-            => Parse(ref input, precedence, out value, out expectation);
+        => (ref Text input, ref Position position, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation)
+            => Parse(ref input, ref position, precedence, out value, out expectation);
 
-    bool Parse(ref Text input, int precedence, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation)
+    bool Parse(ref Text input, ref Position position, int precedence, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation)
     {
-        if (!TryFindMatchingUnitParser(ref input, out var matchingUnitParser, out var token))
+        if (!TryFindMatchingUnitParser(ref input, ref position, out var matchingUnitParser, out var token))
         {
             expectation = "expression";
             value = default;
             return false;
         }
 
-        if (matchingUnitParser(ref input, out value, out expectation))
+        if (matchingUnitParser(ref input, ref position, out value, out expectation))
         {
-            while (TryFindMatchingExtendParserBuilder(ref input, out var matchingExtendParserBuilder, out token, out int? tokenPrecedence) && precedence < tokenPrecedence)
+            while (TryFindMatchingExtendParserBuilder(ref input, ref position, out var matchingExtendParserBuilder, out token, out int? tokenPrecedence) && precedence < tokenPrecedence)
             {
                 //Continue parsing at this precedence level.
 
                 var extendParser = matchingExtendParserBuilder(value);
 
-                if (extendParser(ref input, out value, out expectation))
+                if (extendParser(ref input, ref position, out value, out expectation))
                     continue;
 
                 return false;
@@ -92,7 +92,7 @@ public class OperatorPrecedenceParser<T>
         return false;
     }
 
-    bool TryFindMatchingUnitParser(ref Text input, [NotNullWhen(true)] out Parser<T>? found, out string? token)
+    bool TryFindMatchingUnitParser(ref Text input, ref Position position, [NotNullWhen(true)] out Parser<T>? found, out string? token)
     {
         found = null;
         token = null;
@@ -100,8 +100,10 @@ public class OperatorPrecedenceParser<T>
         foreach(var (kind, parser) in unitParsers)
         {
             var snapshot = input;
-            bool searchSucceeded = kind(ref input, out var value, out _);
+            var originalPosition = position;
+            bool searchSucceeded = kind(ref input, ref position, out var value, out _);
             input = snapshot;
+            position = originalPosition;
 
             if (searchSucceeded)
             {
@@ -114,7 +116,7 @@ public class OperatorPrecedenceParser<T>
         return false;
     }
 
-    bool TryFindMatchingExtendParserBuilder(ref Text input, [NotNullWhen(true)] out ExtendParserBuilder<T>? found, out string? token, out int? tokenPrecedence)
+    bool TryFindMatchingExtendParserBuilder(ref Text input, ref Position position, [NotNullWhen(true)] out ExtendParserBuilder<T>? found, out string? token, out int? tokenPrecedence)
     {
         found = null;
         token = null;
@@ -123,8 +125,10 @@ public class OperatorPrecedenceParser<T>
         foreach (var (kind, precedence, extendParserBuilder) in extendParsers)
         {
             var snapshot = input;
-            bool searchSucceeded = kind(ref input, out token, out _);
+            var originalPosition = position;
+            bool searchSucceeded = kind(ref input, ref position, out token, out _);
             input = snapshot;
+            position = originalPosition;
 
             if (searchSucceeded)
             {
