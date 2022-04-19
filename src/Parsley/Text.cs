@@ -30,13 +30,21 @@ public ref struct Text
         if (characters == 0)
             return (0, 0);
 
-        int originalColumn = Column;
+        int originalColumn = index - input.Slice(0, length: index).LastIndexOf('\n');
+        int columnDelta = 0;
         int newIndex = index + characters;
         int countNewLines = 0;
 
         foreach (var ch in Peek(characters))
+        {
             if (ch == '\n')
+            {
                 countNewLines++;
+                columnDelta = 0 - originalColumn;
+            }
+
+            columnDelta++;
+        }
 
         int newLineNumber = line + countNewLines;
 
@@ -46,7 +54,7 @@ public ref struct Text
         if (index > input.Length)
             index = input.Length;
 
-        return (countNewLines, Column - originalColumn);
+        return (countNewLines, columnDelta);
     }
 
     public readonly bool EndOfInput => index >= input.Length;
@@ -59,18 +67,6 @@ public ref struct Text
             i++;
 
         return Peek(i - index);
-    }
-
-    readonly int Column
-    {
-        get
-        {
-            if (index == 0)
-                return 1;
-
-            int indexOfPreviousNewLine = input[..index].LastIndexOf('\n');
-            return index - indexOfPreviousNewLine;
-        }
     }
 
     public readonly override string ToString()
