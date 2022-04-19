@@ -2,19 +2,15 @@ namespace Parsley;
 
 public ref struct Text
 {
-    int index;
-    readonly ReadOnlySpan<char> input;
+    ReadOnlySpan<char> input;
 
     public Text(ReadOnlySpan<char> input)
-    {
-        this.input = input;
-        index = 0;
-    }
+        => this.input = input;
 
     public readonly ReadOnlySpan<char> Peek(int characters)
-        => index + characters >= input.Length
-            ? input.Slice(index)
-            : input.Slice(index, characters);
+        => characters >= input.Length
+            ? input.Slice(0)
+            : input.Slice(0, characters);
 
     public (int lineDelta, int columnDelta) Advance(Position start, int characters)
     {
@@ -23,6 +19,7 @@ public ref struct Text
 
         int lineDelta = 0;
         int columnDelta = 0;
+
         foreach (var ch in Peek(characters))
         {
             if (ch == '\n')
@@ -34,26 +31,25 @@ public ref struct Text
             columnDelta++;
         }
 
-        index += characters;
-
-        if (index > input.Length)
-            index = input.Length;
+        input = characters < input.Length
+            ? input.Slice(characters)
+            : ReadOnlySpan<char>.Empty;
 
         return (lineDelta, columnDelta);
     }
 
-    public readonly bool EndOfInput => index >= input.Length;
+    public readonly bool EndOfInput => input.Length == 0;
 
     public readonly ReadOnlySpan<char> TakeWhile(Predicate<char> test)
     {
-        int i = index;
+        int i = 0;
 
         while (i < input.Length && test(input[i]))
             i++;
 
-        return Peek(i - index);
+        return Peek(i);
     }
 
     public readonly override string ToString()
-        => input.Slice(index).ToString();
+        => input.ToString();
 }
