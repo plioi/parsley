@@ -19,10 +19,7 @@ partial class Grammar
                 return true;
 
             if (originalInput == input)
-            {
                 expectation = label;
-                value = default;
-            }
 
             return false;
         };
