@@ -2,15 +2,15 @@ using System.Text;
 
 namespace Parsley.Tests;
 
-class TextExtensionsTests
+class ReadOnlySpanExtensionsTests
 {
     public void CanPeekAheadNCharacters()
     {
-        var empty = new Text("");
+        ReadOnlySpan<char> empty = "";
         empty.Peek(0).ToString().ShouldBe("");
         empty.Peek(1).ToString().ShouldBe("");
 
-        var abc = new Text("abc");
+        ReadOnlySpan<char> abc = "abc";
         abc.Peek(0).ToString().ShouldBe("");
         abc.Peek(1).ToString().ShouldBe("a");
         abc.Peek(2).ToString().ShouldBe("ab");
@@ -21,7 +21,7 @@ class TextExtensionsTests
 
     public void CanAdvanceAheadNCharactersWithSnapshotBacktracking()
     {
-        var empty = new Text("");
+        ReadOnlySpan<char> empty = "";
         var position = new Position(1, 1);
 
         empty.Advance(ref position, 0);
@@ -32,7 +32,7 @@ class TextExtensionsTests
         position.ShouldBe(new(1, 1));
         empty.ToString().ShouldBe("");
 
-        var abc = new Text("abc");
+        ReadOnlySpan<char> abc = "abc";
         position = new Position(1, 1);
 
         abc.Advance(ref position, 0);
@@ -71,10 +71,10 @@ class TextExtensionsTests
 
     public void DetectsTheEndOfInput()
     {
-        var nonempty = new Text("!");
+        ReadOnlySpan<char> nonempty = "!";
         nonempty.EndOfInput().ShouldBeFalse();
 
-        var empty = new Text("");
+        ReadOnlySpan<char> empty = "";
         empty.EndOfInput().ShouldBeTrue();
     }
 
@@ -84,10 +84,10 @@ class TextExtensionsTests
         Predicate<char> digits = char.IsDigit;
         Predicate<char> alphanumerics = char.IsLetterOrDigit;
 
-        var empty = new Text("");
+        ReadOnlySpan<char> empty = "";
         empty.TakeWhile(letters).ToString().ShouldBe("");
 
-        var abc123 = new Text("abc123");
+        ReadOnlySpan<char> abc123 = "abc123";
         var snapshot = abc123;
 
         abc123.TakeWhile(digits).ToString().ShouldBe("");
@@ -121,7 +121,7 @@ class TextExtensionsTests
 
     public void CanTrackCurrentPosition()
     {
-        var empty = new Text("");
+        ReadOnlySpan<char> empty = "";
         var position = new Position(1, 1);
 
         empty.Advance(ref position, 0);
@@ -134,7 +134,7 @@ class TextExtensionsTests
             .Append("Line 1\n")//Index 0-5, \n
             .Append("Line 2\n")//Index 7-12, \n
             .Append("Line 3\n");//Index 14-19, \n
-        var list = new Text(lines.ToString());
+        ReadOnlySpan<char> list = lines.ToString();
         position = new Position(1, 1);
 
         var snapshot = list;

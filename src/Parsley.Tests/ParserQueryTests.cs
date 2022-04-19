@@ -5,7 +5,7 @@ namespace Parsley.Tests;
 
 class ParserQueryTests
 {
-    static readonly Parser<char> Next = (ref Text input, ref Position position, [NotNullWhen(true)] out char value, [NotNullWhen(false)] out string? expectation) =>
+    static readonly Parser<char> Next = (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out char value, [NotNullWhen(false)] out string? expectation) =>
     {
         var next = input.Peek(1);
 
@@ -25,7 +25,7 @@ class ParserQueryTests
         return false;
     };
 
-    static readonly Parser<string> Fail = (ref Text input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+    static readonly Parser<string> Fail = (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
     {
         expectation = "unsatisfiable expectation";
         value = null;

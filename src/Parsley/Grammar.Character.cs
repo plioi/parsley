@@ -11,7 +11,7 @@ partial class Grammar
 
     public static Parser<char> Character(Predicate<char> test, string name)
     {
-        return (ref Text input, ref Position position, out char value, [NotNullWhen(false)] out string? expectation) =>
+        return (ref ReadOnlySpan<char> input, ref Position position, out char value, [NotNullWhen(false)] out string? expectation) =>
         {
             var next = input.Peek(1);
 

@@ -7,10 +7,10 @@ public static class Assertions
 {
     public static void FailsToParse<T>(this Parser<T> parse, string input, string expectedUnparsedInput, string expectedMessage)
     {
-        var text = new Text(input);
-        var position = new Position(1, 1);
+        ReadOnlySpan<char> inputSpan = input;
+        Position position = new(1, 1);
 
-        if (parse(ref text, ref position, out var value, out var expectation))
+        if (parse(ref inputSpan, ref position, out var value, out var expectation))
             throw new AssertionException("parser failure", "parser completed successfully");
 
         var actual = expectation + " expected";
@@ -19,44 +19,44 @@ public static class Assertions
             throw new MessageAssertionException(expectedMessage, actual);
         
         if (expectedUnparsedInput == "")
-            text.AtEndOfInput();
+            inputSpan.AtEndOfInput();
         else
-            text.LeavingUnparsedInput(expectedUnparsedInput);
+            inputSpan.LeavingUnparsedInput(expectedUnparsedInput);
     }
 
     public static T PartiallyParses<T>(this Parser<T> parse, string input, string expectedUnparsedInput)
     {
-        var text = new Text(input);
-        var position = new Position(1, 1);
+        ReadOnlySpan<char> inputSpan = input;
+        Position position = new(1, 1);
 
-        if (!parse(ref text, ref position, out var value, out var expectation))
-            UnexpectedFailure(ref text, ref position, expectation);
+        if (!parse(ref inputSpan, ref position, out var value, out var expectation))
+            UnexpectedFailure(ref inputSpan, ref position, expectation);
 
         if (expectedUnparsedInput == "")
             throw new ArgumentException($"{nameof(expectedUnparsedInput)} must be nonempty when calling {nameof(PartiallyParses)}.");
 
-        text.LeavingUnparsedInput(expectedUnparsedInput);
+        inputSpan.LeavingUnparsedInput(expectedUnparsedInput);
 
         return value;
     }
 
     public static T Parses<T>(this Parser<T> parse, string input)
     {
-        var text = new Text(input);
-        var position = new Position(1, 1);
+        ReadOnlySpan<char> inputSpan = input;
+        Position position = new(1, 1);
 
-        if (!parse(ref text, ref position, out var value, out var expectation))
-            UnexpectedFailure(ref text, ref position, expectation);
+        if (!parse(ref inputSpan, ref position, out var value, out var expectation))
+            UnexpectedFailure(ref inputSpan, ref position, expectation);
 
-        text.AtEndOfInput();
+        inputSpan.AtEndOfInput();
 
         return value;
     }
 
     [DoesNotReturn]
-    static void UnexpectedFailure(ref Text text, ref Position position, string expectation)
+    static void UnexpectedFailure(ref ReadOnlySpan<char> input, ref Position position, string expectation)
     {
-        var peek = text.Peek(20).ToString();
+        var peek = input.Peek(20).ToString();
 
         var offendingCharacter = peek[0];
         var displayFriendlyTrailingCharacters = new string(peek.Skip(1).TakeWhile(x => !char.IsControl(x)).ToArray());
@@ -70,9 +70,9 @@ public static class Assertions
         throw new AssertionException(message.ToString(), "parser success", "parser failure");
     }
 
-    static void LeavingUnparsedInput(this Text text, string expectedUnparsedInput)
+    static void LeavingUnparsedInput(this ReadOnlySpan<char> input, string expectedUnparsedInput)
     {
-        var actualUnparsedInput = text.ToString();
+        var actualUnparsedInput = input.ToString();
 
         if (actualUnparsedInput != expectedUnparsedInput)
             throw new AssertionException("Parse resulted in unexpected remaining unparsed input.",
@@ -80,11 +80,11 @@ public static class Assertions
                 actualUnparsedInput);
     }
 
-    static void AtEndOfInput(this Text text)
+    static void AtEndOfInput(this ReadOnlySpan<char> input)
     {
-        if (!text.EndOfInput())
-            throw new AssertionException("end of input", text.ToString());
+        if (!input.EndOfInput())
+            throw new AssertionException("end of input", input.ToString());
 
-        text.LeavingUnparsedInput("");
+        input.LeavingUnparsedInput("");
     }
 }

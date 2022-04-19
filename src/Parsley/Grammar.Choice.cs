@@ -31,7 +31,7 @@ partial class Grammar
             throw new ArgumentException(
                 $"{nameof(Choice)} requires at least two parsers to choose between.", nameof(parsers));
 
-        return (ref Text input, ref Position position, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation) =>
+        return (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation) =>
         {
             var start = position;
             var succeeded = parsers[0](ref input, ref position, out value, out expectation);

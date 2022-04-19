@@ -5,7 +5,7 @@ namespace Parsley.Tests;
 
 class GrammarTests
 {
-    static readonly Parser<string> Fail = (ref Text input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+    static readonly Parser<string> Fail = (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
     {
         expectation = "unsatisfiable expectation";
         value = null;
@@ -70,16 +70,16 @@ class GrammarTests
 
         parser.FailsToParse("ABABA!", "!", "B expected");
 
-        Parser<string> succeedWithoutConsuming = (ref Text input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+        Parser<string> succeedWithoutConsuming = (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {
             expectation = null;
             value = "ignored value";
             return true;
         };
-        Action infiniteLoop = () =>
+        var infiniteLoop = () =>
         {
-            var input = new Text("");
-            var position = new Position(1, 1);
+            ReadOnlySpan<char> input = "";
+            Position position = new(1, 1);
             ZeroOrMore(succeedWithoutConsuming)(ref input, ref position, out _, out _);
         };
 
@@ -102,16 +102,16 @@ class GrammarTests
 
         parser.FailsToParse("ABABA!", "!", "B expected");
 
-        Parser<string> succeedWithoutConsuming = (ref Text input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+        Parser<string> succeedWithoutConsuming = (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {
             expectation = null;
             value = "ignored value";
             return true;
         };
-        Action infiniteLoop = () =>
+        var infiniteLoop = () =>
         {
-            var input = new Text("");
-            var position = new Position(1, 1);
+            ReadOnlySpan<char> input = "";
+            Position position = new(1, 1);
             OneOrMore(succeedWithoutConsuming)(ref input, ref position, out _, out _);
         };
 
@@ -524,7 +524,7 @@ public class AlternationTests
         //consuming input. These tests simply describe the behavior under that
         //unusual situation.
 
-        Parser<string> succeedWithoutConsuming = (ref Text input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+        Parser<string> succeedWithoutConsuming = (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {
             expectation = null;
             value = "atypical value";
@@ -537,6 +537,6 @@ public class AlternationTests
     }
 
     static readonly Parser<string> NeverExecuted =
-        (ref Text input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation)
+        (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation)
             => throw new Exception("Parser 'NeverExecuted' should not have been executed.");
 }

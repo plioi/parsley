@@ -11,7 +11,7 @@ partial class Grammar
     /// </summary>
     public static Parser<T> Label<T>(Parser<T> parse, string label)
     {
-        return (ref Text input, ref Position position, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation) =>
+        return (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation) =>
         {
             var start = position;
 
