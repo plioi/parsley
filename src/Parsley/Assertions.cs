@@ -82,7 +82,7 @@ public static class Assertions
 
     static void AtEndOfInput(this ReadOnlySpan<char> input)
     {
-        if (!input.EndOfInput())
+        if (!input.IsEmpty)
             throw new AssertionException("end of input", input.ToString());
 
         input.LeavingUnparsedInput("");

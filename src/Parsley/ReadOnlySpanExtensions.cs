@@ -32,8 +32,6 @@ public static class ReadOnlySpanExtensions
         position = new Position(position.Line + lineDelta, position.Column + columnDelta);
     }
 
-    public static bool EndOfInput(this ref ReadOnlySpan<char> input) => input.Length == 0;
-
     public static ReadOnlySpan<char> TakeWhile(this ref ReadOnlySpan<char> input, Predicate<char> test)
     {
         int i = 0;

@@ -69,15 +69,6 @@ class ReadOnlySpanExtensionsTests
         abc.ToString().ShouldBe("");
     }
 
-    public void DetectsTheEndOfInput()
-    {
-        ReadOnlySpan<char> nonempty = "!";
-        nonempty.EndOfInput().ShouldBeFalse();
-
-        ReadOnlySpan<char> empty = "";
-        empty.EndOfInput().ShouldBeTrue();
-    }
-
     public void CanMatchLeadingCharactersByPredicate()
     {
         Predicate<char> letters = char.IsLetter;
