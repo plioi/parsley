@@ -6,15 +6,9 @@ public ref struct Text
     readonly ReadOnlySpan<char> input;
 
     public Text(ReadOnlySpan<char> input)
-        : this(input, 0) { }
-
-    Text(ReadOnlySpan<char> input, int index)
     {
         this.input = input;
-        this.index = index;
-
-        if (index > input.Length)
-            this.index = input.Length;
+        index = 0;
     }
 
     public readonly ReadOnlySpan<char> Peek(int characters)
