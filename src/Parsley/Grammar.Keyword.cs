@@ -17,8 +17,7 @@ partial class Grammar
             {
                 if (peek.Length == word.Length || !char.IsLetter(peek[^1]))
                 {
-                    var positionDelta = input.Advance(position, word.Length);
-                    position.Move(positionDelta);
+                    input.Advance(ref position, word.Length);
 
                     expectation = null;
                     value = word;

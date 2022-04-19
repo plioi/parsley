@@ -13,8 +13,7 @@ class ParserQueryTests
         {
             char c = next[0];
 
-            var positionDelta = input.Advance(position, 1);
-            position.Move(positionDelta);
+            input.Advance(ref position, 1);
 
             expectation = null;
             value = c;

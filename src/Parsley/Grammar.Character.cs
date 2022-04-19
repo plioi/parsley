@@ -20,8 +20,7 @@ partial class Grammar
                 char c = next[0];
                 if (test(c))
                 {
-                    var positionDelta = input.Advance(position, 1);
-                    position.Move(positionDelta);
+                    input.Advance(ref position, 1);
 
                     expectation = null;
                     value = c;

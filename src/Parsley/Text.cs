@@ -12,10 +12,10 @@ public ref struct Text
             ? input.Slice(0)
             : input.Slice(0, characters);
 
-    public (int lineDelta, int columnDelta) Advance(Position start, int characters)
+    public void Advance(ref Position position, int characters)
     {
         if (characters == 0)
-            return (0, 0);
+            return;
 
         int lineDelta = 0;
         int columnDelta = 0;
@@ -27,7 +27,7 @@ public ref struct Text
             if (ch == '\n')
             {
                 lineDelta++;
-                columnDelta = 0 - start.Column;
+                columnDelta = 0 - position.Column;
             }
 
             columnDelta++;
@@ -35,7 +35,8 @@ public ref struct Text
 
         input = input.Slice(peek.Length);
 
-        return (lineDelta, columnDelta);
+        position.Line += lineDelta;
+        position.Column += columnDelta;
     }
 
     public readonly bool EndOfInput => input.Length == 0;

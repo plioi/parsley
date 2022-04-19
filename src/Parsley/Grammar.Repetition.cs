@@ -85,8 +85,7 @@ partial class Grammar
 
             if (span.Length > 0)
             {
-                var positionDelta = input.Advance(position, span.Length);
-                position.Move(positionDelta);
+                input.Advance(ref position, span.Length);
 
                 expectation = null;
                 value = span.ToString();
@@ -107,8 +106,7 @@ partial class Grammar
 
             if (span.Length > 0)
             {
-                var positionDelta = input.Advance(position, span.Length);
-                position.Move(positionDelta);
+                input.Advance(ref position, span.Length);
 
                 expectation = null;
                 value = span.ToString();
