@@ -34,30 +34,23 @@ partial class Grammar
         return (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation) =>
         {
             var originalInput = input;
-            var succeeded = parsers[0](ref input, ref position, out value, out expectation);
 
             var expectations = new List<string>();
-            var i = 1;
 
-            while (!succeeded && (originalInput == input) && i < parsers.Length)
+            foreach (var parser in parsers)
             {
-                if (expectation != null)
-                    expectations.Add(expectation);
-                succeeded = parsers[i](ref input, ref position, out value, out expectation);
-                i++;
+                if (parser(ref input, ref position, out value, out expectation))
+                    return true;
+
+                if (originalInput != input)
+                    return false;
+
+                expectations.Add(expectation);
             }
 
-            if (!succeeded && originalInput == input)
-            {
-                if (expectation != null)
-                    expectations.Add(expectation);
-
-                expectation = CompoundExpectation(expectations);
-                value = default;
-                return false;
-            }
-
-            return succeeded;
+            expectation = CompoundExpectation(expectations);
+            value = default;
+            return false;
         };
     }
 
