@@ -9,9 +9,9 @@ partial class Grammar
     /// When parser p does not consume any input, Label(p, l) is the same
     /// as p, except any messages are replaced with expectation label l.
     /// </summary>
-    public static Parser<T> Label<T>(Parser<T> parse, string label)
+    public static Parser<TValue> Label<TValue>(Parser<TValue> parse, string label)
     {
-        return (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation) =>
+        return (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation) =>
         {
             var originalInput = input;
 

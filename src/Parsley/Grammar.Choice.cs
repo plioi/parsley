@@ -25,13 +25,13 @@ partial class Grammar
     /// implementation of the parser combinators and the generation
     /// of good error messages.
     /// </summary>
-    public static Parser<T> Choice<T>(params Parser<T>[] parsers)
+    public static Parser<TValue> Choice<TValue>(params Parser<TValue>[] parsers)
     {
         if (parsers.Length <= 1)
             throw new ArgumentException(
                 $"{nameof(Choice)} requires at least two parsers to choose between.", nameof(parsers));
 
-        return (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation) =>
+        return (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation) =>
         {
             var originalInput = input;
 

@@ -10,11 +10,11 @@ public static class ParserQuery
     /// <remarks>
     /// In monadic terms, this is the 'Unit' function.
     /// </remarks>
-    /// <typeparam name="T">The type of the value to treat as a parse result.</typeparam>
+    /// <typeparam name="TValue">The type of the value to treat as a parse result.</typeparam>
     /// <param name="value">The value to treat as a parse result.</param>
-    public static Parser<T> SucceedWithThisValue<T>(this T value)
+    public static Parser<TValue> SucceedWithThisValue<TValue>(this TValue value)
     {
-        return (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out T? succeedingValue, [NotNullWhen(false)] out string? expectation) =>
+        return (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out TValue? succeedingValue, [NotNullWhen(false)] out string? expectation) =>
         {
             expectation = null;
             succeedingValue = value!;

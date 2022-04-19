@@ -8,13 +8,13 @@ public static partial class Grammar
     /// Optional(p) is equivalent to p whenever p succeeds or when p fails after consuming input.
     /// If p fails without consuming input, Optional(p) succeeds.
     /// </summary>
-    public static Parser<T?> Optional<T>(Parser<T> parser)
-        where T : class
+    public static Parser<TValue?> Optional<TValue>(Parser<TValue> parser)
+        where TValue : class
     {
-        var nothing = default(T).SucceedWithThisValue();
+        var nothing = default(TValue).SucceedWithThisValue();
         return Choice(
             from x in parser
-            select (T?)x, nothing);
+            select (TValue?)x, nothing);
     }
 
     /// <summary>
@@ -24,10 +24,10 @@ public static partial class Grammar
     [SuppressMessage("ReSharper", "MethodOverloadWithOptionalParameter",
         Justification = "This warning is inaccurate. The other `struct` " +
                         "overload does not in fact hide this one.")]
-    public static Parser<T?> Optional<T>(Parser<T> parser, T? ignoredOverloadResolver = null)
-        where T : struct
+    public static Parser<TValue?> Optional<TValue>(Parser<TValue> parser, TValue? ignoredOverloadResolver = null)
+        where TValue : struct
     {
-        var nothing = default(T?).SucceedWithThisValue();
-        return Choice(parser.Select(x => (T?)x), nothing);
+        var nothing = default(TValue?).SucceedWithThisValue();
+        return Choice(parser.Select(x => (TValue?)x), nothing);
     }
 }

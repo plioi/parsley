@@ -2,47 +2,47 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Parsley;
 
-public delegate Parser<T> ExtendParserBuilder<T>(T left);
-public delegate T AtomNodeBuilder<out T>(string atom);
-public delegate T UnaryNodeBuilder<T>(string symbol, T operand);
-public delegate T BinaryNodeBuilder<T>(T left, string symbol, T right);
+public delegate Parser<TValue> ExtendParserBuilder<TValue>(TValue left);
+public delegate TValue AtomNodeBuilder<out TValue>(string atom);
+public delegate TValue UnaryNodeBuilder<TValue>(string symbol, TValue operand);
+public delegate TValue BinaryNodeBuilder<TValue>(TValue left, string symbol, TValue right);
 public enum Associativity { Left, Right }
 
-public class OperatorPrecedenceParser<T>
+public class OperatorPrecedenceParser<TValue>
 {
-    readonly List<(Parser<string>, Parser<T>)> unitParsers = new();
-    readonly List<(Parser<string>, int precedence, ExtendParserBuilder<T>)> extendParsers = new();
+    readonly List<(Parser<string>, Parser<TValue>)> unitParsers = new();
+    readonly List<(Parser<string>, int precedence, ExtendParserBuilder<TValue>)> extendParsers = new();
 
-    public void Unit(Parser<string> kind, Parser<T> unitParser)
+    public void Unit(Parser<string> kind, Parser<TValue> unitParser)
     {
         unitParsers.Add((kind, unitParser));
     }
 
-    public void Atom(Parser<string> kind, AtomNodeBuilder<T> createAtomNode)
+    public void Atom(Parser<string> kind, AtomNodeBuilder<TValue> createAtomNode)
     {
         Unit(kind, from token in kind
             select createAtomNode(token));
     }
 
-    public void Prefix(Parser<string> operation, int precedence, UnaryNodeBuilder<T> createUnaryNode)
+    public void Prefix(Parser<string> operation, int precedence, UnaryNodeBuilder<TValue> createUnaryNode)
     {
         Unit(operation, from symbol in operation
             from operand in OperandAtPrecedenceLevel(precedence)
             select createUnaryNode(symbol, operand));
     }
 
-    public void Extend(Parser<string> operation, int precedence, ExtendParserBuilder<T> createExtendParser)
+    public void Extend(Parser<string> operation, int precedence, ExtendParserBuilder<TValue> createExtendParser)
     {
         extendParsers.Add((operation, precedence, createExtendParser));
     }
 
-    public void Postfix(Parser<string> operation, int precedence, UnaryNodeBuilder<T> createUnaryNode)
+    public void Postfix(Parser<string> operation, int precedence, UnaryNodeBuilder<TValue> createUnaryNode)
     {
         Extend(operation, precedence, left => from symbol in operation
             select createUnaryNode(symbol, left));
     }
 
-    public void Binary(Parser<string> operation, int precedence, BinaryNodeBuilder<T> createBinaryNode,
+    public void Binary(Parser<string> operation, int precedence, BinaryNodeBuilder<TValue> createBinaryNode,
                        Associativity associativity = Associativity.Left)
     {
         int rightOperandPrecedence = precedence;
@@ -55,15 +55,15 @@ public class OperatorPrecedenceParser<T>
             select createBinaryNode(left, symbol, right));
     }
 
-    public Parser<T> Parser
-        => (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation)
+    public Parser<TValue> Parser
+        => (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation)
                 => Parse(ref input, ref position, 0, out value, out expectation);
 
-    Parser<T> OperandAtPrecedenceLevel(int precedence)
-        => (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation)
+    Parser<TValue> OperandAtPrecedenceLevel(int precedence)
+        => (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation)
             => Parse(ref input, ref position, precedence, out value, out expectation);
 
-    bool Parse(ref ReadOnlySpan<char> input, ref Position position, int precedence, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation)
+    bool Parse(ref ReadOnlySpan<char> input, ref Position position, int precedence, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation)
     {
         if (!TryFindMatchingUnitParser(ref input, ref position, out var matchingUnitParser, out var token))
         {
@@ -92,7 +92,7 @@ public class OperatorPrecedenceParser<T>
         return false;
     }
 
-    bool TryFindMatchingUnitParser(ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out Parser<T>? found, out string? token)
+    bool TryFindMatchingUnitParser(ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out Parser<TValue>? found, out string? token)
     {
         found = null;
         token = null;
@@ -116,7 +116,7 @@ public class OperatorPrecedenceParser<T>
         return false;
     }
 
-    bool TryFindMatchingExtendParserBuilder(ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out ExtendParserBuilder<T>? found, out string? token, out int? tokenPrecedence)
+    bool TryFindMatchingExtendParserBuilder(ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out ExtendParserBuilder<TValue>? found, out string? token, out int? tokenPrecedence)
     {
         found = null;
         token = null;

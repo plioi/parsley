@@ -10,13 +10,13 @@ partial class Grammar
     /// end of the sequence, p must fail without consuming input, otherwise the
     /// sequence will fail with the error reported by p.
     /// </summary>
-    public static Parser<IEnumerable<T>> ZeroOrMore<T>(Parser<T> item)
+    public static Parser<IEnumerable<TValue>> ZeroOrMore<TValue>(Parser<TValue> item)
     {
-        return (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out IEnumerable<T>? values, [NotNullWhen(false)] out string? expectation) =>
+        return (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out IEnumerable<TValue>? values, [NotNullWhen(false)] out string? expectation) =>
         {
             var oldInput = input;
             string? itemExpectation;
-            var list = new List<T>();
+            var list = new List<TValue>();
 
             while (item(ref input, ref position, out var itemValue, out itemExpectation))
             {
@@ -46,7 +46,7 @@ partial class Grammar
     /// <summary>
     /// OneOrMore(p) behaves like ZeroOrMore(p), except that p must succeed at least one time.
     /// </summary>
-    public static Parser<IEnumerable<T>> OneOrMore<T>(Parser<T> item)
+    public static Parser<IEnumerable<TValue>> OneOrMore<TValue>(Parser<TValue> item)
     {
         return from first in item
             from rest in ZeroOrMore(item)
@@ -57,15 +57,15 @@ partial class Grammar
     /// ZeroOrMore(p, s) parses zero or more occurrences of p separated by occurrences of s,
     /// returning the list of values returned by successful applications of p.
     /// </summary>
-    public static Parser<IEnumerable<T>> ZeroOrMore<T, S>(Parser<T> item, Parser<S> separator)
+    public static Parser<IEnumerable<TItem>> ZeroOrMore<TItem, S>(Parser<TItem> item, Parser<S> separator)
     {
-        return Choice(OneOrMore(item, separator), Zero<T>());
+        return Choice(OneOrMore(item, separator), Zero<TItem>());
     }
 
     /// <summary>
     /// OneOrMore(p, s) behaves like ZeroOrMore(p, s), except that p must succeed at least one time.
     /// </summary>
-    public static Parser<IEnumerable<T>> OneOrMore<T, S>(Parser<T> item, Parser<S> separator)
+    public static Parser<IEnumerable<TValue>> OneOrMore<TValue, S>(Parser<TValue> item, Parser<S> separator)
     {
         return from first in item
             from rest in ZeroOrMore(from sep in separator
@@ -116,9 +116,9 @@ partial class Grammar
         };
     }
 
-    static Parser<IEnumerable<T>> Zero<T>()
+    static Parser<IEnumerable<TValue>> Zero<TValue>()
     {
-        return Enumerable.Empty<T>().SucceedWithThisValue();
+        return Enumerable.Empty<TValue>().SucceedWithThisValue();
     }
 
     static IEnumerable<T> List<T>(T first, IEnumerable<T> rest)
