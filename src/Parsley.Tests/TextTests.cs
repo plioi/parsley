@@ -21,37 +21,39 @@ class TextTests
 
     public void CanAdvanceAheadNCharactersWithSnapshotBacktracking()
     {
+        var start = new Position(1, 1);
+
         var empty = new Text("");
 
-        empty.Advance(0).ShouldBe((0, 0));
+        empty.Advance(start, 0).ShouldBe((0, 0));
         empty.ToString().ShouldBe("");
 
-        empty.Advance(1).ShouldBe((0, 0));
+        empty.Advance(start, 1).ShouldBe((0, 0));
         empty.ToString().ShouldBe("");
 
         var abc = new Text("abc");
 
-        abc.Advance(0).ShouldBe((0, 0));
+        abc.Advance(start, 0).ShouldBe((0, 0));
         abc.ToString().ShouldBe("abc");
 
         var snapshot = abc;
-        abc.Advance(1).ShouldBe((0, 1));
+        abc.Advance(start, 1).ShouldBe((0, 1));
         abc.ToString().ShouldBe("bc");
 
         abc = snapshot;
-        abc.Advance(2).ShouldBe((0, 2));
+        abc.Advance(start, 2).ShouldBe((0, 2));
         abc.ToString().ShouldBe("c");
 
         abc = snapshot;
-        abc.Advance(3).ShouldBe((0, 3));
+        abc.Advance(start, 3).ShouldBe((0, 3));
         abc.ToString().ShouldBe("");
 
         abc = snapshot;
-        abc.Advance(4).ShouldBe((0, 3));
+        abc.Advance(start, 4).ShouldBe((0, 3));
         abc.ToString().ShouldBe("");
 
         abc = snapshot;
-        abc.Advance(100).ShouldBe((0, 3));
+        abc.Advance(start, 100).ShouldBe((0, 3));
         abc.ToString().ShouldBe("");
     }
 
@@ -71,21 +73,27 @@ class TextTests
         empty.TakeWhile(letters).ToString().ShouldBe("");
 
         var abc123 = new Text("abc123");
+        var start = new Position(1, 1);
+        var snapshot = abc123;
+
         abc123.TakeWhile(digits).ToString().ShouldBe("");
         abc123.TakeWhile(letters).ToString().ShouldBe("abc");
         abc123.TakeWhile(alphanumerics).ToString().ShouldBe("abc123");
 
-        abc123.Advance(2).ShouldBe((0, 2));
+        abc123 = snapshot;
+        abc123.Advance(start, 2).ShouldBe((0, 2));
         abc123.TakeWhile(digits).ToString().ShouldBe("");
         abc123.TakeWhile(letters).ToString().ShouldBe("c");
         abc123.TakeWhile(alphanumerics).ToString().ShouldBe("c123");
 
-        abc123.Advance(1).ShouldBe((0, 1));
+        abc123 = snapshot;
+        abc123.Advance(start, 3).ShouldBe((0, 3));
         abc123.TakeWhile(digits).ToString().ShouldBe("123");
         abc123.TakeWhile(letters).ToString().ShouldBe("");
         abc123.TakeWhile(alphanumerics).ToString().ShouldBe("123");
 
-        abc123.Advance(3).ShouldBe((0, 3));
+        abc123 = snapshot;
+        abc123.Advance(start, 6).ShouldBe((0, 6));
         abc123.TakeWhile(digits).ToString().ShouldBe("");
         abc123.TakeWhile(letters).ToString().ShouldBe("");
         abc123.TakeWhile(alphanumerics).ToString().ShouldBe("");
@@ -96,12 +104,12 @@ class TextTests
         var empty = new Text("");
         var position = new Position(1, 1);
 
-        var delta = empty.Advance(0);
+        var delta = empty.Advance(position, 0);
         delta.ShouldBe((0, 0));
         position.Move(delta);
         position.ShouldBe(new Position(1, 1));
 
-        delta = empty.Advance(1);
+        delta = empty.Advance(position, 1);
         delta.ShouldBe((0, 0));
         position.Move(delta);
         position.ShouldBe(new Position(1, 1));
@@ -114,21 +122,21 @@ class TextTests
         position = new Position(1, 1);
 
         var snapshot = list;
-        delta = list.Advance(0);
+        delta = list.Advance(position, 0);
         delta.ShouldBe((0, 0));
         position.Move(delta);
         position.ShouldBe(new Position(1, 1));
 
         list = snapshot;
         position = new(1, 1);
-        delta = list.Advance(5);
+        delta = list.Advance(position, 5);
         delta.ShouldBe((0, 5));
         position.Move(delta);
         position.ShouldBe(new Position(1, 6));
 
         list = snapshot;
         position = new(1, 1);
-        delta = list.Advance(6);
+        delta = list.Advance(position, 6);
         delta.ShouldBe((0, 6));
         position.Move(delta);
         position.ShouldBe(new Position(1, 7));
@@ -136,21 +144,21 @@ class TextTests
 
         list = snapshot;
         position = new(1, 1);
-        delta = list.Advance(7);
+        delta = list.Advance(position, 7);
         delta.ShouldBe((1, 0));
         position.Move(delta);
         position.ShouldBe(new Position(2, 1));
 
         list = snapshot;
         position = new(1, 1);
-        delta = list.Advance(12);
+        delta = list.Advance(position, 12);
         delta.ShouldBe((1, 5));
         position.Move(delta);
         position.ShouldBe(new Position(2, 6));
 
         list = snapshot;
         position = new(1, 1);
-        delta = list.Advance(13);
+        delta = list.Advance(position, 13);
         delta.ShouldBe((1, 6));
         position.Move(delta);
         position.ShouldBe(new Position(2, 7));
@@ -158,21 +166,21 @@ class TextTests
 
         list = snapshot;
         position = new(1, 1);
-        delta = list.Advance(14);
+        delta = list.Advance(position, 14);
         delta.ShouldBe((2, 0));
         position.Move(delta);
         position.ShouldBe(new Position(3, 1));
 
         list = snapshot;
         position = new(1, 1);
-        delta = list.Advance(19);
+        delta = list.Advance(position, 19);
         delta.ShouldBe((2, 5));
         position.Move(delta);
         position.ShouldBe(new Position(3, 6));
 
         list = snapshot;
         position = new(1, 1);
-        delta = list.Advance(20);
+        delta = list.Advance(position, 20);
         delta.ShouldBe((2, 6));
         position.Move(delta);
         position.ShouldBe(new Position(3, 7));
@@ -180,14 +188,14 @@ class TextTests
 
         list = snapshot;
         position = new(1, 1);
-        delta = list.Advance(21);
+        delta = list.Advance(position, 21);
         delta.ShouldBe((3, 0));
         position.Move(delta);
         position.ShouldBe(new Position(4, 1));
 
         list = snapshot;
         position = new(1, 1);
-        delta = list.Advance(1000);
+        delta = list.Advance(position, 1000);
         delta.ShouldBe((3, 0));
         position.Move(delta);
         position.ShouldBe(new Position(4, 1));

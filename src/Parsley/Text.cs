@@ -25,12 +25,12 @@ public ref struct Text
             ? input.Slice(index)
             : input.Slice(index, characters);
 
-    public (int lineDelta, int columnDelta) Advance(int characters)
+    public (int lineDelta, int columnDelta) Advance(Position start, int characters)
     {
         if (characters == 0)
             return (0, 0);
 
-        int originalColumn = index - input.Slice(0, length: index).LastIndexOf('\n');
+        int originalColumn = start.Column;
         int columnDelta = 0;
         int newIndex = index + characters;
         int countNewLines = 0;
