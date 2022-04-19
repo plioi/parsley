@@ -14,26 +14,25 @@ partial class Grammar
     {
         return (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out IEnumerable<T>? values, [NotNullWhen(false)] out string? expectation) =>
         {
-            var oldPosition = position;
+            var oldInput = input;
             var succeeded = item(ref input, ref position, out var itemValue, out var itemExpectation);
-            var newPosition = position;
 
             var list = new List<T>();
 
             while (succeeded)
             {
-                if (oldPosition == newPosition)
-                    throw new Exception($"Parser encountered a potential infinite loop at position {newPosition}.");
+                if (oldInput == input)
+                    throw new Exception($"Parser encountered a potential infinite loop at position {position}.");
 
                 list.Add(itemValue!);
-                oldPosition = newPosition;
+
+                oldInput = input;
                 succeeded = item(ref input, ref position, out itemValue, out itemExpectation);
-                newPosition = position;
             }
 
             //The item parser finally failed.
 
-            if (oldPosition != newPosition)
+            if (oldInput != input)
             {
                 expectation = itemExpectation!;
                 values = null;

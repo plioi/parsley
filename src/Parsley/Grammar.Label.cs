@@ -13,12 +13,12 @@ partial class Grammar
     {
         return (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation) =>
         {
-            var start = position;
+            var originalInput = input;
 
             if (parse(ref input, ref position, out value, out expectation))
                 return true;
 
-            if (start == position)
+            if (originalInput == input)
             {
                 expectation = label;
                 value = default;

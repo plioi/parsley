@@ -13,15 +13,15 @@ partial class Grammar
     {
         return (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out T? value, [NotNullWhen(false)] out string? expectation) =>
         {
-            var snapshot = input;
+            var originalInput = input;
             var originalPosition = position;
 
             if (parse(ref input, ref position, out value, out expectation))
                 return true;
 
-            if (originalPosition != position)
+            if (originalInput != input)
             {
-                input = snapshot;
+                input = originalInput;
                 position = originalPosition;
             }
 
