@@ -4,20 +4,17 @@ public ref struct Text
 {
     int index;
     readonly ReadOnlySpan<char> input;
-    int line;
 
     public Text(ReadOnlySpan<char> input)
-        : this(input, 0, 1) { }
+        : this(input, 0) { }
 
-    Text(ReadOnlySpan<char> input, int index, int line)
+    Text(ReadOnlySpan<char> input, int index)
     {
         this.input = input;
         this.index = index;
 
         if (index > input.Length)
             this.index = input.Length;
-
-        this.line = line;
     }
 
     public readonly ReadOnlySpan<char> Peek(int characters)
@@ -44,7 +41,6 @@ public ref struct Text
         }
 
         index += characters;
-        line += lineDelta;
 
         if (index > input.Length)
             index = input.Length;
