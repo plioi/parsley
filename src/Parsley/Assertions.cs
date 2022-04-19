@@ -62,7 +62,7 @@ public static class Assertions
         var displayFriendlyTrailingCharacters = new string(peek.Skip(1).TakeWhile(x => !char.IsControl(x)).ToArray());
 
         var message = new StringBuilder();
-        message.AppendLine(position + ": " + expectation + " expected");
+        message.AppendLine(position.ToString() + ": " + expectation + " expected");
         message.AppendLine();
         message.AppendLine($"\t{offendingCharacter}{displayFriendlyTrailingCharacters}");
         message.AppendLine("\t^");
@@ -86,5 +86,12 @@ public static class Assertions
             throw new AssertionException("end of input", input.ToString());
 
         input.LeavingUnparsedInput("");
+    }
+
+    public static void ShouldBe(this Position actual, Position expected)
+    {
+        if (actual.Line != expected.Line ||
+            actual.Column != expected.Column)
+            throw new AssertionException(expected.ToString(), actual.ToString());
     }
 }

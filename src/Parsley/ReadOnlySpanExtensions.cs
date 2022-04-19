@@ -29,9 +29,7 @@ public static class ReadOnlySpanExtensions
         }
 
         input = input.Slice(peek.Length);
-
-        position.Line += lineDelta;
-        position.Column += columnDelta;
+        position = new Position(position.Line + lineDelta, position.Column + columnDelta);
     }
 
     public static bool EndOfInput(this ref ReadOnlySpan<char> input) => input.Length == 0;

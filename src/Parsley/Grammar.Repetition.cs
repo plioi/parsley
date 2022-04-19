@@ -22,7 +22,7 @@ partial class Grammar
             while (succeeded)
             {
                 if (oldInput == input)
-                    throw new Exception($"Parser encountered a potential infinite loop at position {position}.");
+                    throw new Exception($"Parser encountered a potential infinite loop at position {position.ToString()}.");
 
                 list.Add(itemValue!);
 

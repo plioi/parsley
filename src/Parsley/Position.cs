@@ -1,6 +1,6 @@
 namespace Parsley;
 
-public struct Position
+public readonly ref struct Position
 {
     public Position(int line, int column)
     {
@@ -8,8 +8,8 @@ public struct Position
         Column = column;
     }
 
-    public int Line { get; set; }
-    public int Column { get; set; }
+    public int Line { get; init; }
+    public int Column { get; init; }
 
     public override string ToString()
         => $"({Line}, {Column})";
