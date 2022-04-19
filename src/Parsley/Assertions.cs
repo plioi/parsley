@@ -82,7 +82,7 @@ public static class Assertions
 
     static void AtEndOfInput(this Text text)
     {
-        if (!text.EndOfInput)
+        if (!text.EndOfInput())
             throw new AssertionException("end of input", text.ToString());
 
         text.LeavingUnparsedInput("");

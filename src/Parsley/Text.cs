@@ -2,17 +2,23 @@ namespace Parsley;
 
 public ref struct Text
 {
-    ReadOnlySpan<char> input;
+    public ReadOnlySpan<char> input;
 
     public Text(ReadOnlySpan<char> input)
         => this.input = input;
 
-    public readonly ReadOnlySpan<char> Peek(int characters)
-        => characters >= input.Length
-            ? input.Slice(0)
-            : input.Slice(0, characters);
+    public readonly override string ToString()
+        => input.ToString();
+}
 
-    public void Advance(ref Position position, int characters)
+public static class TextExtensions
+{
+    public static ReadOnlySpan<char> Peek(this ref Text text, int characters)
+        => characters >= text.input.Length
+            ? text.input.Slice(0)
+            : text.input.Slice(0, characters);
+
+    public static void Advance(this ref Text text, ref Position position, int characters)
     {
         if (characters == 0)
             return;
@@ -20,7 +26,7 @@ public ref struct Text
         int lineDelta = 0;
         int columnDelta = 0;
 
-        var peek = Peek(characters);
+        var peek = text.Peek(characters);
 
         foreach (var ch in peek)
         {
@@ -33,24 +39,21 @@ public ref struct Text
             columnDelta++;
         }
 
-        input = input.Slice(peek.Length);
+        text.input = text.input.Slice(peek.Length);
 
         position.Line += lineDelta;
         position.Column += columnDelta;
     }
 
-    public readonly bool EndOfInput => input.Length == 0;
+    public static bool EndOfInput(this ref Text text) => text.input.Length == 0;
 
-    public readonly ReadOnlySpan<char> TakeWhile(Predicate<char> test)
+    public static ReadOnlySpan<char> TakeWhile(this ref Text text, Predicate<char> test)
     {
         int i = 0;
 
-        while (i < input.Length && test(input[i]))
+        while (i < text.input.Length && test(text.input[i]))
             i++;
 
-        return Peek(i);
+        return text.Peek(i);
     }
-
-    public readonly override string ToString()
-        => input.ToString();
 }

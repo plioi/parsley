@@ -2,7 +2,7 @@ using System.Text;
 
 namespace Parsley.Tests;
 
-class TextTests
+class TextExtensionsTests
 {
     public void CanPeekAheadNCharacters()
     {
@@ -71,8 +71,11 @@ class TextTests
 
     public void DetectsTheEndOfInput()
     {
-        new Text("!").EndOfInput.ShouldBeFalse();
-        new Text("").EndOfInput.ShouldBeTrue();
+        var nonempty = new Text("!");
+        nonempty.EndOfInput().ShouldBeFalse();
+
+        var empty = new Text("");
+        empty.EndOfInput().ShouldBeTrue();
     }
 
     public void CanMatchLeadingCharactersByPredicate()
