@@ -20,7 +20,9 @@ public ref struct Text
         int lineDelta = 0;
         int columnDelta = 0;
 
-        foreach (var ch in Peek(characters))
+        var peek = Peek(characters);
+
+        foreach (var ch in peek)
         {
             if (ch == '\n')
             {
@@ -31,9 +33,7 @@ public ref struct Text
             columnDelta++;
         }
 
-        input = characters < input.Length
-            ? input.Slice(characters)
-            : ReadOnlySpan<char>.Empty;
+        input = input.Slice(peek.Length);
 
         return (lineDelta, columnDelta);
     }
