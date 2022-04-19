@@ -25,11 +25,12 @@ public ref struct Text
             ? input.Slice(index)
             : input.Slice(index, characters);
 
-    public void Advance(int characters)
+    public (int lineDelta, int columnDelta) Advance(int characters)
     {
         if (characters == 0)
-            return;
+            return (0, 0);
 
+        int originalColumn = Column;
         int newIndex = index + characters;
         int countNewLines = 0;
 
@@ -44,6 +45,8 @@ public ref struct Text
 
         if (index > input.Length)
             index = input.Length;
+
+        return (countNewLines, Column - originalColumn);
     }
 
     public readonly bool EndOfInput => index >= input.Length;

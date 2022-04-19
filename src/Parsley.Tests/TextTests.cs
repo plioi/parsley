@@ -23,35 +23,35 @@ class TextTests
     {
         var empty = new Text("");
 
-        empty.Advance(0);
+        empty.Advance(0).ShouldBe((0, 0));
         empty.ToString().ShouldBe("");
 
-        empty.Advance(1);
+        empty.Advance(1).ShouldBe((0, 0));
         empty.ToString().ShouldBe("");
 
         var abc = new Text("abc");
 
-        abc.Advance(0);
+        abc.Advance(0).ShouldBe((0, 0));
         abc.ToString().ShouldBe("abc");
 
         var snapshot = abc;
-        abc.Advance(1);
+        abc.Advance(1).ShouldBe((0, 1));
         abc.ToString().ShouldBe("bc");
 
         abc = snapshot;
-        abc.Advance(2);
+        abc.Advance(2).ShouldBe((0, 2));
         abc.ToString().ShouldBe("c");
 
         abc = snapshot;
-        abc.Advance(3);
+        abc.Advance(3).ShouldBe((0, 3));
         abc.ToString().ShouldBe("");
 
         abc = snapshot;
-        abc.Advance(4);
+        abc.Advance(4).ShouldBe((0, 3));
         abc.ToString().ShouldBe("");
 
         abc = snapshot;
-        abc.Advance(100);
+        abc.Advance(100).ShouldBe((0, 3));
         abc.ToString().ShouldBe("");
     }
 
@@ -75,17 +75,17 @@ class TextTests
         abc123.TakeWhile(letters).ToString().ShouldBe("abc");
         abc123.TakeWhile(alphanumerics).ToString().ShouldBe("abc123");
 
-        abc123.Advance(2);
+        abc123.Advance(2).ShouldBe((0, 2));
         abc123.TakeWhile(digits).ToString().ShouldBe("");
         abc123.TakeWhile(letters).ToString().ShouldBe("c");
         abc123.TakeWhile(alphanumerics).ToString().ShouldBe("c123");
 
-        abc123.Advance(1);
+        abc123.Advance(1).ShouldBe((0, 1));
         abc123.TakeWhile(digits).ToString().ShouldBe("123");
         abc123.TakeWhile(letters).ToString().ShouldBe("");
         abc123.TakeWhile(alphanumerics).ToString().ShouldBe("123");
 
-        abc123.Advance(3);
+        abc123.Advance(3).ShouldBe((0, 3));
         abc123.TakeWhile(digits).ToString().ShouldBe("");
         abc123.TakeWhile(letters).ToString().ShouldBe("");
         abc123.TakeWhile(alphanumerics).ToString().ShouldBe("");
@@ -94,8 +94,12 @@ class TextTests
     public void CanGetCurrentPosition()
     {
         var empty = new Text("");
-        empty.Advance(0);empty.Position.ShouldBe(new Position(1, 1));
-        empty.Advance(1);empty.Position.ShouldBe(new Position(1, 1));
+
+        empty.Advance(0).ShouldBe((0, 0));
+        empty.Position.ShouldBe(new Position(1, 1));
+
+        empty.Advance(1).ShouldBe((0, 0));
+        empty.Position.ShouldBe(new Position(1, 1));
 
         var lines = new StringBuilder()
             .Append("Line 1\n")//Index 0-5, \n
@@ -104,50 +108,50 @@ class TextTests
         var list = new Text(lines.ToString());
 
         var snapshot = list;
-        list.Advance(0);
+        list.Advance(0).ShouldBe((0, 0));
         list.Position.ShouldBe(new Position(1, 1));
 
         list = snapshot;
-        list.Advance(5);
+        list.Advance(5).ShouldBe((0, 5));
         list.Position.ShouldBe(new Position(1, 6));
 
         list = snapshot;
-        list.Advance(6);
+        list.Advance(6).ShouldBe((0, 6));
         list.Position.ShouldBe(new Position(1, 7));
 
 
         list = snapshot;
-        list.Advance(7);
+        list.Advance(7).ShouldBe((1, 0));
         list.Position.ShouldBe(new Position(2, 1));
 
         list = snapshot;
-        list.Advance(12);
+        list.Advance(12).ShouldBe((1, 5));
         list.Position.ShouldBe(new Position(2, 6));
 
         list = snapshot;
-        list.Advance(13);
+        list.Advance(13).ShouldBe((1, 6));
         list.Position.ShouldBe(new Position(2, 7));
 
 
         list = snapshot;
-        list.Advance(14);
+        list.Advance(14).ShouldBe((2, 0));
         list.Position.ShouldBe(new Position(3, 1));
 
         list = snapshot;
-        list.Advance(19);
+        list.Advance(19).ShouldBe((2, 5));
         list.Position.ShouldBe(new Position(3, 6));
 
         list = snapshot;
-        list.Advance(20);
+        list.Advance(20).ShouldBe((2, 6));
         list.Position.ShouldBe(new Position(3, 7));
 
 
         list = snapshot;
-        list.Advance(21);
+        list.Advance(21).ShouldBe((3, 0));
         list.Position.ShouldBe(new Position(4, 1));
 
         list = snapshot;
-        list.Advance(1000);
+        list.Advance(1000).ShouldBe((3, 0));
         list.Position.ShouldBe(new Position(4, 1));
     }
 }

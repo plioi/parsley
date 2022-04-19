@@ -12,7 +12,7 @@ partial class Grammar
 
             if (peek.Equals(symbol, StringComparison.Ordinal))
             {
-                input.Advance(symbol.Length);
+                var positionDelta = input.Advance(symbol.Length);
 
                 expectation = null;
                 value = symbol;
