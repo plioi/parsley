@@ -30,31 +30,26 @@ public ref struct Text
         if (characters == 0)
             return (0, 0);
 
-        int originalColumn = start.Column;
+        int lineDelta = 0;
         int columnDelta = 0;
-        int newIndex = index + characters;
-        int countNewLines = 0;
-
         foreach (var ch in Peek(characters))
         {
             if (ch == '\n')
             {
-                countNewLines++;
-                columnDelta = 0 - originalColumn;
+                lineDelta++;
+                columnDelta = 0 - start.Column;
             }
 
             columnDelta++;
         }
 
-        int newLineNumber = line + countNewLines;
-
-        index = newIndex;
-        line = newLineNumber;
+        index += characters;
+        line += lineDelta;
 
         if (index > input.Length)
             index = input.Length;
 
-        return (countNewLines, columnDelta);
+        return (lineDelta, columnDelta);
     }
 
     public readonly bool EndOfInput => index >= input.Length;
