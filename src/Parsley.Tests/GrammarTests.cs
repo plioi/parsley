@@ -70,17 +70,12 @@ class GrammarTests
 
         parser.FailsToParse("ABABA!", "!", "B expected");
 
-        Parser<string> succeedWithoutConsuming = (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
-        {
-            expectation = null;
-            value = "ignored value";
-            return true;
-        };
+        var succeedWithThisValue = "ignored value".SucceedWithThisValue();
         var infiniteLoop = () =>
         {
             ReadOnlySpan<char> input = "";
             Position position = new(1, 1);
-            ZeroOrMore(succeedWithoutConsuming)(ref input, ref position, out _, out _);
+            ZeroOrMore(succeedWithThisValue)(ref input, ref position, out _, out _);
         };
 
         infiniteLoop
@@ -102,12 +97,7 @@ class GrammarTests
 
         parser.FailsToParse("ABABA!", "!", "B expected");
 
-        Parser<string> succeedWithoutConsuming = (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
-        {
-            expectation = null;
-            value = "ignored value";
-            return true;
-        };
+        var succeedWithoutConsuming = "ignored value".SucceedWithThisValue();
         var infiniteLoop = () =>
         {
             ReadOnlySpan<char> input = "";
