@@ -119,7 +119,7 @@ class OperatorPrecedenceParserTests
         value.ToString().ShouldBe(expectedTree);
     }
 
-    static readonly Parser<string> Digit = from c in Character(char.IsDigit, "Digit") select c.ToString();
+    static readonly Parser<string> Digit = from c in Single(char.IsDigit, "Digit") select c.ToString();
     static readonly Parser<string> Name = OneOrMore(char.IsLetter, "Name");
     static readonly Parser<string> Increment = Operator("++");
     static readonly Parser<string> Decrement = Operator("--");

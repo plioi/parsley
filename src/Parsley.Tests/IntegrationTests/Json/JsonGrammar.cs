@@ -69,28 +69,28 @@ public class JsonGrammar
         from leading in Digits
 
         from optionalFraction in Optional(
-            from dot in Character('.')
+            from dot in Single('.')
             from digits in Digits
             select dot + digits)
 
         from optionalExponent in Optional(
-            from e in Character(x => x is 'e' or 'E', "exponent")
-            from sign in Optional(Character(x => x is '+' or '-', "sign").Select(x => x.ToString()))
+            from e in Single(x => x is 'e' or 'E', "exponent")
+            from sign in Optional(Single(x => x is '+' or '-', "sign").Select(x => x.ToString()))
             from digits in Digits
             select $"{e}{sign}{digits}")
 
         select $"{leading}{optionalFraction}{optionalExponent}";
 
-    static readonly Parser<char> LetterOrDigit = Character(char.IsLetterOrDigit, "letter or digit");
+    static readonly Parser<char> LetterOrDigit = Single(char.IsLetterOrDigit, "letter or digit");
 
     static readonly Parser<string> Quote =
 
-        from open in Character('"')
+        from open in Single('"')
         from content in ZeroOrMore(
             Choice(
-                from slash in Character('\\')
+                from slash in Single('\\')
                 from unescaped in Choice(
-                    from escape in Character(c => "\"\\bfnrt/".Contains(c), "escape character")
+                    from escape in Single(c => "\"\\bfnrt/".Contains(c), "escape character")
                     select $"{escape}"
                         .Replace("\"", "\"")
                         .Replace("\\", "\\")
@@ -101,7 +101,7 @@ public class JsonGrammar
                         .Replace("t", "\t")
                         .Replace("/", "/"),
 
-                    from u in Label(Character('u'), "unicode escape sequence")
+                    from u in Label(Single('u'), "unicode escape sequence")
                     from _0 in LetterOrDigit
                     from _1 in LetterOrDigit
                     from _2 in LetterOrDigit
@@ -112,8 +112,8 @@ public class JsonGrammar
                             CultureInfo.InvariantCulture))
                 )
                 select unescaped,
-                Character(c => c != '"' && c != '\\', "non-quote, not-slash character").Select(x => x.ToString())
+                Single(c => c != '"' && c != '\\', "non-quote, not-slash character").Select(x => x.ToString())
             ))
-        from close in Character('"')
+        from close in Single('"')
         select string.Join("", content);
 }

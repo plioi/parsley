@@ -11,22 +11,22 @@ class GrammarTests
         value = null;
         return false;
     };
-    static readonly Parser<char> Digit = Character(char.IsDigit, "Digit");
-    static readonly Parser<char> Letter = Character(char.IsLetter, "Letter");
+    static readonly Parser<char> Digit = Single(char.IsDigit, "Digit");
+    static readonly Parser<char> Letter = Single(char.IsLetter, "Letter");
 
     readonly Parser<char> A, B, COMMA;
     readonly Parser<string> AB;
 
     public GrammarTests()
     {
-        A = Character('A');
-        B = Character('B');
+        A = Single('A');
+        B = Single('B');
 
         AB = from a in A
             from b in B
             select $"{a}{b}";
 
-        COMMA = Character(',');
+        COMMA = Single(',');
     }
 
     public void CanFailWithoutConsumingInput()
@@ -217,8 +217,8 @@ class GrammarTests
     public void ProvidesBacktrackingTraceUponExtremeFailureOfLookaheadParsers()
     {
         var sequence = (char first, char second) =>
-            from char1 in Character(first)
-            from char2 in Character(second)
+            from char1 in Single(first)
+            from char2 in Single(second)
             select $"{char1}{char2}";
 
         var ab = sequence('A', 'B');
@@ -342,20 +342,20 @@ class GrammarTests
             "(AB, A[C|D], or AE) expected");
     }
 
-    public void ProvidesConveniencePrimitiveRecognizingOneExpectedCharacter()
+    public void ProvidesConveniencePrimitiveRecognizingSingleExpectedNextItem()
     {
-        var x = Character('x');
+        var x = Single('x');
 
         x.FailsToParse("", "", "x expected");
         x.FailsToParse("yz", "yz", "x expected");
         x.PartiallyParses("xyz", "yz").ShouldBe('x');
     }
 
-    public void ProvidesConveniencePrimitiveRecognizingOneCharacterSatisfyingSomePredicate()
+    public void ProvidesConveniencePrimitiveRecognizingSingleNextItemSatisfyingSomePredicate()
     {
-        var lower = Character(char.IsLower, "Lowercase");
-        var upper = Character(char.IsUpper, "Uppercase");
-        var caseInsensitive = Character(char.IsLetter, "Case Insensitive");
+        var lower = Single(char.IsLower, "Lowercase");
+        var upper = Single(char.IsUpper, "Uppercase");
+        var caseInsensitive = Single(char.IsLetter, "Case Insensitive");
 
         lower.FailsToParse("", "", "Lowercase expected");
 
@@ -471,9 +471,9 @@ public class AlternationTests
 
     public AlternationTests()
     {
-        A = from c in Character('A') select c.ToString();
-        B = from c in Character('B') select c.ToString();
-        C = from c in Character('C') select c.ToString();
+        A = from c in Single('A') select c.ToString();
+        B = from c in Single('B') select c.ToString();
+        C = from c in Single('C') select c.ToString();
     }
 
     public void ChoosingRequiresAtLeastTwoParsersToChooseBetween()
