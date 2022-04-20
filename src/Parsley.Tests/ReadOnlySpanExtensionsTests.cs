@@ -4,7 +4,7 @@ namespace Parsley.Tests;
 
 class ReadOnlySpanExtensionsTests
 {
-    public void CanPeekAheadNCharacters()
+    public void CanPeekAheadNItems()
     {
         ReadOnlySpan<char> empty = "";
         empty.Peek(0).ToString().ShouldBe("");
@@ -19,7 +19,7 @@ class ReadOnlySpanExtensionsTests
         abc.Peek(100).ToString().ShouldBe("abc");
     }
 
-    public void CanAdvanceAheadNCharactersWithSnapshotBacktracking()
+    public void CanAdvanceAheadNItemsWithSnapshotBacktracking()
     {
         ReadOnlySpan<char> empty = "";
         var position = new Position(1, 1);
@@ -69,7 +69,7 @@ class ReadOnlySpanExtensionsTests
         abc.ToString().ShouldBe("");
     }
 
-    public void CanMatchLeadingCharactersByPredicate()
+    public void CanMatchLeadingItemsByPredicate()
     {
         Predicate<char> letters = char.IsLetter;
         Predicate<char> digits = char.IsDigit;

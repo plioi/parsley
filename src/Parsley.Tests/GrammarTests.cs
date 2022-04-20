@@ -362,7 +362,7 @@ class GrammarTests
         caseInsensitive.PartiallyParses("abcDEF", "bcDEF").ShouldBe('a');
     }
 
-    public void ProvidesConveniencePrimitiveRecognizingOptionalSequencesOfCharactersSatisfyingSomePredicate()
+    public void ProvidesConveniencePrimitiveRecognizingOptionalSequencesOfItemsSatisfyingSomePredicate()
     {
         var lower = ZeroOrMore(char.IsLower);
         var upper = ZeroOrMore(char.IsUpper);
@@ -383,7 +383,7 @@ class GrammarTests
         caseInsensitive.Parses("abcDEF").ShouldBe("abcDEF");
     }
 
-    public void ProvidesConveniencePrimitiveRecognizingNonemptySequencesOfCharactersSatisfyingSomePredicate()
+    public void ProvidesConveniencePrimitiveRecognizingNonemptySequencesOfItemsSatisfyingSomePredicate()
     {
         var lower = OneOrMore(char.IsLower, "Lowercase");
         var upper = OneOrMore(char.IsUpper, "Uppercase");

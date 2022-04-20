@@ -58,13 +58,13 @@ public static class Assertions
     {
         var peek = input.Peek(20).ToString();
 
-        var offendingCharacter = peek[0];
-        var displayFriendlyTrailingCharacters = new string(peek.Skip(1).TakeWhile(x => !char.IsControl(x)).ToArray());
+        var offendingItem = peek[0];
+        var displayFriendlyTrailingItems = new string(peek.Skip(1).TakeWhile(x => !char.IsControl(x)).ToArray());
 
         var message = new StringBuilder();
         message.AppendLine(position.ToString() + ": " + expectation + " expected");
         message.AppendLine();
-        message.AppendLine($"\t{offendingCharacter}{displayFriendlyTrailingCharacters}");
+        message.AppendLine($"\t{offendingItem}{displayFriendlyTrailingItems}");
         message.AppendLine("\t^");
 
         throw new AssertionException(message.ToString(), "parser success", "parser failure");

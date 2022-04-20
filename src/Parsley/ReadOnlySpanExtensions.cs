@@ -2,20 +2,20 @@ namespace Parsley;
 
 public static class ReadOnlySpanExtensions
 {
-    public static ReadOnlySpan<char> Peek(this ref ReadOnlySpan<char> input, int characters)
-        => characters >= input.Length
+    public static ReadOnlySpan<char> Peek(this ref ReadOnlySpan<char> input, int length)
+        => length >= input.Length
             ? input.Slice(0)
-            : input.Slice(0, characters);
+            : input.Slice(0, length);
 
-    public static void Advance(this ref ReadOnlySpan<char> input, ref Position position, int characters)
+    public static void Advance(this ref ReadOnlySpan<char> input, ref Position position, int length)
     {
-        if (characters == 0)
+        if (length == 0)
             return;
 
         int lineDelta = 0;
         int columnDelta = 0;
 
-        var peek = input.Peek(characters);
+        var peek = input.Peek(length);
 
         foreach (var ch in peek)
         {
