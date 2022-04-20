@@ -1,29 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using static Parsley.Grammar;
 
 namespace Parsley.Tests;
 
 class ParserQueryTests
 {
-    static readonly Parser<char> Next = (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out char value, [NotNullWhen(false)] out string? expectation) =>
-    {
-        var next = input.Peek(1);
-
-        if (next.Length == 1)
-        {
-            char c = next[0];
-
-            input.Advance(ref position, 1);
-
-            expectation = null;
-            value = c;
-            return true;
-        }
-
-        expectation = "character";
-        value = default;
-        return false;
-    };
+    static readonly Parser<char> Next = Single(_ => true, "character");
 
     static readonly Parser<string> Fail = (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
     {
