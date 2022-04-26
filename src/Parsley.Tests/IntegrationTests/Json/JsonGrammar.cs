@@ -7,51 +7,25 @@ public class JsonGrammar
 {
     public static readonly Parser<object?> JsonDocument;
 
+    static readonly Parser<string> Whitespace = ZeroOrMore(char.IsWhiteSpace);
     static readonly Parser<object?> Value = default!;
-    
+
     static JsonGrammar()
     {
-        var Whitespace = ZeroOrMore(char.IsWhiteSpace);
-
-        var Key =
-            from leading in Whitespace
-            from quote in Quote
-            from trailing in Whitespace
-            select quote;
-
-        var Pair =
-            from key in Key
-            from colon in Operator(":")
-            from value in Value
-            select new KeyValuePair<string, object>(key, value);
+        var True = Literal("true", true);
+        var False = Literal("false", false);
+        var Null = Literal("null", null);
 
         Value =
             from leading in Whitespace
             from value in Choice(
-                from @true in Keyword("true")
-                select (object) true,
-
-                from @false in Keyword("false")
-                select (object) false,
-
-                from @null in Keyword("null")
-                select (object?) null,
-
-                from number in Number
-                select (object) decimal.Parse(number, NumberStyles.Any, CultureInfo.InvariantCulture),
-
-                from quotation in Quote
-                select (object) quotation,
-
-                from open in Operator("{")
-                from pairs in ZeroOrMore(Pair, Operator(","))
-                from close in Operator("}")
-                select (object) pairs.ToDictionary(x => x.Key, x => x.Value),
-
-                from open in Operator("[")
-                from items in ZeroOrMore(Value, Operator(","))
-                from close in Operator("]")
-                select (object) items.ToArray()
+                True,
+                False,
+                Null,
+                Number,
+                from quotation in Quote select (object) quotation,
+                Dictionary,
+                Array
             )
             from trailing in Whitespace
             select value;
@@ -62,58 +36,104 @@ public class JsonGrammar
             select value;
     }
 
-    static readonly Parser<string> Digits = OneOrMore(char.IsDigit, "0..9");
+    static Parser<object> Literal(string literal, object? value) =>
+        from x in Keyword(literal)
+        select value;
 
-    static readonly Parser<string> Number =
+    static Parser<object> Array =>
+        from open in Operator("[")
+        from items in ZeroOrMore(Value, Operator(","))
+        from close in Operator("]")
+        select (object) items.ToArray();
 
-        from leading in Digits
+    static Parser<object> Dictionary
+    {
+        get
+        {
+            var Key =
+                from leading in Whitespace
+                from quote in Quote
+                from trailing in Whitespace
+                select quote;
 
-        from optionalFraction in Optional(
-            from dot in Single('.')
-            from digits in Digits
-            select dot + digits)
+            var Pair =
+                from key in Key
+                from colon in Operator(":")
+                from value in Value
+                select new KeyValuePair<string, object>(key, value);
 
-        from optionalExponent in Optional(
-            from e in Single(x => x is 'e' or 'E', "exponent")
-            from sign in Optional(Single(x => x is '+' or '-', "sign").Select(x => x.ToString()))
-            from digits in Digits
-            select $"{e}{sign}{digits}")
+            return
+                from open in Operator("{")
+                from pairs in ZeroOrMore(Pair, Operator(","))
+                from close in Operator("}")
+                select (object) pairs.ToDictionary(x => x.Key, x => x.Value);
+        }
+    }
 
-        select $"{leading}{optionalFraction}{optionalExponent}";
+    static Parser<object> Number
+    {
+        get
+        {
+            var Digits = OneOrMore(char.IsDigit, "0..9");
 
-    static readonly Parser<char> LetterOrDigit = Single(char.IsLetterOrDigit, "letter or digit");
+            return from leading in Digits
 
-    static readonly Parser<string> Quote =
+                from optionalFraction in Optional(
+                    from dot in Single('.')
+                    from digits in Digits
+                    select dot + digits)
 
-        from open in Single('"')
-        from content in ZeroOrMore(
-            Choice(
-                from slash in Single('\\')
-                from unescaped in Choice(
-                    from escape in Single(c => "\"\\bfnrt/".Contains(c), "escape character")
-                    select $"{escape}"
-                        .Replace("\"", "\"")
-                        .Replace("\\", "\\")
-                        .Replace("b", "\b")
-                        .Replace("f", "\f")
-                        .Replace("n", "\n")
-                        .Replace("r", "\r")
-                        .Replace("t", "\t")
-                        .Replace("/", "/"),
+                from optionalExponent in Optional(
+                    from e in Single(x => x is 'e' or 'E', "exponent")
+                    from sign in Optional(Single(x => x is '+' or '-', "sign").Select(x => x.ToString()))
+                    from digits in Digits
+                    select $"{e}{sign}{digits}")
 
-                    from u in Label(Single('u'), "unicode escape sequence")
-                    from _0 in LetterOrDigit
-                    from _1 in LetterOrDigit
-                    from _2 in LetterOrDigit
-                    from _3 in LetterOrDigit
-                    select char.ConvertFromUtf32(
-                        int.Parse($"{_0}{_1}{_2}{_3}",
-                            NumberStyles.HexNumber,
-                            CultureInfo.InvariantCulture))
-                )
-                select unescaped,
-                Single(c => c != '"' && c != '\\', "non-quote, not-slash character").Select(x => x.ToString())
-            ))
-        from close in Single('"')
-        select string.Join("", content);
+                select (object) decimal.Parse(
+                    $"{leading}{optionalFraction}{optionalExponent}",
+                    NumberStyles.Any,
+                    CultureInfo.InvariantCulture);
+        }
+    }
+
+    static Parser<string> Quote
+    {
+        get
+        {
+            var LetterOrDigit = Single(char.IsLetterOrDigit, "letter or digit");
+
+            return
+                from open in Single('"')
+                from content in ZeroOrMore(
+                    Choice(
+                        from slash in Single('\\')
+                        from unescaped in Choice(
+                            from escape in Single(c => "\"\\bfnrt/".Contains(c), "escape character")
+                            select $"{escape}"
+                                .Replace("\"", "\"")
+                                .Replace("\\", "\\")
+                                .Replace("b", "\b")
+                                .Replace("f", "\f")
+                                .Replace("n", "\n")
+                                .Replace("r", "\r")
+                                .Replace("t", "\t")
+                                .Replace("/", "/"),
+
+                            from u in Label(Single('u'), "unicode escape sequence")
+                            from _0 in LetterOrDigit
+                            from _1 in LetterOrDigit
+                            from _2 in LetterOrDigit
+                            from _3 in LetterOrDigit
+                            select char.ConvertFromUtf32(
+                                int.Parse($"{_0}{_1}{_2}{_3}",
+                                    NumberStyles.HexNumber,
+                                    CultureInfo.InvariantCulture))
+                        )
+                        select unescaped,
+                        Single(c => c != '"' && c != '\\', "non-quote, not-slash character").Select(x => x.ToString())
+                    ))
+                from close in Single('"')
+                select string.Join("", content);
+        }
+    }
 }
