@@ -178,6 +178,21 @@ class GrammarTests
         Attempt(AB).FailsToParse("A!", "A!", "B expected");
     }
 
+    public void NegatingAnotherParseRuleWithoutConsumingInput()
+    {
+        //When p succeeds, Not(p) fails.
+        //When p fails, Not(p) succeeds.
+        //Not(p) never consumes input, even if p fails after consuming input.
+
+        AB.Parses("AB").ShouldBe("AB");
+        AB.FailsToParse("A!", "!", "B expected");
+        AB.FailsToParse("BA", "BA", "A expected");
+
+        Not(AB).FailsToParse("AB", "AB", "parse failure expected");
+        Not(AB).PartiallyParses("A!", "A!").ShouldBe(Void.Value);
+        Not(AB).PartiallyParses("BA", "BA").ShouldBe(Void.Value);
+    }
+
     public void ImprovingDefaultMessagesWithAKnownExpectation()
     {
         var labeled = Label(AB, "'A' followed by 'B'");
