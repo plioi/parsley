@@ -9,14 +9,26 @@ public static class ReadOnlySpanExtensions
 
     public static void Advance(this ref ReadOnlySpan<char> input, ref Position position, int length)
     {
+        var traversed = input.Advance(length);
+
+        position = Advance(position, traversed);
+    }
+
+    static ReadOnlySpan<char> Advance(this ref ReadOnlySpan<char> input, int length)
+    {
         var peek = input.Peek(length);
 
         input = input.Slice(peek.Length);
 
+        return peek;
+    }
+
+    static Position Advance(Position position, ReadOnlySpan<char> traversed)
+    {
         int lineDelta = 0;
         int columnDelta = 0;
 
-        foreach (var ch in peek)
+        foreach (var ch in traversed)
         {
             if (ch == '\n')
             {
@@ -27,7 +39,7 @@ public static class ReadOnlySpanExtensions
             columnDelta++;
         }
 
-        position = new Position(position.Line + lineDelta, position.Column + columnDelta);
+        return new Position(position.Line + lineDelta, position.Column + columnDelta);
     }
 
     public static ReadOnlySpan<char> TakeWhile(this ref ReadOnlySpan<char> input, Predicate<char> test)
