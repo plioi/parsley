@@ -9,10 +9,12 @@ public static class ReadOnlySpanExtensions
 
     public static void Advance(this ref ReadOnlySpan<char> input, ref Position position, int length)
     {
+        var peek = input.Peek(length);
+
+        input = input.Slice(peek.Length);
+
         int lineDelta = 0;
         int columnDelta = 0;
-
-        var peek = input.Peek(length);
 
         foreach (var ch in peek)
         {
@@ -25,7 +27,6 @@ public static class ReadOnlySpanExtensions
             columnDelta++;
         }
 
-        input = input.Slice(peek.Length);
         position = new Position(position.Line + lineDelta, position.Column + columnDelta);
     }
 
