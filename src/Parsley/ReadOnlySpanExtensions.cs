@@ -9,9 +9,6 @@ public static class ReadOnlySpanExtensions
 
     public static void Advance(this ref ReadOnlySpan<char> input, ref Position position, int length)
     {
-        if (length == 0)
-            return;
-
         int lineDelta = 0;
         int columnDelta = 0;
 
