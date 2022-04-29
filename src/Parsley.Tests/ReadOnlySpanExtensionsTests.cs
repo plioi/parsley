@@ -32,6 +32,31 @@ class ReadOnlySpanExtensionsTests
         abc.Peek(3, 1).ToString().ShouldBe("");
         abc.Peek(3, 2).ToString().ShouldBe("");
         abc.Peek(3, 100).ToString().ShouldBe("");
+
+        ReadOnlySpan<int> digits = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+        digits.Peek(0, 0).ToArray().ShouldBe(Array.Empty<int>());
+        digits.Peek(0, 1).ToArray().ShouldBe(new[] { 0 });
+        digits.Peek(0, 2).ToArray().ShouldBe(new[] { 0, 1 });
+        digits.Peek(0, 3).ToArray().ShouldBe(new[] { 0, 1, 2 });
+        digits.Peek(0, 4).ToArray().ShouldBe(new[] { 0, 1, 2, 3 });
+        digits.Peek(0, 9).ToArray().ShouldBe(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 });
+        digits.Peek(0, 10).ToArray().ShouldBe(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 });
+        digits.Peek(0, 100).ToArray().ShouldBe(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 });
+
+        digits.Peek(6, 0).ToArray().ShouldBe(Array.Empty<int>());
+        digits.Peek(6, 1).ToArray().ShouldBe(new[] { 6 });
+        digits.Peek(6, 2).ToArray().ShouldBe(new[] { 6, 7 });
+        digits.Peek(6, 3).ToArray().ShouldBe(new[] { 6, 7, 8 });
+        digits.Peek(6, 4).ToArray().ShouldBe(new[] { 6, 7, 8, 9 });
+        digits.Peek(6, 100).ToArray().ShouldBe(new[] { 6, 7, 8, 9 });
+
+        digits.Peek(10, 0).ToArray().ShouldBe(Array.Empty<int>());
+        digits.Peek(10, 1).ToArray().ShouldBe(Array.Empty<int>());
+        digits.Peek(10, 2).ToArray().ShouldBe(Array.Empty<int>());
+        digits.Peek(10, 3).ToArray().ShouldBe(Array.Empty<int>());
+        digits.Peek(10, 4).ToArray().ShouldBe(Array.Empty<int>());
+        digits.Peek(10, 100).ToArray().ShouldBe(Array.Empty<int>());
     }
 
     public void CanMatchLeadingItemsByPredicate()
