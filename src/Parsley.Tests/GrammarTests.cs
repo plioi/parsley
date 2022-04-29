@@ -74,13 +74,13 @@ class GrammarTests
         var infiniteLoop = () =>
         {
             ReadOnlySpan<char> input = "";
-            Position position = new(1, 1);
+            Position position = new(0, 1, 1);
             ZeroOrMore(succeedWithThisValue)(ref input, ref position, out _, out _);
         };
 
         infiniteLoop
             .ShouldThrow<Exception>()
-            .Message.ShouldBe("Parser encountered a potential infinite loop at position (1, 1).");
+            .Message.ShouldBe("Parser encountered a potential infinite loop at position 0 (1, 1).");
     }
 
     public void ApplyingARuleOneOrMoreTimes()
@@ -101,13 +101,13 @@ class GrammarTests
         var infiniteLoop = () =>
         {
             ReadOnlySpan<char> input = "";
-            Position position = new(1, 1);
+            Position position = new(0, 1, 1);
             OneOrMore(succeedWithoutConsuming)(ref input, ref position, out _, out _);
         };
 
         infiniteLoop
             .ShouldThrow<Exception>()
-            .Message.ShouldBe("Parser encountered a potential infinite loop at position (1, 1).");
+            .Message.ShouldBe("Parser encountered a potential infinite loop at position 0 (1, 1).");
     }
 
     public void ApplyingARuleZeroOrMoreTimesInterspersedByASeparatorRule()

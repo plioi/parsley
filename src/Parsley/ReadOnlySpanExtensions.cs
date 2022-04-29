@@ -39,7 +39,7 @@ public static class ReadOnlySpanExtensions
             columnDelta++;
         }
 
-        return new Position(position.Line + lineDelta, position.Column + columnDelta);
+        return new Position(position.Index + traversed.Length, position.Line + lineDelta, position.Column + columnDelta);
     }
 
     public static ReadOnlySpan<char> TakeWhile(this ref ReadOnlySpan<char> input, Predicate<char> test)

@@ -8,7 +8,7 @@ public static class Assertions
     public static void FailsToParse<TValue>(this Parser<TValue> parse, string input, string expectedUnparsedInput, string expectedMessage)
     {
         ReadOnlySpan<char> inputSpan = input;
-        Position position = new(1, 1);
+        Position position = new(0, 1, 1);
 
         if (parse(ref inputSpan, ref position, out var value, out var expectation))
             throw new AssertionException("parser failure", "parser completed successfully");
@@ -27,7 +27,7 @@ public static class Assertions
     public static TValue PartiallyParses<TValue>(this Parser<TValue> parse, string input, string expectedUnparsedInput)
     {
         ReadOnlySpan<char> inputSpan = input;
-        Position position = new(1, 1);
+        Position position = new(0, 1, 1);
 
         if (!parse(ref inputSpan, ref position, out var value, out var expectation))
             UnexpectedFailure(ref inputSpan, ref position, expectation);
@@ -43,7 +43,7 @@ public static class Assertions
     public static TValue Parses<TValue>(this Parser<TValue> parse, string input)
     {
         ReadOnlySpan<char> inputSpan = input;
-        Position position = new(1, 1);
+        Position position = new(0, 1, 1);
 
         if (!parse(ref inputSpan, ref position, out var value, out var expectation))
             UnexpectedFailure(ref inputSpan, ref position, expectation);
@@ -90,7 +90,8 @@ public static class Assertions
 
     public static void ShouldBe(this Position actual, Position expected)
     {
-        if (actual.Line != expected.Line ||
+        if (actual.Index != expected.Index ||
+            actual.Line != expected.Line ||
             actual.Column != expected.Column)
             throw new AssertionException(expected.ToString(), actual.ToString());
     }
