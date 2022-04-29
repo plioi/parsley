@@ -11,8 +11,8 @@ class GrammarTests
         value = null;
         return false;
     };
-    static readonly Parser<char, char> Digit = Single(char.IsDigit, "Digit");
-    static readonly Parser<char, char> Letter = Single(char.IsLetter, "Letter");
+    static readonly Parser<char, char> Digit = Single<char>(char.IsDigit, "Digit");
+    static readonly Parser<char, char> Letter = Single<char>(char.IsLetter, "Letter");
 
     readonly Parser<char, char> A, B, COMMA;
     readonly Parser<char, string> AB;
@@ -358,9 +358,9 @@ class GrammarTests
 
     public void ProvidesConveniencePrimitiveRecognizingSingleNextItemSatisfyingSomePredicate()
     {
-        var lower = Single(char.IsLower, "Lowercase");
-        var upper = Single(char.IsUpper, "Uppercase");
-        var caseInsensitive = Single(char.IsLetter, "Case Insensitive");
+        var lower = Single<char>(char.IsLower, "Lowercase");
+        var upper = Single<char>(char.IsUpper, "Uppercase");
+        var caseInsensitive = Single<char>(char.IsLetter, "Case Insensitive");
 
         lower.FailsToParse("", "", "Lowercase expected");
 

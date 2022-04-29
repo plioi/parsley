@@ -6,7 +6,7 @@ namespace Parsley.Tests;
 
 class ParserQueryTests
 {
-    static readonly Parser<char, char> Next = Single(_ => true, "character");
+    static readonly Parser<char, char> Next = Single<char>(_ => true, "character");
 
     static readonly Parser<char, string> Fail = (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
     {

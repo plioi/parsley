@@ -84,8 +84,8 @@ public class JsonGrammar
                     select dot + digits)
 
                 from optionalExponent in Optional(
-                    from e in Single(x => x is 'e' or 'E', "exponent")
-                    from sign in Optional(Single(x => x is '+' or '-', "sign").Select(x => x.ToString()))
+                    from e in Single<char>(x => x is 'e' or 'E', "exponent")
+                    from sign in Optional(Single<char>(x => x is '+' or '-', "sign").Select(x => x.ToString()))
                     from digits in Digits
                     select $"{e}{sign}{digits}")
 
@@ -100,7 +100,7 @@ public class JsonGrammar
     {
         get
         {
-            var LetterOrDigit = Single(char.IsLetterOrDigit, "letter or digit");
+            var LetterOrDigit = Single<char>(char.IsLetterOrDigit, "letter or digit");
 
             return
                 from open in Single('"')
@@ -108,7 +108,7 @@ public class JsonGrammar
                     Choice(
                         from slash in Single('\\')
                         from unescaped in Choice(
-                            from escape in Single(c => "\"\\bfnrt/".Contains(c), "escape character")
+                            from escape in Single<char>(c => "\"\\bfnrt/".Contains(c), "escape character")
                             select $"{escape}"
                                 .Replace("\"", "\"")
                                 .Replace("\\", "\\")
@@ -130,7 +130,7 @@ public class JsonGrammar
                                     CultureInfo.InvariantCulture))
                         )
                         select unescaped,
-                        Single(c => c != '"' && c != '\\', "non-quote, not-slash character").Select(x => x.ToString())
+                        Single<char>(c => c != '"' && c != '\\', "non-quote, not-slash character").Select(x => x.ToString())
                     ))
                 from close in Single('"')
                 select string.Join("", content);
