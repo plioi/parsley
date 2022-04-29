@@ -82,7 +82,8 @@ partial class Grammar
 
             if (span.Length > 0)
             {
-                input.Advance(ref index, span.Length);
+                input = input.Slice(span.Length);
+                index += span.Length;
 
                 expectation = null;
                 value = span.ToString();
@@ -103,7 +104,8 @@ partial class Grammar
 
             if (span.Length > 0)
             {
-                input.Advance(ref index, span.Length);
+                input = input.Slice(span.Length);
+                index += span.Length;
 
                 expectation = null;
                 value = span.ToString();

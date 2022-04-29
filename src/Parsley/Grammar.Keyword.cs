@@ -17,7 +17,8 @@ partial class Grammar
             {
                 if (peek.Length == word.Length || !char.IsLetter(peek[^1]))
                 {
-                    input.Advance(ref index, word.Length);
+                    input = input.Slice(word.Length);
+                    index += word.Length;
 
                     expectation = null;
                     value = word;

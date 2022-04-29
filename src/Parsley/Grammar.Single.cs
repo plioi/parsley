@@ -20,7 +20,8 @@ partial class Grammar
                 char c = next[0];
                 if (test(c))
                 {
-                    input.Advance(ref index, 1);
+                    input = input.Slice(1);
+                    index += 1;
 
                     expectation = null;
                     value = c;
