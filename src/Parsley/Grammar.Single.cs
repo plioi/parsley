@@ -13,11 +13,9 @@ partial class Grammar
     {
         return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out TItem? value, [NotNullWhen(false)] out string? expectation) =>
         {
-            var next = input.Peek(index, 1);
-
-            if (next.Length == 1)
+            if (index + 1 <= input.Length)
             {
-                var c = next[0]!;
+                var c = input[index]!;
                 if (test(c))
                 {
                     index += 1;
