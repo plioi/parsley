@@ -22,7 +22,7 @@ class ReadOnlySpanExtensionsTests
     public void CanAdvanceAheadNItemsWithSnapshotBacktracking()
     {
         ReadOnlySpan<char> empty = "";
-        var position = new Index(0);
+        var position = new @int(0);
 
         empty.Advance(ref position, 0);
         position.ShouldBe(new(0));
@@ -33,7 +33,7 @@ class ReadOnlySpanExtensionsTests
         empty.ToString().ShouldBe("");
 
         ReadOnlySpan<char> abc = "abc";
-        position = new Index(0);
+        position = new @int(0);
 
         abc.Advance(ref position, 0);
         position.ShouldBe(new(0));
@@ -45,25 +45,25 @@ class ReadOnlySpanExtensionsTests
         abc.ToString().ShouldBe("bc");
 
         abc = snapshot;
-        position = new Index(0);
+        position = new @int(0);
         abc.Advance(ref position, 2);
         position.ShouldBe(new(2));
         abc.ToString().ShouldBe("c");
 
         abc = snapshot;
-        position = new Index(0);
+        position = new @int(0);
         abc.Advance(ref position, 3);
         position.ShouldBe(new(3));
         abc.ToString().ShouldBe("");
 
         abc = snapshot;
-        position = new Index(0);
+        position = new @int(0);
         abc.Advance(ref position, 4);
         position.ShouldBe(new(3));
         abc.ToString().ShouldBe("");
 
         abc = snapshot;
-        position = new Index(0);
+        position = new @int(0);
         abc.Advance(ref position, 100);
         position.ShouldBe(new(3));
         abc.ToString().ShouldBe("");
@@ -86,7 +86,7 @@ class ReadOnlySpanExtensionsTests
         abc123.TakeWhile(alphanumerics).ToString().ShouldBe("abc123");
 
         abc123 = snapshot;
-        var position = new Index(0);
+        var position = new @int(0);
         abc123.Advance(ref position, 2);
         position.ShouldBe(new(2));
         abc123.TakeWhile(digits).ToString().ShouldBe("");
@@ -94,7 +94,7 @@ class ReadOnlySpanExtensionsTests
         abc123.TakeWhile(alphanumerics).ToString().ShouldBe("c123");
 
         abc123 = snapshot;
-        position = new Index(0);
+        position = new @int(0);
         abc123.Advance(ref position, 3);
         position.ShouldBe(new(3));
         abc123.TakeWhile(digits).ToString().ShouldBe("123");
@@ -102,7 +102,7 @@ class ReadOnlySpanExtensionsTests
         abc123.TakeWhile(alphanumerics).ToString().ShouldBe("123");
 
         abc123 = snapshot;
-        position = new Index(0);
+        position = new @int(0);
         abc123.Advance(ref position, 6);
         position.ShouldBe(new(6));
         abc123.TakeWhile(digits).ToString().ShouldBe("");
@@ -113,76 +113,76 @@ class ReadOnlySpanExtensionsTests
     public void CanTrackCurrentPosition()
     {
         ReadOnlySpan<char> empty = "";
-        var position = new Index(0);
+        var position = new @int(0);
 
         empty.Advance(ref position, 0);
-        position.ShouldBe(new Index(0));
+        position.ShouldBe(new @int(0));
 
         empty.Advance(ref position, 1);
-        position.ShouldBe(new Index(0));
+        position.ShouldBe(new @int(0));
 
         var lines = new StringBuilder()
             .Append("Line 1\n")//Index 0-5, \n
             .Append("Line 2\n")//Index 7-12, \n
             .Append("Line 3\n");//Index 14-19, \n
         ReadOnlySpan<char> list = lines.ToString();
-        position = new Index(0);
+        position = new @int(0);
 
         var snapshot = list;
         list.Advance(ref position, 0);
-        position.ShouldBe(new Index(0));
+        position.ShouldBe(new @int(0));
 
         list = snapshot;
         position = new(0);
         list.Advance(ref position, 5);
-        position.ShouldBe(new Index(5));
+        position.ShouldBe(new @int(5));
 
         list = snapshot;
         position = new(0);
         list.Advance(ref position, 6);
-        position.ShouldBe(new Index(6));
+        position.ShouldBe(new @int(6));
 
 
         list = snapshot;
         position = new(0);
         list.Advance(ref position, 7);
-        position.ShouldBe(new Index(7));
+        position.ShouldBe(new @int(7));
 
         list = snapshot;
         position = new(0);
         list.Advance(ref position, 12);
-        position.ShouldBe(new Index(12));
+        position.ShouldBe(new @int(12));
 
         list = snapshot;
         position = new(0);
         list.Advance(ref position, 13);
-        position.ShouldBe(new Index(13));
+        position.ShouldBe(new @int(13));
 
 
         list = snapshot;
         position = new(0);
         list.Advance(ref position, 14);
-        position.ShouldBe(new Index(14));
+        position.ShouldBe(new @int(14));
 
         list = snapshot;
         position = new(0);
         list.Advance(ref position, 19);
-        position.ShouldBe(new Index(19));
+        position.ShouldBe(new @int(19));
 
         list = snapshot;
         position = new(0);
         list.Advance(ref position, 20);
-        position.ShouldBe(new Index(20));
+        position.ShouldBe(new @int(20));
 
 
         list = snapshot;
         position = new(0);
         list.Advance(ref position, 21);
-        position.ShouldBe(new Index(21));
+        position.ShouldBe(new @int(21));
 
         list = snapshot;
         position = new(0);
         list.Advance(ref position, 1000);
-        position.ShouldBe(new Index(21));
+        position.ShouldBe(new @int(21));
     }
 }

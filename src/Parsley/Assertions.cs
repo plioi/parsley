@@ -8,7 +8,7 @@ public static class Assertions
     public static void FailsToParse<TValue>(this Parser<TValue> parse, string input, string expectedUnparsedInput, string expectedMessage)
     {
         ReadOnlySpan<char> inputSpan = input;
-        Index index = new(0);
+        @int index = new(0);
 
         if (parse(ref inputSpan, ref index, out var value, out var expectation))
             throw new AssertionException("parser failure", "parser completed successfully");
@@ -27,7 +27,7 @@ public static class Assertions
     public static TValue PartiallyParses<TValue>(this Parser<TValue> parse, string input, string expectedUnparsedInput)
     {
         ReadOnlySpan<char> inputSpan = input;
-        Index index = new(0);
+        @int index = new(0);
 
         if (!parse(ref inputSpan, ref index, out var value, out var expectation))
             UnexpectedFailure(ref inputSpan, ref index, expectation);
@@ -43,7 +43,7 @@ public static class Assertions
     public static TValue Parses<TValue>(this Parser<TValue> parse, string input)
     {
         ReadOnlySpan<char> inputSpan = input;
-        Index index = new(0);
+        @int index = new(0);
 
         if (!parse(ref inputSpan, ref index, out var value, out var expectation))
             UnexpectedFailure(ref inputSpan, ref index, expectation);
@@ -54,7 +54,7 @@ public static class Assertions
     }
 
     [DoesNotReturn]
-    static void UnexpectedFailure(ref ReadOnlySpan<char> input, ref Index index, string expectation)
+    static void UnexpectedFailure(ref ReadOnlySpan<char> input, ref @int index, string expectation)
     {
         var peek = input.Peek(20).ToString();
 
@@ -88,7 +88,7 @@ public static class Assertions
         input.LeavingUnparsedInput("");
     }
 
-    public static void ShouldBe(this Index actual, Index expected)
+    public static void ShouldBe(this @int actual, @int expected)
     {
         if (actual.Value != expected.Value)
             throw new AssertionException(expected.ToString(), actual.ToString());

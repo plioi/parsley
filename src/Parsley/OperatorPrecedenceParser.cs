@@ -56,14 +56,14 @@ public class OperatorPrecedenceParser<TValue>
     }
 
     public Parser<TValue> Parser
-        => (ref ReadOnlySpan<char> input, ref Index position, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation)
+        => (ref ReadOnlySpan<char> input, ref @int position, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation)
                 => Parse(ref input, ref position, 0, out value, out expectation);
 
     Parser<TValue> OperandAtPrecedenceLevel(int precedence)
-        => (ref ReadOnlySpan<char> input, ref Index position, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation)
+        => (ref ReadOnlySpan<char> input, ref @int position, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation)
             => Parse(ref input, ref position, precedence, out value, out expectation);
 
-    bool Parse(ref ReadOnlySpan<char> input, ref Index index, int precedence, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation)
+    bool Parse(ref ReadOnlySpan<char> input, ref @int index, int precedence, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation)
     {
         if (!TryFindMatchingUnitParser(ref input, ref index, out var matchingUnitParser, out var token))
         {
@@ -92,7 +92,7 @@ public class OperatorPrecedenceParser<TValue>
         return false;
     }
 
-    bool TryFindMatchingUnitParser(ref ReadOnlySpan<char> input, ref Index index, [NotNullWhen(true)] out Parser<TValue>? found, out string? token)
+    bool TryFindMatchingUnitParser(ref ReadOnlySpan<char> input, ref @int index, [NotNullWhen(true)] out Parser<TValue>? found, out string? token)
     {
         found = null;
         token = null;
@@ -116,7 +116,7 @@ public class OperatorPrecedenceParser<TValue>
         return false;
     }
 
-    bool TryFindMatchingExtendParserBuilder(ref ReadOnlySpan<char> input, ref Index index, [NotNullWhen(true)] out ExtendParserBuilder<TValue>? found, out string? token, out int? tokenPrecedence)
+    bool TryFindMatchingExtendParserBuilder(ref ReadOnlySpan<char> input, ref @int index, [NotNullWhen(true)] out ExtendParserBuilder<TValue>? found, out string? token, out int? tokenPrecedence)
     {
         found = null;
         token = null;

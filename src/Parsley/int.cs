@@ -1,8 +1,8 @@
 namespace Parsley;
 
-public readonly ref struct Index
+public readonly ref struct @int
 {
-    public Index(int value)
+    public @int(int value)
     {
         Value = value;
     }
