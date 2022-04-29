@@ -13,14 +13,13 @@ partial class Grammar
     {
         return (ref ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out char value, [NotNullWhen(false)] out string? expectation) =>
         {
-            var next = input.Peek(1);
+            var next = input.Peek(index, 1);
 
             if (next.Length == 1)
             {
                 char c = next[0];
                 if (test(c))
                 {
-                    input = input.Slice(1);
                     index += 1;
 
                     expectation = null;

@@ -14,10 +14,9 @@ partial class Grammar
         {
             value = Void.Value;
 
-            var copyOfInput = input;
             var copyOfIndex = index;
 
-            var succeeded = parse(ref copyOfInput, ref copyOfIndex, out _, out expectation);
+            var succeeded = parse(ref input, ref copyOfIndex, out _, out expectation);
 
             if (succeeded)
             {

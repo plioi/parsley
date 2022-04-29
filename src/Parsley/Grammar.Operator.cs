@@ -8,11 +8,10 @@ partial class Grammar
     {
         return (ref ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {
-            var peek = input.Peek(symbol.Length);
+            var peek = input.Peek(index, symbol.Length);
 
             if (peek.Equals(symbol, StringComparison.Ordinal))
             {
-                input = input.Slice(symbol.Length);
                 index += symbol.Length;
 
                 expectation = null;

@@ -33,7 +33,7 @@ partial class Grammar
 
         return (ref ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation) =>
         {
-            var originalInput = input;
+            var originalIndex = index;
 
             var expectations = new List<string>();
 
@@ -42,7 +42,7 @@ partial class Grammar
                 if (parser(ref input, ref index, out value, out expectation))
                     return true;
 
-                if (originalInput != input)
+                if (originalIndex != index)
                     return false;
 
                 expectations.Add(expectation);

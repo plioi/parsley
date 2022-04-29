@@ -99,10 +99,8 @@ public class OperatorPrecedenceParser<TValue>
 
         foreach(var (kind, parser) in unitParsers)
         {
-            var snapshot = input;
             var originalIndex = index;
             bool searchSucceeded = kind(ref input, ref index, out var value, out _);
-            input = snapshot;
             index = originalIndex;
 
             if (searchSucceeded)
@@ -124,10 +122,8 @@ public class OperatorPrecedenceParser<TValue>
 
         foreach (var (kind, precedence, extendParserBuilder) in extendParsers)
         {
-            var snapshot = input;
             var originalIndex = index;
             bool searchSucceeded = kind(ref input, ref index, out token, out _);
-            input = snapshot;
             index = originalIndex;
 
             if (searchSucceeded)

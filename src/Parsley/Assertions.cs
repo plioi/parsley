@@ -19,9 +19,9 @@ public static class Assertions
             throw new MessageAssertionException(expectedMessage, actual);
         
         if (expectedUnparsedInput == "")
-            inputSpan.AtEndOfInput();
+            inputSpan.AtEndOfInput(index);
         else
-            inputSpan.LeavingUnparsedInput(expectedUnparsedInput);
+            inputSpan.LeavingUnparsedInput(index, expectedUnparsedInput);
     }
 
     public static TValue PartiallyParses<TValue>(this Parser<TValue> parse, string input, string expectedUnparsedInput)
@@ -35,7 +35,7 @@ public static class Assertions
         if (expectedUnparsedInput == "")
             throw new ArgumentException($"{nameof(expectedUnparsedInput)} must be nonempty when calling {nameof(PartiallyParses)}.");
 
-        inputSpan.LeavingUnparsedInput(expectedUnparsedInput);
+        inputSpan.LeavingUnparsedInput(index, expectedUnparsedInput);
 
         return value;
     }
@@ -48,7 +48,7 @@ public static class Assertions
         if (!parse(ref inputSpan, ref index, out var value, out var expectation))
             UnexpectedFailure(ref inputSpan, ref index, expectation);
 
-        inputSpan.AtEndOfInput();
+        inputSpan.AtEndOfInput(index);
 
         return value;
     }
@@ -56,13 +56,13 @@ public static class Assertions
     [DoesNotReturn]
     static void UnexpectedFailure(ref ReadOnlySpan<char> input, ref int index, string expectation)
     {
-        var peek = input.Peek(20).ToString();
+        var peek = input.Peek(index, 20).ToString();
 
         var offendingItem = peek[0];
         var displayFriendlyTrailingItems = new string(peek.Skip(1).TakeWhile(x => !char.IsControl(x)).ToArray());
 
         var message = new StringBuilder();
-        message.AppendLine(index.ToString() + ": " + expectation + " expected");
+        message.AppendLine(index + ": " + expectation + " expected");
         message.AppendLine();
         message.AppendLine($"\t{offendingItem}{displayFriendlyTrailingItems}");
         message.AppendLine("\t^");
@@ -70,9 +70,9 @@ public static class Assertions
         throw new AssertionException(message.ToString(), "parser success", "parser failure");
     }
 
-    static void LeavingUnparsedInput(this ReadOnlySpan<char> input, string expectedUnparsedInput)
+    static void LeavingUnparsedInput(this ReadOnlySpan<char> input, int index, string expectedUnparsedInput)
     {
-        var actualUnparsedInput = input.ToString();
+        var actualUnparsedInput = input.Slice(index).ToString();
 
         if (actualUnparsedInput != expectedUnparsedInput)
             throw new AssertionException("Parse resulted in unexpected remaining unparsed input.",
@@ -80,11 +80,11 @@ public static class Assertions
                 actualUnparsedInput);
     }
 
-    static void AtEndOfInput(this ReadOnlySpan<char> input)
+    static void AtEndOfInput(this ReadOnlySpan<char> input, int index)
     {
-        if (!input.IsEmpty)
+        if (index != input.Length)
             throw new AssertionException("end of input", input.ToString());
 
-        input.LeavingUnparsedInput("");
+        input.LeavingUnparsedInput(index, "");
     }
 }
