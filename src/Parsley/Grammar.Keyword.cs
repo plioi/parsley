@@ -9,7 +9,7 @@ partial class Grammar
         if (word.Any(ch => !char.IsLetter(ch)))
             throw new ArgumentException("Keywords may only contain letters.", nameof(word));
 
-        return (ref ReadOnlySpan<char> input, ref int position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+        return (ref ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {
             var peek = input.Peek(word.Length + 1);
 
@@ -17,7 +17,7 @@ partial class Grammar
             {
                 if (peek.Length == word.Length || !char.IsLetter(peek[^1]))
                 {
-                    input.Advance(ref position, word.Length);
+                    input.Advance(ref index, word.Length);
 
                     expectation = null;
                     value = word;

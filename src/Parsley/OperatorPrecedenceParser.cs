@@ -56,12 +56,12 @@ public class OperatorPrecedenceParser<TValue>
     }
 
     public Parser<TValue> Parser
-        => (ref ReadOnlySpan<char> input, ref int position, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation)
-                => Parse(ref input, ref position, 0, out value, out expectation);
+        => (ref ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation)
+                => Parse(ref input, ref index, 0, out value, out expectation);
 
     Parser<TValue> OperandAtPrecedenceLevel(int precedence)
-        => (ref ReadOnlySpan<char> input, ref int position, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation)
-            => Parse(ref input, ref position, precedence, out value, out expectation);
+        => (ref ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation)
+            => Parse(ref input, ref index, precedence, out value, out expectation);
 
     bool Parse(ref ReadOnlySpan<char> input, ref int index, int precedence, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation)
     {
@@ -100,10 +100,10 @@ public class OperatorPrecedenceParser<TValue>
         foreach(var (kind, parser) in unitParsers)
         {
             var snapshot = input;
-            var originalPosition = index;
+            var originalIndex = index;
             bool searchSucceeded = kind(ref input, ref index, out var value, out _);
             input = snapshot;
-            index = originalPosition;
+            index = originalIndex;
 
             if (searchSucceeded)
             {
@@ -125,10 +125,10 @@ public class OperatorPrecedenceParser<TValue>
         foreach (var (kind, precedence, extendParserBuilder) in extendParsers)
         {
             var snapshot = input;
-            var originalPosition = index;
+            var originalIndex = index;
             bool searchSucceeded = kind(ref input, ref index, out token, out _);
             input = snapshot;
-            index = originalPosition;
+            index = originalIndex;
 
             if (searchSucceeded)
             {

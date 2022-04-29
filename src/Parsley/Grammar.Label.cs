@@ -11,11 +11,11 @@ partial class Grammar
     /// </summary>
     public static Parser<TValue> Label<TValue>(Parser<TValue> parse, string label)
     {
-        return (ref ReadOnlySpan<char> input, ref int position, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation) =>
+        return (ref ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation) =>
         {
             var originalInput = input;
 
-            if (parse(ref input, ref position, out value, out expectation))
+            if (parse(ref input, ref index, out value, out expectation))
                 return true;
 
             if (originalInput == input)

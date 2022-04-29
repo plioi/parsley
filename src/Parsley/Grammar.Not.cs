@@ -10,14 +10,14 @@ partial class Grammar
     /// </summary>
     public static Parser<Void> Not<TValue>(Parser<TValue> parse)
     {
-        return (ref ReadOnlySpan<char> input, ref int position, [NotNullWhen(true)] out Void value, [NotNullWhen(false)] out string? expectation) =>
+        return (ref ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out Void value, [NotNullWhen(false)] out string? expectation) =>
         {
             value = Void.Value;
 
             var copyOfInput = input;
-            var copyOfPosition = position;
+            var copyOfIndex = index;
 
-            var succeeded = parse(ref copyOfInput, ref copyOfPosition, out _, out expectation);
+            var succeeded = parse(ref copyOfInput, ref copyOfIndex, out _, out expectation);
 
             if (succeeded)
             {
