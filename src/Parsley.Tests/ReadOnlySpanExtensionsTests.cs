@@ -85,5 +85,14 @@ class ReadOnlySpanExtensionsTests
         abc123.TakeWhile(6, digits).ToString().ShouldBe("");
         abc123.TakeWhile(6, letters).ToString().ShouldBe("");
         abc123.TakeWhile(6, alphanumerics).ToString().ShouldBe("");
+
+        ReadOnlySpan<int> numbers = new[] { 2, 4, 6, 8, 1, 3, 5, 7, 9 };
+
+        numbers.TakeWhile(0, x => x % 2 == 0).ToArray().ShouldBe(new[] { 2, 4, 6, 8 });
+        numbers.TakeWhile(1, x => x % 2 == 0).ToArray().ShouldBe(new[] { 4, 6, 8 });
+        numbers.TakeWhile(2, x => x % 2 == 0).ToArray().ShouldBe(new[] { 6, 8 });
+        numbers.TakeWhile(3, x => x % 2 == 0).ToArray().ShouldBe(new[] { 8 });
+        numbers.TakeWhile(4, x => x % 2 == 0).ToArray().ShouldBe(Array.Empty<int>());
+        numbers.TakeWhile(9, x => x % 2 == 0).ToArray().ShouldBe(Array.Empty<int>());
     }
 }

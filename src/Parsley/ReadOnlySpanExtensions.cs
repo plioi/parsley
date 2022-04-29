@@ -7,7 +7,7 @@ public static class ReadOnlySpanExtensions
             ? input.Slice(index)
             : input.Slice(index, length);
 
-    public static ReadOnlySpan<char> TakeWhile(this ReadOnlySpan<char> input, int index, Predicate<char> test)
+    public static ReadOnlySpan<T> TakeWhile<T>(this ReadOnlySpan<T> input, int index, Predicate<T> test)
     {
         int i = 0;
 
