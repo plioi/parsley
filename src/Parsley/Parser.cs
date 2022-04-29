@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Parsley;
 
-public delegate bool Parser<TValue>(
+public delegate bool Parser_char_<TValue>(
     ReadOnlySpan<char> input,
     ref int index,
     [NotNullWhen(true)] out TValue? value,

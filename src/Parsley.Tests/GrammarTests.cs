@@ -5,17 +5,17 @@ namespace Parsley.Tests;
 
 class GrammarTests
 {
-    static readonly Parser<string> Fail = (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+    static readonly Parser_char_<string> Fail = (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
     {
         expectation = "unsatisfiable expectation";
         value = null;
         return false;
     };
-    static readonly Parser<char> Digit = Single(char.IsDigit, "Digit");
-    static readonly Parser<char> Letter = Single(char.IsLetter, "Letter");
+    static readonly Parser_char_<char> Digit = Single(char.IsDigit, "Digit");
+    static readonly Parser_char_<char> Letter = Single(char.IsLetter, "Letter");
 
-    readonly Parser<char> A, B, COMMA;
-    readonly Parser<string> AB;
+    readonly Parser_char_<char> A, B, COMMA;
+    readonly Parser_char_<string> AB;
 
     public GrammarTests()
     {
@@ -472,7 +472,7 @@ class GrammarTests
 
 public class AlternationTests
 {
-    readonly Parser<string> A, B, C;
+    readonly Parser_char_<string> A, B, C;
 
     public AlternationTests()
     {
@@ -529,7 +529,7 @@ public class AlternationTests
         //consuming input. These tests simply describe the behavior under that
         //unusual situation.
 
-        Parser<string> succeedWithoutConsuming = (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+        Parser_char_<string> succeedWithoutConsuming = (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {
             expectation = null;
             value = "atypical value";
@@ -541,7 +541,7 @@ public class AlternationTests
         Choice(A, succeedWithoutConsuming, B).Parses("").ShouldBe("atypical value");
     }
 
-    static readonly Parser<string> NeverExecuted =
+    static readonly Parser_char_<string> NeverExecuted =
         (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation)
             => throw new Exception("Parser 'NeverExecuted' should not have been executed.");
 }

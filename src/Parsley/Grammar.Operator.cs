@@ -4,7 +4,7 @@ namespace Parsley;
 
 partial class Grammar
 {
-    public static Parser<string> Operator(string symbol)
+    public static Parser_char_<string> Operator(string symbol)
     {
         return (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {

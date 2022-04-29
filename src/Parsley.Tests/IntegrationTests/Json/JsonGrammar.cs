@@ -5,10 +5,10 @@ namespace Parsley.Tests.IntegrationTests.Json;
 
 public class JsonGrammar
 {
-    public static readonly Parser<object?> JsonDocument;
+    public static readonly Parser_char_<object?> JsonDocument;
 
-    static readonly Parser<string> Whitespace = ZeroOrMore(char.IsWhiteSpace);
-    static readonly Parser<object?> Value = default!;
+    static readonly Parser_char_<string> Whitespace = ZeroOrMore(char.IsWhiteSpace);
+    static readonly Parser_char_<object?> Value = default!;
 
     static JsonGrammar()
     {
@@ -36,17 +36,17 @@ public class JsonGrammar
             select value;
     }
 
-    static Parser<object> Literal(string literal, object? value) =>
+    static Parser_char_<object> Literal(string literal, object? value) =>
         from x in Keyword(literal)
         select value;
 
-    static Parser<object> Array =>
+    static Parser_char_<object> Array =>
         from open in Operator("[")
         from items in ZeroOrMore(Value, Operator(","))
         from close in Operator("]")
         select (object) items.ToArray();
 
-    static Parser<object> Dictionary
+    static Parser_char_<object> Dictionary
     {
         get
         {
@@ -70,7 +70,7 @@ public class JsonGrammar
         }
     }
 
-    static Parser<object> Number
+    static Parser_char_<object> Number
     {
         get
         {
@@ -96,7 +96,7 @@ public class JsonGrammar
         }
     }
 
-    static Parser<string> Quote
+    static Parser_char_<string> Quote
     {
         get
         {
