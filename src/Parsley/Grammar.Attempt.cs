@@ -9,9 +9,9 @@ partial class Grammar
     /// that it hasn't consumed any input when an error occurs. This combinator
     /// is used whenever arbitrary look ahead is needed.
     /// </summary>
-    public static Parser<TValue> Attempt<TValue>(Parser<TValue> parse)
+    public static Parser<TItem, TValue> Attempt<TItem, TValue>(Parser<TItem, TValue> parse)
     {
-        return (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation) =>
         {
             var originalIndex = index;
 

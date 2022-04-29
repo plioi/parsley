@@ -4,7 +4,7 @@ namespace Parsley;
 
 partial class Grammar
 {
-    public static Parser<string> Keyword(string word)
+    public static Parser<char, string> Keyword(string word)
     {
         if (word.Any(ch => !char.IsLetter(ch)))
             throw new ArgumentException("Keywords may only contain letters.", nameof(word));

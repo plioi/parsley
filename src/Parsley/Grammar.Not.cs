@@ -8,9 +8,9 @@ partial class Grammar
     /// The parser Not(p) succeeds when parser p fails, and fails
     /// when parser p succeeds. Not(p) never consumes input.
     /// </summary>
-    public static Parser<Void> Not<TValue>(Parser<TValue> parse)
+    public static Parser<TItem, Void> Not<TItem, TValue>(Parser<TItem, TValue> parse)
     {
-        return (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out Void value, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out Void value, [NotNullWhen(false)] out string? expectation) =>
         {
             value = Void.Value;
 

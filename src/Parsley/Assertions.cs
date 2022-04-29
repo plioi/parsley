@@ -5,7 +5,7 @@ namespace Parsley;
 
 public static class Assertions
 {
-    public static void FailsToParse<TValue>(this Parser<TValue> parse, string input, string expectedUnparsedInput, string expectedMessage)
+    public static void FailsToParse<TValue>(this Parser<char, TValue> parse, string input, string expectedUnparsedInput, string expectedMessage)
     {
         ReadOnlySpan<char> inputSpan = input;
         int index = 0;
@@ -24,7 +24,7 @@ public static class Assertions
             inputSpan.LeavingUnparsedInput(index, expectedUnparsedInput);
     }
 
-    public static TValue PartiallyParses<TValue>(this Parser<TValue> parse, string input, string expectedUnparsedInput)
+    public static TValue PartiallyParses<TValue>(this Parser<char, TValue> parse, string input, string expectedUnparsedInput)
     {
         ReadOnlySpan<char> inputSpan = input;
         int index = 0;
@@ -40,7 +40,7 @@ public static class Assertions
         return value;
     }
 
-    public static TValue Parses<TValue>(this Parser<TValue> parse, string input)
+    public static TValue Parses<TValue>(this Parser<char, TValue> parse, string input)
     {
         ReadOnlySpan<char> inputSpan = input;
         int index = 0;

@@ -4,20 +4,20 @@ namespace Parsley;
 
 partial class Grammar
 {
-    public static Parser<char> Single(char expected)
+    public static Parser<TItem, TItem> Single<TItem>(TItem expected)
     {
-        return Single(x => x == expected, expected.ToString());
+        return Single<TItem>(x => EqualityComparer<TItem>.Default.Equals(x, expected), $"{expected}");
     }
 
-    public static Parser<char> Single(Predicate<char> test, string name)
+    public static Parser<TItem, TItem> Single<TItem>(Predicate<TItem> test, string name)
     {
-        return (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out char value, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out TItem? value, [NotNullWhen(false)] out string? expectation) =>
         {
             var next = input.Peek(index, 1);
 
             if (next.Length == 1)
             {
-                char c = next[0];
+                var c = next[0]!;
                 if (test(c))
                 {
                     index += 1;

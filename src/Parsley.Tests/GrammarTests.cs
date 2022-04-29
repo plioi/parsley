@@ -5,17 +5,17 @@ namespace Parsley.Tests;
 
 class GrammarTests
 {
-    static readonly Parser<string> Fail = (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+    static readonly Parser<char, string> Fail = (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
     {
         expectation = "unsatisfiable expectation";
         value = null;
         return false;
     };
-    static readonly Parser<char> Digit = Single(char.IsDigit, "Digit");
-    static readonly Parser<char> Letter = Single(char.IsLetter, "Letter");
+    static readonly Parser<char, char> Digit = Single<char>(char.IsDigit, "Digit");
+    static readonly Parser<char, char> Letter = Single<char>(char.IsLetter, "Letter");
 
-    readonly Parser<char> A, B, COMMA;
-    readonly Parser<string> AB;
+    readonly Parser<char, char> A, B, COMMA;
+    readonly Parser<char, string> AB;
 
     public GrammarTests()
     {
@@ -36,8 +36,8 @@ class GrammarTests
 
     public void CanDetectTheEndOfInputWithoutAdvancing()
     {
-        EndOfInput.Parses("").ShouldBe("");
-        EndOfInput.FailsToParse("!", "!", "end of input expected");
+        EndOfInput<char>().Parses("").ShouldBe(Void.Value);
+        EndOfInput<char>().FailsToParse("!", "!", "end of input expected");
     }
 
     public void CanDemandThatAGivenParserRecognizesTheNextConsumableInput()
@@ -70,7 +70,7 @@ class GrammarTests
 
         parser.FailsToParse("ABABA!", "!", "B expected");
 
-        var succeedWithThisValue = "ignored value".SucceedWithThisValue();
+        var succeedWithThisValue = "ignored value".SucceedWithThisValue<char, string>();
         var infiniteLoop = () =>
         {
             ReadOnlySpan<char> input = "";
@@ -97,7 +97,7 @@ class GrammarTests
 
         parser.FailsToParse("ABABA!", "!", "B expected");
 
-        var succeedWithoutConsuming = "ignored value".SucceedWithThisValue();
+        var succeedWithoutConsuming = "ignored value".SucceedWithThisValue<char, string>();
         var infiniteLoop = () =>
         {
             ReadOnlySpan<char> input = "";
@@ -206,7 +206,7 @@ class GrammarTests
         labeled.FailsToParse("A!", "!", "B expected");
 
         //When p succeeds but does not consume input, Label(p) still succeeds but the potential error is included.
-        var succeedWithoutConsuming = "$".SucceedWithThisValue();
+        var succeedWithoutConsuming = "$".SucceedWithThisValue<char, string>();
         succeedWithoutConsuming
             .PartiallyParses("!", "!")
             .ShouldBe("$");
@@ -358,9 +358,9 @@ class GrammarTests
 
     public void ProvidesConveniencePrimitiveRecognizingSingleNextItemSatisfyingSomePredicate()
     {
-        var lower = Single(char.IsLower, "Lowercase");
-        var upper = Single(char.IsUpper, "Uppercase");
-        var caseInsensitive = Single(char.IsLetter, "Case Insensitive");
+        var lower = Single<char>(char.IsLower, "Lowercase");
+        var upper = Single<char>(char.IsUpper, "Uppercase");
+        var caseInsensitive = Single<char>(char.IsLetter, "Case Insensitive");
 
         lower.FailsToParse("", "", "Lowercase expected");
 
@@ -472,7 +472,7 @@ class GrammarTests
 
 public class AlternationTests
 {
-    readonly Parser<string> A, B, C;
+    readonly Parser<char, string> A, B, C;
 
     public AlternationTests()
     {
@@ -483,7 +483,7 @@ public class AlternationTests
 
     public void ChoosingRequiresAtLeastTwoParsersToChooseBetween()
     {
-        var attemptChoiceBetweenZeroAlternatives = () => Choice<string>();
+        var attemptChoiceBetweenZeroAlternatives = () => Choice<char, string>();
         attemptChoiceBetweenZeroAlternatives
             .ShouldThrow<ArgumentException>()
             .Message.ShouldBe("Choice requires at least two parsers to choose between. (Parameter 'parsers')");
@@ -529,7 +529,7 @@ public class AlternationTests
         //consuming input. These tests simply describe the behavior under that
         //unusual situation.
 
-        Parser<string> succeedWithoutConsuming = (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+        Parser<char, string> succeedWithoutConsuming = (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {
             expectation = null;
             value = "atypical value";
@@ -541,7 +541,7 @@ public class AlternationTests
         Choice(A, succeedWithoutConsuming, B).Parses("").ShouldBe("atypical value");
     }
 
-    static readonly Parser<string> NeverExecuted =
+    static readonly Parser<char, string> NeverExecuted =
         (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation)
             => throw new Exception("Parser 'NeverExecuted' should not have been executed.");
 }

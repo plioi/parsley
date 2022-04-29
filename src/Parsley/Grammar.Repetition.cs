@@ -10,9 +10,9 @@ partial class Grammar
     /// end of the sequence, p must fail without consuming input, otherwise the
     /// sequence will fail with the error reported by p.
     /// </summary>
-    public static Parser<IEnumerable<TValue>> ZeroOrMore<TValue>(Parser<TValue> item)
+    public static Parser<TItem, IEnumerable<TValue>> ZeroOrMore<TItem, TValue>(Parser<TItem, TValue> item)
     {
-        return (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out IEnumerable<TValue>? values, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out IEnumerable<TValue>? values, [NotNullWhen(false)] out string? expectation) =>
         {
             var oldIndex = index;
             string? itemExpectation;
@@ -46,7 +46,7 @@ partial class Grammar
     /// <summary>
     /// OneOrMore(p) behaves like ZeroOrMore(p), except that p must succeed at least one time.
     /// </summary>
-    public static Parser<IEnumerable<TValue>> OneOrMore<TValue>(Parser<TValue> item)
+    public static Parser<TItem, IEnumerable<TValue>> OneOrMore<TItem, TValue>(Parser<TItem, TValue> item)
     {
         return from first in item
             from rest in ZeroOrMore(item)
@@ -57,15 +57,15 @@ partial class Grammar
     /// ZeroOrMore(p, s) parses zero or more occurrences of p separated by occurrences of s,
     /// returning the list of values returned by successful applications of p.
     /// </summary>
-    public static Parser<IEnumerable<TItem>> ZeroOrMore<TItem, S>(Parser<TItem> item, Parser<S> separator)
+    public static Parser<TItem, IEnumerable<TValue>> ZeroOrMore<TItem, TValue, S>(Parser<TItem, TValue> item, Parser<TItem, S> separator)
     {
-        return Choice(OneOrMore(item, separator), Zero<TItem>());
+        return Choice(OneOrMore(item, separator), Zero<TItem, TValue>());
     }
 
     /// <summary>
     /// OneOrMore(p, s) behaves like ZeroOrMore(p, s), except that p must succeed at least one time.
     /// </summary>
-    public static Parser<IEnumerable<TValue>> OneOrMore<TValue, S>(Parser<TValue> item, Parser<S> separator)
+    public static Parser<TItem, IEnumerable<TValue>> OneOrMore<TItem, TValue, S>(Parser<TItem, TValue> item, Parser<TItem, S> separator)
     {
         return from first in item
             from rest in ZeroOrMore(from sep in separator
@@ -74,7 +74,7 @@ partial class Grammar
             select List(first, rest);
     }
 
-    public static Parser<string> ZeroOrMore(Predicate<char> test)
+    public static Parser<char, string> ZeroOrMore(Predicate<char> test)
     {
         return (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {
@@ -95,7 +95,7 @@ partial class Grammar
         };
     }
 
-    public static Parser<string> OneOrMore(Predicate<char> test, string name)
+    public static Parser<char, string> OneOrMore(Predicate<char> test, string name)
     {
         return (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {
@@ -116,9 +116,9 @@ partial class Grammar
         };
     }
 
-    static Parser<IEnumerable<TValue>> Zero<TValue>()
+    static Parser<TItem, IEnumerable<TValue>> Zero<TItem, TValue>()
     {
-        return Enumerable.Empty<TValue>().SucceedWithThisValue();
+        return Enumerable.Empty<TValue>().SucceedWithThisValue<TItem, IEnumerable<TValue>>();
     }
 
     static IEnumerable<T> List<T>(T first, IEnumerable<T> rest)

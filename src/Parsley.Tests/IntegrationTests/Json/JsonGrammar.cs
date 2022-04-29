@@ -5,10 +5,10 @@ namespace Parsley.Tests.IntegrationTests.Json;
 
 public class JsonGrammar
 {
-    public static readonly Parser<object?> JsonDocument;
+    public static readonly Parser<char, object?> JsonDocument;
 
-    static readonly Parser<string> Whitespace = ZeroOrMore(char.IsWhiteSpace);
-    static readonly Parser<object?> Value = default!;
+    static readonly Parser<char, string> Whitespace = ZeroOrMore(char.IsWhiteSpace);
+    static readonly Parser<char, object?> Value = default!;
 
     static JsonGrammar()
     {
@@ -32,21 +32,21 @@ public class JsonGrammar
 
         JsonDocument =
             from value in Value
-            from end in EndOfInput
+            from end in EndOfInput<char>()
             select value;
     }
 
-    static Parser<object> Literal(string literal, object? value) =>
+    static Parser<char, object> Literal(string literal, object? value) =>
         from x in Keyword(literal)
         select value;
 
-    static Parser<object> Array =>
+    static Parser<char, object> Array =>
         from open in Operator("[")
         from items in ZeroOrMore(Value, Operator(","))
         from close in Operator("]")
         select (object) items.ToArray();
 
-    static Parser<object> Dictionary
+    static Parser<char, object> Dictionary
     {
         get
         {
@@ -70,7 +70,7 @@ public class JsonGrammar
         }
     }
 
-    static Parser<object> Number
+    static Parser<char, object> Number
     {
         get
         {
@@ -84,8 +84,8 @@ public class JsonGrammar
                     select dot + digits)
 
                 from optionalExponent in Optional(
-                    from e in Single(x => x is 'e' or 'E', "exponent")
-                    from sign in Optional(Single(x => x is '+' or '-', "sign").Select(x => x.ToString()))
+                    from e in Single<char>(x => x is 'e' or 'E', "exponent")
+                    from sign in Optional(Single<char>(x => x is '+' or '-', "sign").Select(x => x.ToString()))
                     from digits in Digits
                     select $"{e}{sign}{digits}")
 
@@ -96,11 +96,11 @@ public class JsonGrammar
         }
     }
 
-    static Parser<string> Quote
+    static Parser<char, string> Quote
     {
         get
         {
-            var LetterOrDigit = Single(char.IsLetterOrDigit, "letter or digit");
+            var LetterOrDigit = Single<char>(char.IsLetterOrDigit, "letter or digit");
 
             return
                 from open in Single('"')
@@ -108,7 +108,7 @@ public class JsonGrammar
                     Choice(
                         from slash in Single('\\')
                         from unescaped in Choice(
-                            from escape in Single(c => "\"\\bfnrt/".Contains(c), "escape character")
+                            from escape in Single<char>(c => "\"\\bfnrt/".Contains(c), "escape character")
                             select $"{escape}"
                                 .Replace("\"", "\"")
                                 .Replace("\\", "\\")
@@ -130,7 +130,7 @@ public class JsonGrammar
                                     CultureInfo.InvariantCulture))
                         )
                         select unescaped,
-                        Single(c => c != '"' && c != '\\', "non-quote, not-slash character").Select(x => x.ToString())
+                        Single<char>(c => c != '"' && c != '\\', "non-quote, not-slash character").Select(x => x.ToString())
                     ))
                 from close in Single('"')
                 select string.Join("", content);

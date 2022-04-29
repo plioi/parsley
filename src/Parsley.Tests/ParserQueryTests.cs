@@ -6,9 +6,9 @@ namespace Parsley.Tests;
 
 class ParserQueryTests
 {
-    static readonly Parser<char> Next = Single(_ => true, "character");
+    static readonly Parser<char, char> Next = Single<char>(_ => true, "character");
 
-    static readonly Parser<string> Fail = (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+    static readonly Parser<char, string> Fail = (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
     {
         expectation = "unsatisfiable expectation";
         value = null;
@@ -17,7 +17,7 @@ class ParserQueryTests
 
     public void CanBuildParserWhichSimulatesSuccessfulParsingOfGivenValueWithoutConsumingInput()
     {
-        var parser = 1.SucceedWithThisValue();
+        var parser = 1.SucceedWithThisValue<char, int>();
 
         parser.PartiallyParses("input", "input").ShouldBe(1);
     }
