@@ -26,17 +26,17 @@ public static class ParserQuery
     /// <summary>
     /// Allows LINQ syntax to construct a new parser from a simpler parser, using a single 'from' clause.
     /// </summary>
-    public static Parser<char, U> Select<T, U>(this Parser<char, T> parser, Func<T, U> constructResult)
+    public static Parser<TItem, U> Select<TItem, T, U>(this Parser<TItem, T> parser, Func<T, U> constructResult)
     {
-        return parser.Bind(t => constructResult(t).SucceedWithThisValue<char, U>());
+        return parser.Bind(t => constructResult(t).SucceedWithThisValue<TItem, U>());
     }
 
     /// <summary>
     /// Allows LINQ syntax to construct a new parser from an ordered sequence of simpler parsers, using multiple 'from' clauses.
     /// </summary>
-    public static Parser<char, V> SelectMany<T, U, V>(this Parser<char, T> parser, Func<T, Parser<char, U>> k, Func<T, U, V> s)
+    public static Parser<TItem, V> SelectMany<TItem, T, U, V>(this Parser<TItem, T> parser, Func<T, Parser<TItem, U>> k, Func<T, U, V> s)
     {
-        return parser.Bind(x => k(x).Bind(y => s(x, y).SucceedWithThisValue<char, V>()));
+        return parser.Bind(x => k(x).Bind(y => s(x, y).SucceedWithThisValue<TItem, V>()));
     }
 
     /// <summary>
@@ -45,9 +45,9 @@ public static class ParserQuery
     /// <remarks>
     /// In monadic terms, this is the 'Bind' function.
     /// </remarks>
-    static Parser<char, U> Bind<T, U>(this Parser<char, T> parse, Func<T, Parser<char, U>> constructNextParser)
+    static Parser<TItem, U> Bind<TItem, T, U>(this Parser<TItem, T> parse, Func<T, Parser<TItem, U>> constructNextParser)
     {
-        return (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out U? uValue, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out U? uValue, [NotNullWhen(false)] out string? expectation) =>
         {
             if (parse(input, ref index, out var tValue, out expectation))
                 return constructNextParser(tValue)(input, ref index, out uValue, out expectation);
