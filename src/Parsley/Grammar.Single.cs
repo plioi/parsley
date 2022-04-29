@@ -11,16 +11,16 @@ partial class Grammar
 
     public static Parser<char> Single(Predicate<char> test, string name)
     {
-        return (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out char value, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out char value, [NotNullWhen(false)] out string? expectation) =>
         {
-            var next = input.Peek(1);
+            var next = input.Peek(index, 1);
 
             if (next.Length == 1)
             {
                 char c = next[0];
                 if (test(c))
                 {
-                    input.Advance(ref position, 1);
+                    index += 1;
 
                     expectation = null;
                     value = c;

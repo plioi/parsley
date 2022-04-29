@@ -31,18 +31,18 @@ partial class Grammar
             throw new ArgumentException(
                 $"{nameof(Choice)} requires at least two parsers to choose between.", nameof(parsers));
 
-        return (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation) =>
         {
-            var originalInput = input;
+            var originalIndex = index;
 
             var expectations = new List<string>();
 
             foreach (var parser in parsers)
             {
-                if (parser(ref input, ref position, out value, out expectation))
+                if (parser(input, ref index, out value, out expectation))
                     return true;
 
-                if (originalInput != input)
+                if (originalIndex != index)
                     return false;
 
                 expectations.Add(expectation);

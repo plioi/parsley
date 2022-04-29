@@ -91,7 +91,7 @@ class OperatorPrecedenceParserTests
         Parses("1^2+3^4", "(+ (^ 1 2) (^ 3 4))");
     }
 
-    public void ProvidesErrorAtAppropriatePositionWhenUnitParsersFail()
+    public void ProvidesErrorAtAppropriateIndexWhenUnitParsersFail()
     {
         //Upon unit-parser failures, stop!
             
@@ -101,7 +101,7 @@ class OperatorPrecedenceParserTests
         expression.Parser.FailsToParse("(*", "*", "expression expected");
     }
 
-    public void ProvidesErrorAtAppropriatePositionWhenExtendParsersFail()
+    public void ProvidesErrorAtAppropriateIndexWhenExtendParsersFail()
     {
         //Upon extend-parser failures, stop!
             

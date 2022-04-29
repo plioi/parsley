@@ -5,7 +5,7 @@ namespace Parsley.Tests;
 
 class GrammarTests
 {
-    static readonly Parser<string> Fail = (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+    static readonly Parser<string> Fail = (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
     {
         expectation = "unsatisfiable expectation";
         value = null;
@@ -74,13 +74,13 @@ class GrammarTests
         var infiniteLoop = () =>
         {
             ReadOnlySpan<char> input = "";
-            Position position = new(1, 1);
-            ZeroOrMore(succeedWithThisValue)(ref input, ref position, out _, out _);
+            int index = 0;
+            ZeroOrMore(succeedWithThisValue)(input, ref index, out _, out _);
         };
 
         infiniteLoop
             .ShouldThrow<Exception>()
-            .Message.ShouldBe("Parser encountered a potential infinite loop at position (1, 1).");
+            .Message.ShouldBe("Parser encountered a potential infinite loop at index 0.");
     }
 
     public void ApplyingARuleOneOrMoreTimes()
@@ -101,13 +101,13 @@ class GrammarTests
         var infiniteLoop = () =>
         {
             ReadOnlySpan<char> input = "";
-            Position position = new(1, 1);
-            OneOrMore(succeedWithoutConsuming)(ref input, ref position, out _, out _);
+            int index = 0;
+            OneOrMore(succeedWithoutConsuming)(input, ref index, out _, out _);
         };
 
         infiniteLoop
             .ShouldThrow<Exception>()
-            .Message.ShouldBe("Parser encountered a potential infinite loop at position (1, 1).");
+            .Message.ShouldBe("Parser encountered a potential infinite loop at index 0.");
     }
 
     public void ApplyingARuleZeroOrMoreTimesInterspersedByASeparatorRule()
@@ -288,7 +288,7 @@ class GrammarTests
         ).FailsToParse("AF", "AF", //...arriving at the failure to find f, having consumed nothing.
 
             //Note intermediate expectations are preserved, but describe
-            //some deeper location in the input than the current position.
+            //some deeper location in the input than the current index.
             //The order indicates the order that the problems were handled.
             //It is recommended that such extreme usages of Attempt be supplemented
             //with Label in order to better describe the error.
@@ -307,7 +307,7 @@ class GrammarTests
         ).FailsToParse("AF", "AF", //... demonstrating the intermediate error information is NOT discarded.
 
             //Note intermediate expectations are preserved, but describe
-            //some deeper location in the input than the current position.
+            //some deeper location in the input than the current index.
             //The order indicates the order that the problems were handled.
             //It is recommended that such extreme usages of Attempt be supplemented
             //with Label in order to better describe the error.
@@ -324,9 +324,9 @@ class GrammarTests
         ).FailsToParse("AF", "AF", //... demonstrating how the intermediate error information is affected.
 
             //Note the first and third intermediate expectations are preserved, but
-            //describe some deeper location in the input than the current position.
+            //describe some deeper location in the input than the current index.
             //Note that the second expectation is improved, appropriate to the current
-            //position. The order indicates the order that the problems were handled.
+            //index. The order indicates the order that the problems were handled.
             //It is recommended that such extreme usages of Attempt be supplemented
             //with more Label calls in order to better describe the error.
 
@@ -342,7 +342,7 @@ class GrammarTests
             Label(Attempt(ae), "AE")
         ).FailsToParse("AF", "AF", //... demonstrating how the error message once again respects the overall location.
 
-            //Note how the full error message now respects the current position.
+            //Note how the full error message now respects the current index.
 
             "(AB, A[C|D], or AE) expected");
     }
@@ -529,7 +529,7 @@ public class AlternationTests
         //consuming input. These tests simply describe the behavior under that
         //unusual situation.
 
-        Parser<string> succeedWithoutConsuming = (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+        Parser<string> succeedWithoutConsuming = (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {
             expectation = null;
             value = "atypical value";
@@ -542,6 +542,6 @@ public class AlternationTests
     }
 
     static readonly Parser<string> NeverExecuted =
-        (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation)
+        (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation)
             => throw new Exception("Parser 'NeverExecuted' should not have been executed.");
 }

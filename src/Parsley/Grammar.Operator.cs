@@ -6,13 +6,13 @@ partial class Grammar
 {
     public static Parser<string> Operator(string symbol)
     {
-        return (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {
-            var peek = input.Peek(symbol.Length);
+            var peek = input.Peek(index, symbol.Length);
 
             if (peek.Equals(symbol, StringComparison.Ordinal))
             {
-                input.Advance(ref position, symbol.Length);
+                index += symbol.Length;
 
                 expectation = null;
                 value = symbol;
