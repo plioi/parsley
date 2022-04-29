@@ -25,7 +25,7 @@ partial class Grammar
     /// implementation of the parser combinators and the generation
     /// of good error messages.
     /// </summary>
-    public static Parser_char_<TValue> Choice<TValue>(params Parser_char_<TValue>[] parsers)
+    public static Parser<char, TValue> Choice<TValue>(params Parser<char, TValue>[] parsers)
     {
         if (parsers.Length <= 1)
             throw new ArgumentException(

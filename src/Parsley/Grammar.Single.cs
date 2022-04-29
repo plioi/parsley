@@ -4,12 +4,12 @@ namespace Parsley;
 
 partial class Grammar
 {
-    public static Parser_char_<char> Single(char expected)
+    public static Parser<char, char> Single(char expected)
     {
         return Single(x => x == expected, expected.ToString());
     }
 
-    public static Parser_char_<char> Single(Predicate<char> test, string name)
+    public static Parser<char, char> Single(Predicate<char> test, string name)
     {
         return (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out char value, [NotNullWhen(false)] out string? expectation) =>
         {

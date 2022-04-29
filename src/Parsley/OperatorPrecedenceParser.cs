@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Parsley;
 
-public delegate Parser_char_<TValue> ExtendParserBuilder<TValue>(TValue left);
+public delegate Parser<char, TValue> ExtendParserBuilder<TValue>(TValue left);
 public delegate TValue AtomNodeBuilder<out TValue>(string atom);
 public delegate TValue UnaryNodeBuilder<TValue>(string symbol, TValue operand);
 public delegate TValue BinaryNodeBuilder<TValue>(TValue left, string symbol, TValue right);
@@ -10,39 +10,39 @@ public enum Associativity { Left, Right }
 
 public class OperatorPrecedenceParser<TValue>
 {
-    readonly List<(Parser_char_<string>, Parser_char_<TValue>)> unitParsers = new();
-    readonly List<(Parser_char_<string>, int precedence, ExtendParserBuilder<TValue>)> extendParsers = new();
+    readonly List<(Parser<char, string>, Parser<char, TValue>)> unitParsers = new();
+    readonly List<(Parser<char, string>, int precedence, ExtendParserBuilder<TValue>)> extendParsers = new();
 
-    public void Unit(Parser_char_<string> kind, Parser_char_<TValue> unitParser)
+    public void Unit(Parser<char, string> kind, Parser<char, TValue> unitParser)
     {
         unitParsers.Add((kind, unitParser));
     }
 
-    public void Atom(Parser_char_<string> kind, AtomNodeBuilder<TValue> createAtomNode)
+    public void Atom(Parser<char, string> kind, AtomNodeBuilder<TValue> createAtomNode)
     {
         Unit(kind, from token in kind
             select createAtomNode(token));
     }
 
-    public void Prefix(Parser_char_<string> operation, int precedence, UnaryNodeBuilder<TValue> createUnaryNode)
+    public void Prefix(Parser<char, string> operation, int precedence, UnaryNodeBuilder<TValue> createUnaryNode)
     {
         Unit(operation, from symbol in operation
             from operand in OperandAtPrecedenceLevel(precedence)
             select createUnaryNode(symbol, operand));
     }
 
-    public void Extend(Parser_char_<string> operation, int precedence, ExtendParserBuilder<TValue> createExtendParser)
+    public void Extend(Parser<char, string> operation, int precedence, ExtendParserBuilder<TValue> createExtendParser)
     {
         extendParsers.Add((operation, precedence, createExtendParser));
     }
 
-    public void Postfix(Parser_char_<string> operation, int precedence, UnaryNodeBuilder<TValue> createUnaryNode)
+    public void Postfix(Parser<char, string> operation, int precedence, UnaryNodeBuilder<TValue> createUnaryNode)
     {
         Extend(operation, precedence, left => from symbol in operation
             select createUnaryNode(symbol, left));
     }
 
-    public void Binary(Parser_char_<string> operation, int precedence, BinaryNodeBuilder<TValue> createBinaryNode,
+    public void Binary(Parser<char, string> operation, int precedence, BinaryNodeBuilder<TValue> createBinaryNode,
                        Associativity associativity = Associativity.Left)
     {
         int rightOperandPrecedence = precedence;
@@ -55,11 +55,11 @@ public class OperatorPrecedenceParser<TValue>
             select createBinaryNode(left, symbol, right));
     }
 
-    public Parser_char_<TValue> Parser
+    public Parser<char, TValue> Parser
         => (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation)
                 => Parse(input, ref index, 0, out value, out expectation);
 
-    Parser_char_<TValue> OperandAtPrecedenceLevel(int precedence)
+    Parser<char, TValue> OperandAtPrecedenceLevel(int precedence)
         => (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation)
             => Parse(input, ref index, precedence, out value, out expectation);
 
@@ -92,7 +92,7 @@ public class OperatorPrecedenceParser<TValue>
         return false;
     }
 
-    bool TryFindMatchingUnitParser(ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out Parser_char_<TValue>? found, out string? token)
+    bool TryFindMatchingUnitParser(ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out Parser<char, TValue>? found, out string? token)
     {
         found = null;
         token = null;
