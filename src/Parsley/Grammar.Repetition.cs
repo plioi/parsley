@@ -12,7 +12,7 @@ partial class Grammar
     /// </summary>
     public static Parser<IEnumerable<TValue>> ZeroOrMore<TValue>(Parser<TValue> item)
     {
-        return (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out IEnumerable<TValue>? values, [NotNullWhen(false)] out string? expectation) =>
+        return (ref ReadOnlySpan<char> input, ref Index position, [NotNullWhen(true)] out IEnumerable<TValue>? values, [NotNullWhen(false)] out string? expectation) =>
         {
             var oldInput = input;
             string? itemExpectation;
@@ -76,7 +76,7 @@ partial class Grammar
 
     public static Parser<string> ZeroOrMore(Predicate<char> test)
     {
-        return (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+        return (ref ReadOnlySpan<char> input, ref Index position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {
             var span = input.TakeWhile(test);
 
@@ -97,7 +97,7 @@ partial class Grammar
 
     public static Parser<string> OneOrMore(Predicate<char> test, string name)
     {
-        return (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+        return (ref ReadOnlySpan<char> input, ref Index position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {
             var span = input.TakeWhile(test);
 

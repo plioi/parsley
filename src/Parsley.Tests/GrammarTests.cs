@@ -5,7 +5,7 @@ namespace Parsley.Tests;
 
 class GrammarTests
 {
-    static readonly Parser<string> Fail = (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+    static readonly Parser<string> Fail = (ref ReadOnlySpan<char> input, ref Index position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
     {
         expectation = "unsatisfiable expectation";
         value = null;
@@ -74,8 +74,8 @@ class GrammarTests
         var infiniteLoop = () =>
         {
             ReadOnlySpan<char> input = "";
-            Position position = new(0);
-            ZeroOrMore(succeedWithThisValue)(ref input, ref position, out _, out _);
+            Index index = new(0);
+            ZeroOrMore(succeedWithThisValue)(ref input, ref index, out _, out _);
         };
 
         infiniteLoop
@@ -101,8 +101,8 @@ class GrammarTests
         var infiniteLoop = () =>
         {
             ReadOnlySpan<char> input = "";
-            Position position = new(0);
-            OneOrMore(succeedWithoutConsuming)(ref input, ref position, out _, out _);
+            Index index = new(0);
+            OneOrMore(succeedWithoutConsuming)(ref input, ref index, out _, out _);
         };
 
         infiniteLoop
@@ -529,7 +529,7 @@ public class AlternationTests
         //consuming input. These tests simply describe the behavior under that
         //unusual situation.
 
-        Parser<string> succeedWithoutConsuming = (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+        Parser<string> succeedWithoutConsuming = (ref ReadOnlySpan<char> input, ref Index position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {
             expectation = null;
             value = "atypical value";
@@ -542,6 +542,6 @@ public class AlternationTests
     }
 
     static readonly Parser<string> NeverExecuted =
-        (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation)
+        (ref ReadOnlySpan<char> input, ref Index position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation)
             => throw new Exception("Parser 'NeverExecuted' should not have been executed.");
 }

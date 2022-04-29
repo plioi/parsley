@@ -1,8 +1,8 @@
 namespace Parsley;
 
-public readonly ref struct Position
+public readonly ref struct Index
 {
-    public Position(int value)
+    public Index(int value)
     {
         Value = value;
     }

@@ -5,7 +5,7 @@ namespace Parsley;
 partial class Grammar
 {
     public static readonly Parser<string> EndOfInput =
-        (ref ReadOnlySpan<char> input, ref Position position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+        (ref ReadOnlySpan<char> input, ref Index position, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {
             if (input.IsEmpty)
             {

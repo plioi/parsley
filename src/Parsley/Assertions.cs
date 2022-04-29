@@ -8,9 +8,9 @@ public static class Assertions
     public static void FailsToParse<TValue>(this Parser<TValue> parse, string input, string expectedUnparsedInput, string expectedMessage)
     {
         ReadOnlySpan<char> inputSpan = input;
-        Position position = new(0);
+        Index index = new(0);
 
-        if (parse(ref inputSpan, ref position, out var value, out var expectation))
+        if (parse(ref inputSpan, ref index, out var value, out var expectation))
             throw new AssertionException("parser failure", "parser completed successfully");
 
         var actual = expectation + " expected";
@@ -27,10 +27,10 @@ public static class Assertions
     public static TValue PartiallyParses<TValue>(this Parser<TValue> parse, string input, string expectedUnparsedInput)
     {
         ReadOnlySpan<char> inputSpan = input;
-        Position position = new(0);
+        Index index = new(0);
 
-        if (!parse(ref inputSpan, ref position, out var value, out var expectation))
-            UnexpectedFailure(ref inputSpan, ref position, expectation);
+        if (!parse(ref inputSpan, ref index, out var value, out var expectation))
+            UnexpectedFailure(ref inputSpan, ref index, expectation);
 
         if (expectedUnparsedInput == "")
             throw new ArgumentException($"{nameof(expectedUnparsedInput)} must be nonempty when calling {nameof(PartiallyParses)}.");
@@ -43,10 +43,10 @@ public static class Assertions
     public static TValue Parses<TValue>(this Parser<TValue> parse, string input)
     {
         ReadOnlySpan<char> inputSpan = input;
-        Position position = new(0);
+        Index index = new(0);
 
-        if (!parse(ref inputSpan, ref position, out var value, out var expectation))
-            UnexpectedFailure(ref inputSpan, ref position, expectation);
+        if (!parse(ref inputSpan, ref index, out var value, out var expectation))
+            UnexpectedFailure(ref inputSpan, ref index, expectation);
 
         inputSpan.AtEndOfInput();
 
@@ -54,7 +54,7 @@ public static class Assertions
     }
 
     [DoesNotReturn]
-    static void UnexpectedFailure(ref ReadOnlySpan<char> input, ref Position position, string expectation)
+    static void UnexpectedFailure(ref ReadOnlySpan<char> input, ref Index index, string expectation)
     {
         var peek = input.Peek(20).ToString();
 
@@ -62,7 +62,7 @@ public static class Assertions
         var displayFriendlyTrailingItems = new string(peek.Skip(1).TakeWhile(x => !char.IsControl(x)).ToArray());
 
         var message = new StringBuilder();
-        message.AppendLine(position.ToString() + ": " + expectation + " expected");
+        message.AppendLine(index.ToString() + ": " + expectation + " expected");
         message.AppendLine();
         message.AppendLine($"\t{offendingItem}{displayFriendlyTrailingItems}");
         message.AppendLine("\t^");
@@ -88,7 +88,7 @@ public static class Assertions
         input.LeavingUnparsedInput("");
     }
 
-    public static void ShouldBe(this Position actual, Position expected)
+    public static void ShouldBe(this Index actual, Index expected)
     {
         if (actual.Value != expected.Value)
             throw new AssertionException(expected.ToString(), actual.ToString());

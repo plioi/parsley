@@ -7,11 +7,11 @@ public static class ReadOnlySpanExtensions
             ? input.Slice(0)
             : input.Slice(0, length);
 
-    public static void Advance(this ref ReadOnlySpan<char> input, ref Position position, int length)
+    public static void Advance(this ref ReadOnlySpan<char> input, ref Index index, int length)
     {
         var traversed = input.Advance(length);
 
-        position = Advance(position, traversed);
+        index = Advance(index, traversed);
     }
 
     static ReadOnlySpan<char> Advance(this ref ReadOnlySpan<char> input, int length)
@@ -23,9 +23,9 @@ public static class ReadOnlySpanExtensions
         return peek;
     }
 
-    static Position Advance(Position position, ReadOnlySpan<char> traversed)
+    static Index Advance(Index index, ReadOnlySpan<char> traversed)
     {
-        return new Position(position.Value + traversed.Length);
+        return new Index(index.Value + traversed.Length);
     }
 
     public static ReadOnlySpan<char> TakeWhile(this ref ReadOnlySpan<char> input, Predicate<char> test)
