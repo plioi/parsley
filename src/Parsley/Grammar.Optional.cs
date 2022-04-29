@@ -11,7 +11,7 @@ public static partial class Grammar
     public static Parser<char, TValue?> Optional<TValue>(Parser<char, TValue> parser)
         where TValue : class
     {
-        var nothing = default(TValue).SucceedWithThisValue();
+        var nothing = default(TValue).SucceedWithThisValue<TValue?>();
         return Choice(
             from x in parser
             select (TValue?)x, nothing);
@@ -27,7 +27,7 @@ public static partial class Grammar
     public static Parser<char, TValue?> Optional<TValue>(Parser<char, TValue> parser, TValue? ignoredOverloadResolver = null)
         where TValue : struct
     {
-        var nothing = default(TValue?).SucceedWithThisValue();
+        var nothing = default(TValue?).SucceedWithThisValue<TValue?>();
         return Choice(parser.Select(x => (TValue?)x), nothing);
     }
 }

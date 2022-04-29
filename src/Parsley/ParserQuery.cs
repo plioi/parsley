@@ -27,7 +27,7 @@ public static class ParserQuery
     /// </summary>
     public static Parser<char, U> Select<T, U>(this Parser<char, T> parser, Func<T, U> constructResult)
     {
-        return parser.Bind(t => constructResult(t).SucceedWithThisValue());
+        return parser.Bind(t => constructResult(t).SucceedWithThisValue<U>());
     }
 
     /// <summary>
@@ -35,7 +35,7 @@ public static class ParserQuery
     /// </summary>
     public static Parser<char, V> SelectMany<T, U, V>(this Parser<char, T> parser, Func<T, Parser<char, U>> k, Func<T, U, V> s)
     {
-        return parser.Bind(x => k(x).Bind(y => s(x, y).SucceedWithThisValue()));
+        return parser.Bind(x => k(x).Bind(y => s(x, y).SucceedWithThisValue<V>()));
     }
 
     /// <summary>

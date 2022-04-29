@@ -118,7 +118,7 @@ partial class Grammar
 
     static Parser<char, IEnumerable<TValue>> Zero<TValue>()
     {
-        return Enumerable.Empty<TValue>().SucceedWithThisValue();
+        return Enumerable.Empty<TValue>().SucceedWithThisValue<IEnumerable<TValue>>();
     }
 
     static IEnumerable<T> List<T>(T first, IEnumerable<T> rest)

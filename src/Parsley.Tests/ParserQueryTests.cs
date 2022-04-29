@@ -17,7 +17,7 @@ class ParserQueryTests
 
     public void CanBuildParserWhichSimulatesSuccessfulParsingOfGivenValueWithoutConsumingInput()
     {
-        var parser = 1.SucceedWithThisValue();
+        var parser = 1.SucceedWithThisValue<int>();
 
         parser.PartiallyParses("input", "input").ShouldBe(1);
     }
