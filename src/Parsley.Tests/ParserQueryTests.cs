@@ -8,7 +8,7 @@ class ParserQueryTests
 {
     static readonly Parser<char> Next = Single(_ => true, "character");
 
-    static readonly Parser<string> Fail = (in ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+    static readonly Parser<string> Fail = (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
     {
         expectation = "unsatisfiable expectation";
         value = null;

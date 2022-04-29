@@ -54,7 +54,7 @@ public static class Assertions
     }
 
     [DoesNotReturn]
-    static void UnexpectedFailure(in ReadOnlySpan<char> input, ref int index, string expectation)
+    static void UnexpectedFailure(ReadOnlySpan<char> input, ref int index, string expectation)
     {
         var peek = input.Peek(index, 20).ToString();
 

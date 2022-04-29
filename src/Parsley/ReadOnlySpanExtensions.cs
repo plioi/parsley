@@ -2,12 +2,12 @@ namespace Parsley;
 
 public static class ReadOnlySpanExtensions
 {
-    public static ReadOnlySpan<char> Peek(this in ReadOnlySpan<char> input, int index, int length)
+    public static ReadOnlySpan<char> Peek(this ReadOnlySpan<char> input, int index, int length)
         => index + length > input.Length
             ? input.Slice(index)
             : input.Slice(index, length);
 
-    public static ReadOnlySpan<char> TakeWhile(this in ReadOnlySpan<char> input, int index, Predicate<char> test)
+    public static ReadOnlySpan<char> TakeWhile(this ReadOnlySpan<char> input, int index, Predicate<char> test)
     {
         int i = 0;
 

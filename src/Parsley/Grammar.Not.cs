@@ -10,7 +10,7 @@ partial class Grammar
     /// </summary>
     public static Parser<Void> Not<TValue>(Parser<TValue> parse)
     {
-        return (in ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out Void value, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out Void value, [NotNullWhen(false)] out string? expectation) =>
         {
             value = Void.Value;
 

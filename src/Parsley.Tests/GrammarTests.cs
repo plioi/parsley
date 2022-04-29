@@ -5,7 +5,7 @@ namespace Parsley.Tests;
 
 class GrammarTests
 {
-    static readonly Parser<string> Fail = (in ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+    static readonly Parser<string> Fail = (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
     {
         expectation = "unsatisfiable expectation";
         value = null;
@@ -529,7 +529,7 @@ public class AlternationTests
         //consuming input. These tests simply describe the behavior under that
         //unusual situation.
 
-        Parser<string> succeedWithoutConsuming = (in ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+        Parser<string> succeedWithoutConsuming = (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {
             expectation = null;
             value = "atypical value";
@@ -542,6 +542,6 @@ public class AlternationTests
     }
 
     static readonly Parser<string> NeverExecuted =
-        (in ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation)
+        (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation)
             => throw new Exception("Parser 'NeverExecuted' should not have been executed.");
 }
