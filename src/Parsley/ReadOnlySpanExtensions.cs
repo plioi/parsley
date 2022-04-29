@@ -25,7 +25,7 @@ public static class ReadOnlySpanExtensions
 
     static Position Advance(Position position, ReadOnlySpan<char> traversed)
     {
-        return new Position(position.Index + traversed.Length);
+        return new Position(position.Value + traversed.Length);
     }
 
     public static ReadOnlySpan<char> TakeWhile(this ref ReadOnlySpan<char> input, Predicate<char> test)

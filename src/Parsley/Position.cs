@@ -2,13 +2,13 @@ namespace Parsley;
 
 public readonly ref struct Position
 {
-    public Position(int index)
+    public Position(int value)
     {
-        Index = index;
+        Value = value;
     }
 
-    public int Index { get; init; }
+    public int Value { get; init; }
 
     public override string ToString()
-        => $"{Index}";
+        => $"{Value}";
 }

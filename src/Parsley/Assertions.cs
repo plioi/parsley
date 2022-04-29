@@ -90,7 +90,7 @@ public static class Assertions
 
     public static void ShouldBe(this Position actual, Position expected)
     {
-        if (actual.Index != expected.Index)
+        if (actual.Value != expected.Value)
             throw new AssertionException(expected.ToString(), actual.ToString());
     }
 }
