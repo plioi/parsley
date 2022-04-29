@@ -10,11 +10,12 @@ public static class ParserQuery
     /// <remarks>
     /// In monadic terms, this is the 'Unit' function.
     /// </remarks>
+    /// <typeparam name="TItem">The type of the items in the span being traversed.</typeparam>
     /// <typeparam name="TValue">The type of the value to treat as a parse result.</typeparam>
     /// <param name="value">The value to treat as a parse result.</param>
-    public static Parser<char, TValue> SucceedWithThisValue<TValue>(this TValue value)
+    public static Parser<TItem, TValue> SucceedWithThisValue<TItem, TValue>(this TValue value)
     {
-        return (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out TValue? succeedingValue, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out TValue? succeedingValue, [NotNullWhen(false)] out string? expectation) =>
         {
             expectation = null;
             succeedingValue = value!;
@@ -27,7 +28,7 @@ public static class ParserQuery
     /// </summary>
     public static Parser<char, U> Select<T, U>(this Parser<char, T> parser, Func<T, U> constructResult)
     {
-        return parser.Bind(t => constructResult(t).SucceedWithThisValue<U>());
+        return parser.Bind(t => constructResult(t).SucceedWithThisValue<char, U>());
     }
 
     /// <summary>
@@ -35,7 +36,7 @@ public static class ParserQuery
     /// </summary>
     public static Parser<char, V> SelectMany<T, U, V>(this Parser<char, T> parser, Func<T, Parser<char, U>> k, Func<T, U, V> s)
     {
-        return parser.Bind(x => k(x).Bind(y => s(x, y).SucceedWithThisValue<V>()));
+        return parser.Bind(x => k(x).Bind(y => s(x, y).SucceedWithThisValue<char, V>()));
     }
 
     /// <summary>

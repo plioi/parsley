@@ -70,7 +70,7 @@ class GrammarTests
 
         parser.FailsToParse("ABABA!", "!", "B expected");
 
-        var succeedWithThisValue = "ignored value".SucceedWithThisValue<string>();
+        var succeedWithThisValue = "ignored value".SucceedWithThisValue<char, string>();
         var infiniteLoop = () =>
         {
             ReadOnlySpan<char> input = "";
@@ -97,7 +97,7 @@ class GrammarTests
 
         parser.FailsToParse("ABABA!", "!", "B expected");
 
-        var succeedWithoutConsuming = "ignored value".SucceedWithThisValue<string>();
+        var succeedWithoutConsuming = "ignored value".SucceedWithThisValue<char, string>();
         var infiniteLoop = () =>
         {
             ReadOnlySpan<char> input = "";
@@ -206,7 +206,7 @@ class GrammarTests
         labeled.FailsToParse("A!", "!", "B expected");
 
         //When p succeeds but does not consume input, Label(p) still succeeds but the potential error is included.
-        var succeedWithoutConsuming = "$".SucceedWithThisValue<string>();
+        var succeedWithoutConsuming = "$".SucceedWithThisValue<char, string>();
         succeedWithoutConsuming
             .PartiallyParses("!", "!")
             .ShouldBe("$");
