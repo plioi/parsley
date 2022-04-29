@@ -5,7 +5,7 @@ namespace Parsley.Tests;
 
 class GrammarTests
 {
-    static readonly Parser<string> Fail = (ref ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+    static readonly Parser<string> Fail = (in ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
     {
         expectation = "unsatisfiable expectation";
         value = null;
@@ -75,7 +75,7 @@ class GrammarTests
         {
             ReadOnlySpan<char> input = "";
             int index = 0;
-            ZeroOrMore(succeedWithThisValue)(ref input, ref index, out _, out _);
+            ZeroOrMore(succeedWithThisValue)(input, ref index, out _, out _);
         };
 
         infiniteLoop
@@ -102,7 +102,7 @@ class GrammarTests
         {
             ReadOnlySpan<char> input = "";
             int index = 0;
-            OneOrMore(succeedWithoutConsuming)(ref input, ref index, out _, out _);
+            OneOrMore(succeedWithoutConsuming)(input, ref index, out _, out _);
         };
 
         infiniteLoop
@@ -529,7 +529,7 @@ public class AlternationTests
         //consuming input. These tests simply describe the behavior under that
         //unusual situation.
 
-        Parser<string> succeedWithoutConsuming = (ref ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+        Parser<string> succeedWithoutConsuming = (in ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {
             expectation = null;
             value = "atypical value";
@@ -542,6 +542,6 @@ public class AlternationTests
     }
 
     static readonly Parser<string> NeverExecuted =
-        (ref ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation)
+        (in ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation)
             => throw new Exception("Parser 'NeverExecuted' should not have been executed.");
 }

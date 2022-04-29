@@ -6,7 +6,7 @@ partial class Grammar
 {
     public static Parser<string> Operator(string symbol)
     {
-        return (ref ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+        return (in ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {
             var peek = input.Peek(index, symbol.Length);
 

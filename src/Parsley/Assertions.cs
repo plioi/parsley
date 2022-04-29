@@ -10,7 +10,7 @@ public static class Assertions
         ReadOnlySpan<char> inputSpan = input;
         int index = 0;
 
-        if (parse(ref inputSpan, ref index, out var value, out var expectation))
+        if (parse(inputSpan, ref index, out var value, out var expectation))
             throw new AssertionException("parser failure", "parser completed successfully");
 
         var actual = expectation + " expected";
@@ -29,8 +29,8 @@ public static class Assertions
         ReadOnlySpan<char> inputSpan = input;
         int index = 0;
 
-        if (!parse(ref inputSpan, ref index, out var value, out var expectation))
-            UnexpectedFailure(ref inputSpan, ref index, expectation);
+        if (!parse(inputSpan, ref index, out var value, out var expectation))
+            UnexpectedFailure(inputSpan, ref index, expectation);
 
         if (expectedUnparsedInput == "")
             throw new ArgumentException($"{nameof(expectedUnparsedInput)} must be nonempty when calling {nameof(PartiallyParses)}.");
@@ -45,8 +45,8 @@ public static class Assertions
         ReadOnlySpan<char> inputSpan = input;
         int index = 0;
 
-        if (!parse(ref inputSpan, ref index, out var value, out var expectation))
-            UnexpectedFailure(ref inputSpan, ref index, expectation);
+        if (!parse(inputSpan, ref index, out var value, out var expectation))
+            UnexpectedFailure(inputSpan, ref index, expectation);
 
         inputSpan.AtEndOfInput(index);
 
@@ -54,7 +54,7 @@ public static class Assertions
     }
 
     [DoesNotReturn]
-    static void UnexpectedFailure(ref ReadOnlySpan<char> input, ref int index, string expectation)
+    static void UnexpectedFailure(in ReadOnlySpan<char> input, ref int index, string expectation)
     {
         var peek = input.Peek(index, 20).ToString();
 

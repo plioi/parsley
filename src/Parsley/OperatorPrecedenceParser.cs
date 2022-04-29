@@ -56,31 +56,31 @@ public class OperatorPrecedenceParser<TValue>
     }
 
     public Parser<TValue> Parser
-        => (ref ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation)
-                => Parse(ref input, ref index, 0, out value, out expectation);
+        => (in ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation)
+                => Parse(input, ref index, 0, out value, out expectation);
 
     Parser<TValue> OperandAtPrecedenceLevel(int precedence)
-        => (ref ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation)
-            => Parse(ref input, ref index, precedence, out value, out expectation);
+        => (in ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation)
+            => Parse(input, ref index, precedence, out value, out expectation);
 
-    bool Parse(ref ReadOnlySpan<char> input, ref int index, int precedence, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation)
+    bool Parse(in ReadOnlySpan<char> input, ref int index, int precedence, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation)
     {
-        if (!TryFindMatchingUnitParser(ref input, ref index, out var matchingUnitParser, out var token))
+        if (!TryFindMatchingUnitParser(input, ref index, out var matchingUnitParser, out var token))
         {
             expectation = "expression";
             value = default;
             return false;
         }
 
-        if (matchingUnitParser(ref input, ref index, out value, out expectation))
+        if (matchingUnitParser(input, ref index, out value, out expectation))
         {
-            while (TryFindMatchingExtendParserBuilder(ref input, ref index, out var matchingExtendParserBuilder, out token, out int? tokenPrecedence) && precedence < tokenPrecedence)
+            while (TryFindMatchingExtendParserBuilder(input, ref index, out var matchingExtendParserBuilder, out token, out int? tokenPrecedence) && precedence < tokenPrecedence)
             {
                 //Continue parsing at this precedence level.
 
                 var extendParser = matchingExtendParserBuilder(value);
 
-                if (extendParser(ref input, ref index, out value, out expectation))
+                if (extendParser(input, ref index, out value, out expectation))
                     continue;
 
                 return false;
@@ -92,7 +92,7 @@ public class OperatorPrecedenceParser<TValue>
         return false;
     }
 
-    bool TryFindMatchingUnitParser(ref ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out Parser<TValue>? found, out string? token)
+    bool TryFindMatchingUnitParser(in ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out Parser<TValue>? found, out string? token)
     {
         found = null;
         token = null;
@@ -100,7 +100,7 @@ public class OperatorPrecedenceParser<TValue>
         foreach(var (kind, parser) in unitParsers)
         {
             var originalIndex = index;
-            bool searchSucceeded = kind(ref input, ref index, out var value, out _);
+            bool searchSucceeded = kind(input, ref index, out var value, out _);
             index = originalIndex;
 
             if (searchSucceeded)
@@ -114,7 +114,7 @@ public class OperatorPrecedenceParser<TValue>
         return false;
     }
 
-    bool TryFindMatchingExtendParserBuilder(ref ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out ExtendParserBuilder<TValue>? found, out string? token, out int? tokenPrecedence)
+    bool TryFindMatchingExtendParserBuilder(in ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out ExtendParserBuilder<TValue>? found, out string? token, out int? tokenPrecedence)
     {
         found = null;
         token = null;
@@ -123,7 +123,7 @@ public class OperatorPrecedenceParser<TValue>
         foreach (var (kind, precedence, extendParserBuilder) in extendParsers)
         {
             var originalIndex = index;
-            bool searchSucceeded = kind(ref input, ref index, out token, out _);
+            bool searchSucceeded = kind(input, ref index, out token, out _);
             index = originalIndex;
 
             if (searchSucceeded)

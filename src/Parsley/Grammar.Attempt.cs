@@ -11,11 +11,11 @@ partial class Grammar
     /// </summary>
     public static Parser<TValue> Attempt<TValue>(Parser<TValue> parse)
     {
-        return (ref ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation) =>
+        return (in ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation) =>
         {
             var originalIndex = index;
 
-            if (parse(ref input, ref index, out value, out expectation))
+            if (parse(input, ref index, out value, out expectation))
                 return true;
 
             index = originalIndex;

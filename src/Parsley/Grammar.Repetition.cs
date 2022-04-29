@@ -12,13 +12,13 @@ partial class Grammar
     /// </summary>
     public static Parser<IEnumerable<TValue>> ZeroOrMore<TValue>(Parser<TValue> item)
     {
-        return (ref ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out IEnumerable<TValue>? values, [NotNullWhen(false)] out string? expectation) =>
+        return (in ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out IEnumerable<TValue>? values, [NotNullWhen(false)] out string? expectation) =>
         {
             var oldIndex = index;
             string? itemExpectation;
             var list = new List<TValue>();
 
-            while (item(ref input, ref index, out var itemValue, out itemExpectation))
+            while (item(input, ref index, out var itemValue, out itemExpectation))
             {
                 if (oldIndex == index)
                     throw new Exception($"Parser encountered a potential infinite loop at index {index}.");
@@ -76,7 +76,7 @@ partial class Grammar
 
     public static Parser<string> ZeroOrMore(Predicate<char> test)
     {
-        return (ref ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+        return (in ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {
             var span = input.TakeWhile(index, test);
 
@@ -97,7 +97,7 @@ partial class Grammar
 
     public static Parser<string> OneOrMore(Predicate<char> test, string name)
     {
-        return (ref ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+        return (in ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {
             var span = input.TakeWhile(index, test);
 
