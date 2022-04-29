@@ -36,8 +36,8 @@ class GrammarTests
 
     public void CanDetectTheEndOfInputWithoutAdvancing()
     {
-        EndOfInput.Parses("").ShouldBe("");
-        EndOfInput.FailsToParse("!", "!", "end of input expected");
+        EndOfInput().Parses("").ShouldBe("");
+        EndOfInput().FailsToParse("!", "!", "end of input expected");
     }
 
     public void CanDemandThatAGivenParserRecognizesTheNextConsumableInput()
