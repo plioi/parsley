@@ -9,7 +9,7 @@ public static class ReadOnlySpanExtensions
 
     public static void Advance(this ref ReadOnlySpan<char> input, ref int index, int length)
     {
-        var traversed = length >= input.Length
+        var traversed = length > input.Length
             ? input.Length
             : length;
 
