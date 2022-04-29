@@ -483,7 +483,7 @@ public class AlternationTests
 
     public void ChoosingRequiresAtLeastTwoParsersToChooseBetween()
     {
-        var attemptChoiceBetweenZeroAlternatives = () => Choice<string>();
+        var attemptChoiceBetweenZeroAlternatives = () => Choice<char, string>();
         attemptChoiceBetweenZeroAlternatives
             .ShouldThrow<ArgumentException>()
             .Message.ShouldBe("Choice requires at least two parsers to choose between. (Parameter 'parsers')");
