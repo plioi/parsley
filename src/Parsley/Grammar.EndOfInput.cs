@@ -4,9 +4,9 @@ namespace Parsley;
 
 partial class Grammar
 {
-    public static Parser<char, Void> EndOfInput()
+    public static Parser<TItem, Void> EndOfInput<TItem>()
     {
-        return (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out Void value, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out Void value, [NotNullWhen(false)] out string? expectation) =>
         {
             value = Void.Value;
 

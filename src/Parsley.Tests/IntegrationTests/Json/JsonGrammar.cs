@@ -32,7 +32,7 @@ public class JsonGrammar
 
         JsonDocument =
             from value in Value
-            from end in EndOfInput()
+            from end in EndOfInput<char>()
             select value;
     }
 
