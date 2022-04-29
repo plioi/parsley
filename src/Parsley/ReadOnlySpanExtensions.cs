@@ -9,11 +9,13 @@ public static class ReadOnlySpanExtensions
 
     public static void Advance(this ref ReadOnlySpan<char> input, ref int index, int length)
     {
-        var traversed = input.Peek(length);
+        var traversed = length >= input.Length
+            ? input.Length
+            : length;
 
-        input = input.Slice(traversed.Length);
+        input = input.Slice(traversed);
 
-        index += traversed.Length;
+        index += traversed;
     }
 
     public static ReadOnlySpan<char> TakeWhile(this ref ReadOnlySpan<char> input, Predicate<char> test)
