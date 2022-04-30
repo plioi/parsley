@@ -61,9 +61,9 @@ class ReadOnlySpanExtensionsTests
 
     public void CanMatchLeadingItemsByPredicate()
     {
-        Predicate<char> letters = char.IsLetter;
-        Predicate<char> digits = char.IsDigit;
-        Predicate<char> alphanumerics = char.IsLetterOrDigit;
+        Func<char, bool> letters = char.IsLetter;
+        Func<char, bool> digits = char.IsDigit;
+        Func<char, bool> alphanumerics = char.IsLetterOrDigit;
 
         ReadOnlySpan<char> empty = "";
         empty.TakeWhile(0, letters).ToString().ShouldBe("");

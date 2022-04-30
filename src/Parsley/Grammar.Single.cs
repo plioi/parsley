@@ -9,7 +9,7 @@ partial class Grammar
         return Single<TItem>(x => EqualityComparer<TItem>.Default.Equals(x, expected), $"{expected}");
     }
 
-    public static Parser<TItem, TItem> Single<TItem>(Predicate<TItem> test, string name)
+    public static Parser<TItem, TItem> Single<TItem>(Func<TItem, bool> test, string name)
     {
         return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out TItem? value, [NotNullWhen(false)] out string? expectation) =>
         {

@@ -74,7 +74,7 @@ partial class Grammar
             select List(first, rest);
     }
 
-    public static Parser<char, string> ZeroOrMore(Predicate<char> test)
+    public static Parser<char, string> ZeroOrMore(Func<char, bool> test)
     {
         return (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {
@@ -95,7 +95,7 @@ partial class Grammar
         };
     }
 
-    public static Parser<char, string> OneOrMore(Predicate<char> test, string name)
+    public static Parser<char, string> OneOrMore(Func<char, bool> test, string name)
     {
         return (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
         {
