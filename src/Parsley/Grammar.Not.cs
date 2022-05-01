@@ -16,14 +16,13 @@ partial class Grammar
 
             var copyOfIndex = index;
 
-            var succeeded = parse(input, ref copyOfIndex, out _, out expectation);
-
-            if (succeeded)
+            if (parse(input, ref copyOfIndex, out _, out _))
             {
                 expectation = "parse failure";
                 return false;
             }
 
+            expectation = null;
             return true;
         };
     }
