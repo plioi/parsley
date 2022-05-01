@@ -5,6 +5,42 @@ namespace Parsley;
 partial class Grammar
 {
     /// <summary>
+    /// Repeat(p, n) expects parser p to succeed exactly n times in a row,
+    /// returning the list of values returned by the successful applications of p.
+    /// If parser p fails during any of the n attempts, the sequence will fail
+    /// with the error reported by p.
+    /// </summary>
+    public static Parser<TItem, TValue[]> Repeat<TItem, TValue>(Parser<TItem, TValue> item, int count)
+    {
+        if (count <= 1)
+            throw new ArgumentException(
+                $"{nameof(Repeat)} requires the given count to be > 1.", nameof(count));
+
+        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out TValue[]? values, [NotNullWhen(false)] out string? expectation) =>
+        {
+            var items = new TValue[count];
+
+            for (int i = 0; i < count; i++)
+            {
+                if (item(input, ref index, out var itemValue, out var itemExpectation))
+                {
+                    items[i] = itemValue;
+                }
+                else
+                {
+                    expectation = itemExpectation;
+                    values = null;
+                    return false;
+                }
+            }
+
+            expectation = null;
+            values = items;
+            return true;
+        };
+    }
+
+    /// <summary>
     /// ZeroOrMore(p) repeatedly applies an parser p until it fails, returning
     /// the list of values returned by successful applications of p.  At the
     /// end of the sequence, p must fail without consuming input, otherwise the

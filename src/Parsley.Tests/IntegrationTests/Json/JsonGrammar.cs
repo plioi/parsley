@@ -120,12 +120,10 @@ public class JsonGrammar
                                 .Replace("/", "/"),
 
                             from u in Label(Single('u'), "unicode escape sequence")
-                            from _0 in LetterOrDigit
-                            from _1 in LetterOrDigit
-                            from _2 in LetterOrDigit
-                            from _3 in LetterOrDigit
+                            from unicodeDigits in Repeat(LetterOrDigit, 4)
                             select char.ConvertFromUtf32(
-                                int.Parse($"{_0}{_1}{_2}{_3}",
+                                int.Parse(
+                                    new string(unicodeDigits),
                                     NumberStyles.HexNumber,
                                     CultureInfo.InvariantCulture))
                         )

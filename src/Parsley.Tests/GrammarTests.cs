@@ -56,6 +56,32 @@ class GrammarTests
         A.FailsToParse("B", "B", "A expected");
     }
 
+    public void ApplyingARuleFixedNumberOfTimes()
+    {
+        var parser = Repeat(AB, 3);
+
+        parser.FailsToParse("", "", "A expected");
+        parser.FailsToParse("A", "", "B expected");
+        parser.FailsToParse("AB!", "!", "A expected");
+        parser.FailsToParse("ABA!", "!", "B expected");
+        parser.FailsToParse("ABAB!", "!", "A expected");
+        parser.FailsToParse("ABABA!", "!", "B expected");
+        parser.PartiallyParses("ABABAB!", "!")
+            .ShouldBe(new [] { "AB", "AB", "AB" });
+        parser.PartiallyParses("ABABABA", "A")
+            .ShouldBe(new [] { "AB", "AB", "AB" });
+
+        var attemptRepeat0 = () => Repeat(AB, 0);
+        attemptRepeat0
+            .ShouldThrow<ArgumentException>()
+            .Message.ShouldBe("Repeat requires the given count to be > 1. (Parameter 'count')");
+
+        var attemptRepeat1 = () => Repeat(AB, 1);
+        attemptRepeat1
+            .ShouldThrow<ArgumentException>()
+            .Message.ShouldBe("Repeat requires the given count to be > 1. (Parameter 'count')");
+    }
+
     public void ApplyingARuleZeroOrMoreTimes()
     {
         var parser = ZeroOrMore(AB);
