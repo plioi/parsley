@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using static Parsley.Grammar;
 
@@ -89,11 +90,21 @@ public class JsonGrammar
                     from digits in Digits
                     select $"{e}{sign}{digits}")
 
-                select (object) decimal.Parse(
-                    $"{leading}{optionalFraction}{optionalExponent}",
-                    NumberStyles.Any,
-                    CultureInfo.InvariantCulture);
+                from value in Evaluate($"{leading}{optionalFraction}{optionalExponent}")
+                select (object) value;
         }
+    }
+
+    static Parser<char, decimal> Evaluate(string candidate)
+    {
+        return (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out decimal value, [NotNullWhen(false)] out string? expectation) =>
+        {
+            var valid = decimal.TryParse(candidate, NumberStyles.Any, CultureInfo.InvariantCulture, out value);
+
+            expectation = valid ? null : "decimal within valid range";
+
+            return valid;
+        };
     }
 
     static Parser<char, string> Quote

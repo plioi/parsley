@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace Parsley.Tests.IntegrationTests.Json;
 
 using static JsonGrammar;
@@ -33,6 +35,7 @@ class JsonGrammarTests
         JsonDocument.Parses("10e11").ShouldBe(10e11m);
         JsonDocument.Parses("10.123e11").ShouldBe(10.123e11m);
         JsonDocument.Parses("10.123E-11").ShouldBe(10.123E-11m);
+        JsonDocument.FailsToParse("9" + decimal.MaxValue, "", "decimal within valid range expected");
     }
 
     public void ParsesQuotations()

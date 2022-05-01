@@ -56,16 +56,23 @@ public static class Assertions
     [DoesNotReturn]
     static void UnexpectedFailure(ReadOnlySpan<char> input, ref int index, string expectation)
     {
+        var message = new StringBuilder();
         var peek = input.Peek(index, 20).ToString();
 
-        var offendingItem = peek[0];
-        var displayFriendlyTrailingItems = new string(peek.Skip(1).TakeWhile(x => !char.IsControl(x)).ToArray());
+        if (peek.Length > 0)
+        {
+            var offendingItem = peek[0];
+            var displayFriendlyTrailingItems = new string(peek.Skip(1).TakeWhile(x => !char.IsControl(x)).ToArray());
 
-        var message = new StringBuilder();
-        message.AppendLine(index + ": " + expectation + " expected");
-        message.AppendLine();
-        message.AppendLine($"\t{offendingItem}{displayFriendlyTrailingItems}");
-        message.AppendLine("\t^");
+            message.AppendLine(index + ": " + expectation + " expected");
+            message.AppendLine();
+            message.AppendLine($"\t{offendingItem}{displayFriendlyTrailingItems}");
+            message.AppendLine("\t^");
+        }
+        else
+        {
+            message.AppendLine(index + ": " + expectation + " expected");
+        }
 
         throw new AssertionException(message.ToString(), "parser success", "parser failure");
     }
