@@ -46,9 +46,9 @@ partial class Grammar
     /// end of the sequence, p must fail without consuming input, otherwise the
     /// sequence will fail with the error reported by p.
     /// </summary>
-    public static Parser<TItem, IEnumerable<TValue>> ZeroOrMore<TItem, TValue>(Parser<TItem, TValue> item)
+    public static Parser<TItem, IReadOnlyList<TValue>> ZeroOrMore<TItem, TValue>(Parser<TItem, TValue> item)
     {
-        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out IEnumerable<TValue>? values, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out IReadOnlyList<TValue>? values, [NotNullWhen(false)] out string? expectation) =>
         {
             var accumulator = new List<TValue>();
 
@@ -59,9 +59,9 @@ partial class Grammar
     /// <summary>
     /// OneOrMore(p) behaves like ZeroOrMore(p), except that p must succeed at least one time.
     /// </summary>
-    public static Parser<TItem, IEnumerable<TValue>> OneOrMore<TItem, TValue>(Parser<TItem, TValue> item)
+    public static Parser<TItem, IReadOnlyList<TValue>> OneOrMore<TItem, TValue>(Parser<TItem, TValue> item)
     {
-        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out IEnumerable<TValue>? values, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out IReadOnlyList<TValue>? values, [NotNullWhen(false)] out string? expectation) =>
         {
             var accumulator = new List<TValue>();
 
@@ -85,9 +85,9 @@ partial class Grammar
     /// ZeroOrMore(p, s) parses zero or more occurrences of p separated by occurrences of s,
     /// returning the list of values returned by successful applications of p.
     /// </summary>
-    public static Parser<TItem, IEnumerable<TValue>> ZeroOrMore<TItem, TValue, S>(Parser<TItem, TValue> item, Parser<TItem, S> separator)
+    public static Parser<TItem, IReadOnlyList<TValue>> ZeroOrMore<TItem, TValue, S>(Parser<TItem, TValue> item, Parser<TItem, S> separator)
     {
-        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out IEnumerable<TValue>? values, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out IReadOnlyList<TValue>? values, [NotNullWhen(false)] out string? expectation) =>
         {
             var accumulator = new List<TValue>();
             var originalIndex = index;
@@ -125,9 +125,9 @@ partial class Grammar
     /// <summary>
     /// OneOrMore(p, s) behaves like ZeroOrMore(p, s), except that p must succeed at least one time.
     /// </summary>
-    public static Parser<TItem, IEnumerable<TValue>> OneOrMore<TItem, TValue, S>(Parser<TItem, TValue> item, Parser<TItem, S> separator)
+    public static Parser<TItem, IReadOnlyList<TValue>> OneOrMore<TItem, TValue, S>(Parser<TItem, TValue> item, Parser<TItem, S> separator)
     {
-        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out IEnumerable<TValue>? values, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out IReadOnlyList<TValue>? values, [NotNullWhen(false)] out string? expectation) =>
         {
             var accumulator = new List<TValue>();
 
@@ -156,7 +156,7 @@ partial class Grammar
                                       Parser<TItem, TValue> item,
                                       ReadOnlySpan<TItem> input,
                                       ref int index,
-                                      [NotNullWhen(true)] out IEnumerable<TValue>? values,
+                                      [NotNullWhen(true)] out IReadOnlyList<TValue>? values,
                                       [NotNullWhen(false)] out string? expectation)
     {
         var oldIndex = index;
