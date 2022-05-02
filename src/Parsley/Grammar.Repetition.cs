@@ -59,7 +59,7 @@ partial class Grammar
                 if (oldIndex == index)
                     throw new Exception($"Parser encountered a potential infinite loop at index {index}.");
 
-                list.Add(itemValue!);
+                list.Add(itemValue);
 
                 oldIndex = index;
             }
