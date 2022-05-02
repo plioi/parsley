@@ -14,7 +14,7 @@ class GrammarTests
     static readonly Parser<char, char> Digit = Single<char>(char.IsDigit, "Digit");
     static readonly Parser<char, char> Letter = Single<char>(char.IsLetter, "Letter");
 
-    readonly Parser<char, char> A, B, COMMA;
+    readonly Parser<char, char> A, B;
     readonly Parser<char, string> AB, AND;
 
     public GrammarTests()
@@ -31,8 +31,6 @@ class GrammarTests
         AND = from first in ampersand
             from second in ampersand
             select "&&";
-
-        COMMA = Single(',');
     }
 
     public void CanFailWithoutConsumingInput()
