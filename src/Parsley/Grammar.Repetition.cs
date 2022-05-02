@@ -95,11 +95,29 @@ partial class Grammar
     /// </summary>
     public static Parser<TItem, IEnumerable<TValue>> OneOrMore<TItem, TValue, S>(Parser<TItem, TValue> item, Parser<TItem, S> separator)
     {
-        return from first in item
-            from rest in ZeroOrMore(from sep in separator
+        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out IEnumerable<TValue>? values, [NotNullWhen(false)] out string? expectation) =>
+        {
+            var accumulator = new List<TValue>();
+
+            if (item(input, ref index, out var value, out var itemExpectation))
+            {
+                accumulator.Add(value);
+            }
+            else
+            {
+                //The required first item failed.
+                expectation = itemExpectation;
+                values = null;
+                return false;
+            }
+
+            var separatorAndNextItem =
+                from _ in separator
                 from next in item
-                select next)
-            select List(first, rest);
+                select next;
+
+            return Repeat(accumulator, separatorAndNextItem, input, ref index, out values, out expectation);
+        };
     }
 
     static bool Repeat<TItem, TValue>(List<TValue> accumulator,

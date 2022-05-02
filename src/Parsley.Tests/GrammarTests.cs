@@ -15,7 +15,7 @@ class GrammarTests
     static readonly Parser<char, char> Letter = Single<char>(char.IsLetter, "Letter");
 
     readonly Parser<char, char> A, B, COMMA;
-    readonly Parser<char, string> AB;
+    readonly Parser<char, string> AB, AND;
 
     public GrammarTests()
     {
@@ -25,6 +25,12 @@ class GrammarTests
         AB = from a in A
             from b in B
             select $"{a}{b}";
+
+        var ampersand = Single('&');
+
+        AND = from first in ampersand
+            from second in ampersand
+            select "&&";
 
         COMMA = Single(',');
     }
@@ -138,14 +144,16 @@ class GrammarTests
 
     public void ApplyingARuleZeroOrMoreTimesInterspersedByASeparatorRule()
     {
-        var parser = ZeroOrMore(AB, COMMA);
+        var parser = ZeroOrMore(AB, AND);
 
         parser.Parses("").ShouldBeEmpty();
         parser.Parses("AB").Single().ShouldBe("AB");
-        parser.Parses("AB,AB").ShouldBe(new[] { "AB", "AB" });
-        parser.Parses("AB,AB,AB").ShouldBe(new[] { "AB", "AB", "AB" });
-        parser.FailsToParse("AB,", "", "A expected");
-        parser.FailsToParse("AB,A", "", "B expected");
+        parser.Parses("AB&&AB").ShouldBe(new[] { "AB", "AB" });
+        parser.Parses("AB&&AB&&AB").ShouldBe(new[] { "AB", "AB", "AB" });
+        parser.PartiallyParses("AB&&AB&&ABA", "A").ShouldBe(new[] { "AB", "AB", "AB" });
+        parser.FailsToParse("AB&", "", "& expected");
+        parser.FailsToParse("AB&&", "", "A expected");
+        parser.FailsToParse("AB&&A", "", "B expected");
     }
 
     public void ApplyingARuleOneOrMoreTimesInterspersedByASeparatorRule()
