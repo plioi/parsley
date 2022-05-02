@@ -147,25 +147,35 @@ class GrammarTests
         var parser = ZeroOrMore(AB, AND);
 
         parser.Parses("").ShouldBeEmpty();
+        parser.PartiallyParses("&", "&").ShouldBeEmpty();
+
+        parser.FailsToParse("A", "", "B expected");
+        parser.FailsToParse("A&", "&", "B expected");
         parser.Parses("AB").Single().ShouldBe("AB");
-        parser.Parses("AB&&AB").ShouldBe(new[] { "AB", "AB" });
-        parser.Parses("AB&&AB&&AB").ShouldBe(new[] { "AB", "AB", "AB" });
-        parser.PartiallyParses("AB&&AB&&ABA", "A").ShouldBe(new[] { "AB", "AB", "AB" });
         parser.FailsToParse("AB&", "", "& expected");
         parser.FailsToParse("AB&&", "", "A expected");
         parser.FailsToParse("AB&&A", "", "B expected");
+        parser.Parses("AB&&AB").ShouldBe(new[] { "AB", "AB" });
+        parser.Parses("AB&&AB&&AB").ShouldBe(new[] { "AB", "AB", "AB" });
+        parser.PartiallyParses("AB&&AB&&ABA", "A").ShouldBe(new[] { "AB", "AB", "AB" });
     }
 
     public void ApplyingARuleOneOrMoreTimesInterspersedByASeparatorRule()
     {
-        var parser = OneOrMore(AB, COMMA);
+        var parser = OneOrMore(AB, AND);
 
         parser.FailsToParse("", "", "A expected");
+        parser.FailsToParse("&", "&", "A expected");
+
+        parser.FailsToParse("A", "", "B expected");
+        parser.FailsToParse("A&", "&", "B expected");
         parser.Parses("AB").Single().ShouldBe("AB");
-        parser.Parses("AB,AB").ShouldBe(new[] { "AB", "AB" });
-        parser.Parses("AB,AB,AB").ShouldBe(new[] { "AB", "AB", "AB" });
-        parser.FailsToParse("AB,", "", "A expected");
-        parser.FailsToParse("AB,A", "", "B expected");
+        parser.FailsToParse("AB&", "", "& expected");
+        parser.FailsToParse("AB&&", "", "A expected");
+        parser.FailsToParse("AB&&A", "", "B expected");
+        parser.Parses("AB&&AB").ShouldBe(new[] { "AB", "AB" });
+        parser.Parses("AB&&AB&&AB").ShouldBe(new[] { "AB", "AB", "AB" });
+        parser.PartiallyParses("AB&&AB&&ABA", "A").ShouldBe(new[] { "AB", "AB", "AB" });
     }
 
     public void ParsingAnOptionalRuleZeroOrOneTimes()

@@ -90,14 +90,24 @@ partial class Grammar
         return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out IEnumerable<TValue>? values, [NotNullWhen(false)] out string? expectation) =>
         {
             var accumulator = new List<TValue>();
+            var originalIndex = index;
 
-            if (item(input, ref index, out var value, out _))
+            if (item(input, ref index, out var value, out var itemExpectation))
             {
                 accumulator.Add(value);
             }
             else
             {
-                //The optional first item failed, so we succeed with an empty list of values.
+                //The optional first item failed, but if any input was consumed
+                //then we must treat that as a failure rather than 'zero' items.
+
+                if (originalIndex != index)
+                {
+                    expectation = itemExpectation;
+                    values = null;
+                    return false;
+                }
+
                 expectation = null;
                 values = accumulator;
                 return true;
