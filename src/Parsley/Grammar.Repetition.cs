@@ -52,14 +52,14 @@ partial class Grammar
         {
             var oldIndex = index;
             string? itemExpectation;
-            var list = new List<TValue>();
+            var accumulator = new List<TValue>();
 
             while (item(input, ref index, out var itemValue, out itemExpectation))
             {
                 if (oldIndex == index)
                     throw new Exception($"Parser encountered a potential infinite loop at index {index}.");
 
-                list.Add(itemValue);
+                accumulator.Add(itemValue);
 
                 oldIndex = index;
             }
@@ -74,7 +74,7 @@ partial class Grammar
             }
 
             expectation = null;
-            values = list;
+            values = accumulator;
             return true;
         };
     }
