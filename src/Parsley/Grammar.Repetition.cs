@@ -87,7 +87,29 @@ partial class Grammar
     /// </summary>
     public static Parser<TItem, IEnumerable<TValue>> ZeroOrMore<TItem, TValue, S>(Parser<TItem, TValue> item, Parser<TItem, S> separator)
     {
-        return Choice(OneOrMore(item, separator), Zero<TItem, TValue>());
+        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out IEnumerable<TValue>? values, [NotNullWhen(false)] out string? expectation) =>
+        {
+            var accumulator = new List<TValue>();
+
+            if (item(input, ref index, out var value, out _))
+            {
+                accumulator.Add(value);
+            }
+            else
+            {
+                //The optional first item failed, so we succeed with an empty list of values.
+                expectation = null;
+                values = accumulator;
+                return true;
+            }
+
+            var separatorAndNextItem =
+                from _ in separator
+                from next in item
+                select next;
+
+            return Repeat(accumulator, separatorAndNextItem, input, ref index, out values, out expectation);
+        };
     }
 
     /// <summary>
@@ -194,11 +216,6 @@ partial class Grammar
             value = null;
             return false;
         };
-    }
-
-    static Parser<TItem, IEnumerable<TValue>> Zero<TItem, TValue>()
-    {
-        return Enumerable.Empty<TValue>().SucceedWithThisValue<TItem, IEnumerable<TValue>>();
     }
 }
 
