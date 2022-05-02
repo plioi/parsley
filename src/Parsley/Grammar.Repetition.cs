@@ -56,6 +56,37 @@ partial class Grammar
         };
     }
 
+    /// <summary>
+    /// OneOrMore(p) behaves like ZeroOrMore(p), except that p must succeed at least one time.
+    /// </summary>
+    public static Parser<TItem, IEnumerable<TValue>> OneOrMore<TItem, TValue>(Parser<TItem, TValue> item)
+    {
+        return from first in item
+            from rest in ZeroOrMore(item)
+            select List(first, rest);
+    }
+
+    /// <summary>
+    /// ZeroOrMore(p, s) parses zero or more occurrences of p separated by occurrences of s,
+    /// returning the list of values returned by successful applications of p.
+    /// </summary>
+    public static Parser<TItem, IEnumerable<TValue>> ZeroOrMore<TItem, TValue, S>(Parser<TItem, TValue> item, Parser<TItem, S> separator)
+    {
+        return Choice(OneOrMore(item, separator), Zero<TItem, TValue>());
+    }
+
+    /// <summary>
+    /// OneOrMore(p, s) behaves like ZeroOrMore(p, s), except that p must succeed at least one time.
+    /// </summary>
+    public static Parser<TItem, IEnumerable<TValue>> OneOrMore<TItem, TValue, S>(Parser<TItem, TValue> item, Parser<TItem, S> separator)
+    {
+        return from first in item
+            from rest in ZeroOrMore(from sep in separator
+                from next in item
+                select next)
+            select List(first, rest);
+    }
+
     static bool Repeat<TItem, TValue>(List<TValue> accumulator,
                                       Parser<TItem, TValue> item,
                                       ReadOnlySpan<TItem> input,
@@ -88,37 +119,6 @@ partial class Grammar
         expectation = null;
         values = accumulator;
         return true;
-    }
-
-    /// <summary>
-    /// OneOrMore(p) behaves like ZeroOrMore(p), except that p must succeed at least one time.
-    /// </summary>
-    public static Parser<TItem, IEnumerable<TValue>> OneOrMore<TItem, TValue>(Parser<TItem, TValue> item)
-    {
-        return from first in item
-            from rest in ZeroOrMore(item)
-            select List(first, rest);
-    }
-
-    /// <summary>
-    /// ZeroOrMore(p, s) parses zero or more occurrences of p separated by occurrences of s,
-    /// returning the list of values returned by successful applications of p.
-    /// </summary>
-    public static Parser<TItem, IEnumerable<TValue>> ZeroOrMore<TItem, TValue, S>(Parser<TItem, TValue> item, Parser<TItem, S> separator)
-    {
-        return Choice(OneOrMore(item, separator), Zero<TItem, TValue>());
-    }
-
-    /// <summary>
-    /// OneOrMore(p, s) behaves like ZeroOrMore(p, s), except that p must succeed at least one time.
-    /// </summary>
-    public static Parser<TItem, IEnumerable<TValue>> OneOrMore<TItem, TValue, S>(Parser<TItem, TValue> item, Parser<TItem, S> separator)
-    {
-        return from first in item
-            from rest in ZeroOrMore(from sep in separator
-                from next in item
-                select next)
-            select List(first, rest);
     }
 
     public static Parser<char, string> ZeroOrMore(Func<char, bool> test)
