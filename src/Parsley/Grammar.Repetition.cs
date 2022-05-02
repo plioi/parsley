@@ -200,13 +200,5 @@ partial class Grammar
     {
         return Enumerable.Empty<TValue>().SucceedWithThisValue<TItem, IEnumerable<TValue>>();
     }
-
-    static IEnumerable<T> List<T>(T first, IEnumerable<T> rest)
-    {
-        yield return first;
-
-        foreach (var item in rest)
-            yield return item;
-    }
 }
 
