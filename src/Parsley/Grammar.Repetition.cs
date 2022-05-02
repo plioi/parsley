@@ -50,9 +50,10 @@ partial class Grammar
     {
         return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out IEnumerable<TValue>? values, [NotNullWhen(false)] out string? expectation) =>
         {
+            var accumulator = new List<TValue>();
+
             var oldIndex = index;
             string? itemExpectation;
-            var accumulator = new List<TValue>();
 
             while (item(input, ref index, out var itemValue, out itemExpectation))
             {
