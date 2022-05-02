@@ -52,31 +52,31 @@ partial class Grammar
         {
             var accumulator = new List<TValue>();
 
-            var oldIndex = index;
-            string? itemExpectation;
+        var oldIndex = index;
+        string? itemExpectation;
 
-            while (item(input, ref index, out var itemValue, out itemExpectation))
-            {
-                if (oldIndex == index)
-                    throw new Exception($"Parser encountered a potential infinite loop at index {index}.");
+        while (item(input, ref index, out var itemValue, out itemExpectation))
+        {
+            if (oldIndex == index)
+                throw new Exception($"Parser encountered a potential infinite loop at index {index}.");
 
-                accumulator.Add(itemValue);
+            accumulator.Add(itemValue);
 
-                oldIndex = index;
-            }
+            oldIndex = index;
+        }
 
-            //The item parser finally failed.
+        //The item parser finally failed.
 
-            if (oldIndex != index)
-            {
-                expectation = itemExpectation;
-                values = null;
-                return false;
-            }
+        if (oldIndex != index)
+        {
+            expectation = itemExpectation;
+            values = null;
+            return false;
+        }
 
-            expectation = null;
-            values = accumulator;
-            return true;
+        expectation = null;
+        values = accumulator;
+        return true;
         };
     }
 
