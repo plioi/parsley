@@ -52,6 +52,17 @@ partial class Grammar
         {
             var accumulator = new List<TValue>();
 
+            return Repeat(accumulator, item, input, ref index, out values, out expectation);
+        };
+    }
+
+    static bool Repeat<TItem, TValue>(List<TValue> accumulator,
+                                      Parser<TItem, TValue> item,
+                                      ReadOnlySpan<TItem> input,
+                                      ref int index,
+                                      [NotNullWhen(true)] out IEnumerable<TValue>? values,
+                                      [NotNullWhen(false)] out string? expectation)
+    {
         var oldIndex = index;
         string? itemExpectation;
 
@@ -77,7 +88,6 @@ partial class Grammar
         expectation = null;
         values = accumulator;
         return true;
-        };
     }
 
     /// <summary>
