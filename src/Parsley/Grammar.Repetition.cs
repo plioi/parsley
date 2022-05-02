@@ -61,9 +61,24 @@ partial class Grammar
     /// </summary>
     public static Parser<TItem, IEnumerable<TValue>> OneOrMore<TItem, TValue>(Parser<TItem, TValue> item)
     {
-        return from first in item
-            from rest in ZeroOrMore(item)
-            select List(first, rest);
+        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out IEnumerable<TValue>? values, [NotNullWhen(false)] out string? expectation) =>
+        {
+            var accumulator = new List<TValue>();
+
+            if (item(input, ref index, out var value, out var itemExpectation))
+            {
+                accumulator.Add(value);
+            }
+            else
+            {
+                //The required first item failed.
+                expectation = itemExpectation;
+                values = null;
+                return false;
+            }
+
+            return Repeat(accumulator, item, input, ref index, out values, out expectation);
+        };
     }
 
     /// <summary>
