@@ -1,5 +1,3 @@
-using System.Globalization;
-
 namespace Parsley.Tests.IntegrationTests.Json;
 
 using static JsonGrammar;
