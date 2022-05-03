@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace Parsley;
 
 partial class Grammar
@@ -9,7 +7,7 @@ partial class Grammar
         if (word.Any(ch => !char.IsLetter(ch)))
             throw new ArgumentException("Keywords may only contain letters.", nameof(word));
 
-        return (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<char> input, ref int index, out bool succeeded, out string? expectation) =>
         {
             var peek = input.Peek(index, word.Length + 1);
 
@@ -19,15 +17,15 @@ partial class Grammar
                 {
                     index += word.Length;
 
+                    succeeded = true;
                     expectation = null;
-                    value = word;
-                    return true;
+                    return word;
                 }
             }
 
+            succeeded = false;
             expectation = word;
-            value = null;
-            return false;
+            return null;
         };
     }
 }

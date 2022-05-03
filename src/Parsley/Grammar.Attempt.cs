@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace Parsley;
 
 partial class Grammar
@@ -11,16 +9,16 @@ partial class Grammar
     /// </summary>
     public static Parser<TItem, TValue> Attempt<TItem, TValue>(Parser<TItem, TValue> parse)
     {
-        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<TItem> input, ref int index, out bool succeeded, out string? expectation) =>
         {
             var originalIndex = index;
 
-            if (parse(input, ref index, out value, out expectation))
-                return true;
+            var value = parse(input, ref index, out succeeded, out expectation);
 
-            index = originalIndex;
+            if (!succeeded)
+                index = originalIndex;
 
-            return false;
+            return value;
         };
     }
 }

@@ -1,12 +1,10 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace Parsley;
 
 partial class Grammar
 {
     public static Parser<char, string> Operator(string symbol)
     {
-        return (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<char> input, ref int index, out bool succeeded, out string? expectation) =>
         {
             var peek = input.Peek(index, symbol.Length);
 
@@ -14,14 +12,14 @@ partial class Grammar
             {
                 index += symbol.Length;
 
+                succeeded = true;
                 expectation = null;
-                value = symbol;
-                return true;
+                return symbol;
             }
 
+            succeeded = false;
             expectation = symbol;
-            value = null;
-            return false;
+            return null;
         };
     }
 }

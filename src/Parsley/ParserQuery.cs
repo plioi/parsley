@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace Parsley;
 
 public static class ParserQuery
@@ -15,11 +13,11 @@ public static class ParserQuery
     /// <param name="value">The value to treat as a parse result.</param>
     public static Parser<TItem, TValue> SucceedWithThisValue<TItem, TValue>(this TValue value)
     {
-        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out TValue? succeedingValue, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<TItem> input, ref int index, out bool succeeded, out string? expectation) =>
         {
             expectation = null;
-            succeedingValue = value!;
-            return true;
+            succeeded = true;
+            return value!;
         };
     }
 
@@ -47,13 +45,15 @@ public static class ParserQuery
     /// </remarks>
     static Parser<TItem, U> Bind<TItem, T, U>(this Parser<TItem, T> parse, Func<T, Parser<TItem, U>> constructNextParser)
     {
-        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out U? uValue, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<TItem> input, ref int index, out bool succeeded, out string? expectation) =>
         {
-            if (parse(input, ref index, out var tValue, out expectation))
-                return constructNextParser(tValue)(input, ref index, out uValue, out expectation);
+            var tValue = parse(input, ref index, out var tSucceeded, out expectation);
 
-            uValue = default;
-            return false;
+            if (tSucceeded)
+                return constructNextParser(tValue!)(input, ref index, out succeeded, out expectation);
+
+            succeeded = false;
+            return default;
         };
     }
 }

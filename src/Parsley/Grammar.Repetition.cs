@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace Parsley;
 
 partial class Grammar
@@ -16,27 +14,29 @@ partial class Grammar
             throw new ArgumentException(
                 $"{nameof(Repeat)} requires the given count to be > 1.", nameof(count));
 
-        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out TValue[]? values, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<TItem> input, ref int index, out bool succeeded, out string? expectation) =>
         {
             var items = new TValue[count];
 
             for (int i = 0; i < count; i++)
             {
-                if (item(input, ref index, out var itemValue, out var itemExpectation))
+                var itemValue = item(input, ref index, out var itemSucceeded, out var itemExpectation);
+
+                if (itemSucceeded)
                 {
-                    items[i] = itemValue;
+                    items[i] = itemValue!;
                 }
                 else
                 {
                     expectation = itemExpectation;
-                    values = null;
-                    return false;
+                    succeeded = false;
+                    return null;
                 }
             }
 
             expectation = null;
-            values = items;
-            return true;
+            succeeded = true;
+            return items;
         };
     }
 
@@ -48,11 +48,11 @@ partial class Grammar
     /// </summary>
     public static Parser<TItem, IReadOnlyList<TValue>> ZeroOrMore<TItem, TValue>(Parser<TItem, TValue> item)
     {
-        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out IReadOnlyList<TValue>? values, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<TItem> input, ref int index, out bool succeeded, out string? expectation) =>
         {
             var accumulator = new List<TValue>();
 
-            return Repeat(accumulator, item, input, ref index, out values, out expectation);
+            return Repeat(accumulator, item, input, ref index, out succeeded, out expectation);
         };
     }
 
@@ -61,23 +61,25 @@ partial class Grammar
     /// </summary>
     public static Parser<TItem, IReadOnlyList<TValue>> OneOrMore<TItem, TValue>(Parser<TItem, TValue> item)
     {
-        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out IReadOnlyList<TValue>? values, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<TItem> input, ref int index, out bool succeeded, out string? expectation) =>
         {
             var accumulator = new List<TValue>();
 
-            if (item(input, ref index, out var value, out var itemExpectation))
+            var value = item(input, ref index, out var itemSucceeded, out var itemExpectation);
+
+            if (itemSucceeded)
             {
-                accumulator.Add(value);
+                accumulator.Add(value!);
             }
             else
             {
                 //The required first item failed.
                 expectation = itemExpectation;
-                values = null;
-                return false;
+                succeeded = false;
+                return null;
             }
 
-            return Repeat(accumulator, item, input, ref index, out values, out expectation);
+            return Repeat(accumulator, item, input, ref index, out succeeded, out expectation);
         };
     }
 
@@ -87,14 +89,16 @@ partial class Grammar
     /// </summary>
     public static Parser<TItem, IReadOnlyList<TValue>> ZeroOrMore<TItem, TValue, S>(Parser<TItem, TValue> item, Parser<TItem, S> separator)
     {
-        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out IReadOnlyList<TValue>? values, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<TItem> input, ref int index, out bool succeeded, out string? expectation) =>
         {
             var accumulator = new List<TValue>();
             var originalIndex = index;
 
-            if (item(input, ref index, out var value, out var itemExpectation))
+            var value = item(input, ref index, out var itemSucceeded, out var itemExpectation);
+
+            if (itemSucceeded)
             {
-                accumulator.Add(value);
+                accumulator.Add(value!);
             }
             else
             {
@@ -104,13 +108,13 @@ partial class Grammar
                 if (originalIndex != index)
                 {
                     expectation = itemExpectation;
-                    values = null;
-                    return false;
+                    succeeded = false;
+                    return null;
                 }
 
                 expectation = null;
-                values = accumulator;
-                return true;
+                succeeded = true;
+                return accumulator;
             }
 
             var separatorAndNextItem =
@@ -118,7 +122,7 @@ partial class Grammar
                 from next in item
                 select next;
 
-            return Repeat(accumulator, separatorAndNextItem, input, ref index, out values, out expectation);
+            return Repeat(accumulator, separatorAndNextItem, input, ref index, out succeeded, out expectation);
         };
     }
 
@@ -127,20 +131,22 @@ partial class Grammar
     /// </summary>
     public static Parser<TItem, IReadOnlyList<TValue>> OneOrMore<TItem, TValue, S>(Parser<TItem, TValue> item, Parser<TItem, S> separator)
     {
-        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out IReadOnlyList<TValue>? values, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<TItem> input, ref int index, out bool succeeeded, out string? expectation) =>
         {
             var accumulator = new List<TValue>();
 
-            if (item(input, ref index, out var value, out var itemExpectation))
+            var value = item(input, ref index, out var itemSucceeded, out var itemExpectation);
+
+            if (itemSucceeded)
             {
-                accumulator.Add(value);
+                accumulator.Add(value!);
             }
             else
             {
                 //The required first item failed.
                 expectation = itemExpectation;
-                values = null;
-                return false;
+                succeeeded = false;
+                return null;
             }
 
             var separatorAndNextItem =
@@ -148,28 +154,31 @@ partial class Grammar
                 from next in item
                 select next;
 
-            return Repeat(accumulator, separatorAndNextItem, input, ref index, out values, out expectation);
+            return Repeat(accumulator, separatorAndNextItem, input, ref index, out succeeeded, out expectation);
         };
     }
 
-    static bool Repeat<TItem, TValue>(List<TValue> accumulator,
-                                      Parser<TItem, TValue> item,
-                                      ReadOnlySpan<TItem> input,
-                                      ref int index,
-                                      [NotNullWhen(true)] out IReadOnlyList<TValue>? values,
-                                      [NotNullWhen(false)] out string? expectation)
+    static IReadOnlyList<TValue>? Repeat<TItem, TValue>(List<TValue> accumulator,
+                                                        Parser<TItem, TValue> item,
+                                                        ReadOnlySpan<TItem> input,
+                                                        ref int index,
+                                                        out bool succeeded,
+                                                        out string? expectation)
     {
         var oldIndex = index;
-        string? itemExpectation;
 
-        while (item(input, ref index, out var itemValue, out itemExpectation))
+        var itemValue = item(input, ref index, out var itemSucceeded, out var itemExpectation);
+
+        while (itemSucceeded)
         {
             if (oldIndex == index)
                 throw new Exception($"Parser encountered a potential infinite loop at index {index}.");
 
-            accumulator.Add(itemValue);
+            accumulator.Add(itemValue!);
 
             oldIndex = index;
+
+            itemValue = item(input, ref index, out itemSucceeded, out itemExpectation);
         }
 
         //The item parser finally failed.
@@ -177,18 +186,18 @@ partial class Grammar
         if (oldIndex != index)
         {
             expectation = itemExpectation;
-            values = null;
-            return false;
+            succeeded = false;
+            return null;
         }
 
         expectation = null;
-        values = accumulator;
-        return true;
+        succeeded = true;
+        return accumulator;
     }
 
     public static Parser<char, string> ZeroOrMore(Func<char, bool> test)
     {
-        return (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<char> input, ref int index, out bool succeeded, out string? expectation) =>
         {
             var span = input.TakeWhile(index, test);
 
@@ -197,19 +206,19 @@ partial class Grammar
                 index += span.Length;
 
                 expectation = null;
-                value = span.ToString();
-                return true;
+                succeeded = true;
+                return span.ToString();
             }
 
             expectation = null;
-            value = "";
-            return true;
+            succeeded = true;
+            return "";
         };
     }
 
     public static Parser<char, string> OneOrMore(Func<char, bool> test, string name)
     {
-        return (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<char> input, ref int index, out bool succeeded, out string? expectation) =>
         {
             var span = input.TakeWhile(index, test);
 
@@ -218,13 +227,13 @@ partial class Grammar
                 index += span.Length;
 
                 expectation = null;
-                value = span.ToString();
-                return true;
+                succeeded = true;
+                return span.ToString();
             }
 
             expectation = name;
-            value = null;
-            return false;
+            succeeded = false;
+            return null;
         };
     }
 }
