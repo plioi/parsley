@@ -6,34 +6,34 @@ class JsonGrammarTests
 {
     public void ParsesTrueLiteral()
     {
-        Json.Parses("true").ShouldBe(true);
+        JsonDocument.Parses("true").ShouldBe(true);
     }
 
     public void ParsesFalseLiteral()
     {
-        Json.Parses("false").ShouldBe(false);
+        JsonDocument.Parses("false").ShouldBe(false);
     }
 
     public void ParsesNullLiteral()
     {
-        Json.Parses("null").ShouldBe(null);
+        JsonDocument.Parses("null").ShouldBe(null);
     }
 
     public void ParsesNumbers()
     {
-        Json.Parses("0").ShouldBe(0m);
-        Json.Parses("12345").ShouldBe(12345m);
-        Json.Parses("0.012").ShouldBe(0.012m);
-        Json.Parses("0e1").ShouldBe(0e1m);
-        Json.Parses("0e+1").ShouldBe(0e+1m);
-        Json.Parses("0e-1").ShouldBe(0e-1m);
-        Json.Parses("0E1").ShouldBe(0E1m);
-        Json.Parses("0E+1").ShouldBe(0E+1m);
-        Json.Parses("0E-1").ShouldBe(0E-1m);
-        Json.Parses("10e11").ShouldBe(10e11m);
-        Json.Parses("10.123e11").ShouldBe(10.123e11m);
-        Json.Parses("10.123E-11").ShouldBe(10.123E-11m);
-        Json.FailsToParse("9" + decimal.MaxValue, "", "decimal within valid range expected");
+        JsonDocument.Parses("0").ShouldBe(0m);
+        JsonDocument.Parses("12345").ShouldBe(12345m);
+        JsonDocument.Parses("0.012").ShouldBe(0.012m);
+        JsonDocument.Parses("0e1").ShouldBe(0e1m);
+        JsonDocument.Parses("0e+1").ShouldBe(0e+1m);
+        JsonDocument.Parses("0e-1").ShouldBe(0e-1m);
+        JsonDocument.Parses("0E1").ShouldBe(0E1m);
+        JsonDocument.Parses("0E+1").ShouldBe(0E+1m);
+        JsonDocument.Parses("0E-1").ShouldBe(0E-1m);
+        JsonDocument.Parses("10e11").ShouldBe(10e11m);
+        JsonDocument.Parses("10.123e11").ShouldBe(10.123e11m);
+        JsonDocument.Parses("10.123E-11").ShouldBe(10.123E-11m);
+        JsonDocument.FailsToParse("9" + decimal.MaxValue, "", "decimal within valid range expected");
     }
 
     public void ParsesQuotations()
@@ -42,8 +42,8 @@ class JsonGrammarTests
         var filled = "\"abc \\\" \\\\ \\/ \\b \\f \\n \\r \\t \\u263a def\"";
         const string expected = "abc \" \\ / \b \f \n \r \t ☺ def";
 
-        Json.Parses(empty).ShouldBe("");
-        Json.Parses(filled).ShouldBe(expected);
+        JsonDocument.Parses(empty).ShouldBe("");
+        JsonDocument.Parses(filled).ShouldBe(expected);
     }
 
     public void ParsesArrays()
@@ -51,11 +51,11 @@ class JsonGrammarTests
         var empty = "[]";
         var filled = "[0, 1, 2]";
 
-        var emptyValue = Json.Parses(empty);
+        var emptyValue = JsonDocument.Parses(empty);
         emptyValue.ShouldNotBeNull();
         ((object[]) emptyValue).ShouldBeEmpty();
 
-        var value = Json.Parses(filled);
+        var value = JsonDocument.Parses(filled);
         value.ShouldNotBeNull();
         ((object[]) value).ShouldBe(new object[] { 0m, 1m, 2m });
     }
@@ -65,11 +65,11 @@ class JsonGrammarTests
         var empty = "{}";
         var filled = "{\"zero\" : 0, \"one\" : 1, \"two\" : 2}";
 
-        var emptyValue = Json.Parses(empty);
+        var emptyValue = JsonDocument.Parses(empty);
         emptyValue.ShouldNotBeNull();
         ((Dictionary<string, object>) emptyValue).Count.ShouldBe(0);
 
-        var value = Json.Parses(filled);
+        var value = JsonDocument.Parses(filled);
         value.ShouldNotBeNull();
 
         var dictionary = (Dictionary<string, object>) value;
@@ -97,7 +97,7 @@ class JsonGrammarTests
 
             " + whitespaceCharacters;
 
-        var value = Json.Parses(complex);
+        var value = JsonDocument.Parses(complex);
         value.ShouldNotBeNull();
 
         var json = (Dictionary<string, object>) value;
@@ -126,7 +126,7 @@ class JsonGrammarTests
                     }
                 }";
 
-        Json.FailsToParse(invalidSlashP,
+        JsonDocument.FailsToParse(invalidSlashP,
             @"parent"": false
                     }
                 }",

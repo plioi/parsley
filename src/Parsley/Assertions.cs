@@ -5,7 +5,7 @@ namespace Parsley;
 
 public static class Assertions
 {
-    public static void FailsToParse<TValue>(this Parser<char, TValue> parse, string input, string expectedUnparsedInput, string expectedMessage)
+    public static void FailsToParse<TItem, TValue>(this Parser<TItem, TValue> parse, ReadOnlySpan<TItem> input, ReadOnlySpan<TItem> expectedUnparsedInput, string expectedMessage)
     {
         if (parse.TryPartialParse(input, out int index, out var value, out var error))
             throw new AssertionException("parser failure", "parser completed successfully");
@@ -15,15 +15,15 @@ public static class Assertions
         if (actual != expectedMessage)
             throw new MessageAssertionException(expectedMessage, actual);
 
-        if (expectedUnparsedInput == "")
+        if (expectedUnparsedInput.IsEmpty)
             input.AtEndOfInput(index);
         else
             input.LeavingUnparsedInput(index, expectedUnparsedInput);
     }
 
-    public static TValue PartiallyParses<TValue>(this Parser<char, TValue> parse, string input, string expectedUnparsedInput)
+    public static TValue PartiallyParses<TItem, TValue>(this Parser<TItem, TValue> parse, ReadOnlySpan<TItem> input, ReadOnlySpan<TItem> expectedUnparsedInput)
     {
-        if (expectedUnparsedInput == "")
+        if (expectedUnparsedInput.IsEmpty)
             throw new ArgumentException($"{nameof(expectedUnparsedInput)} must be nonempty when calling {nameof(PartiallyParses)}.");
 
         if (!parse.TryPartialParse(input, out int index, out var value, out var error))
@@ -34,7 +34,7 @@ public static class Assertions
         return value;
     }
 
-    public static TValue Parses<TValue>(this Parser<char, TValue> parse, string input)
+    public static TValue Parses<TItem, TValue>(this Parser<TItem, TValue> parse, ReadOnlySpan<TItem> input)
     {
         if (!parse.TryParse(input, out var value, out var error))
             UnexpectedFailure(input, error);
@@ -43,7 +43,7 @@ public static class Assertions
     }
 
     [DoesNotReturn]
-    static void UnexpectedFailure(ReadOnlySpan<char> input, ParseError error)
+    static void UnexpectedFailure<TItem>(ReadOnlySpan<TItem> input, ParseError error)
     {
         var message = new StringBuilder();
         var peek = input.Peek(error.Index, 20).ToString();
@@ -66,21 +66,30 @@ public static class Assertions
         throw new AssertionException(message.ToString(), "parser success", "parser failure");
     }
 
-    static void LeavingUnparsedInput(this string input, int index, string expectedUnparsedInput)
+    static void LeavingUnparsedInput<TItem>(this ReadOnlySpan<TItem> input, int index, ReadOnlySpan<TItem> expectedUnparsedInput)
     {
-        var actualUnparsedInput = input.Substring(index);
+        var actualUnparsedInput = input.Slice(index);
 
-        if (actualUnparsedInput != expectedUnparsedInput)
+        if (!actualUnparsedInput.SequenceEqual(expectedUnparsedInput))
             throw new AssertionException("Parse resulted in unexpected remaining unparsed input.",
-                expectedUnparsedInput,
-                actualUnparsedInput);
+                Display(expectedUnparsedInput),
+                Display(actualUnparsedInput));
     }
 
-    static void AtEndOfInput(this string input, int index)
+    static void AtEndOfInput<TItem>(this ReadOnlySpan<TItem> input, int index)
     {
         if (index != input.Length)
-            throw new AssertionException("end of input", input.Substring(index));
+        {
+            var unparsedInput = input.Slice(index);
 
-        input.LeavingUnparsedInput(index, "");
+            throw new AssertionException("end of input", Display(unparsedInput));
+        }
+
+        input.LeavingUnparsedInput(index, Array.Empty<TItem>());
     }
+
+    static string Display<TItem>(ReadOnlySpan<TItem> unparsedInput)
+        => typeof(TItem) == typeof(char)
+            ? unparsedInput.ToString()
+            : $"[{string.Join(", ", unparsedInput.ToArray().Select(x => x?.ToString()))}]";
 }
