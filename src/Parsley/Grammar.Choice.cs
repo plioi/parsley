@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace Parsley;
@@ -31,7 +30,7 @@ partial class Grammar
             throw new ArgumentException(
                 $"{nameof(Choice)} requires at least two parsers to choose between.", nameof(parsers));
 
-        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out TValue? value, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<TItem> input, ref int index, out bool succeeded, out string? expectation) =>
         {
             var originalIndex = index;
 
@@ -39,18 +38,20 @@ partial class Grammar
 
             foreach (var parser in parsers)
             {
-                if (parser(input, ref index, out value, out expectation))
-                    return true;
+                var value = parser(input, ref index, out succeeded, out expectation);
+
+                if (succeeded)
+                    return value;
 
                 if (originalIndex != index)
-                    return false;
+                    return default;
 
-                expectations.Add(expectation);
+                expectations.Add(expectation!);
             }
 
             expectation = CompoundExpectation(expectations);
-            value = default;
-            return false;
+            succeeded = false;
+            return default;
         };
     }
 

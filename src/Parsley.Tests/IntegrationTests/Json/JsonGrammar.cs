@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using static Parsley.Grammar;
 
@@ -9,7 +8,7 @@ public class JsonGrammar
     public static readonly Parser<char, object?> JsonDocument;
 
     static readonly Parser<char, string> Whitespace = ZeroOrMore(char.IsWhiteSpace);
-    static readonly Parser<char, object?> Value = default!;
+    static readonly Parser<char, object?> Value;
 
     static JsonGrammar()
     {
@@ -19,15 +18,7 @@ public class JsonGrammar
 
         Value =
             from leading in Whitespace
-            from value in Choice(
-                True,
-                False,
-                Null,
-                Number,
-                from quotation in Quote select (object) quotation,
-                Dictionary,
-                Array
-            )
+            from value in Choice(True, False, Null, Number, Quote, Dictionary, Array)
             from trailing in Whitespace
             select value;
 
@@ -45,7 +36,7 @@ public class JsonGrammar
         from open in Operator("[")
         from items in ZeroOrMore(Value, Operator(","))
         from close in Operator("]")
-        select (object) items.ToArray();
+        select items.ToArray();
 
     static Parser<char, object> Dictionary
     {
@@ -67,7 +58,7 @@ public class JsonGrammar
                 from open in Operator("{")
                 from pairs in ZeroOrMore(Pair, Operator(","))
                 from close in Operator("}")
-                select (object) pairs.ToDictionary(x => x.Key, x => x.Value);
+                select pairs.ToDictionary(x => x.Key, x => x.Value);
         }
     }
 
@@ -97,13 +88,13 @@ public class JsonGrammar
 
     static Parser<char, decimal> Evaluate(string candidate)
     {
-        return (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out decimal value, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<char> input, ref int index, out bool succeeded, out string? expectation) =>
         {
-            var valid = decimal.TryParse(candidate, NumberStyles.Any, CultureInfo.InvariantCulture, out value);
+            succeeded = decimal.TryParse(candidate, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal value);
 
-            expectation = valid ? null : "decimal within valid range";
+            expectation = succeeded ? null : "decimal within valid range";
 
-            return valid;
+            return value;
         };
     }
 

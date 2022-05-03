@@ -1,15 +1,14 @@
-using System.Diagnostics.CodeAnalysis;
 using static Parsley.Grammar;
 
 namespace Parsley.Tests;
 
 class GrammarTests
 {
-    static readonly Parser<char, string> Fail = (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+    static readonly Parser<char, string> Fail = (ReadOnlySpan<char> input, ref int index, out bool succeeded, out string? expectation) =>
     {
         expectation = "unsatisfiable expectation";
-        value = null;
-        return false;
+        succeeded = false;
+        return null;
     };
     static readonly Parser<char, char> Digit = Single<char>(char.IsDigit, "Digit");
     static readonly Parser<char, char> Letter = Single<char>(char.IsLetter, "Letter");
@@ -571,11 +570,11 @@ public class AlternationTests
         //consuming input. These tests simply describe the behavior under that
         //unusual situation.
 
-        Parser<char, string> succeedWithoutConsuming = (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation) =>
+        Parser<char, string> succeedWithoutConsuming = (ReadOnlySpan<char> input, ref int index, out bool succeeded, out string? expectation) =>
         {
             expectation = null;
-            value = "atypical value";
-            return true;
+            succeeded = true;
+            return "atypical value";
         };
 
         Choice(A, succeedWithoutConsuming).Parses("").ShouldBe("atypical value");
@@ -584,6 +583,6 @@ public class AlternationTests
     }
 
     static readonly Parser<char, string> NeverExecuted =
-        (ReadOnlySpan<char> input, ref int index, [NotNullWhen(true)] out string? value, [NotNullWhen(false)] out string? expectation)
+        (ReadOnlySpan<char> input, ref int index, out bool succeeded, out string? expectation)
             => throw new Exception("Parser 'NeverExecuted' should not have been executed.");
 }

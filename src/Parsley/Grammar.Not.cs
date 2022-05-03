@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace Parsley;
 
 partial class Grammar
@@ -10,20 +8,24 @@ partial class Grammar
     /// </summary>
     public static Parser<TItem, Void> Not<TItem, TValue>(Parser<TItem, TValue> parse)
     {
-        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out Void value, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<TItem> input, ref int index, out bool succeeded, out string? expectation) =>
         {
-            value = Void.Value;
-
             var copyOfIndex = index;
 
-            if (parse(input, ref copyOfIndex, out _, out _))
+            var ignoredValue = parse(input, ref copyOfIndex, out var parseSucceeded, out _);
+
+            if (parseSucceeded)
             {
                 expectation = "parse failure";
-                return false;
+                succeeded = false;
+            }
+            else
+            {
+                expectation = null;
+                succeeded = true;
             }
 
-            expectation = null;
-            return true;
+            return Void.Value;
         };
     }
 }

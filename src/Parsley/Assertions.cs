@@ -10,7 +10,9 @@ public static class Assertions
         ReadOnlySpan<char> inputSpan = input;
         int index = 0;
 
-        if (parse(inputSpan, ref index, out var value, out var expectation))
+        var value = parse(inputSpan, ref index, out var succeeded, out var expectation);
+
+        if (succeeded)
             throw new AssertionException("parser failure", "parser completed successfully");
 
         var actual = expectation + " expected";
@@ -29,15 +31,17 @@ public static class Assertions
         ReadOnlySpan<char> inputSpan = input;
         int index = 0;
 
-        if (!parse(inputSpan, ref index, out var value, out var expectation))
-            UnexpectedFailure(inputSpan, ref index, expectation);
+        var value = parse(inputSpan, ref index, out var succeeded, out var expectation);
+
+        if (!succeeded)
+            UnexpectedFailure(inputSpan, ref index, expectation!);
 
         if (expectedUnparsedInput == "")
             throw new ArgumentException($"{nameof(expectedUnparsedInput)} must be nonempty when calling {nameof(PartiallyParses)}.");
 
         inputSpan.LeavingUnparsedInput(index, expectedUnparsedInput);
 
-        return value;
+        return value!;
     }
 
     public static TValue Parses<TValue>(this Parser<char, TValue> parse, string input)
@@ -45,12 +49,14 @@ public static class Assertions
         ReadOnlySpan<char> inputSpan = input;
         int index = 0;
 
-        if (!parse(inputSpan, ref index, out var value, out var expectation))
-            UnexpectedFailure(inputSpan, ref index, expectation);
+        var value = parse(inputSpan, ref index, out var succeeded, out var expectation);
+
+        if (!succeeded)
+            UnexpectedFailure(inputSpan, ref index, expectation!);
 
         inputSpan.AtEndOfInput(index);
 
-        return value;
+        return value!;
     }
 
     [DoesNotReturn]

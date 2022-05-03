@@ -33,7 +33,7 @@ class OperatorPrecedenceParserTests
             from open in LeftParen
             from arguments in ZeroOrMore(expression.Parser, Comma)
             from close in RightParen
-            select (IExpression) new Form(callable, arguments));
+            select new Form(callable, arguments));
     }
 
     public void ParsesRegisteredTokensIntoCorrespondingAtoms()

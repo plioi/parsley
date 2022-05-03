@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace Parsley;
 
 partial class Grammar
@@ -11,7 +9,7 @@ partial class Grammar
 
     public static Parser<TItem, TItem> Single<TItem>(Func<TItem, bool> test, string name)
     {
-        return (ReadOnlySpan<TItem> input, ref int index, [NotNullWhen(true)] out TItem? value, [NotNullWhen(false)] out string? expectation) =>
+        return (ReadOnlySpan<TItem> input, ref int index, out bool succeeded, out string? expectation) =>
         {
             if (index + 1 <= input.Length)
             {
@@ -21,14 +19,14 @@ partial class Grammar
                     index += 1;
 
                     expectation = null;
-                    value = c;
-                    return true;
+                    succeeded = true;
+                    return c;
                 }
             }
 
             expectation = name;
-            value = default;
-            return false;
+            succeeded = false;
+            return default;
         };
     }
 }
