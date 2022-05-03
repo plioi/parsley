@@ -6,10 +6,9 @@ namespace Parsley.Tests.IntegrationTests.Json;
 
 public class JsonGrammar
 {
-    public static readonly Parser<char, object?> JsonDocument;
+    public static readonly Parser<char, object?> Json;
 
     static readonly Parser<char, Void> Whitespace = Skip(IsWhiteSpace);
-    static readonly Parser<char, object?> Value;
 
     static JsonGrammar()
     {
@@ -17,15 +16,10 @@ public class JsonGrammar
         var False = Literal("false", false);
         var Null = Literal("null", null);
 
-        Value =
+        Json =
             from leading in Whitespace
             from value in Choice(True, False, Null, Number, Quote, Dictionary, Array)
             from trailing in Whitespace
-            select value;
-
-        JsonDocument =
-            from value in Value
-            from end in EndOfInput<char>()
             select value;
     }
 
@@ -35,7 +29,7 @@ public class JsonGrammar
 
     static Parser<char, object> Array =>
         from open in Operator("[")
-        from items in ZeroOrMore(Value, Operator(","))
+        from items in ZeroOrMore(Json, Operator(","))
         from close in Operator("]")
         select items.ToArray();
 
@@ -52,7 +46,7 @@ public class JsonGrammar
             var Pair =
                 from key in Key
                 from colon in Operator(":")
-                from value in Value
+                from value in Json
                 select new KeyValuePair<string, object>(key, value);
 
             return
