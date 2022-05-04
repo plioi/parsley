@@ -45,22 +45,21 @@ public static class Assertions
     [DoesNotReturn]
     static void UnexpectedFailure<TItem>(ReadOnlySpan<TItem> input, ParseError error)
     {
-        var message = new StringBuilder();
-        var peek = input.Peek(error.Index, 20).ToString();
+        var message = new StringBuilder()
+            .AppendLine(error.Index + ": " + error.Expectation + " expected");
+
+        var peek = input.Peek(error.Index, 20);
 
         if (peek.Length > 0)
         {
-            var offendingItem = peek[0];
-            var displayFriendlyTrailingItems = new string(peek.Skip(1).TakeWhile(x => !char.IsControl(x)).ToArray());
-
-            message.AppendLine(error.Index + ": " + error.Expectation + " expected");
             message.AppendLine();
-            message.AppendLine($"\t{offendingItem}{displayFriendlyTrailingItems}");
+
+            var displayPeek = typeof(TItem) == typeof(char)
+                ? new string(peek.ToString().TakeWhile(x => !char.IsControl(x)).ToArray())
+                : Display(peek);
+
+            message.AppendLine($"\t{displayPeek}");
             message.AppendLine("\t^");
-        }
-        else
-        {
-            message.AppendLine(error.Index + ": " + error.Expectation + " expected");
         }
 
         throw new AssertionException(message.ToString(), "parser success", "parser failure");
@@ -91,5 +90,5 @@ public static class Assertions
     static string Display<TItem>(ReadOnlySpan<TItem> unparsedInput)
         => typeof(TItem) == typeof(char)
             ? unparsedInput.ToString()
-            : $"[{string.Join(", ", unparsedInput.ToArray().Select(x => x?.ToString()))}]";
+            : string.Join(", ", unparsedInput.ToArray().Select(x => x?.ToString()));
 }
