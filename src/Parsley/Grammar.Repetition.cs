@@ -199,15 +199,16 @@ partial class Grammar
     {
         return (ReadOnlySpan<char> input, ref int index, out bool succeeded, out string? expectation) =>
         {
-            var span = input.TakeWhile(index, test);
-
-            if (span.Length > 0)
+            var length = input.CountWhile(index, test);
+            
+            if (length > 0)
             {
-                index += span.Length;
+                var slice = input.Slice(index, length);
+                index += length;
 
                 expectation = null;
                 succeeded = true;
-                return span.ToString();
+                return slice.ToString();
             }
 
             expectation = null;
@@ -220,11 +221,12 @@ partial class Grammar
     {
         return (ReadOnlySpan<char> input, ref int index, out bool succeeded, out string? expectation) =>
         {
-            var span = input.TakeWhile(index, test);
+            var length = input.CountWhile(index, test);
 
-            if (span.Length > 0)
+            if (length > 0)
             {
-                index += span.Length;
+                var span = input.Slice(index, length);
+                index += length;
 
                 expectation = null;
                 succeeded = true;

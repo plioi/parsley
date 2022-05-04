@@ -59,40 +59,40 @@ class ReadOnlySpanExtensionsTests
         digits.Peek(10, 100).ToArray().ShouldBe(Array.Empty<int>());
     }
 
-    public void CanMatchLeadingItemsByPredicate()
+    public void CanCountLeadingItemsSatisfyingPredicate()
     {
         Func<char, bool> letters = char.IsLetter;
         Func<char, bool> digits = char.IsDigit;
         Func<char, bool> alphanumerics = char.IsLetterOrDigit;
 
         ReadOnlySpan<char> empty = "";
-        empty.TakeWhile(0, letters).ToString().ShouldBe("");
+        empty.CountWhile(0, letters).ShouldBe(0);
 
         ReadOnlySpan<char> abc123 = "abc123";
 
-        abc123.TakeWhile(0, digits).ToString().ShouldBe("");
-        abc123.TakeWhile(0, letters).ToString().ShouldBe("abc");
-        abc123.TakeWhile(0, alphanumerics).ToString().ShouldBe("abc123");
+        abc123.CountWhile(0, digits).ShouldBe(0);
+        abc123.CountWhile(0, letters).ShouldBe(3);
+        abc123.CountWhile(0, alphanumerics).ShouldBe(6);
 
-        abc123.TakeWhile(2, digits).ToString().ShouldBe("");
-        abc123.TakeWhile(2, letters).ToString().ShouldBe("c");
-        abc123.TakeWhile(2, alphanumerics).ToString().ShouldBe("c123");
+        abc123.CountWhile(2, digits).ShouldBe(0);
+        abc123.CountWhile(2, letters).ShouldBe(1);
+        abc123.CountWhile(2, alphanumerics).ShouldBe(4);
 
-        abc123.TakeWhile(3, digits).ToString().ShouldBe("123");
-        abc123.TakeWhile(3, letters).ToString().ShouldBe("");
-        abc123.TakeWhile(3, alphanumerics).ToString().ShouldBe("123");
+        abc123.CountWhile(3, digits).ShouldBe(3);
+        abc123.CountWhile(3, letters).ShouldBe(0);
+        abc123.CountWhile(3, alphanumerics).ShouldBe(3);
 
-        abc123.TakeWhile(6, digits).ToString().ShouldBe("");
-        abc123.TakeWhile(6, letters).ToString().ShouldBe("");
-        abc123.TakeWhile(6, alphanumerics).ToString().ShouldBe("");
+        abc123.CountWhile(6, digits).ShouldBe(0);
+        abc123.CountWhile(6, letters).ShouldBe(0);
+        abc123.CountWhile(6, alphanumerics).ShouldBe(0);
 
         ReadOnlySpan<int> numbers = new[] { 2, 4, 6, 8, 1, 3, 5, 7, 9 };
 
-        numbers.TakeWhile(0, x => x % 2 == 0).ToArray().ShouldBe(new[] { 2, 4, 6, 8 });
-        numbers.TakeWhile(1, x => x % 2 == 0).ToArray().ShouldBe(new[] { 4, 6, 8 });
-        numbers.TakeWhile(2, x => x % 2 == 0).ToArray().ShouldBe(new[] { 6, 8 });
-        numbers.TakeWhile(3, x => x % 2 == 0).ToArray().ShouldBe(new[] { 8 });
-        numbers.TakeWhile(4, x => x % 2 == 0).ToArray().ShouldBe(Array.Empty<int>());
-        numbers.TakeWhile(9, x => x % 2 == 0).ToArray().ShouldBe(Array.Empty<int>());
+        numbers.CountWhile(0, x => x % 2 == 0).ShouldBe(4);
+        numbers.CountWhile(1, x => x % 2 == 0).ShouldBe(3);
+        numbers.CountWhile(2, x => x % 2 == 0).ShouldBe(2);
+        numbers.CountWhile(3, x => x % 2 == 0).ShouldBe(1);
+        numbers.CountWhile(4, x => x % 2 == 0).ShouldBe(0);
+        numbers.CountWhile(9, x => x % 2 == 0).ShouldBe(0);
     }
 }

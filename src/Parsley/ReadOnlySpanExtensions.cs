@@ -7,13 +7,13 @@ public static class ReadOnlySpanExtensions
             ? input.Slice(index)
             : input.Slice(index, length);
 
-    public static ReadOnlySpan<T> TakeWhile<T>(this ReadOnlySpan<T> input, int index, Func<T, bool> test)
+    public static int CountWhile<T>(this ReadOnlySpan<T> input, int index, Func<T, bool> test)
     {
-        int i = 0;
+        int length = 0;
 
-        while (index + i < input.Length && test(input[index + i]))
-            i++;
+        while (index + length < input.Length && test(input[index + length]))
+            length++;
 
-        return input.Peek(index, i);
+        return length;
     }
 }
