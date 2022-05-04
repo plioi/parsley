@@ -6,58 +6,95 @@ namespace Parsley.Tests.IntegrationTests.Json;
 
 public class JsonGrammar
 {
+    record JsonToken(string Kind, object? Value);
+
     public static readonly Parser<char, object?> JsonDocument;
+    static readonly Parser<JsonToken, object?> Value;
 
     static readonly Parser<char, Void> Whitespace = Skip(IsWhiteSpace);
 
     static JsonGrammar()
     {
-        var True = Literal("true", true);
-        var False = Literal("false", false);
-        var Null = Literal("null", null);
+        var True = Token("true");
+        var False = Token("false");
+        var Null = Token("null");
+        var Number = Token("number");
+        var Quote = Token("quote");
 
-        JsonDocument =
-            from leading in Whitespace
-            from value in Choice(True, False, Null, Number, Quote, Dictionary, Array)
-            from trailing in Whitespace
-            select value;
+        Value = Choice(True, False, Null, Number, Quote, Dictionary, Array);
+
+        JsonDocument = (ReadOnlySpan<char> input, ref int index, out bool succeeded, out string? expectation) =>
+        {
+            var tokens = Tokenizer()(input, ref index, out succeeded, out expectation);
+
+            if (succeeded)
+            {
+                var tokenIndex = 0;
+                return Value(tokens!.ToArray(), ref tokenIndex, out succeeded, out expectation);
+            }
+
+            return null;
+        };
     }
 
-    static Parser<char, object> Literal(string literal, object? value) =>
-        from x in Keyword(literal)
-        select value;
+    static Parser<char, IReadOnlyList<JsonToken>> Tokenizer() =>
+        from leading in Whitespace
+        from tokens in
+            ZeroOrMore(
+                from token in Choice(
+                    Literal("true", true),
+                    Literal("false", false),
+                    Literal("null", null),
+                    Symbol("["),
+                    Symbol("]"),
+                    Symbol("{"),
+                    Symbol("}"),
+                    Symbol(","),
+                    Symbol(":"),
+                    NumberLiteral,
+                    StringLiteral
+                )
+                from trailing in Whitespace
+                select token)
+        select tokens;
 
-    static Parser<char, object> Array =>
-        from open in Operator("[")
-        from items in ZeroOrMore(JsonDocument, Operator(","))
-        from close in Operator("]")
+    static Parser<char, JsonToken> Literal(string literal, object? value) =>
+        from x in Keyword(literal)
+        select new JsonToken(literal, value);
+
+    static Parser<char, JsonToken> Symbol(string literal) =>
+        from x in Operator(literal)
+        select new JsonToken(literal, literal);
+
+    static Parser<JsonToken, object> Token(string kind) =>
+        from x in Single<JsonToken>(x => x.Kind == kind, kind)
+        select x.Value;
+
+    static Parser<JsonToken, object> Array =>
+        from open in Token("[")
+        from items in ZeroOrMore(Value, Token(","))
+        from close in Token("]")
         select items.ToArray();
 
-    static Parser<char, object> Dictionary
+    static Parser<JsonToken, object> Dictionary
     {
         get
         {
-            var Key =
-                from leading in Whitespace
-                from quote in Quote
-                from trailing in Whitespace
-                select quote;
-
             var Pair =
-                from key in Key
-                from colon in Operator(":")
-                from value in JsonDocument
-                select new KeyValuePair<string, object>(key, value);
+                from key in Token("quote")
+                from colon in Token(":")
+                from value in Value
+                select new KeyValuePair<string, object>((string) key, value);
 
             return
-                from open in Operator("{")
-                from pairs in ZeroOrMore(Pair, Operator(","))
-                from close in Operator("}")
+                from open in Token("{")
+                from pairs in ZeroOrMore(Pair, Token(","))
+                from close in Token("}")
                 select pairs.ToDictionary(x => x.Key, x => x.Value);
         }
     }
 
-    static Parser<char, object> Number
+    static Parser<char, JsonToken> NumberLiteral
     {
         get
         {
@@ -77,7 +114,7 @@ public class JsonGrammar
                     select $"{e}{sign}{digits}")
 
                 from value in Evaluate($"{leading}{optionalFraction}{optionalExponent}")
-                select (object) value;
+                select new JsonToken("number", value);
         }
     }
 
@@ -93,7 +130,7 @@ public class JsonGrammar
         };
     }
 
-    static Parser<char, string> Quote
+    static Parser<char, JsonToken> StringLiteral
     {
         get
         {
@@ -128,7 +165,7 @@ public class JsonGrammar
                         Single<char>(c => c != '"' && c != '\\', "non-quote, not-slash character").Select(x => x.ToString())
                     ))
                 from close in Single('"')
-                select string.Join("", content);
+                select new JsonToken("quote", string.Join("", content));
         }
     }
 }
