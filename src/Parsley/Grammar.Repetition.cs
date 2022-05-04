@@ -195,6 +195,27 @@ partial class Grammar
         return accumulator;
     }
 
+    public static Parser<TItem, Void> Skip<TItem>(Func<TItem, bool> test)
+    {
+        return (ReadOnlySpan<TItem> input, ref int index, out bool succeeded, out string? expectation) =>
+        {
+            var length = input.CountWhile(index, test);
+            
+            if (length > 0)
+            {
+                index += length;
+
+                expectation = null;
+                succeeded = true;
+                return Void.Value;
+            }
+
+            expectation = null;
+            succeeded = true;
+            return Void.Value;
+        };
+    }
+
     public static Parser<char, string> ZeroOrMore(Func<char, bool> test)
     {
         return (ReadOnlySpan<char> input, ref int index, out bool succeeded, out string? expectation) =>

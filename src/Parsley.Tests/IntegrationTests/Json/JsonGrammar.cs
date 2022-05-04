@@ -7,7 +7,7 @@ public class JsonGrammar
 {
     public static readonly Parser<char, object?> JsonDocument;
 
-    static readonly Parser<char, string> Whitespace = ZeroOrMore(char.IsWhiteSpace);
+    static readonly Parser<char, Void> Whitespace = Skip<char>(char.IsWhiteSpace);
     static readonly Parser<char, object?> Value;
 
     static JsonGrammar()
