@@ -459,6 +459,13 @@ class GrammarTests
         upper.Parses("DEF").ShouldBe("DEF");
 
         caseInsensitive.Parses("abcDEF").ShouldBe("abcDEF");
+
+        var even = ZeroOrMore<int>(x => x % 2 == 0);
+        var empty = Array.Empty<int>();
+        even.Parses(empty).ShouldBe(empty);
+        even.PartiallyParses(new[] { 1, 2, 4, 6 }, new[] { 1, 2, 4, 6 }).ShouldBe(empty);
+        even.PartiallyParses(new[] { 2, 4, 6, 1, 3, 5 }, new[] { 1, 3, 5 }).ShouldBe(new[] { 2, 4, 6 });
+        even.Parses(new[] { 2, 4, 6 }).ShouldBe(new[] { 2, 4, 6 });
     }
 
     public void ProvidesConveniencePrimitiveRecognizingNonemptySequencesOfItemsSatisfyingSomePredicate()
@@ -480,6 +487,13 @@ class GrammarTests
         upper.Parses("DEF").ShouldBe("DEF");
 
         caseInsensitive.Parses("abcDEF").ShouldBe("abcDEF");
+
+        var even = OneOrMore<int>(x => x % 2 == 0, "even number");
+        var empty = Array.Empty<int>();
+        even.FailsToParse(empty, empty, "even number expected");
+        even.FailsToParse(new[] { 1, 2, 4, 6 }, new[] { 1, 2, 4, 6 }, "even number expected");
+        even.PartiallyParses(new[] { 2, 4, 6, 1, 3, 5 }, new[] { 1, 3, 5 }).ShouldBe(new[] { 2, 4, 6 });
+        even.Parses(new[] { 2, 4, 6 }).ShouldBe(new[] { 2, 4, 6 });
     }
 
     public void ProvidesConveniencePrimitiveForDefiningKeywords()

@@ -5,99 +5,90 @@ namespace Parsley;
 
 public static class Assertions
 {
-    public static void FailsToParse<TValue>(this Parser<char, TValue> parse, string input, string expectedUnparsedInput, string expectedMessage)
+    public static void FailsToParse<TItem, TValue>(this Parser<TItem, TValue> parse, ReadOnlySpan<TItem> input, ReadOnlySpan<TItem> expectedUnparsedInput, string expectedMessage)
     {
-        ReadOnlySpan<char> inputSpan = input;
-        int index = 0;
-
-        var value = parse(inputSpan, ref index, out var succeeded, out var expectation);
-
-        if (succeeded)
+        if (parse.TryPartialParse(input, out int index, out var value, out var error))
             throw new AssertionException("parser failure", "parser completed successfully");
 
-        var actual = expectation + " expected";
+        var actual = error.Expectation + " expected";
             
         if (actual != expectedMessage)
             throw new MessageAssertionException(expectedMessage, actual);
-        
-        if (expectedUnparsedInput == "")
-            inputSpan.AtEndOfInput(index);
+
+        if (expectedUnparsedInput.IsEmpty)
+            input.AtEndOfInput(index);
         else
-            inputSpan.LeavingUnparsedInput(index, expectedUnparsedInput);
+            input.LeavingUnparsedInput(index, expectedUnparsedInput);
     }
 
-    public static TValue PartiallyParses<TValue>(this Parser<char, TValue> parse, string input, string expectedUnparsedInput)
+    public static TValue PartiallyParses<TItem, TValue>(this Parser<TItem, TValue> parse, ReadOnlySpan<TItem> input, ReadOnlySpan<TItem> expectedUnparsedInput)
     {
-        ReadOnlySpan<char> inputSpan = input;
-        int index = 0;
-
-        var value = parse(inputSpan, ref index, out var succeeded, out var expectation);
-
-        if (!succeeded)
-            UnexpectedFailure(inputSpan, ref index, expectation!);
-
-        if (expectedUnparsedInput == "")
+        if (expectedUnparsedInput.IsEmpty)
             throw new ArgumentException($"{nameof(expectedUnparsedInput)} must be nonempty when calling {nameof(PartiallyParses)}.");
 
-        inputSpan.LeavingUnparsedInput(index, expectedUnparsedInput);
+        if (!parse.TryPartialParse(input, out int index, out var value, out var error))
+            UnexpectedFailure(input, error);
 
-        return value!;
+        input.LeavingUnparsedInput(index, expectedUnparsedInput);
+
+        return value;
     }
 
-    public static TValue Parses<TValue>(this Parser<char, TValue> parse, string input)
+    public static TValue Parses<TItem, TValue>(this Parser<TItem, TValue> parse, ReadOnlySpan<TItem> input)
     {
-        ReadOnlySpan<char> inputSpan = input;
-        int index = 0;
+        if (!parse.TryParse(input, out var value, out var error))
+            UnexpectedFailure(input, error);
 
-        var value = parse(inputSpan, ref index, out var succeeded, out var expectation);
-
-        if (!succeeded)
-            UnexpectedFailure(inputSpan, ref index, expectation!);
-
-        inputSpan.AtEndOfInput(index);
-
-        return value!;
+        return value;
     }
 
     [DoesNotReturn]
-    static void UnexpectedFailure(ReadOnlySpan<char> input, ref int index, string expectation)
+    static void UnexpectedFailure<TItem>(ReadOnlySpan<TItem> input, ParseError error)
     {
-        var message = new StringBuilder();
-        var peek = input.Peek(index, 20).ToString();
+        var message = new StringBuilder()
+            .AppendLine(error.Index + ": " + error.Expectation + " expected");
+
+        var peek = input.Peek(error.Index, 20);
 
         if (peek.Length > 0)
         {
-            var offendingItem = peek[0];
-            var displayFriendlyTrailingItems = new string(peek.Skip(1).TakeWhile(x => !char.IsControl(x)).ToArray());
-
-            message.AppendLine(index + ": " + expectation + " expected");
             message.AppendLine();
-            message.AppendLine($"\t{offendingItem}{displayFriendlyTrailingItems}");
+
+            var displayPeek = typeof(TItem) == typeof(char)
+                ? new string(peek.ToString().TakeWhile(x => !char.IsControl(x)).ToArray())
+                : Display(peek);
+
+            message.AppendLine($"\t{displayPeek}");
             message.AppendLine("\t^");
-        }
-        else
-        {
-            message.AppendLine(index + ": " + expectation + " expected");
         }
 
         throw new AssertionException(message.ToString(), "parser success", "parser failure");
     }
 
-    static void LeavingUnparsedInput(this ReadOnlySpan<char> input, int index, string expectedUnparsedInput)
+    static void LeavingUnparsedInput<TItem>(this ReadOnlySpan<TItem> input, int index, ReadOnlySpan<TItem> expectedUnparsedInput)
     {
-        var actualUnparsedInput = input.Slice(index).ToString();
+        var actualUnparsedInput = input.Slice(index);
 
-        if (actualUnparsedInput != expectedUnparsedInput)
+        if (!actualUnparsedInput.SequenceEqual(expectedUnparsedInput))
             throw new AssertionException("Parse resulted in unexpected remaining unparsed input.",
-                expectedUnparsedInput,
-                actualUnparsedInput);
+                Display(expectedUnparsedInput),
+                Display(actualUnparsedInput));
     }
 
-    static void AtEndOfInput(this ReadOnlySpan<char> input, int index)
+    static void AtEndOfInput<TItem>(this ReadOnlySpan<TItem> input, int index)
     {
         if (index != input.Length)
-            throw new AssertionException("end of input", input.ToString());
+        {
+            var unparsedInput = input.Slice(index);
 
-        input.LeavingUnparsedInput(index, "");
+            throw new AssertionException("end of input", Display(unparsedInput));
+        }
+
+        input.LeavingUnparsedInput(index, Array.Empty<TItem>());
     }
+
+    static string Display<TItem>(ReadOnlySpan<TItem> unparsedInput)
+        => typeof(TItem) == typeof(char)
+            ? unparsedInput.ToString()
+            : string.Join(", ", unparsedInput.ToArray().Select(x => x?.ToString()));
 }

@@ -6,64 +6,89 @@ namespace Parsley.Tests.IntegrationTests.Json;
 
 public class JsonGrammar
 {
+    record JsonToken(string Kind, object? Value);
+
     public static readonly Parser<char, object?> JsonDocument;
+    static readonly Parser<JsonToken, object?> Value;
 
     static readonly Parser<char, Void> Whitespace = Skip(IsWhiteSpace);
-    static readonly Parser<char, object?> Value;
 
     static JsonGrammar()
     {
-        var True = Literal("true", true);
-        var False = Literal("false", false);
-        var Null = Literal("null", null);
+        var True = Token("true");
+        var False = Token("false");
+        var Null = Token("null");
+        var Number = Token("number");
+        var String = Token("string");
 
-        Value =
-            from leading in Whitespace
-            from value in Choice(True, False, Null, Number, Quote, Dictionary, Array)
-            from trailing in Whitespace
-            select value;
+        Value = Recursive(() => Choice(True, False, Null, Number, String, Dictionary, Array));
 
-        JsonDocument =
-            from value in Value
-            from end in EndOfInput<char>()
-            select value;
-    }
-
-    static Parser<char, object> Literal(string literal, object? value) =>
-        from x in Keyword(literal)
-        select value;
-
-    static Parser<char, object> Array =>
-        from open in Operator("[")
-        from items in ZeroOrMore(Value, Operator(","))
-        from close in Operator("]")
-        select items.ToArray();
-
-    static Parser<char, object> Dictionary
-    {
-        get
+        JsonDocument = (ReadOnlySpan<char> input, ref int index, out bool succeeded, out string? expectation) =>
         {
-            var Key =
-                from leading in Whitespace
-                from quote in Quote
-                from trailing in Whitespace
-                select quote;
+            var tokens = Tokenizer()(input, ref index, out succeeded, out expectation);
 
-            var Pair =
-                from key in Key
-                from colon in Operator(":")
-                from value in Value
-                select new KeyValuePair<string, object>(key, value);
+            if (succeeded)
+            {
+                var tokenIndex = 0;
+                return Value(tokens!.ToArray(), ref tokenIndex, out succeeded, out expectation);
+            }
 
-            return
-                from open in Operator("{")
-                from pairs in ZeroOrMore(Pair, Operator(","))
-                from close in Operator("}")
-                select pairs.ToDictionary(x => x.Key, x => x.Value);
-        }
+            return null;
+        };
     }
 
-    static Parser<char, object> Number
+    static Parser<char, IReadOnlyList<JsonToken>> Tokenizer() =>
+        from leading in Whitespace
+        from tokens in
+            ZeroOrMore(
+                from token in Choice(
+                    Literal("true", true),
+                    Literal("false", false),
+                    Literal("null", null),
+                    Symbol("["),
+                    Symbol("]"),
+                    Symbol("{"),
+                    Symbol("}"),
+                    Symbol(","),
+                    Symbol(":"),
+                    NumberLiteral,
+                    StringLiteral
+                )
+                from trailing in Whitespace
+                select token)
+        select tokens;
+
+    static Parser<char, JsonToken> Literal(string literal, object? value) =>
+        from x in Keyword(literal)
+        select new JsonToken(literal, value);
+
+    static Parser<char, JsonToken> Symbol(string literal) =>
+        from x in Operator(literal)
+        select new JsonToken(literal, literal);
+
+    static Parser<JsonToken, object> Token(string kind) =>
+        from x in Single<JsonToken>(x => x.Kind == kind, kind)
+        select x.Value;
+
+    static Parser<JsonToken, object> Array =>
+        List(Value, "[", "]").Select(values => values.ToArray());
+
+    static Parser<JsonToken, object> Dictionary =>
+        List(Pair, "{", "}").Select(pairs => pairs.ToDictionary(x => (string)x.key, x => x.value));
+
+    static Parser<JsonToken, (object key, object? value)> Pair =>
+        from key in Token("string")
+        from colon in Token(":")
+        from value in Value
+        select (key, value);
+
+    static Parser<JsonToken, IReadOnlyList<TValue>> List<TValue>(Parser<JsonToken, TValue> item, string open, string close) =>
+        from openToken in Token(open)
+        from items in ZeroOrMore(item, Token(","))
+        from closeToken in Token(close)
+        select items;
+
+    static Parser<char, JsonToken> NumberLiteral
     {
         get
         {
@@ -83,7 +108,7 @@ public class JsonGrammar
                     select $"{e}{sign}{digits}")
 
                 from value in Evaluate($"{leading}{optionalFraction}{optionalExponent}")
-                select (object) value;
+                select new JsonToken("number", value);
         }
     }
 
@@ -99,7 +124,7 @@ public class JsonGrammar
         };
     }
 
-    static Parser<char, string> Quote
+    static Parser<char, JsonToken> StringLiteral
     {
         get
         {
@@ -134,7 +159,7 @@ public class JsonGrammar
                         Single<char>(c => c != '"' && c != '\\', "non-quote, not-slash character").Select(x => x.ToString())
                     ))
                 from close in Single('"')
-                select string.Join("", content);
+                select new JsonToken("string", string.Join("", content));
         }
     }
 }
