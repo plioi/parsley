@@ -1,5 +1,6 @@
 using System.Globalization;
 using static Parsley.Grammar;
+using static Parsley.Characters;
 
 namespace Parsley.Tests;
 
@@ -119,8 +120,8 @@ class OperatorPrecedenceParserTests
         value.ToString().ShouldBe(expectedTree);
     }
 
-    static readonly Parser<char, string> Digit = from c in Single<char>(char.IsDigit, "Digit") select c.ToString();
-    static readonly Parser<char, string> Name = OneOrMore(char.IsLetter, "Name");
+    static readonly Parser<char, string> Digit = from c in Single(IsDigit, "Digit") select c.ToString();
+    static readonly Parser<char, string> Name = OneOrMore(IsLetter, "Name");
     static readonly Parser<char, string> Increment = Operator("++");
     static readonly Parser<char, string> Decrement = Operator("--");
     static readonly Parser<char, string> Add = Operator("+");

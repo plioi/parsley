@@ -1,3 +1,5 @@
+using static Parsley.Characters;
+
 namespace Parsley.Tests;
 
 class ReadOnlySpanExtensionsTests
@@ -61,30 +63,26 @@ class ReadOnlySpanExtensionsTests
 
     public void CanCountLeadingItemsSatisfyingPredicate()
     {
-        Func<char, bool> letters = char.IsLetter;
-        Func<char, bool> digits = char.IsDigit;
-        Func<char, bool> alphanumerics = char.IsLetterOrDigit;
-
         ReadOnlySpan<char> empty = "";
-        empty.CountWhile(0, letters).ShouldBe(0);
+        empty.CountWhile(0, IsLetter).ShouldBe(0);
 
         ReadOnlySpan<char> abc123 = "abc123";
 
-        abc123.CountWhile(0, digits).ShouldBe(0);
-        abc123.CountWhile(0, letters).ShouldBe(3);
-        abc123.CountWhile(0, alphanumerics).ShouldBe(6);
+        abc123.CountWhile(0, IsDigit).ShouldBe(0);
+        abc123.CountWhile(0, IsLetter).ShouldBe(3);
+        abc123.CountWhile(0, IsLetterOrDigit).ShouldBe(6);
 
-        abc123.CountWhile(2, digits).ShouldBe(0);
-        abc123.CountWhile(2, letters).ShouldBe(1);
-        abc123.CountWhile(2, alphanumerics).ShouldBe(4);
+        abc123.CountWhile(2, IsDigit).ShouldBe(0);
+        abc123.CountWhile(2, IsLetter).ShouldBe(1);
+        abc123.CountWhile(2, IsLetterOrDigit).ShouldBe(4);
 
-        abc123.CountWhile(3, digits).ShouldBe(3);
-        abc123.CountWhile(3, letters).ShouldBe(0);
-        abc123.CountWhile(3, alphanumerics).ShouldBe(3);
+        abc123.CountWhile(3, IsDigit).ShouldBe(3);
+        abc123.CountWhile(3, IsLetter).ShouldBe(0);
+        abc123.CountWhile(3, IsLetterOrDigit).ShouldBe(3);
 
-        abc123.CountWhile(6, digits).ShouldBe(0);
-        abc123.CountWhile(6, letters).ShouldBe(0);
-        abc123.CountWhile(6, alphanumerics).ShouldBe(0);
+        abc123.CountWhile(6, IsDigit).ShouldBe(0);
+        abc123.CountWhile(6, IsLetter).ShouldBe(0);
+        abc123.CountWhile(6, IsLetterOrDigit).ShouldBe(0);
 
         ReadOnlySpan<int> numbers = new[] { 2, 4, 6, 8, 1, 3, 5, 7, 9 };
 

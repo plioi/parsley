@@ -1,5 +1,6 @@
 using System.Globalization;
 using static Parsley.Grammar;
+using static Parsley.Characters;
 
 namespace Parsley.Tests.IntegrationTests.Json;
 
@@ -7,7 +8,7 @@ public class JsonGrammar
 {
     public static readonly Parser<char, object?> JsonDocument;
 
-    static readonly Parser<char, Void> Whitespace = Skip<char>(char.IsWhiteSpace);
+    static readonly Parser<char, Void> Whitespace = Skip(IsWhiteSpace);
     static readonly Parser<char, object?> Value;
 
     static JsonGrammar()
@@ -66,7 +67,7 @@ public class JsonGrammar
     {
         get
         {
-            var Digits = OneOrMore(char.IsDigit, "0..9");
+            var Digits = OneOrMore(IsDigit, "0..9");
 
             return from leading in Digits
 
@@ -102,7 +103,7 @@ public class JsonGrammar
     {
         get
         {
-            var LetterOrDigit = Single<char>(char.IsLetterOrDigit, "letter or digit");
+            var LetterOrDigit = Single(IsLetterOrDigit, "letter or digit");
 
             return
                 from open in Single('"')

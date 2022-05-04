@@ -1,4 +1,5 @@
 using static Parsley.Grammar;
+using static Parsley.Characters;
 
 namespace Parsley.Tests;
 
@@ -10,8 +11,8 @@ class GrammarTests
         succeeded = false;
         return null;
     };
-    static readonly Parser<char, char> Digit = Single<char>(char.IsDigit, "Digit");
-    static readonly Parser<char, char> Letter = Single<char>(char.IsLetter, "Letter");
+    static readonly Parser<char, char> Digit = Single(IsDigit, "Digit");
+    static readonly Parser<char, char> Letter = Single(IsLetter, "Letter");
 
     readonly Parser<char, char> A, B;
     readonly Parser<char, string> AB, AND;
@@ -399,9 +400,9 @@ class GrammarTests
 
     public void ProvidesConveniencePrimitiveRecognizingSingleNextItemSatisfyingSomePredicate()
     {
-        var lower = Single<char>(char.IsLower, "Lowercase");
-        var upper = Single<char>(char.IsUpper, "Uppercase");
-        var caseInsensitive = Single<char>(char.IsLetter, "Case Insensitive");
+        var lower = Single(IsLower, "Lowercase");
+        var upper = Single(IsUpper, "Uppercase");
+        var caseInsensitive = Single(IsLetter, "Case Insensitive");
 
         lower.FailsToParse("", "", "Lowercase expected");
 
@@ -420,9 +421,9 @@ class GrammarTests
 
     public void ProvidesConveniencePrimitiveSkippingOptionalSequencesOfItemsSatisfyingSomePredicate()
     {
-        var lower = Skip<char>(char.IsLower);
-        var upper = Skip<char>(char.IsUpper);
-        var caseInsensitive = Skip<char>(char.IsLetter);
+        var lower = Skip(IsLower);
+        var upper = Skip(IsUpper);
+        var caseInsensitive = Skip(IsLetter);
 
         lower.Parses("").ShouldBe(Void.Value);
 
@@ -441,9 +442,9 @@ class GrammarTests
 
     public void ProvidesConveniencePrimitiveRecognizingOptionalSequencesOfItemsSatisfyingSomePredicate()
     {
-        var lower = ZeroOrMore(char.IsLower);
-        var upper = ZeroOrMore(char.IsUpper);
-        var caseInsensitive = ZeroOrMore(char.IsLetter);
+        var lower = ZeroOrMore(IsLower);
+        var upper = ZeroOrMore(IsUpper);
+        var caseInsensitive = ZeroOrMore(IsLetter);
 
         lower.Parses("").ShouldBe("");
 
@@ -462,9 +463,9 @@ class GrammarTests
 
     public void ProvidesConveniencePrimitiveRecognizingNonemptySequencesOfItemsSatisfyingSomePredicate()
     {
-        var lower = OneOrMore(char.IsLower, "Lowercase");
-        var upper = OneOrMore(char.IsUpper, "Uppercase");
-        var caseInsensitive = OneOrMore(char.IsLetter, "Case Insensitive");
+        var lower = OneOrMore(IsLower, "Lowercase");
+        var upper = OneOrMore(IsUpper, "Uppercase");
+        var caseInsensitive = OneOrMore(IsLetter, "Case Insensitive");
 
         lower.FailsToParse("", "", "Lowercase expected");
         
