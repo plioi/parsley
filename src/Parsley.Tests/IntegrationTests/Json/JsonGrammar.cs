@@ -21,7 +21,7 @@ public class JsonGrammar
         var Number = Token("number");
         var Quote = Token("quote");
 
-        Value = Choice(True, False, Null, Number, Quote, Dictionary, Array);
+        Value = Recursive(() => Choice(True, False, Null, Number, Quote, Dictionary, Array));
 
         JsonDocument = (ReadOnlySpan<char> input, ref int index, out bool succeeded, out string? expectation) =>
         {
@@ -71,28 +71,22 @@ public class JsonGrammar
         select x.Value;
 
     static Parser<JsonToken, object> Array =>
-        from open in Token("[")
-        from items in ZeroOrMore(Value, Token(","))
-        from close in Token("]")
-        select items.ToArray();
+        List(Value, "[", "]").Select(values => values.ToArray());
 
-    static Parser<JsonToken, object> Dictionary
-    {
-        get
-        {
-            var Pair =
-                from key in Token("quote")
-                from colon in Token(":")
-                from value in Value
-                select new KeyValuePair<string, object>((string) key, value);
+    static Parser<JsonToken, object> Dictionary =>
+        List(Pair, "{", "}").Select(pairs => pairs.ToDictionary(x => (string)x.key, x => x.value));
 
-            return
-                from open in Token("{")
-                from pairs in ZeroOrMore(Pair, Token(","))
-                from close in Token("}")
-                select pairs.ToDictionary(x => x.Key, x => x.Value);
-        }
-    }
+    static Parser<JsonToken, (object key, object? value)> Pair =>
+        from key in Token("quote")
+        from colon in Token(":")
+        from value in Value
+        select (key, value);
+
+    static Parser<JsonToken, IReadOnlyList<TValue>> List<TValue>(Parser<JsonToken, TValue> item, string open, string close) =>
+        from openToken in Token(open)
+        from items in ZeroOrMore(item, Token(","))
+        from closeToken in Token(close)
+        select items;
 
     static Parser<char, JsonToken> NumberLiteral
     {
