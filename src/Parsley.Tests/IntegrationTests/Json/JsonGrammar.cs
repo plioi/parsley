@@ -19,9 +19,9 @@ public class JsonGrammar
         var False = Token("false");
         var Null = Token("null");
         var Number = Token("number");
-        var Quote = Token("quote");
+        var String = Token("string");
 
-        Value = Recursive(() => Choice(True, False, Null, Number, Quote, Dictionary, Array));
+        Value = Recursive(() => Choice(True, False, Null, Number, String, Dictionary, Array));
 
         JsonDocument = (ReadOnlySpan<char> input, ref int index, out bool succeeded, out string? expectation) =>
         {
@@ -77,7 +77,7 @@ public class JsonGrammar
         List(Pair, "{", "}").Select(pairs => pairs.ToDictionary(x => (string)x.key, x => x.value));
 
     static Parser<JsonToken, (object key, object? value)> Pair =>
-        from key in Token("quote")
+        from key in Token("string")
         from colon in Token(":")
         from value in Value
         select (key, value);
@@ -159,7 +159,7 @@ public class JsonGrammar
                         Single<char>(c => c != '"' && c != '\\', "non-quote, not-slash character").Select(x => x.ToString())
                     ))
                 from close in Single('"')
-                select new JsonToken("quote", string.Join("", content));
+                select new JsonToken("string", string.Join("", content));
         }
     }
 }
