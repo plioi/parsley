@@ -259,5 +259,49 @@ partial class Grammar
             return null;
         };
     }
+
+    public static Parser<TItem, IReadOnlyList<TItem>> ZeroOrMore<TItem>(Func<TItem, bool> test)
+    {
+        return (ReadOnlySpan<TItem> input, ref int index, out bool succeeded, out string? expectation) =>
+        {
+            var length = input.CountWhile(index, test);
+            
+            if (length > 0)
+            {
+                var slice = input.Slice(index, length);
+                index += length;
+
+                expectation = null;
+                succeeded = true;
+                return slice.ToArray();
+            }
+
+            expectation = null;
+            succeeded = true;
+            return Array.Empty<TItem>();
+        };
+    }
+
+    public static Parser<TItem, IReadOnlyList<TItem>> OneOrMore<TItem>(Func<TItem, bool> test, string name)
+    {
+        return (ReadOnlySpan<TItem> input, ref int index, out bool succeeded, out string? expectation) =>
+        {
+            var length = input.CountWhile(index, test);
+
+            if (length > 0)
+            {
+                var span = input.Slice(index, length);
+                index += length;
+
+                expectation = null;
+                succeeded = true;
+                return span.ToArray();
+            }
+
+            expectation = name;
+            succeeded = false;
+            return null;
+        };
+    }
 }
 
