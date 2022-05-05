@@ -545,6 +545,103 @@ class GrammarTests
         doubleStar.PartiallyParses("***", "*")
             .ShouldBe("**");
     }
+
+    public void ProvidesTheCurrentIndexPosition()
+    {
+        var index = Index<char>();
+
+        var queryWithIndices =
+            from _0 in index
+            from ab in AB
+            from _2 in index
+            from a in A
+            from b in B
+            from _4 in index
+            select new[] { _0, _2, _4 };
+
+        queryWithIndices.Parses("ABAB").ShouldBe(new[] { 0, 2, 4 });
+        queryWithIndices.PartiallyParses("ABABA", "A").ShouldBe(new[] { 0, 2, 4 });
+    }
+
+    public void ProvidesArbitraryInspectionAtTheCurrentIndexPosition()
+    {
+        var buildPositionTrackingParser = () =>
+        {
+            var metadata = TextPositionTracker();
+
+            return
+                from metadataAtStart in metadata
+                from a in A
+                from metadataBeforeWhitespace in metadata
+                from whitespace in ZeroOrMore(IsWhiteSpace)
+                from metadataAfterWhitespace in metadata
+                from b in B
+                from metadataAtEnd in metadata
+                select new[]
+                {
+                    metadataAtStart,
+                    metadataBeforeWhitespace,
+                    metadataAfterWhitespace,
+                    metadataAtEnd
+                };
+        };
+
+        buildPositionTrackingParser().Parses("AB").ShouldBe(new[]
+        {
+            (0, 1, 1), //start
+            (1, 1, 2), //before zero width whitespace
+            (1, 1, 2), //after zero width whitespace
+            (2, 1, 3)  //end
+        });
+
+        buildPositionTrackingParser().Parses("A \n \n   B").ShouldBe(new[]
+        {
+            (0, 1, 1), //start
+            (1, 1, 2), //before whitespace
+            (8, 3, 4), //after whitespace
+            (9, 3, 5)  //end
+        });
+    }
+
+    static Parser<char, (int index, int position, int endlines)> TextPositionTracker()
+    {
+        // This sample textual line/column tracker is naive in that it assumes
+        // there will be no backtracking and therefore assumes that the single
+        // lastMetadata value is sufficient to calculate a delta. In a parser
+        // that includes backtracking, the lambda expression here should detect
+        // whether or not lastMetadata is trustworthy and at least fall back
+        // to counting lines from the origin.
+
+        (int index, int line, int column) origin = (0, 1, 1);
+
+        var lastMetadata = origin;
+
+        return Inspect<char, (int index, int position, int endlines)>(
+            (span, index) =>
+            {
+                var traversed = span.Slice(lastMetadata.index, index - lastMetadata.index);
+
+                int lineDelta = 0;
+                int columnDelta = 0;
+
+                foreach (var ch in traversed)
+                {
+                    if (ch == '\n')
+                    {
+                        lineDelta++;
+                        columnDelta = -lastMetadata.column;
+                    }
+
+                    columnDelta++;
+                }
+
+                var newMetadata = (index, lastMetadata.line + lineDelta, lastMetadata.column + columnDelta);
+
+                lastMetadata = newMetadata;
+
+                return newMetadata;
+            });
+    }
 }
 
 public class AlternationTests
