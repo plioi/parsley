@@ -110,7 +110,7 @@ class JsonGrammarTests
         window["transparent"].ShouldBe(false);
     }
 
-    public void ProvidesUsefulErrorMessagesForDeeplyPlacedErrors()
+    public void ProvidesUsefulErrorMessagesForDeeplyPlacedTokenizerErrors()
     {
         const string whitespaceCharacters = "\r\n\t";
         const string invalidSlashP = whitespaceCharacters + @"
@@ -131,5 +131,28 @@ class JsonGrammarTests
                     }
                 }",
             "(escape character or unicode escape sequence) expected");
+    }
+
+    public void ProvidesUsefulErrorMessagesForDeeplyPlacedGrammarErrors()
+    {
+        const string whitespaceCharacters = "\r\n\t";
+        const string invalidSlashP = whitespaceCharacters + @"
+
+                {
+                    ""numbers"" : [ 10, 20, 30 ],
+                    ""window"":
+                    {
+                        ""title"": ""Sample Widget""," + whitespaceCharacters + @"
+                        ""parent"": null,
+                        ""maximized"": true  ,
+                        ""transparent"": false 7
+                    }
+                }";
+
+        JsonDocument.FailsToParse(invalidSlashP,
+            @"7
+                    }
+                }",
+            "} expected");
     }
 }

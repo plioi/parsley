@@ -6,7 +6,7 @@ namespace Parsley.Tests.IntegrationTests.Json;
 
 public class JsonGrammar
 {
-    record JsonToken(string Kind, object? Value);
+    record JsonToken(string Kind, object? Value, int Index);
 
     public static readonly Parser<char, object?> JsonDocument;
     static readonly Parser<JsonToken, object?> Value;
@@ -30,7 +30,12 @@ public class JsonGrammar
             if (succeeded)
             {
                 var tokenIndex = 0;
-                return Value(tokens!.ToArray(), ref tokenIndex, out succeeded, out expectation);
+                var value = Value(tokens!.ToArray(), ref tokenIndex, out succeeded, out expectation);
+
+                if (tokenIndex != tokens!.Count)
+                    index = tokens[tokenIndex].Index;
+
+                return value;
             }
 
             return null;
@@ -59,12 +64,14 @@ public class JsonGrammar
         select tokens;
 
     static Parser<char, JsonToken> Literal(string literal, object? value) =>
+        from index in Index<char>()
         from x in Keyword(literal)
-        select new JsonToken(literal, value);
+        select new JsonToken(literal, value, index);
 
     static Parser<char, JsonToken> Symbol(string literal) =>
+        from index in Index<char>()
         from x in Operator(literal)
-        select new JsonToken(literal, literal);
+        select new JsonToken(literal, literal, index);
 
     static Parser<JsonToken, object> Token(string kind) =>
         from x in Single<JsonToken>(x => x.Kind == kind, kind)
@@ -94,7 +101,10 @@ public class JsonGrammar
         {
             var Digits = OneOrMore(IsDigit, "0..9");
 
-            return from leading in Digits
+            return
+                from index in Index<char>()
+
+                from leading in Digits
 
                 from optionalFraction in Optional(
                     from dot in Single('.')
@@ -108,7 +118,7 @@ public class JsonGrammar
                     select $"{e}{sign}{digits}")
 
                 from value in Evaluate($"{leading}{optionalFraction}{optionalExponent}")
-                select new JsonToken("number", value);
+                select new JsonToken("number", value, index);
         }
     }
 
@@ -131,6 +141,7 @@ public class JsonGrammar
             var LetterOrDigit = Single(IsLetterOrDigit, "letter or digit");
 
             return
+                from index in Index<char>()
                 from open in Single('"')
                 from content in ZeroOrMore(
                     Choice(
@@ -159,7 +170,7 @@ public class JsonGrammar
                         Single<char>(c => c != '"' && c != '\\', "non-quote, not-slash character").Select(x => x.ToString())
                     ))
                 from close in Single('"')
-                select new JsonToken("string", string.Join("", content));
+                select new JsonToken("string", string.Join("", content), index);
         }
     }
 }
