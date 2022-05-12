@@ -43,7 +43,7 @@ public static class Assertions
     }
 
     [DoesNotReturn]
-    static void UnexpectedFailure<TItem>(ReadOnlySpan<TItem> input, ParseError error)
+    public static void UnexpectedFailure<TItem>(ReadOnlySpan<TItem> input, ParseError error)
     {
         var message = new StringBuilder()
             .AppendLine(error.Index + ": " + error.Expectation + " expected");
@@ -65,7 +65,7 @@ public static class Assertions
         throw new AssertionException(message.ToString(), "parser success", "parser failure");
     }
 
-    static void LeavingUnparsedInput<TItem>(this ReadOnlySpan<TItem> input, int index, ReadOnlySpan<TItem> expectedUnparsedInput)
+    public static void LeavingUnparsedInput<TItem>(this ReadOnlySpan<TItem> input, int index, ReadOnlySpan<TItem> expectedUnparsedInput)
     {
         var actualUnparsedInput = input.Slice(index);
 
@@ -75,7 +75,7 @@ public static class Assertions
                 Display(actualUnparsedInput));
     }
 
-    static void AtEndOfInput<TItem>(this ReadOnlySpan<TItem> input, int index)
+    public static void AtEndOfInput<TItem>(this ReadOnlySpan<TItem> input, int index)
     {
         if (index != input.Length)
         {
