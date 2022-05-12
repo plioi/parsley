@@ -31,19 +31,14 @@ public class Json
     {
         var tokenizer = Tokenize;
 
-        if (tokenizer.TryParse(input, out var tokens, out var tokenizerError))
+        if (tokenizer.TryParse(input, out var tokens, out error))
         {
-            if (Value.TryParse(tokens.ToArray(), out value, out var grammarError))
-            {
-                error = null;
+            if (Value.TryParse(tokens.ToArray(), out value, out error))
                 return true;
-            }
 
-            error = new ParseError(tokens[grammarError.Index].Index, grammarError.Expectation);
-            return false;
+            error = new ParseError(tokens[error.Index].Index, error.Expectation);
         }
 
-        error = tokenizerError;
         value = null;
         return false;
     }
