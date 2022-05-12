@@ -134,37 +134,40 @@ public class Json
     {
         get
         {
-            var LetterOrDigit = Single(IsLetterOrDigit, "letter or digit");
+            var escapeCharacter =
+                from escape in Single<char>(c => "\"\\bfnrt/".Contains(c), "escape character")
+                select $"{escape}"
+                    .Replace("\"", "\"")
+                    .Replace("\\", "\\")
+                    .Replace("b", "\b")
+                    .Replace("f", "\f")
+                    .Replace("n", "\n")
+                    .Replace("r", "\r")
+                    .Replace("t", "\t")
+                    .Replace("/", "/");
+
+            var unicodeEscapeCharacters =
+                from u in Label(Single('u'), "unicode escape sequence")
+                from unicodeDigits in Repeat(Single(IsLetterOrDigit, "letter or digit"), 4)
+                select char.ConvertFromUtf32(
+                    int.Parse(
+                        new string(unicodeDigits),
+                        NumberStyles.HexNumber,
+                        CultureInfo.InvariantCulture));
+
+            var charactersFromEscapeSequence =
+                from slash in Single('\\')
+                from unescaped in Choice(escapeCharacter, unicodeEscapeCharacters)
+                select unescaped;
+
+            var literalCharacter =
+                Single<char>(c => c != '"' && c != '\\', "non-quote, not-slash character")
+                    .Select(x => x.ToString());
 
             return
                 from index in Index<char>()
                 from open in Single('"')
-                from content in ZeroOrMore(
-                    Choice(
-                        from slash in Single('\\')
-                        from unescaped in Choice(
-                            from escape in Single<char>(c => "\"\\bfnrt/".Contains(c), "escape character")
-                            select $"{escape}"
-                                .Replace("\"", "\"")
-                                .Replace("\\", "\\")
-                                .Replace("b", "\b")
-                                .Replace("f", "\f")
-                                .Replace("n", "\n")
-                                .Replace("r", "\r")
-                                .Replace("t", "\t")
-                                .Replace("/", "/"),
-
-                            from u in Label(Single('u'), "unicode escape sequence")
-                            from unicodeDigits in Repeat(LetterOrDigit, 4)
-                            select char.ConvertFromUtf32(
-                                int.Parse(
-                                    new string(unicodeDigits),
-                                    NumberStyles.HexNumber,
-                                    CultureInfo.InvariantCulture))
-                        )
-                        select unescaped,
-                        Single<char>(c => c != '"' && c != '\\', "non-quote, not-slash character").Select(x => x.ToString())
-                    ))
+                from content in ZeroOrMore(Choice(charactersFromEscapeSequence, literalCharacter))
                 from close in Single('"')
                 select new JsonToken("string", string.Join("", content), index);
         }
