@@ -7,31 +7,12 @@ namespace Parsley.Tests.IntegrationTests.Json;
 
 public class Json
 {
-    record JsonToken(string Kind, object? Value, int Index);
-
-    static readonly Parser<JsonToken, object?> Value;
-
-    static readonly Parser<char, Void> Whitespace = Skip(IsWhiteSpace);
-
-    static Json()
-    {
-        var True = Token("true");
-        var False = Token("false");
-        var Null = Token("null");
-        var Number = Token("number");
-        var String = Token("string");
-
-        Value = Recursive(() => Choice(True, False, Null, Number, String, Dictionary, Array));
-    }
-
     public static bool TryParse(
         ReadOnlySpan<char> input,
         [NotNullWhen(true)] out object? value,
         [NotNullWhen(false)] out ParseError? error)
     {
-        var tokenizer = Tokenize;
-
-        if (tokenizer.TryParse(input, out var tokens, out error))
+        if (Tokenize.TryParse(input, out var tokens, out error))
         {
             if (Value.TryParse(tokens.ToArray(), out value, out error))
                 return true;
@@ -42,6 +23,10 @@ public class Json
         value = null;
         return false;
     }
+
+    record JsonToken(string Kind, object? Value, int Index);
+
+    static readonly Parser<char, Void> Whitespace = Skip(IsWhiteSpace);
 
     static Parser<char, IReadOnlyList<JsonToken>> Tokenize =>
         from leading in Whitespace
@@ -63,6 +48,16 @@ public class Json
                 from trailing in Whitespace
                 select token)
         select tokens;
+
+    static readonly Parser<JsonToken, object?> Value =
+        Recursive(() => Choice(
+            Token("true"),
+            Token("false"),
+            Token("null"),
+            Token("number"),
+            Token("string"),
+            Dictionary,
+            Array));
 
     static Parser<char, JsonToken> Literal(string literal, object? value) =>
         from index in Index<char>()
