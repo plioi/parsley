@@ -160,14 +160,13 @@ public class Json
                 from unescaped in Choice(escapeCharacter, unicodeEscapeCharacters)
                 select unescaped;
 
-            var literalCharacter =
-                Single<char>(c => c != '"' && c != '\\', "non-quote, not-slash character")
-                    .Select(x => x.ToString());
+            var literalCharacters =
+                OneOrMore(c => c != '"' && c != '\\', "non-quote, not-slash character");
 
             return
                 from index in Index<char>()
                 from open in Single('"')
-                from content in ZeroOrMore(Choice(charactersFromEscapeSequence, literalCharacter))
+                from content in ZeroOrMore(Choice(charactersFromEscapeSequence, literalCharacters))
                 from close in Single('"')
                 select new JsonToken("string", string.Join("", content), index);
         }
