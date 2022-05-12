@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using static Parsley.Grammar;
 using static Parsley.Characters;
@@ -48,6 +49,30 @@ public class JsonGrammar
             expectation = tokenizerError.Expectation;
             return null;
         };
+    }
+
+    public static bool TryParse(
+        ReadOnlySpan<char> input,
+        [NotNullWhen(true)] out object? value,
+        [NotNullWhen(false)] out ParseError? error)
+    {
+        var tokenizer = Tokenizer();
+
+        if (tokenizer.TryParse(input, out var tokens, out var tokenizerError))
+        {
+            if (Value.TryParse(tokens.ToArray(), out value, out var grammarError))
+            {
+                error = null;
+                return true;
+            }
+
+            error = new ParseError(tokens[grammarError.Index].Index, grammarError.Expectation);
+            return false;
+        }
+
+        error = tokenizerError;
+        value = null;
+        return false;
     }
 
     static Parser<char, IReadOnlyList<JsonToken>> Tokenizer() =>

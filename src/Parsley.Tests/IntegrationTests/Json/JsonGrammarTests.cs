@@ -1,7 +1,5 @@
 namespace Parsley.Tests.IntegrationTests.Json;
 
-using static JsonGrammar;
-
 class JsonGrammarTests
 {
     public void ParsesTrueLiteral()
@@ -158,7 +156,7 @@ class JsonGrammarTests
 
     static object Parses(ReadOnlySpan<char> input)
     {
-        if (!JsonDocument.TryParse(input, out var value, out var error))
+        if (!JsonGrammar.TryParse(input, out var value, out var error))
             Assertions.UnexpectedFailure(input, error);
 
         return value;
@@ -166,7 +164,7 @@ class JsonGrammarTests
 
     static void FailsToParse(ReadOnlySpan<char> input, ReadOnlySpan<char> expectedUnparsedInput, string expectedMessage)
     {
-        if (JsonDocument.TryPartialParse(input, out int index, out var value, out var error))
+        if (JsonGrammar.TryParse(input, out var value, out var error))
             throw new AssertionException("parser failure", "parser completed successfully");
 
         var actual = error.Expectation + " expected";
@@ -175,8 +173,8 @@ class JsonGrammarTests
             throw new MessageAssertionException(expectedMessage, actual);
 
         if (expectedUnparsedInput.IsEmpty)
-            input.AtEndOfInput(index);
+            input.AtEndOfInput(error.Index);
         else
-            input.LeavingUnparsedInput(index, expectedUnparsedInput);
+            input.LeavingUnparsedInput(error.Index, expectedUnparsedInput);
     }
 }
