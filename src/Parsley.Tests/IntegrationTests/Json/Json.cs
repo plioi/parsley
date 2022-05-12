@@ -136,15 +136,15 @@ public class Json
         {
             var escapeCharacter =
                 from escape in Single<char>(c => "\"\\bfnrt/".Contains(c), "escape character")
-                select $"{escape}"
-                    .Replace("\"", "\"")
-                    .Replace("\\", "\\")
-                    .Replace("b", "\b")
-                    .Replace("f", "\f")
-                    .Replace("n", "\n")
-                    .Replace("r", "\r")
-                    .Replace("t", "\t")
-                    .Replace("/", "/");
+                select (escape switch
+                {
+                    'b' => '\b',
+                    'f' => '\f',
+                    'n' => '\n',
+                    'r' => '\r',
+                    't' => '\t',
+                    _ => escape
+                }).ToString();
 
             var unicodeEscapeCharacters =
                 from u in Label(Single('u'), "unicode escape sequence")
