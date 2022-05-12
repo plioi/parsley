@@ -5,7 +5,7 @@ using static Parsley.Characters;
 
 namespace Parsley.Tests.IntegrationTests.Json;
 
-public class JsonGrammar
+public class Json
 {
     record JsonToken(string Kind, object? Value, int Index);
 
@@ -13,7 +13,7 @@ public class JsonGrammar
 
     static readonly Parser<char, Void> Whitespace = Skip(IsWhiteSpace);
 
-    static JsonGrammar()
+    static Json()
     {
         var True = Token("true");
         var False = Token("false");
