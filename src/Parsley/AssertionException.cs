@@ -2,7 +2,7 @@ using static System.Environment;
 
 namespace Parsley;
 
-class AssertionException : Exception
+public class AssertionException : Exception
 {
     public AssertionException(object expected, object actual)
         : base(ExpectationDetails(expected, actual))
@@ -18,7 +18,7 @@ class AssertionException : Exception
         => $"{NewLine}Expected: {expected}{NewLine}But was:  {actual}";
 }
 
-class MessageAssertionException : Exception
+public class MessageAssertionException : Exception
 {
     public MessageAssertionException(string expectedMessage, string actualMessage)
         : base(ExpectationDetails(expectedMessage, actualMessage))

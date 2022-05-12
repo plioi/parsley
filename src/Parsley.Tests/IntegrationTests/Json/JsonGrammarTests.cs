@@ -6,34 +6,34 @@ class JsonGrammarTests
 {
     public void ParsesTrueLiteral()
     {
-        JsonDocument.Parses("true").ShouldBe(true);
+        Parses("true").ShouldBe(true);
     }
 
     public void ParsesFalseLiteral()
     {
-        JsonDocument.Parses("false").ShouldBe(false);
+        Parses("false").ShouldBe(false);
     }
 
     public void ParsesNullLiteral()
     {
-        JsonDocument.Parses("null").ShouldBe(null);
+        Parses("null").ShouldBe(null);
     }
 
     public void ParsesNumbers()
     {
-        JsonDocument.Parses("0").ShouldBe(0m);
-        JsonDocument.Parses("12345").ShouldBe(12345m);
-        JsonDocument.Parses("0.012").ShouldBe(0.012m);
-        JsonDocument.Parses("0e1").ShouldBe(0e1m);
-        JsonDocument.Parses("0e+1").ShouldBe(0e+1m);
-        JsonDocument.Parses("0e-1").ShouldBe(0e-1m);
-        JsonDocument.Parses("0E1").ShouldBe(0E1m);
-        JsonDocument.Parses("0E+1").ShouldBe(0E+1m);
-        JsonDocument.Parses("0E-1").ShouldBe(0E-1m);
-        JsonDocument.Parses("10e11").ShouldBe(10e11m);
-        JsonDocument.Parses("10.123e11").ShouldBe(10.123e11m);
-        JsonDocument.Parses("10.123E-11").ShouldBe(10.123E-11m);
-        JsonDocument.FailsToParse("9" + decimal.MaxValue, "", "decimal within valid range expected");
+        Parses("0").ShouldBe(0m);
+        Parses("12345").ShouldBe(12345m);
+        Parses("0.012").ShouldBe(0.012m);
+        Parses("0e1").ShouldBe(0e1m);
+        Parses("0e+1").ShouldBe(0e+1m);
+        Parses("0e-1").ShouldBe(0e-1m);
+        Parses("0E1").ShouldBe(0E1m);
+        Parses("0E+1").ShouldBe(0E+1m);
+        Parses("0E-1").ShouldBe(0E-1m);
+        Parses("10e11").ShouldBe(10e11m);
+        Parses("10.123e11").ShouldBe(10.123e11m);
+        Parses("10.123E-11").ShouldBe(10.123E-11m);
+        FailsToParse("9" + decimal.MaxValue, "", "decimal within valid range expected");
     }
 
     public void ParsesQuotations()
@@ -42,8 +42,8 @@ class JsonGrammarTests
         var filled = "\"abc \\\" \\\\ \\/ \\b \\f \\n \\r \\t \\u263a def\"";
         const string expected = "abc \" \\ / \b \f \n \r \t ☺ def";
 
-        JsonDocument.Parses(empty).ShouldBe("");
-        JsonDocument.Parses(filled).ShouldBe(expected);
+        Parses(empty).ShouldBe("");
+        Parses(filled).ShouldBe(expected);
     }
 
     public void ParsesArrays()
@@ -51,11 +51,11 @@ class JsonGrammarTests
         var empty = "[]";
         var filled = "[0, 1, 2]";
 
-        var emptyValue = JsonDocument.Parses(empty);
+        var emptyValue = Parses(empty);
         emptyValue.ShouldNotBeNull();
         ((object[]) emptyValue).ShouldBeEmpty();
 
-        var value = JsonDocument.Parses(filled);
+        var value = Parses(filled);
         value.ShouldNotBeNull();
         ((object[]) value).ShouldBe(new object[] { 0m, 1m, 2m });
     }
@@ -65,11 +65,11 @@ class JsonGrammarTests
         var empty = "{}";
         var filled = "{\"zero\" : 0, \"one\" : 1, \"two\" : 2}";
 
-        var emptyValue = JsonDocument.Parses(empty);
+        var emptyValue = Parses(empty);
         emptyValue.ShouldNotBeNull();
         ((Dictionary<string, object>) emptyValue).Count.ShouldBe(0);
 
-        var value = JsonDocument.Parses(filled);
+        var value = Parses(filled);
         value.ShouldNotBeNull();
 
         var dictionary = (Dictionary<string, object>) value;
@@ -97,7 +97,7 @@ class JsonGrammarTests
 
             " + whitespaceCharacters;
 
-        var value = JsonDocument.Parses(complex);
+        var value = Parses(complex);
         value.ShouldNotBeNull();
 
         var json = (Dictionary<string, object>) value;
@@ -126,7 +126,7 @@ class JsonGrammarTests
                     }
                 }";
 
-        JsonDocument.FailsToParse(invalidSlashP,
+        FailsToParse(invalidSlashP,
             @"parent"": false
                     }
                 }",
@@ -149,10 +149,34 @@ class JsonGrammarTests
                     }
                 }";
 
-        JsonDocument.FailsToParse(invalidSlashP,
+        FailsToParse(invalidSlashP,
             @"7
                     }
                 }",
             "} expected");
+    }
+
+    static object Parses(ReadOnlySpan<char> input)
+    {
+        if (!JsonDocument.TryParse(input, out var value, out var error))
+            Assertions.UnexpectedFailure(input, error);
+
+        return value;
+    }
+
+    static void FailsToParse(ReadOnlySpan<char> input, ReadOnlySpan<char> expectedUnparsedInput, string expectedMessage)
+    {
+        if (JsonDocument.TryPartialParse(input, out int index, out var value, out var error))
+            throw new AssertionException("parser failure", "parser completed successfully");
+
+        var actual = error.Expectation + " expected";
+            
+        if (actual != expectedMessage)
+            throw new MessageAssertionException(expectedMessage, actual);
+
+        if (expectedUnparsedInput.IsEmpty)
+            input.AtEndOfInput(index);
+        else
+            input.LeavingUnparsedInput(index, expectedUnparsedInput);
     }
 }
