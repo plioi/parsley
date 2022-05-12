@@ -9,7 +9,6 @@ public class JsonGrammar
 {
     record JsonToken(string Kind, object? Value, int Index);
 
-    public static readonly Parser<char, object?> JsonDocument;
     static readonly Parser<JsonToken, object?> Value;
 
     static readonly Parser<char, Void> Whitespace = Skip(IsWhiteSpace);
@@ -23,32 +22,6 @@ public class JsonGrammar
         var String = Token("string");
 
         Value = Recursive(() => Choice(True, False, Null, Number, String, Dictionary, Array));
-
-        JsonDocument = (ReadOnlySpan<char> input, ref int index, out bool succeeded, out string? expectation) =>
-        {
-            var tokenizer = Tokenizer();
-
-            if (tokenizer.TryParse(input, out var tokens, out var tokenizerError))
-            {
-                if (Value.TryParse(tokens.ToArray(), out var value, out var grammarError))
-                {
-                    index = input.Length;
-                    expectation = null;
-                    succeeded = true;
-                    return value;
-                }
-
-                index = tokens[grammarError.Index].Index;
-                expectation = grammarError.Expectation;
-                succeeded = false;
-                return null;
-            }
-
-            index = tokenizerError.Index;
-            succeeded = false;
-            expectation = tokenizerError.Expectation;
-            return null;
-        };
     }
 
     public static bool TryParse(
