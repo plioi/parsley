@@ -29,7 +29,7 @@ public class JsonGrammar
         [NotNullWhen(true)] out object? value,
         [NotNullWhen(false)] out ParseError? error)
     {
-        var tokenizer = Tokenizer();
+        var tokenizer = Tokenize;
 
         if (tokenizer.TryParse(input, out var tokens, out var tokenizerError))
         {
@@ -48,7 +48,7 @@ public class JsonGrammar
         return false;
     }
 
-    static Parser<char, IReadOnlyList<JsonToken>> Tokenizer() =>
+    static Parser<char, IReadOnlyList<JsonToken>> Tokenize =>
         from leading in Whitespace
         from tokens in
             ZeroOrMore(
