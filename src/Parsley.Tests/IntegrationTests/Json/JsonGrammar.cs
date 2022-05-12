@@ -25,19 +25,27 @@ public class JsonGrammar
 
         JsonDocument = (ReadOnlySpan<char> input, ref int index, out bool succeeded, out string? expectation) =>
         {
-            var tokens = Tokenizer()(input, ref index, out succeeded, out expectation);
+            var tokenizer = Tokenizer();
 
-            if (succeeded)
+            if (tokenizer.TryParse(input, out var tokens, out var tokenizerError))
             {
-                var tokenIndex = 0;
-                var value = Value(tokens!.ToArray(), ref tokenIndex, out succeeded, out expectation);
+                if (Value.TryParse(tokens.ToArray(), out var value, out var grammarError))
+                {
+                    index = input.Length;
+                    expectation = null;
+                    succeeded = true;
+                    return value;
+                }
 
-                if (tokenIndex != tokens!.Count)
-                    index = tokens[tokenIndex].Index;
-
-                return value;
+                index = tokens[grammarError.Index].Index;
+                expectation = grammarError.Expectation;
+                succeeded = false;
+                return null;
             }
 
+            index = tokenizerError.Index;
+            succeeded = false;
+            expectation = tokenizerError.Expectation;
             return null;
         };
     }
