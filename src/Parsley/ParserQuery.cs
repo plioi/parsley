@@ -11,7 +11,7 @@ public static class ParserQuery
     /// <typeparam name="TItem">The type of the items in the span being traversed.</typeparam>
     /// <typeparam name="TValue">The type of the value to treat as a parse result.</typeparam>
     /// <param name="value">The value to treat as a parse result.</param>
-    public static Parser<TItem, TValue> SucceedWithThisValue<TItem, TValue>(this TValue value)
+    internal static Parser<TItem, TValue> SucceedWithThisValue<TItem, TValue>(this TValue value)
     {
         return (ReadOnlySpan<TItem> input, ref int index, out bool succeeded, out string? expectation) =>
         {
