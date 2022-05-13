@@ -151,7 +151,7 @@ public class Json
                 from unicodeDigits in Repeat(IsLetterOrDigit, 4, "4 unicode digits")
                 select char.ConvertFromUtf32(
                     int.Parse(
-                        new string(unicodeDigits),
+                        unicodeDigits,
                         NumberStyles.HexNumber,
                         CultureInfo.InvariantCulture));
 
