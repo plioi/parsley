@@ -148,7 +148,7 @@ public class Json
 
             var unicodeEscapeCharacters =
                 from u in Label(Single('u'), "unicode escape sequence")
-                from unicodeDigits in Repeat(Single(IsLetterOrDigit, "letter or digit"), 4)
+                from unicodeDigits in Repeat(IsLetterOrDigit, 4, "4 unicode digits")
                 select char.ConvertFromUtf32(
                     int.Parse(
                         new string(unicodeDigits),

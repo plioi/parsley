@@ -3,44 +3,6 @@ namespace Parsley;
 partial class Grammar
 {
     /// <summary>
-    /// Repeat(p, n) expects parser p to succeed exactly n times in a row,
-    /// returning the list of values returned by the successful applications of p.
-    /// If parser p fails during any of the n attempts, the sequence will fail
-    /// with the error reported by p.
-    /// </summary>
-    public static Parser<TItem, TValue[]> Repeat<TItem, TValue>(Parser<TItem, TValue> item, int count)
-    {
-        if (count <= 1)
-            throw new ArgumentException(
-                $"{nameof(Repeat)} requires the given count to be > 1.", nameof(count));
-
-        return (ReadOnlySpan<TItem> input, ref int index, out bool succeeded, out string? expectation) =>
-        {
-            var items = new TValue[count];
-
-            for (int i = 0; i < count; i++)
-            {
-                var itemValue = item(input, ref index, out var itemSucceeded, out var itemExpectation);
-
-                if (itemSucceeded)
-                {
-                    items[i] = itemValue!;
-                }
-                else
-                {
-                    expectation = itemExpectation;
-                    succeeded = false;
-                    return null;
-                }
-            }
-
-            expectation = null;
-            succeeded = true;
-            return items;
-        };
-    }
-
-    /// <summary>
     /// ZeroOrMore(p) repeatedly applies an parser p until it fails, returning
     /// the list of values returned by successful applications of p.  At the
     /// end of the sequence, p must fail without consuming input, otherwise the
@@ -252,6 +214,58 @@ partial class Grammar
                 expectation = null;
                 succeeded = true;
                 return span.ToString();
+            }
+
+            expectation = name;
+            succeeded = false;
+            return null;
+        };
+    }
+
+    public static Parser<char, string> Repeat(Func<char, bool> test, int count, string name)
+    {
+        if (count <= 1)
+            throw new ArgumentException(
+                $"{nameof(Repeat)} requires the given count to be > 1.", nameof(count));
+
+        return (ReadOnlySpan<char> input, ref int index, out bool succeeded, out string? expectation) =>
+        {
+            var length = input.CountWhile(index, test, maxCount: count);
+            
+            if (length == count)
+            {
+                var slice = input.Slice(index, length);
+                index += length;
+
+                expectation = null;
+                succeeded = true;
+                return slice.ToString();
+            }
+
+            expectation = name;
+            succeeded = false;
+            return null;
+        };
+    }
+
+    public static Parser<TItem, IReadOnlyList<TItem>> Repeat<TItem>(Func<TItem, bool> test, int count, string name)
+    {
+        if (count <= 1)
+            throw new ArgumentException(
+                $"{nameof(Repeat)} requires the given count to be > 1.", nameof(count));
+
+        return (ReadOnlySpan<TItem> input, ref int index, out bool succeeded, out string? expectation) =>
+        {
+            var length = input.CountWhile(index, test, maxCount: count);
+            
+            if (length == count)
+            {
+                var slice = input.Slice(index, length);
+                index += length;
+
+                expectation = null;
+                succeeded = true;
+                return slice.ToArray();
             }
 
             expectation = name;

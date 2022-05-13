@@ -93,4 +93,103 @@ class ReadOnlySpanExtensionsTests
         numbers.CountWhile(4, x => x % 2 == 0).ShouldBe(0);
         numbers.CountWhile(9, x => x % 2 == 0).ShouldBe(0);
     }
+
+    public void CanCountLeadingItemsSatisfyingPredicateUpToSomeMaxCount()
+    {
+        ReadOnlySpan<char> empty = "";
+        empty.CountWhile(0, IsLetter, 0).ShouldBe(0);
+        empty.CountWhile(0, IsLetter, 10).ShouldBe(0);
+
+        ReadOnlySpan<char> abc123 = "abc123";
+
+        abc123.CountWhile(0, IsDigit, maxCount: 0).ShouldBe(0);
+        abc123.CountWhile(0, IsDigit, maxCount: 3).ShouldBe(0);
+        abc123.CountWhile(0, IsDigit, maxCount: 4).ShouldBe(0);
+        abc123.CountWhile(0, IsDigit, maxCount: 10).ShouldBe(0);
+
+        abc123.CountWhile(0, IsLetter, maxCount: 0).ShouldBe(0);
+        abc123.CountWhile(0, IsLetter, maxCount: 3).ShouldBe(3);
+        abc123.CountWhile(0, IsLetter, maxCount: 4).ShouldBe(3);
+        abc123.CountWhile(0, IsLetter, maxCount: 10).ShouldBe(3);
+
+        abc123.CountWhile(0, IsLetterOrDigit, maxCount: 0).ShouldBe(0);
+        abc123.CountWhile(0, IsLetterOrDigit, maxCount: 3).ShouldBe(3);
+        abc123.CountWhile(0, IsLetterOrDigit, maxCount: 4).ShouldBe(4);
+        abc123.CountWhile(0, IsLetterOrDigit, maxCount: 10).ShouldBe(6);
+
+        abc123.CountWhile(2, IsDigit, maxCount: 0).ShouldBe(0);
+        abc123.CountWhile(2, IsDigit, maxCount: 3).ShouldBe(0);
+        abc123.CountWhile(2, IsDigit, maxCount: 4).ShouldBe(0);
+        abc123.CountWhile(2, IsDigit, maxCount: 10).ShouldBe(0);
+
+        abc123.CountWhile(2, IsLetter, maxCount: 0).ShouldBe(0);
+        abc123.CountWhile(2, IsLetter, maxCount: 3).ShouldBe(1);
+        abc123.CountWhile(2, IsLetter, maxCount: 4).ShouldBe(1);
+        abc123.CountWhile(2, IsLetter, maxCount: 10).ShouldBe(1);
+
+        abc123.CountWhile(2, IsLetterOrDigit, maxCount: 0).ShouldBe(0);
+        abc123.CountWhile(2, IsLetterOrDigit, maxCount: 3).ShouldBe(3);
+        abc123.CountWhile(2, IsLetterOrDigit, maxCount: 4).ShouldBe(4);
+        abc123.CountWhile(2, IsLetterOrDigit, maxCount: 10).ShouldBe(4);
+
+        abc123.CountWhile(3, IsDigit, maxCount: 0).ShouldBe(0);
+        abc123.CountWhile(3, IsDigit, maxCount: 3).ShouldBe(3);
+        abc123.CountWhile(3, IsDigit, maxCount: 4).ShouldBe(3);
+        abc123.CountWhile(3, IsDigit, maxCount: 10).ShouldBe(3);
+
+        abc123.CountWhile(3, IsLetter, maxCount: 0).ShouldBe(0);
+        abc123.CountWhile(3, IsLetter, maxCount: 3).ShouldBe(0);
+        abc123.CountWhile(3, IsLetter, maxCount: 4).ShouldBe(0);
+        abc123.CountWhile(3, IsLetter, maxCount: 10).ShouldBe(0);
+
+        abc123.CountWhile(3, IsLetterOrDigit, maxCount: 0).ShouldBe(0);
+        abc123.CountWhile(3, IsLetterOrDigit, maxCount: 3).ShouldBe(3);
+        abc123.CountWhile(3, IsLetterOrDigit, maxCount: 4).ShouldBe(3);
+        abc123.CountWhile(3, IsLetterOrDigit, maxCount: 10).ShouldBe(3);
+
+        abc123.CountWhile(6, IsDigit, maxCount: 0).ShouldBe(0);
+        abc123.CountWhile(6, IsDigit, maxCount: 3).ShouldBe(0);
+        abc123.CountWhile(6, IsDigit, maxCount: 4).ShouldBe(0);
+        abc123.CountWhile(6, IsDigit, maxCount: 10).ShouldBe(0);
+
+        abc123.CountWhile(6, IsLetter, maxCount: 0).ShouldBe(0);
+        abc123.CountWhile(6, IsLetter, maxCount: 3).ShouldBe(0);
+        abc123.CountWhile(6, IsLetter, maxCount: 4).ShouldBe(0);
+        abc123.CountWhile(6, IsLetter, maxCount: 10).ShouldBe(0);
+
+        abc123.CountWhile(6, IsLetterOrDigit, maxCount: 0).ShouldBe(0);
+        abc123.CountWhile(6, IsLetterOrDigit, maxCount: 3).ShouldBe(0);
+        abc123.CountWhile(6, IsLetterOrDigit, maxCount: 4).ShouldBe(0);
+        abc123.CountWhile(6, IsLetterOrDigit, maxCount: 10).ShouldBe(0);
+
+        ReadOnlySpan<int> numbers = new[] { 2, 4, 6, 8, 1, 3, 5, 7, 9 };
+
+        numbers.CountWhile(0, x => x % 2 == 0, maxCount: 0).ShouldBe(0);
+        numbers.CountWhile(1, x => x % 2 == 0, maxCount: 0).ShouldBe(0);
+        numbers.CountWhile(2, x => x % 2 == 0, maxCount: 0).ShouldBe(0);
+        numbers.CountWhile(3, x => x % 2 == 0, maxCount: 0).ShouldBe(0);
+        numbers.CountWhile(4, x => x % 2 == 0, maxCount: 0).ShouldBe(0);
+        numbers.CountWhile(9, x => x % 2 == 0, maxCount: 0).ShouldBe(0);
+
+        numbers.CountWhile(0, x => x % 2 == 0, maxCount: 3).ShouldBe(3);
+        numbers.CountWhile(1, x => x % 2 == 0, maxCount: 3).ShouldBe(3);
+        numbers.CountWhile(2, x => x % 2 == 0, maxCount: 3).ShouldBe(2);
+        numbers.CountWhile(3, x => x % 2 == 0, maxCount: 3).ShouldBe(1);
+        numbers.CountWhile(4, x => x % 2 == 0, maxCount: 3).ShouldBe(0);
+        numbers.CountWhile(9, x => x % 2 == 0, maxCount: 3).ShouldBe(0);
+
+        numbers.CountWhile(0, x => x % 2 == 0, maxCount: 4).ShouldBe(4);
+        numbers.CountWhile(1, x => x % 2 == 0, maxCount: 4).ShouldBe(3);
+        numbers.CountWhile(2, x => x % 2 == 0, maxCount: 4).ShouldBe(2);
+        numbers.CountWhile(3, x => x % 2 == 0, maxCount: 4).ShouldBe(1);
+        numbers.CountWhile(4, x => x % 2 == 0, maxCount: 4).ShouldBe(0);
+        numbers.CountWhile(9, x => x % 2 == 0, maxCount: 4).ShouldBe(0);
+
+        numbers.CountWhile(0, x => x % 2 == 0, maxCount: 10).ShouldBe(4);
+        numbers.CountWhile(1, x => x % 2 == 0, maxCount: 10).ShouldBe(3);
+        numbers.CountWhile(2, x => x % 2 == 0, maxCount: 10).ShouldBe(2);
+        numbers.CountWhile(3, x => x % 2 == 0, maxCount: 10).ShouldBe(1);
+        numbers.CountWhile(4, x => x % 2 == 0, maxCount: 10).ShouldBe(0);
+        numbers.CountWhile(9, x => x % 2 == 0, maxCount: 10).ShouldBe(0);
+    }
 }

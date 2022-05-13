@@ -60,32 +60,6 @@ class GrammarTests
         A.FailsToParse("B", "B", "A expected");
     }
 
-    public void ApplyingARuleFixedNumberOfTimes()
-    {
-        var parser = Repeat(AB, 3);
-
-        parser.FailsToParse("", "", "A expected");
-        parser.FailsToParse("A", "", "B expected");
-        parser.FailsToParse("AB!", "!", "A expected");
-        parser.FailsToParse("ABA!", "!", "B expected");
-        parser.FailsToParse("ABAB!", "!", "A expected");
-        parser.FailsToParse("ABABA!", "!", "B expected");
-        parser.PartiallyParses("ABABAB!", "!")
-            .ShouldBe(new [] { "AB", "AB", "AB" });
-        parser.PartiallyParses("ABABABA", "A")
-            .ShouldBe(new [] { "AB", "AB", "AB" });
-
-        var attemptRepeat0 = () => Repeat(AB, 0);
-        attemptRepeat0
-            .ShouldThrow<ArgumentException>()
-            .Message.ShouldBe("Repeat requires the given count to be > 1. (Parameter 'count')");
-
-        var attemptRepeat1 = () => Repeat(AB, 1);
-        attemptRepeat1
-            .ShouldThrow<ArgumentException>()
-            .Message.ShouldBe("Repeat requires the given count to be > 1. (Parameter 'count')");
-    }
-
     public void ApplyingARuleZeroOrMoreTimes()
     {
         var parser = ZeroOrMore(AB);
@@ -494,6 +468,84 @@ class GrammarTests
         even.FailsToParse(new[] { 1, 2, 4, 6 }, new[] { 1, 2, 4, 6 }, "even number expected");
         even.PartiallyParses(new[] { 2, 4, 6, 1, 3, 5 }, new[] { 1, 3, 5 }).ShouldBe(new[] { 2, 4, 6 });
         even.Parses(new[] { 2, 4, 6 }).ShouldBe(new[] { 2, 4, 6 });
+    }
+
+    public void ProvidesConveniencePrimitiveRecognizingSequencesOfItemsSatisfyingSomePredicateAFixedNumberOfTimes()
+    {
+        var lower2 = Repeat(IsLower, 2, "2 Lowercase");
+        var lower3 = Repeat(IsLower, 3, "3 Lowercase");
+        var lower4 = Repeat(IsLower, 4, "4 Lowercase");
+
+        lower2.FailsToParse("", "", "2 Lowercase expected");
+        lower3.FailsToParse("", "", "3 Lowercase expected");
+        lower4.FailsToParse("", "", "4 Lowercase expected");
+
+        lower2.FailsToParse("ABCdef", "ABCdef", "2 Lowercase expected");
+        lower3.FailsToParse("ABCdef", "ABCdef", "3 Lowercase expected");
+        lower4.FailsToParse("ABCdef", "ABCdef", "4 Lowercase expected");
+
+        lower2.PartiallyParses("abcDEF", "cDEF").ShouldBe("ab");
+        lower3.PartiallyParses("abcDEF", "DEF").ShouldBe("abc");
+        lower4.FailsToParse("abcDEF", "abcDEF", "4 Lowercase expected");
+
+
+        var upper2 = Repeat(IsUpper, 2, "2 Uppercase");
+        var upper3 = Repeat(IsUpper, 3, "3 Uppercase");
+        var upper4 = Repeat(IsUpper, 4, "4 Uppercase");
+
+        upper2.FailsToParse("abcDEF", "abcDEF", "2 Uppercase expected");
+        upper3.FailsToParse("abcDEF", "abcDEF", "3 Uppercase expected");
+        upper4.FailsToParse("abcDEF", "abcDEF", "4 Uppercase expected");
+
+        upper2.PartiallyParses("DEF", "F").ShouldBe("DE");
+        upper3.Parses("DEF").ShouldBe("DEF");
+        upper4.FailsToParse("DEF", "DEF", "4 Uppercase expected");
+
+
+        var caseInsensitive2 = Repeat(IsLetter, 2, "2 Case Insensitive");
+        var caseInsensitive3 = Repeat(IsLetter, 3, "3 Case Insensitive");
+        var caseInsensitive4 = Repeat(IsLetter, 4, "4 Case Insensitive");
+
+        caseInsensitive2.FailsToParse("!abcDEF", "!abcDEF", "2 Case Insensitive expected");
+        caseInsensitive3.FailsToParse("!abcDEF", "!abcDEF", "3 Case Insensitive expected");
+        caseInsensitive4.FailsToParse("!abcDEF", "!abcDEF", "4 Case Insensitive expected");
+
+        caseInsensitive2.PartiallyParses("abcDEF", "cDEF").ShouldBe("ab");
+        caseInsensitive3.PartiallyParses("abcDEF", "DEF").ShouldBe("abc");
+        caseInsensitive4.PartiallyParses("abcDEF", "EF").ShouldBe("abcD");
+
+
+        var even = Repeat<int>(x => x % 2 == 0, 2, "2 even numbers");
+        var empty = Array.Empty<int>();
+        even.FailsToParse(empty, empty, "2 even numbers expected");
+        even.FailsToParse(new[] { 1, 2, 4, 6 }, new[] { 1, 2, 4, 6 }, "2 even numbers expected");
+        even.PartiallyParses(new[] { 2, 4, 6, 1, 3, 5 }, new[] { 6, 1, 3, 5 }).ShouldBe(new[] { 2, 4 });
+        even.PartiallyParses(new[] { 4, 6, 1, 3, 5 }, new[] { 1, 3, 5 }).ShouldBe(new[] { 4, 6 });
+        even.FailsToParse(new[] { 6, 1, 3, 5 }, new[] { 6, 1, 3, 5 }, "2 even numbers expected");
+        even.PartiallyParses(new[] { 2, 4, 6 }, new[] { 6 }).ShouldBe(new[] { 2, 4 });
+        even.Parses(new[] { 2, 4 }).ShouldBe(new[] { 2, 4 });
+
+
+        var attemptRepeat0char = () => Repeat(IsLower, 0, "Lowercase");
+        attemptRepeat0char
+            .ShouldThrow<ArgumentException>()
+            .Message.ShouldBe("Repeat requires the given count to be > 1. (Parameter 'count')");
+
+        var attemptRepeat1char = () => Repeat(IsLower, 1, "Lowercase");
+        attemptRepeat1char
+            .ShouldThrow<ArgumentException>()
+            .Message.ShouldBe("Repeat requires the given count to be > 1. (Parameter 'count')");
+
+
+        var attemptRepeat0int = () => Repeat<int>(x => x % 2 == 0, 0, "even number");
+        attemptRepeat0int
+            .ShouldThrow<ArgumentException>()
+            .Message.ShouldBe("Repeat requires the given count to be > 1. (Parameter 'count')");
+
+        var attemptRepeat1int = () => Repeat<int>(x => x % 2 == 0, 1, "even number");
+        attemptRepeat1int
+            .ShouldThrow<ArgumentException>()
+            .Message.ShouldBe("Repeat requires the given count to be > 1. (Parameter 'count')");
     }
 
     public void ProvidesConveniencePrimitiveForDefiningKeywords()

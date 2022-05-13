@@ -16,4 +16,14 @@ public static class ReadOnlySpanExtensions
 
         return length;
     }
+
+    public static int CountWhile<T>(this ReadOnlySpan<T> input, int index, Func<T, bool> test, int maxCount)
+    {
+        int length = 0;
+
+        while (length < maxCount && index + length < input.Length && test(input[index + length]))
+            length++;
+
+        return length;
+    }
 }
