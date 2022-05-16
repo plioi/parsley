@@ -188,26 +188,6 @@ class GrammarTests
         //suspect to begin with.
     }
 
-    public void AttemptingToParseRuleButBacktrackingUponFailure()
-    {
-        //When p succeeds, Attempt(p) is the same as p.
-        AB.Parses("AB").ShouldBe("AB");
-        Attempt(AB).Parses("AB").ShouldBe("AB");
-
-        //When p fails without consuming input, Attempt(p) is the same as p.
-        AB.FailsToParse("!", "!", "A expected");
-        Attempt(AB).FailsToParse("!", "!", "A expected");
-
-        //When p fails after consuming input, Attempt(p) backtracks before reporting failure.
-        //This error message is naturally disappointing on its own as it describe an expectation
-        //at a deeper location than we stopped at. In practice, this is part of some larger
-        //Choice where either another option's message will supersede this one, or the entire
-        //Choice fails without consuming input, in which case you're better off applying a Label
-        //on the options which will again supersede this message.
-        AB.FailsToParse("A!", "!", "B expected");
-        Attempt(AB).FailsToParse("A!", "A!", "B expected");
-    }
-
     public void NegatingAnotherParseRuleWithoutConsumingInput()
     {
         //When p succeeds, Not(p) fails.
@@ -221,102 +201,6 @@ class GrammarTests
         Not(AB).FailsToParse("AB", "AB", "parse failure expected");
         Not(AB).PartiallyParses("A!", "A!").ShouldBe(Void.Value);
         Not(AB).PartiallyParses("BA", "BA").ShouldBe(Void.Value);
-    }
-
-    public void ProvidesBacktrackingTraceUponExtremeFailureOfLookaheadParsers()
-    {
-        var sequence = (char first, char second) =>
-            from char1 in Single(first)
-            from char2 in Single(second)
-            select $"{char1}{char2}";
-
-        var ab = sequence('A', 'B');
-        var ac = sequence('A', 'C');
-        var ad = sequence('A', 'D');
-        var ae = sequence('A', 'E');
-
-        Choice(
-                ab, //Since we fail here while consuming a, we fail here.
-                Choice(
-                    ac,
-                    ad
-                ),
-                ae
-            ).FailsToParse("AE", "E", "B expected");
-
-        Choice(
-            Attempt(ab), //Allow rewinding the consumption of a...
-            Choice(
-                ac, //...arriving at the failure to find c.
-                ad
-            ),
-            ae
-        ).FailsToParse("AE", "E", "C expected");
-
-        Choice(
-            Attempt(ab),
-            Choice(
-                Attempt(ac), //Allow rewinding the consumption of c...
-                ad //...arriving at the failure to find d.
-            ),
-            ae
-        ).FailsToParse("AE", "E", "D expected");
-
-        Choice(
-            Attempt(ab),
-            Choice(
-                Attempt(ac),
-                Attempt(ad) //Allow rewinding the consumption of d...
-            ),
-            ae //...arriving at the success of finding e.
-        ).Parses("AE"); //Note intermediate error information is discarded by this point.
-
-        // Now try that again but for input that will still fail...
-
-        Choice(
-            Attempt(ab),
-            Choice(
-                Attempt(ac),
-                Attempt(ad) //Allow rewinding the consumption of d...
-            ),
-            ae //...arriving at the failure to find e.
-        ).FailsToParse("AF", "F", "E expected");
-
-        Choice(
-            Attempt(ab),
-            Choice(
-                Attempt(ac),
-                Attempt(ad)
-            ),
-            Attempt(ae) //Allow rewinding the consumption of e (and a since all a-consuming choices allow rewind)...
-        ).FailsToParse("AF", "AF", //...arriving at the failure to find f, having consumed nothing.
-
-            //Note intermediate expectations are preserved, but describe
-            //some deeper location in the input than the current index.
-            //The order indicates the order that the problems were handled.
-            //It is recommended that such extreme usages of Attempt be supplemented
-            //with Label in order to better describe the error.
-
-            "(B, (C or D), or E) expected");
-
-        Attempt( //Excessively attempt the non-consuming choice itself...
-            Choice(
-                Attempt(ab),
-                Choice(
-                    Attempt(ac),
-                    Attempt(ad)
-                ),
-                Attempt(ae)
-            )
-        ).FailsToParse("AF", "AF", //... demonstrating the intermediate error information is NOT discarded.
-
-            //Note intermediate expectations are preserved, but describe
-            //some deeper location in the input than the current index.
-            //The order indicates the order that the problems were handled.
-            //It is recommended that such extreme usages of Attempt be supplemented
-            //with Label in order to better describe the error.
-
-            "(B, (C or D), or E) expected");
     }
 
     public void ProvidesConveniencePrimitiveRecognizingSingleExpectedNextItem()
