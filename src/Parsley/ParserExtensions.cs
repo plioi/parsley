@@ -11,9 +11,7 @@ public static class ParserExtensions
         [NotNullWhen(false)] out ParseError? error)
     {
         var parseToEnd =
-            from result in parse
-            from end in Grammar.EndOfInput<TItem>()
-            select result;
+            Grammar.Map(parse, Grammar.EndOfInput<TItem>(), (result, _) => result);
 
         return TryPartialParse(parseToEnd, input, out int index, out value, out error);
     }
