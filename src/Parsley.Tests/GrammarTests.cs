@@ -150,6 +150,20 @@ class GrammarTests
         parser.PartiallyParses("AB&&AB&&ABA", "A").ShouldBe(new[] { "AB", "AB", "AB" });
     }
 
+    public void ApplyingARuleBetweenTwoOtherRules()
+    {
+        var parser = Between(A, B, A);
+
+        parser.FailsToParse("", "", "A expected");
+        parser.FailsToParse("B", "B", "A expected");
+        parser.FailsToParse("A", "", "B expected");
+        parser.FailsToParse("AA", "A", "B expected");
+        parser.FailsToParse("AB", "", "A expected");
+        parser.FailsToParse("ABB", "B", "A expected");
+        parser.Parses("ABA").ShouldBe('B');
+        parser.PartiallyParses("ABA!", "!").ShouldBe('B');
+    }
+
     public void ParsingAnOptionalRuleZeroOrOneTimes()
     {
         //Reference Type to Nullable Reference Type

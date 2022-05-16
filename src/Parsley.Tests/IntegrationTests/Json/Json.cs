@@ -86,10 +86,7 @@ public class Json
         select (key, value);
 
     static Parser<JsonToken, IReadOnlyList<TValue>> List<TValue>(Parser<JsonToken, TValue> item, string open, string close) =>
-        from openToken in Token(open)
-        from items in ZeroOrMore(item, Token(","))
-        from closeToken in Token(close)
-        select items;
+        Between(Token(open), ZeroOrMore(item, Token(",")), Token(close));
 
     static Parser<char, JsonToken> NumberLiteral
     {
@@ -165,9 +162,10 @@ public class Json
 
             return
                 from index in Index<char>()
-                from open in Single('"')
-                from content in ZeroOrMore(Choice(charactersFromEscapeSequence, literalCharacters))
-                from close in Single('"')
+                from content in Between(
+                    Single('"'),
+                    ZeroOrMore(Choice(charactersFromEscapeSequence, literalCharacters)),
+                    Single('"'))
                 select new JsonToken("string", string.Join("", content), index);
         }
     }
