@@ -2,9 +2,9 @@ namespace Parsley;
 
 partial class Grammar
 {
-    public static Parser<TItem, TItem> Single<TItem>(TItem expected)
+    public static Parser<TItem, TItem> Single<TItem>(TItem expected, string? name = null)
     {
-        return Single<TItem>(x => EqualityComparer<TItem>.Default.Equals(x, expected), $"{expected}");
+        return Single<TItem>(x => EqualityComparer<TItem>.Default.Equals(x, expected), name ?? $"{expected}");
     }
 
     public static Parser<TItem, TItem> Single<TItem>(Func<TItem, bool> test, string name)

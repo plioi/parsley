@@ -223,32 +223,6 @@ class GrammarTests
         Not(AB).PartiallyParses("BA", "BA").ShouldBe(Void.Value);
     }
 
-    public void ImprovingDefaultMessagesWithAKnownExpectation()
-    {
-        var labeled = Label(AB, "'A' followed by 'B'");
-
-        //When p succeeds after consuming input, Label(p) is the same as p.
-        AB.Parses("AB").ShouldBe("AB");
-        labeled.Parses("AB").ShouldBe("AB");
-
-        //When p fails after consuming input, Label(p) is the same as p.
-        AB.FailsToParse("A!", "!", "B expected");
-        labeled.FailsToParse("A!", "!", "B expected");
-
-        //When p succeeds but does not consume input, Label(p) still succeeds but the potential error is included.
-        var succeedWithoutConsuming = "$".SucceedWithThisValue<char, string>();
-        succeedWithoutConsuming
-            .PartiallyParses("!", "!")
-            .ShouldBe("$");
-        Label(succeedWithoutConsuming, "nothing")
-            .PartiallyParses("!", "!")
-            .ShouldBe("$");
-
-        //When p fails but does not consume input, Label(p) fails with the given expectation.
-        AB.FailsToParse("!", "!", "A expected");
-        labeled.FailsToParse("!", "!", "'A' followed by 'B' expected");
-    }
-
     public void ProvidesBacktrackingTraceUponExtremeFailureOfLookaheadParsers()
     {
         var sequence = (char first, char second) =>
@@ -343,38 +317,6 @@ class GrammarTests
             //with Label in order to better describe the error.
 
             "(B, (C or D), or E) expected");
-
-        Choice( //Phase out that irrelevant outermost Attempt...
-            Attempt(ab),
-            Label(Choice( //... instead labeling the nested pattern in an attempt to improve error messages...
-                Attempt(ac),
-                Attempt(ad)
-            ), "A[C|D]"),
-            Attempt(ae)
-        ).FailsToParse("AF", "AF", //... demonstrating how the intermediate error information is affected.
-
-            //Note the first and third intermediate expectations are preserved, but
-            //describe some deeper location in the input than the current index.
-            //Note that the second expectation is improved, appropriate to the current
-            //index. The order indicates the order that the problems were handled.
-            //It is recommended that such extreme usages of Attempt be supplemented
-            //with more Label calls in order to better describe the error.
-
-            "(B, A[C|D], or E) expected");
-
-        Choice(
-            //Label all of the backtracking choices in an attempt to improve error messages...
-            Label(Attempt(ab), "AB"),
-            Label(Choice(
-                Attempt(ac),
-                Attempt(ad)
-            ), "A[C|D]"),
-            Label(Attempt(ae), "AE")
-        ).FailsToParse("AF", "AF", //... demonstrating how the error message once again respects the overall location.
-
-            //Note how the full error message now respects the current index.
-
-            "(AB, A[C|D], or AE) expected");
     }
 
     public void ProvidesConveniencePrimitiveRecognizingSingleExpectedNextItem()
