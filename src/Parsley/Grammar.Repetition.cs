@@ -80,9 +80,7 @@ partial class Grammar
             }
 
             var separatorAndNextItem =
-                from _ in separator
-                from next in item
-                select next;
+                Map(separator, item, (_, next) => next);
 
             return Repeat(accumulator, separatorAndNextItem, input, ref index, out succeeded, out expectation);
         };
@@ -112,9 +110,7 @@ partial class Grammar
             }
 
             var separatorAndNextItem =
-                from _ in separator
-                from next in item
-                select next;
+                Map(separator, item, (_, next) => next);
 
             return Repeat(accumulator, separatorAndNextItem, input, ref index, out succeeeded, out expectation);
         };

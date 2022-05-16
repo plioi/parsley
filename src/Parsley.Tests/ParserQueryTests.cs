@@ -44,16 +44,16 @@ class ParserQueryTests
         (from _ in Fail
             from x in Next
             from y in Next
-            select Tuple.Create(x, y)).FailsToParse("xy", "xy", "unsatisfiable expectation expected");
+            select (x, y)).FailsToParse("xy", "xy", "unsatisfiable expectation expected");
 
         (from x in Next
             from _ in Fail
             from y in Next
-            select Tuple.Create(x, y)).FailsToParse("xy", "y", "unsatisfiable expectation expected");
+            select (x, y)).FailsToParse("xy", "y", "unsatisfiable expectation expected");
 
         (from x in Next
             from y in Next
             from _ in Fail
-            select Tuple.Create(x, y)).FailsToParse("xy", "", "unsatisfiable expectation expected");
+            select (x, y)).FailsToParse("xy", "", "unsatisfiable expectation expected");
     }
 }
