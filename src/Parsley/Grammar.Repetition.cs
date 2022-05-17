@@ -91,7 +91,7 @@ partial class Grammar
     /// </summary>
     public static Parser<TItem, IReadOnlyList<TValue>> OneOrMore<TItem, TValue, S>(Parser<TItem, TValue> item, Parser<TItem, S> separator)
     {
-        return (ReadOnlySpan<TItem> input, ref int index, out bool succeeeded, out string? expectation) =>
+        return (ReadOnlySpan<TItem> input, ref int index, out bool succeeded, out string? expectation) =>
         {
             var accumulator = new List<TValue>();
 
@@ -105,14 +105,14 @@ partial class Grammar
             {
                 //The required first item failed.
                 expectation = itemExpectation;
-                succeeeded = false;
+                succeeded = false;
                 return null;
             }
 
             var separatorAndNextItem =
                 Map(separator, item, (_, next) => next);
 
-            return Repeat(accumulator, separatorAndNextItem, input, ref index, out succeeeded, out expectation);
+            return Repeat(accumulator, separatorAndNextItem, input, ref index, out succeeded, out expectation);
         };
     }
 
