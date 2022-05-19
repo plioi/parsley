@@ -154,7 +154,7 @@ public class Json
 
             var charactersFromEscapeSequence =
                 from slash in Single('\\')
-                from unescaped in Choice(escapeCharacter, unicodeEscapeCharacters)
+                from unescaped in Choice("escape sequence", escapeCharacter, unicodeEscapeCharacters)
                 select unescaped;
 
             var literalCharacters =

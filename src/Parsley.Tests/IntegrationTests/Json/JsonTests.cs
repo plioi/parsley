@@ -128,7 +128,7 @@ class JsonTests
             @"parent"": false
                     }
                 }",
-            "(escape character or unicode escape sequence) expected");
+            "escape sequence expected");
     }
 
     public void ProvidesUsefulErrorMessagesForDeeplyPlacedGrammarErrors()
