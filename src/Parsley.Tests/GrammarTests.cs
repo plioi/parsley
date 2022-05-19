@@ -571,6 +571,18 @@ public class AlternationTests
         Choice(C, B, A).Parses("A").ShouldBe("A");
     }
 
+    public void ProvidesLastMissedExpectationWhenParsersFailWithoutConsumingInput()
+    {
+        Choice(A, B).FailsToParse("", "", "B expected");
+        Choice(A, B, C).FailsToParse("", "", "C expected");
+    }
+
+    public void SupportsOptionalComprehensiveExpectationsWhenAllParsersFailWithoutConsumingInput()
+    {
+        Choice("A or B", A, B).FailsToParse("", "", "A or B expected");
+        Choice("A, B, or C", A, B, C).FailsToParse("", "", "A, B, or C expected");
+    }
+
     public void SubsequentParserWillNotBeAttemptedWhenPreviousParserFailsAfterConsumingInput()
     {
         //As soon as something consumes input, it's failure and message win.
@@ -583,10 +595,16 @@ public class AlternationTests
         Choice(C, AB, NeverExecuted).FailsToParse("A", "", "B expected");
     }
 
-    public void MergesErrorMessagesWhenParsersFailWithoutConsumingInput()
+    public void SpecificExpectationSupercedesComprehensiveExpectationWhenAnyParserFailsAfterConsumingInput()
     {
-        Choice(A, B).FailsToParse("", "", "(A or B) expected");
-        Choice(A, B, C).FailsToParse("", "", "(A, B, or C) expected");
+        //As soon as something consumes input, it's failure and message win.
+
+        var AB = from a in A
+            from b in B
+            select $"{a}{b}";
+
+        Choice("This expectation is discarded.", AB, NeverExecuted).FailsToParse("A", "", "B expected");
+        Choice("This expectation is discarded.", C, AB, NeverExecuted).FailsToParse("A", "", "B expected");
     }
 
     public void MergesPotentialErrorMessagesWhenParserSucceedsWithoutConsumingInput()
