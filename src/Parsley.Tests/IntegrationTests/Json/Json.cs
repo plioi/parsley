@@ -145,12 +145,13 @@ public class Json
 
             var unicodeEscapeCharacters =
                 from u in Single('u', "unicode escape sequence")
-                from unicodeDigits in Repeat(IsLetterOrDigit, 4, "4 unicode digits", span => span.ToString())
-                select char.ConvertFromUtf32(
-                    int.Parse(
-                        unicodeDigits,
-                        NumberStyles.HexNumber,
-                        CultureInfo.InvariantCulture));
+                from unescaped in Repeat(IsLetterOrDigit, 4, "4 unicode digits",
+                    unicodeDigits => char.ConvertFromUtf32(
+                        int.Parse(
+                            unicodeDigits,
+                            NumberStyles.HexNumber,
+                            CultureInfo.InvariantCulture)))
+                select unescaped;
 
             var charactersFromEscapeSequence =
                 from slash in Single('\\')

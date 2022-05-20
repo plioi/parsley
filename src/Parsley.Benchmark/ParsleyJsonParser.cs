@@ -19,7 +19,7 @@ public static class ParsleyJsonParser
             var @true = Literal("true", true);
             var @false = Literal("false", false);
             var @null = Literal("null", null);
-            var @int = Map(OneOrMore(IsDigit, "digit", span => span.ToString()), digits => (object?) int.Parse(digits));
+            var @int = OneOrMore(IsDigit, "digit", digits => (object?) int.Parse(digits));
 
             return Choice(@true, @false, @null, @int, String, Array, Object);
         });
