@@ -233,35 +233,9 @@ partial class Grammar
         return Repeat(test, count, name, span => span.ToString());
     }
 
-    static Parser<char, TValue> Repeat<TValue>(Func<char, bool> test, int count, string name, SpanFunc<char, TValue> selector)
-    {
-        if (count <= 1)
-            throw new ArgumentException(
-                $"{nameof(Repeat)} requires the given count to be > 1.", nameof(count));
-
-        return (ReadOnlySpan<char> input, ref int index, out bool succeeded, out string? expectation) =>
-        {
-            var length = input.CountWhile(index, test, maxCount: count);
-            
-            if (length == count)
-            {
-                var slice = input.Slice(index, length);
-                index += length;
-
-                expectation = null;
-                succeeded = true;
-                return selector(slice);
-            }
-
-            expectation = name;
-            succeeded = false;
-            return default;
-        };
-    }
-
     public static Parser<TItem, IReadOnlyList<TItem>> Repeat<TItem>(Func<TItem, bool> test, int count, string name)
     {
-        return Repeat<TItem, IReadOnlyList<TItem>>(test, count, name, span => span.ToArray());
+        return Repeat(test, count, name, span => span.ToArray());
     }
 
     static Parser<TItem, TValue> Repeat<TItem, TValue>(Func<TItem, bool> test, int count, string name, SpanFunc<TItem, TValue> selector)
