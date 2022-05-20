@@ -174,33 +174,6 @@ partial class Grammar
         };
     }
 
-    public static Parser<char, string> ZeroOrMore(Func<char, bool> test)
-    {
-        return ZeroOrMore(test, span => span.ToString());
-    }
-
-    static Parser<char, TValue> ZeroOrMore<TValue>(Func<char, bool> test, SpanFunc<char, TValue> selector)
-    {
-        return (ReadOnlySpan<char> input, ref int index, out bool succeeded, out string? expectation) =>
-        {
-            var length = input.CountWhile(index, test);
-            
-            if (length > 0)
-            {
-                var slice = input.Slice(index, length);
-                index += length;
-
-                expectation = null;
-                succeeded = true;
-                return selector(slice);
-            }
-
-            expectation = null;
-            succeeded = true;
-            return selector(ReadOnlySpan<char>.Empty);
-        };
-    }
-
     public static Parser<char, string> OneOrMore(Func<char, bool> test, string name)
     {
         return OneOrMore(test, name, span => span.ToString());
@@ -264,9 +237,14 @@ partial class Grammar
         };
     }
 
+    public static Parser<char, string> ZeroOrMore(Func<char, bool> test)
+    {
+        return ZeroOrMore(test, span => span.ToString());
+    }
+
     public static Parser<TItem, IReadOnlyList<TItem>> ZeroOrMore<TItem>(Func<TItem, bool> test)
     {
-        return ZeroOrMore<TItem, IReadOnlyList<TItem>>(test, span => span.ToArray());
+        return ZeroOrMore(test, span => span.ToArray());
     }
 
     static Parser<TItem, TValue> ZeroOrMore<TItem, TValue>(Func<TItem, bool> test, SpanFunc<TItem, TValue> selector)
