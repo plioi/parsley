@@ -174,17 +174,7 @@ partial class Grammar
         };
     }
 
-    public static Parser<char, string> Repeat(Func<char, bool> test, int count, string name)
-    {
-        return Repeat(test, count, name, span => span.ToString());
-    }
-
-    public static Parser<TItem, IReadOnlyList<TItem>> Repeat<TItem>(Func<TItem, bool> test, int count, string name)
-    {
-        return Repeat(test, count, name, span => span.ToArray());
-    }
-
-    static Parser<TItem, TValue> Repeat<TItem, TValue>(Func<TItem, bool> test, int count, string name, SpanFunc<TItem, TValue> selector)
+    public static Parser<TItem, TValue> Repeat<TItem, TValue>(Func<TItem, bool> test, int count, string name, SpanFunc<TItem, TValue> selector)
     {
         if (count <= 1)
             throw new ArgumentException(
@@ -210,17 +200,7 @@ partial class Grammar
         };
     }
 
-    public static Parser<char, string> ZeroOrMore(Func<char, bool> test)
-    {
-        return ZeroOrMore(test, span => span.ToString());
-    }
-
-    public static Parser<TItem, IReadOnlyList<TItem>> ZeroOrMore<TItem>(Func<TItem, bool> test)
-    {
-        return ZeroOrMore(test, span => span.ToArray());
-    }
-
-    static Parser<TItem, TValue> ZeroOrMore<TItem, TValue>(Func<TItem, bool> test, SpanFunc<TItem, TValue> selector)
+    public static Parser<TItem, TValue> ZeroOrMore<TItem, TValue>(Func<TItem, bool> test, SpanFunc<TItem, TValue> selector)
     {
         return (ReadOnlySpan<TItem> input, ref int index, out bool succeeded, out string? expectation) =>
         {
@@ -242,17 +222,7 @@ partial class Grammar
         };
     }
 
-    public static Parser<char, string> OneOrMore(Func<char, bool> test, string name)
-    {
-        return OneOrMore(test, name, span => span.ToString());
-    }
-
-    public static Parser<TItem, IReadOnlyList<TItem>> OneOrMore<TItem>(Func<TItem, bool> test, string name)
-    {
-        return OneOrMore(test, name, span => span.ToArray());
-    }
-
-    static Parser<TItem, TValue> OneOrMore<TItem, TValue>(Func<TItem, bool> test, string name, SpanFunc<TItem, TValue> selector)
+    public static Parser<TItem, TValue> OneOrMore<TItem, TValue>(Func<TItem, bool> test, string name, SpanFunc<TItem, TValue> selector)
     {
         return (ReadOnlySpan<TItem> input, ref int index, out bool succeeded, out string? expectation) =>
         {

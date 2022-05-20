@@ -256,9 +256,9 @@ class GrammarTests
 
     public void ProvidesConveniencePrimitiveRecognizingOptionalSequencesOfItemsSatisfyingSomePredicate()
     {
-        var lower = ZeroOrMore(IsLower);
-        var upper = ZeroOrMore(IsUpper);
-        var caseInsensitive = ZeroOrMore(IsLetter);
+        var lower = ZeroOrMore(IsLower, span => span.ToString());
+        var upper = ZeroOrMore(IsUpper, span => span.ToString());
+        var caseInsensitive = ZeroOrMore(IsLetter, span => span.ToString());
 
         lower.Parses("").ShouldBe("");
 
@@ -274,7 +274,8 @@ class GrammarTests
 
         caseInsensitive.Parses("abcDEF").ShouldBe("abcDEF");
 
-        var even = ZeroOrMore<int>(x => x % 2 == 0);
+        var isEven = (int x) => x % 2 == 0;
+        var even = ZeroOrMore(isEven, span => span.ToArray());
         var empty = Array.Empty<int>();
         even.Parses(empty).ShouldBe(empty);
         even.PartiallyParses(new[] { 1, 2, 4, 6 }, new[] { 1, 2, 4, 6 }).ShouldBe(empty);
@@ -284,9 +285,9 @@ class GrammarTests
 
     public void ProvidesConveniencePrimitiveRecognizingNonemptySequencesOfItemsSatisfyingSomePredicate()
     {
-        var lower = OneOrMore(IsLower, "Lowercase");
-        var upper = OneOrMore(IsUpper, "Uppercase");
-        var caseInsensitive = OneOrMore(IsLetter, "Case Insensitive");
+        var lower = OneOrMore(IsLower, "Lowercase", span => span.ToString());
+        var upper = OneOrMore(IsUpper, "Uppercase", span => span.ToString());
+        var caseInsensitive = OneOrMore(IsLetter, "Case Insensitive", span => span.ToString());
 
         lower.FailsToParse("", "", "Lowercase expected");
         
@@ -302,7 +303,8 @@ class GrammarTests
 
         caseInsensitive.Parses("abcDEF").ShouldBe("abcDEF");
 
-        var even = OneOrMore<int>(x => x % 2 == 0, "even number");
+        var isEven = (int x) => x % 2 == 0;
+        var even = OneOrMore(isEven, "even number", span => span.ToArray());
         var empty = Array.Empty<int>();
         even.FailsToParse(empty, empty, "even number expected");
         even.FailsToParse(new[] { 1, 2, 4, 6 }, new[] { 1, 2, 4, 6 }, "even number expected");
@@ -312,9 +314,9 @@ class GrammarTests
 
     public void ProvidesConveniencePrimitiveRecognizingSequencesOfItemsSatisfyingSomePredicateAFixedNumberOfTimes()
     {
-        var lower2 = Repeat(IsLower, 2, "2 Lowercase");
-        var lower3 = Repeat(IsLower, 3, "3 Lowercase");
-        var lower4 = Repeat(IsLower, 4, "4 Lowercase");
+        var lower2 = Repeat(IsLower, 2, "2 Lowercase", span => span.ToString());
+        var lower3 = Repeat(IsLower, 3, "3 Lowercase", span => span.ToString());
+        var lower4 = Repeat(IsLower, 4, "4 Lowercase", span => span.ToString());
 
         lower2.FailsToParse("", "", "2 Lowercase expected");
         lower3.FailsToParse("", "", "3 Lowercase expected");
@@ -329,9 +331,9 @@ class GrammarTests
         lower4.FailsToParse("abcDEF", "abcDEF", "4 Lowercase expected");
 
 
-        var upper2 = Repeat(IsUpper, 2, "2 Uppercase");
-        var upper3 = Repeat(IsUpper, 3, "3 Uppercase");
-        var upper4 = Repeat(IsUpper, 4, "4 Uppercase");
+        var upper2 = Repeat(IsUpper, 2, "2 Uppercase", span => span.ToString());
+        var upper3 = Repeat(IsUpper, 3, "3 Uppercase", span => span.ToString());
+        var upper4 = Repeat(IsUpper, 4, "4 Uppercase", span => span.ToString());
 
         upper2.FailsToParse("abcDEF", "abcDEF", "2 Uppercase expected");
         upper3.FailsToParse("abcDEF", "abcDEF", "3 Uppercase expected");
@@ -342,9 +344,9 @@ class GrammarTests
         upper4.FailsToParse("DEF", "DEF", "4 Uppercase expected");
 
 
-        var caseInsensitive2 = Repeat(IsLetter, 2, "2 Case Insensitive");
-        var caseInsensitive3 = Repeat(IsLetter, 3, "3 Case Insensitive");
-        var caseInsensitive4 = Repeat(IsLetter, 4, "4 Case Insensitive");
+        var caseInsensitive2 = Repeat(IsLetter, 2, "2 Case Insensitive", span => span.ToString());
+        var caseInsensitive3 = Repeat(IsLetter, 3, "3 Case Insensitive", span => span.ToString());
+        var caseInsensitive4 = Repeat(IsLetter, 4, "4 Case Insensitive", span => span.ToString());
 
         caseInsensitive2.FailsToParse("!abcDEF", "!abcDEF", "2 Case Insensitive expected");
         caseInsensitive3.FailsToParse("!abcDEF", "!abcDEF", "3 Case Insensitive expected");
@@ -354,8 +356,8 @@ class GrammarTests
         caseInsensitive3.PartiallyParses("abcDEF", "DEF").ShouldBe("abc");
         caseInsensitive4.PartiallyParses("abcDEF", "EF").ShouldBe("abcD");
 
-
-        var even = Repeat<int>(x => x % 2 == 0, 2, "2 even numbers");
+        var isEven = (int x) => x % 2 == 0;
+        var even = Repeat(isEven, 2, "2 even numbers", span => span.ToArray());
         var empty = Array.Empty<int>();
         even.FailsToParse(empty, empty, "2 even numbers expected");
         even.FailsToParse(new[] { 1, 2, 4, 6 }, new[] { 1, 2, 4, 6 }, "2 even numbers expected");
@@ -366,23 +368,22 @@ class GrammarTests
         even.Parses(new[] { 2, 4 }).ShouldBe(new[] { 2, 4 });
 
 
-        var attemptRepeat0char = () => Repeat(IsLower, 0, "Lowercase");
+        var attemptRepeat0char = () => Repeat(IsLower, 0, "Lowercase", span => span.ToString());
         attemptRepeat0char
             .ShouldThrow<ArgumentException>()
             .Message.ShouldBe("Repeat requires the given count to be > 1. (Parameter 'count')");
 
-        var attemptRepeat1char = () => Repeat(IsLower, 1, "Lowercase");
+        var attemptRepeat1char = () => Repeat(IsLower, 1, "Lowercase", span => span.ToString());
         attemptRepeat1char
             .ShouldThrow<ArgumentException>()
             .Message.ShouldBe("Repeat requires the given count to be > 1. (Parameter 'count')");
 
-
-        var attemptRepeat0int = () => Repeat<int>(x => x % 2 == 0, 0, "even number");
+        var attemptRepeat0int = () => Repeat(isEven, 0, "even number", span => span.ToArray());
         attemptRepeat0int
             .ShouldThrow<ArgumentException>()
             .Message.ShouldBe("Repeat requires the given count to be > 1. (Parameter 'count')");
 
-        var attemptRepeat1int = () => Repeat<int>(x => x % 2 == 0, 1, "even number");
+        var attemptRepeat1int = () => Repeat(isEven, 1, "even number", span => span.ToArray());
         attemptRepeat1int
             .ShouldThrow<ArgumentException>()
             .Message.ShouldBe("Repeat requires the given count to be > 1. (Parameter 'count')");
@@ -465,7 +466,7 @@ class GrammarTests
                 from metadataAtStart in metadata
                 from a in A
                 from metadataBeforeWhitespace in metadata
-                from whitespace in ZeroOrMore(IsWhiteSpace)
+                from whitespace in ZeroOrMore(IsWhiteSpace, span => span.ToString())
                 from metadataAfterWhitespace in metadata
                 from b in B
                 from metadataAtEnd in metadata

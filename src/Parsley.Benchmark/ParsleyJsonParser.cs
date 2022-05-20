@@ -11,7 +11,7 @@ public static class ParsleyJsonParser
     static readonly Parsley.Parser<char, Void> SkipWhitespaces = Skip(IsWhiteSpace);
 
     static readonly Parsley.Parser<char, string> String =
-        Between(Single('"'), ZeroOrMore(c => c != '"'), Single('"'));
+        Between(Single('"'), ZeroOrMore((char c) => c != '"', span => span.ToString()), Single('"'));
 
     static readonly Parsley.Parser<char, object?> Json =
         Recursive(() =>
@@ -19,7 +19,7 @@ public static class ParsleyJsonParser
             var @true = Literal("true", true);
             var @false = Literal("false", false);
             var @null = Literal("null", null);
-            var @int = Map(OneOrMore(IsDigit, "digit"), digits => (object?) int.Parse(digits));
+            var @int = Map(OneOrMore(IsDigit, "digit", span => span.ToString()), digits => (object?) int.Parse(digits));
 
             return Choice(@true, @false, @null, @int, String, Array, Object);
         });
