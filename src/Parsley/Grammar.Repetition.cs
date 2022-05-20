@@ -174,77 +174,7 @@ partial class Grammar
         };
     }
 
-    public static Parser<char, string> ZeroOrMore(Func<char, bool> test)
-    {
-        return (ReadOnlySpan<char> input, ref int index, out bool succeeded, out string? expectation) =>
-        {
-            var length = input.CountWhile(index, test);
-            
-            if (length > 0)
-            {
-                var slice = input.Slice(index, length);
-                index += length;
-
-                expectation = null;
-                succeeded = true;
-                return slice.ToString();
-            }
-
-            expectation = null;
-            succeeded = true;
-            return "";
-        };
-    }
-
-    public static Parser<char, string> OneOrMore(Func<char, bool> test, string name)
-    {
-        return (ReadOnlySpan<char> input, ref int index, out bool succeeded, out string? expectation) =>
-        {
-            var length = input.CountWhile(index, test);
-
-            if (length > 0)
-            {
-                var span = input.Slice(index, length);
-                index += length;
-
-                expectation = null;
-                succeeded = true;
-                return span.ToString();
-            }
-
-            expectation = name;
-            succeeded = false;
-            return null;
-        };
-    }
-
-    public static Parser<char, string> Repeat(Func<char, bool> test, int count, string name)
-    {
-        if (count <= 1)
-            throw new ArgumentException(
-                $"{nameof(Repeat)} requires the given count to be > 1.", nameof(count));
-
-        return (ReadOnlySpan<char> input, ref int index, out bool succeeded, out string? expectation) =>
-        {
-            var length = input.CountWhile(index, test, maxCount: count);
-            
-            if (length == count)
-            {
-                var slice = input.Slice(index, length);
-                index += length;
-
-                expectation = null;
-                succeeded = true;
-                return slice.ToString();
-            }
-
-            expectation = name;
-            succeeded = false;
-            return null;
-        };
-    }
-
-    public static Parser<TItem, IReadOnlyList<TItem>> Repeat<TItem>(Func<TItem, bool> test, int count, string name)
+    public static Parser<TItem, TValue> Repeat<TItem, TValue>(Func<TItem, bool> test, int count, string name, SpanFunc<TItem, TValue> selector)
     {
         if (count <= 1)
             throw new ArgumentException(
@@ -261,16 +191,16 @@ partial class Grammar
 
                 expectation = null;
                 succeeded = true;
-                return slice.ToArray();
+                return selector(slice);
             }
 
             expectation = name;
             succeeded = false;
-            return null;
+            return default;
         };
     }
 
-    public static Parser<TItem, IReadOnlyList<TItem>> ZeroOrMore<TItem>(Func<TItem, bool> test)
+    public static Parser<TItem, TValue> ZeroOrMore<TItem, TValue>(Func<TItem, bool> test, SpanFunc<TItem, TValue> selector)
     {
         return (ReadOnlySpan<TItem> input, ref int index, out bool succeeded, out string? expectation) =>
         {
@@ -283,16 +213,16 @@ partial class Grammar
 
                 expectation = null;
                 succeeded = true;
-                return slice.ToArray();
+                return selector(slice);
             }
 
             expectation = null;
             succeeded = true;
-            return Array.Empty<TItem>();
+            return selector(ReadOnlySpan<TItem>.Empty);
         };
     }
 
-    public static Parser<TItem, IReadOnlyList<TItem>> OneOrMore<TItem>(Func<TItem, bool> test, string name)
+    public static Parser<TItem, TValue> OneOrMore<TItem, TValue>(Func<TItem, bool> test, string name, SpanFunc<TItem, TValue> selector)
     {
         return (ReadOnlySpan<TItem> input, ref int index, out bool succeeded, out string? expectation) =>
         {
@@ -300,17 +230,17 @@ partial class Grammar
 
             if (length > 0)
             {
-                var span = input.Slice(index, length);
+                var slice = input.Slice(index, length);
                 index += length;
 
                 expectation = null;
                 succeeded = true;
-                return span.ToArray();
+                return selector(slice);
             }
 
             expectation = name;
             succeeded = false;
-            return null;
+            return default;
         };
     }
 }

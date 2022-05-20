@@ -92,7 +92,7 @@ public class Json
     {
         get
         {
-            var Digits = OneOrMore(IsDigit, "0..9");
+            var Digits = OneOrMore(IsDigit, "0..9", span => span.ToString());
 
             return
                 from index in Index<char>()
@@ -145,12 +145,13 @@ public class Json
 
             var unicodeEscapeCharacters =
                 from u in Single('u', "unicode escape sequence")
-                from unicodeDigits in Repeat(IsLetterOrDigit, 4, "4 unicode digits")
-                select char.ConvertFromUtf32(
-                    int.Parse(
-                        unicodeDigits,
-                        NumberStyles.HexNumber,
-                        CultureInfo.InvariantCulture));
+                from unescaped in Repeat(IsLetterOrDigit, 4, "4 unicode digits",
+                    unicodeDigits => char.ConvertFromUtf32(
+                        int.Parse(
+                            unicodeDigits,
+                            NumberStyles.HexNumber,
+                            CultureInfo.InvariantCulture)))
+                select unescaped;
 
             var charactersFromEscapeSequence =
                 from slash in Single('\\')
@@ -158,7 +159,7 @@ public class Json
                 select unescaped;
 
             var literalCharacters =
-                OneOrMore(c => c != '"' && c != '\\', "non-quote, not-slash character");
+                OneOrMore((char c) => c != '"' && c != '\\', "non-quote, not-slash character", span => span.ToString());
 
             return
                 from index in Index<char>()
