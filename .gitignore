@@ -2,3 +2,4 @@
 /src/**/bin/
 /src/**/obj/
 /src/**/*.csproj.user
+/BenchmarkDotNet.Artifacts/

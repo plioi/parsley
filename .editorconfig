@@ -34,13 +34,26 @@ resharper_space_within_single_line_array_initializer_braces = true
 resharper_wrap_before_arrow_with_expressions = true
 resharper_wrap_before_first_type_parameter_constraint = true
 
+# Diagnostic Severity - See https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/categories
 dotnet_analyzer_diagnostic.severity = error
-dotnet_analyzer_diagnostic.category-Style.severity = default
 dotnet_analyzer_diagnostic.category-Design.severity = default
+dotnet_analyzer_diagnostic.category-Documentation.severity = error
+dotnet_analyzer_diagnostic.category-Globalization.severity = error
+dotnet_analyzer_diagnostic.category-Interoperability.severity = error
+dotnet_analyzer_diagnostic.category-Maintainability.severity = error
 dotnet_analyzer_diagnostic.category-Naming.severity = default
+dotnet_analyzer_diagnostic.category-Performance.severity = default
+dotnet_analyzer_diagnostic.category-SingleFile.severity = error
+dotnet_analyzer_diagnostic.category-Reliability.severity = error
+dotnet_analyzer_diagnostic.category-Security.severity = error
+dotnet_analyzer_diagnostic.category-Style.severity = default
+dotnet_analyzer_diagnostic.category-Usage.severity = error
+dotnet_analyzer_diagnostic.category-CodeQuality.severity = default
+
 dotnet_diagnostic.CS0612.severity = warning # '...' is obsolete
 dotnet_diagnostic.CS1591.severity = none # Missing XML comment for publicly visible type or member '...'
 dotnet_diagnostic.CS0162.severity = warning # Unreachable code detected
+dotnet_diagnostic.CA1305.severity = none # Specify IFormatProvider (This is raised in far too many valid scenarios such as `stringBuilder.Append($"{'A'}{'B'}")`).
 dotnet_diagnostic.CA2201.severity = none # Do not raise reserved exception types
 dotnet_diagnostic.CA1041.severity = none # Provide ObsoleteAttribute message
 
