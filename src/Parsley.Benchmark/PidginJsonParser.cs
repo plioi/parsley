@@ -51,5 +51,10 @@ public static class PidginJsonParser
             .Between(Char(open), Char(close))
             .Select(convert);
 
-    public static Result<char, object?> Parse(string input) => Json.Parse(input);
+    public static object? Parse(string input)
+    {
+        var result = Json.Parse(input);
+
+        return result.Value;
+    }
 }
