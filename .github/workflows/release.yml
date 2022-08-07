@@ -1,13 +1,10 @@
-name: CI
+name: Release
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    tags:
+      - '*.*.*'
 jobs:
-  ci:
+  release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -20,8 +17,8 @@ jobs:
           dotnet-version: '6.0.302'
       - name: Build / Test / Pack
         run: pwsh ./eng/pack.ps1
-      - name: Release to MyGet
+      - name: Release to NuGet
         env:
-          PACKAGE_URL: https://www.myget.org/F/parsley-ci/api/v3/index.json
-          PACKAGE_API_KEY: ${{ secrets.MYGET_API_KEY }}
+          PACKAGE_URL: https://api.nuget.org/v3/index.json
+          PACKAGE_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: pwsh ./eng/release.ps1
