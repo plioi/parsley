@@ -14,7 +14,8 @@ jobs:
       - name: .NET SDK
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '6.0.302'
+          dotnet-version: |
+            6.0
       - name: Build / Test / Pack
         run: pwsh ./eng/pack.ps1
       - name: Release to NuGet
