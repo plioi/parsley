@@ -18,7 +18,7 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: |
-            6.0
+            7.0
       - run: dotnet --info
       - name: Build / Test / Pack
         env:
