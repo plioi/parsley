@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Fixie.TestAdapter" Version="3.3.0" />
-    <PackageReference Include="Shouldly" Version="4.0.3" />
+    <PackageReference Include="Shouldly" Version="4.2.1" />
   </ItemGroup>
 
   <ItemGroup>
