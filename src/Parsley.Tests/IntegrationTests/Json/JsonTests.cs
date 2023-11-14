@@ -80,20 +80,22 @@ class JsonTests
     public void ParsesComplexJsonValuesSkippingOptionalWhitespace()
     {
         const string whitespaceCharacters = "\r\n\t";
-        const string complex = whitespaceCharacters + @"
+        const string complex = $$"""
+            {{whitespaceCharacters}}
 
+            {
+                "numbers" : [ 10, 20, 30 ],
+                "window":
                 {
-                    ""numbers"" : [ 10, 20, 30 ],
-                    ""window"":
-                    {
-                        ""title"": ""Sample Widget""," + whitespaceCharacters + @"
-                        ""parent"": null,
-                        ""maximized"": true  ,
-                        ""transparent"": false
-                    }
+                    "title": "Sample Widget",{{whitespaceCharacters}}
+                    "parent": null,
+                    "maximized": true  ,
+                    "transparent": false
                 }
+            }
 
-            " + whitespaceCharacters;
+            {{whitespaceCharacters}}
+            """;
 
         var value = Parses(complex);
         value.ShouldNotBeNull();
@@ -111,46 +113,53 @@ class JsonTests
     public void ProvidesUsefulErrorMessagesForDeeplyPlacedTokenizerErrors()
     {
         const string whitespaceCharacters = "\r\n\t";
-        const string invalidSlashP = whitespaceCharacters + @"
+        const string invalidSlashP = $$"""
+            {{whitespaceCharacters}}
 
+            {
+                "numbers" : [ 10, 20, 30 ],
+                "window":
                 {
-                    ""numbers"" : [ 10, 20, 30 ],
-                    ""window"":
-                    {
-                        ""title"": ""Sample Widget""," + whitespaceCharacters + @"
-                        ""parent"": null,
-                        ""maximized"": true  ,
-                        ""trans\parent"": false
-                    }
-                }";
+                    "title": "Sample Widget",{{whitespaceCharacters}}
+                    "parent": null,
+                    "maximized": true  ,
+                    "trans\parent": false
+                }
+            }
+            """;
 
         FailsToParse(invalidSlashP,
-            @"parent"": false
-                    }
-                }",
+            """
+            parent": false
+                }
+            }
+            """,
             "escape sequence expected");
     }
 
     public void ProvidesUsefulErrorMessagesForDeeplyPlacedGrammarErrors()
     {
         const string whitespaceCharacters = "\r\n\t";
-        const string invalidSlashP = whitespaceCharacters + @"
+        const string invalidSlashP = $$"""
+            {{whitespaceCharacters}}
 
+            {
+                "numbers" : [ 10, 20, 30 ],
+                "window":
                 {
-                    ""numbers"" : [ 10, 20, 30 ],
-                    ""window"":
-                    {
-                        ""title"": ""Sample Widget""," + whitespaceCharacters + @"
-                        ""parent"": null,
-                        ""maximized"": true  ,
-                        ""transparent"": false 7
-                    }
-                }";
+                    "title": "Sample Widget",{{whitespaceCharacters}}
+                    "parent": null,
+                    "maximized": true  ,
+                    "transparent": false 7
+                }
+            }
+            """;
 
-        FailsToParse(invalidSlashP,
-            @"7
-                    }
-                }",
+        FailsToParse(invalidSlashP,            """
+            7
+                }
+            }
+            """,
             "} expected");
     }
 
