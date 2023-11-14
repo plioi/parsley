@@ -2,5 +2,5 @@
 /src/artifacts/bin/
 /src/artifacts/obj/
 /src/**/*.csproj.user
-/artifacts/
+/packages/
 /BenchmarkDotNet.Artifacts/
