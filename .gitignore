@@ -1,6 +1,6 @@
 /src/.vs/
-/src/**/bin/
-/src/**/obj/
+/src/artifacts/bin/
+/src/artifacts/obj/
 /src/**/*.csproj.user
 /artifacts/
 /BenchmarkDotNet.Artifacts/
