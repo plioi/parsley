@@ -16,9 +16,11 @@
     <PackageProjectUrl>https://github.com/plioi/parsley</PackageProjectUrl>
     <RepositoryUrl>https://github.com/plioi/parsley</RepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="" Visible="false" />
     <None Include="..\..\LICENSE" Pack="true" PackagePath="" Visible="false" />
   </ItemGroup>
 
