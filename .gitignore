@@ -3,4 +3,3 @@
 /src/artifacts/obj/
 /src/**/*.csproj.user
 /packages/
-/BenchmarkDotNet.Artifacts/

@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parsley", "Parsley\Parsley.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parsley.Tests", "Parsley.Tests\Parsley.Tests.csproj", "{02C7A22E-1A63-478F-915E-4C7F6EF50B05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parsley.Benchmark", "Parsley.Benchmark\Parsley.Benchmark.csproj", "{EC3CB54A-0114-47DC-8BA1-E80A63780F87}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{02C7A22E-1A63-478F-915E-4C7F6EF50B05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02C7A22E-1A63-478F-915E-4C7F6EF50B05}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02C7A22E-1A63-478F-915E-4C7F6EF50B05}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EC3CB54A-0114-47DC-8BA1-E80A63780F87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EC3CB54A-0114-47DC-8BA1-E80A63780F87}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EC3CB54A-0114-47DC-8BA1-E80A63780F87}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EC3CB54A-0114-47DC-8BA1-E80A63780F87}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,1 +1,0 @@
-pwsh ./eng/benchmark.ps1 "$@"
