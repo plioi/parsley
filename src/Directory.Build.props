@@ -4,6 +4,8 @@
         <Nullable>enable</Nullable>
         <WarningsAsErrors>nullable</WarningsAsErrors>
         <UseArtifactsOutput>true</UseArtifactsOutput>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
 
     <!-- Enable Deterministic Builds -->
