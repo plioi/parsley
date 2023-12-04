@@ -5,4 +5,9 @@
         <WarningsAsErrors>nullable</WarningsAsErrors>
         <UseArtifactsOutput>true</UseArtifactsOutput>
     </PropertyGroup>
+
+    <!-- Enable Deterministic Builds -->
+    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    </PropertyGroup>
 </Project>
