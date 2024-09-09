@@ -1,5 +1,3 @@
 /src/.vs/
-/src/artifacts/bin/
-/src/artifacts/obj/
-/src/**/*.csproj.user
+/src/artifacts/
 /packages/
