@@ -1,1 +1,0 @@
-pwsh ./eng/build.ps1 "$@"

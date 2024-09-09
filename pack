@@ -1,1 +1,0 @@
-pwsh ./eng/pack.ps1 "$@"
