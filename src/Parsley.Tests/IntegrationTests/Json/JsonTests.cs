@@ -55,7 +55,7 @@ class JsonTests
 
         var value = Parses(filled);
         value.ShouldNotBeNull();
-        ((object[]) value).ShouldBe(new object[] { 0m, 1m, 2m });
+        ((object[]) value).ShouldBe([0m, 1m, 2m]);
     }
 
     public void ParsesDictionaries()
