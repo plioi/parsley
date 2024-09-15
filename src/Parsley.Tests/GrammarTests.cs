@@ -276,7 +276,7 @@ class GrammarTests
 
         var isEven = (int x) => x % 2 == 0;
         var even = ZeroOrMore(isEven, span => span.ToArray());
-        var empty = Array.Empty<int>();
+        int[] empty = [];
         even.Parses(empty).ShouldBe(empty);
         even.PartiallyParses(new[] { 1, 2, 4, 6 }, new[] { 1, 2, 4, 6 }).ShouldBe(empty);
         even.PartiallyParses(new[] { 2, 4, 6, 1, 3, 5 }, new[] { 1, 3, 5 }).ShouldBe(new[] { 2, 4, 6 });
@@ -305,7 +305,7 @@ class GrammarTests
 
         var isEven = (int x) => x % 2 == 0;
         var even = OneOrMore(isEven, "even number", span => span.ToArray());
-        var empty = Array.Empty<int>();
+        int[] empty = [];
         even.FailsToParse(empty, empty, "even number expected");
         even.FailsToParse(new[] { 1, 2, 4, 6 }, new[] { 1, 2, 4, 6 }, "even number expected");
         even.PartiallyParses(new[] { 2, 4, 6, 1, 3, 5 }, new[] { 1, 3, 5 }).ShouldBe(new[] { 2, 4, 6 });
@@ -358,7 +358,7 @@ class GrammarTests
 
         var isEven = (int x) => x % 2 == 0;
         var even = Repeat(isEven, 2, "2 even numbers", span => span.ToArray());
-        var empty = Array.Empty<int>();
+        int[] empty = [];
         even.FailsToParse(empty, empty, "2 even numbers expected");
         even.FailsToParse(new[] { 1, 2, 4, 6 }, new[] { 1, 2, 4, 6 }, "2 even numbers expected");
         even.PartiallyParses(new[] { 2, 4, 6, 1, 3, 5 }, new[] { 6, 1, 3, 5 }).ShouldBe(new[] { 2, 4 });

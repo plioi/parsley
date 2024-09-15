@@ -84,7 +84,7 @@ public static class Assertions
             throw new AssertionException("end of input", Display(unparsedInput));
         }
 
-        input.LeavingUnparsedInput(index, Array.Empty<TItem>());
+        input.LeavingUnparsedInput(index, []);
     }
 
     static string Display<TItem>(ReadOnlySpan<TItem> unparsedInput)
