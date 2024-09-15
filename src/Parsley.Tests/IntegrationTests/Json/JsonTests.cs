@@ -101,7 +101,8 @@ class JsonTests
         value.ShouldNotBeNull();
 
         var json = (Dictionary<string, object>) value;
-        json["numbers"].ShouldBe(new[] { 10m, 20m, 30m });
+        var numbers = json["numbers"];
+        ((object[])numbers).ShouldBe([10m, 20m, 30m]);
 
         var window = (Dictionary<string, object>) json["window"];
         window["title"].ShouldBe("Sample Widget");

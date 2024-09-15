@@ -70,7 +70,7 @@ class GrammarTests
             .Single().ShouldBe("AB");
 
         parser.PartiallyParses("ABAB!", "!")
-            .ShouldBe(new[] { "AB", "AB" });
+            .ShouldBe(["AB", "AB"]);
 
         parser.FailsToParse("ABABA!", "!", "B expected");
 
@@ -97,7 +97,7 @@ class GrammarTests
             .Single().ShouldBe("AB");
 
         parser.PartiallyParses("ABAB!", "!")
-            .ShouldBe(new[] { "AB", "AB" });
+            .ShouldBe(["AB", "AB"]);
 
         parser.FailsToParse("ABABA!", "!", "B expected");
 
@@ -127,9 +127,9 @@ class GrammarTests
         parser.FailsToParse("AB&", "", "& expected");
         parser.FailsToParse("AB&&", "", "A expected");
         parser.FailsToParse("AB&&A", "", "B expected");
-        parser.Parses("AB&&AB").ShouldBe(new[] { "AB", "AB" });
-        parser.Parses("AB&&AB&&AB").ShouldBe(new[] { "AB", "AB", "AB" });
-        parser.PartiallyParses("AB&&AB&&ABA", "A").ShouldBe(new[] { "AB", "AB", "AB" });
+        parser.Parses("AB&&AB").ShouldBe(["AB", "AB"]);
+        parser.Parses("AB&&AB&&AB").ShouldBe(["AB", "AB", "AB"]);
+        parser.PartiallyParses("AB&&AB&&ABA", "A").ShouldBe(["AB", "AB", "AB"]);
     }
 
     public void ApplyingARuleOneOrMoreTimesInterspersedByASeparatorRule()
@@ -145,9 +145,9 @@ class GrammarTests
         parser.FailsToParse("AB&", "", "& expected");
         parser.FailsToParse("AB&&", "", "A expected");
         parser.FailsToParse("AB&&A", "", "B expected");
-        parser.Parses("AB&&AB").ShouldBe(new[] { "AB", "AB" });
-        parser.Parses("AB&&AB&&AB").ShouldBe(new[] { "AB", "AB", "AB" });
-        parser.PartiallyParses("AB&&AB&&ABA", "A").ShouldBe(new[] { "AB", "AB", "AB" });
+        parser.Parses("AB&&AB").ShouldBe(["AB", "AB"]);
+        parser.Parses("AB&&AB&&AB").ShouldBe(["AB", "AB", "AB"]);
+        parser.PartiallyParses("AB&&AB&&ABA", "A").ShouldBe(["AB", "AB", "AB"]);
     }
 
     public void ApplyingARuleBetweenTwoOtherRules()
@@ -278,9 +278,9 @@ class GrammarTests
         var even = ZeroOrMore(isEven, span => span.ToArray());
         int[] empty = [];
         even.Parses(empty).ShouldBe(empty);
-        even.PartiallyParses(new[] { 1, 2, 4, 6 }, new[] { 1, 2, 4, 6 }).ShouldBe(empty);
-        even.PartiallyParses(new[] { 2, 4, 6, 1, 3, 5 }, new[] { 1, 3, 5 }).ShouldBe(new[] { 2, 4, 6 });
-        even.Parses(new[] { 2, 4, 6 }).ShouldBe(new[] { 2, 4, 6 });
+        even.PartiallyParses([1, 2, 4, 6], [1, 2, 4, 6]).ShouldBe(empty);
+        even.PartiallyParses([2, 4, 6, 1, 3, 5], [1, 3, 5]).ShouldBe([2, 4, 6]);
+        even.Parses([2, 4, 6]).ShouldBe([2, 4, 6]);
     }
 
     public void ProvidesConveniencePrimitiveRecognizingNonemptySequencesOfItemsSatisfyingSomePredicate()
@@ -307,9 +307,9 @@ class GrammarTests
         var even = OneOrMore(isEven, "even number", span => span.ToArray());
         int[] empty = [];
         even.FailsToParse(empty, empty, "even number expected");
-        even.FailsToParse(new[] { 1, 2, 4, 6 }, new[] { 1, 2, 4, 6 }, "even number expected");
-        even.PartiallyParses(new[] { 2, 4, 6, 1, 3, 5 }, new[] { 1, 3, 5 }).ShouldBe(new[] { 2, 4, 6 });
-        even.Parses(new[] { 2, 4, 6 }).ShouldBe(new[] { 2, 4, 6 });
+        even.FailsToParse([1, 2, 4, 6], [1, 2, 4, 6], "even number expected");
+        even.PartiallyParses([2, 4, 6, 1, 3, 5], [1, 3, 5]).ShouldBe([2, 4, 6]);
+        even.Parses([2, 4, 6]).ShouldBe([2, 4, 6]);
     }
 
     public void ProvidesConveniencePrimitiveRecognizingSequencesOfItemsSatisfyingSomePredicateAFixedNumberOfTimes()
@@ -360,12 +360,12 @@ class GrammarTests
         var even = Repeat(isEven, 2, "2 even numbers", span => span.ToArray());
         int[] empty = [];
         even.FailsToParse(empty, empty, "2 even numbers expected");
-        even.FailsToParse(new[] { 1, 2, 4, 6 }, new[] { 1, 2, 4, 6 }, "2 even numbers expected");
-        even.PartiallyParses(new[] { 2, 4, 6, 1, 3, 5 }, new[] { 6, 1, 3, 5 }).ShouldBe(new[] { 2, 4 });
-        even.PartiallyParses(new[] { 4, 6, 1, 3, 5 }, new[] { 1, 3, 5 }).ShouldBe(new[] { 4, 6 });
-        even.FailsToParse(new[] { 6, 1, 3, 5 }, new[] { 6, 1, 3, 5 }, "2 even numbers expected");
-        even.PartiallyParses(new[] { 2, 4, 6 }, new[] { 6 }).ShouldBe(new[] { 2, 4 });
-        even.Parses(new[] { 2, 4 }).ShouldBe(new[] { 2, 4 });
+        even.FailsToParse([1, 2, 4, 6], [1, 2, 4, 6], "2 even numbers expected");
+        even.PartiallyParses([2, 4, 6, 1, 3, 5], [6, 1, 3, 5]).ShouldBe([2, 4]);
+        even.PartiallyParses([4, 6, 1, 3, 5], [1, 3, 5]).ShouldBe([4, 6]);
+        even.FailsToParse([6, 1, 3, 5], [6, 1, 3, 5], "2 even numbers expected");
+        even.PartiallyParses([2, 4, 6], [6]).ShouldBe([2, 4]);
+        even.Parses([2, 4]).ShouldBe([2, 4]);
 
 
         var attemptRepeat0char = () => Repeat(IsLower, 0, "Lowercase", span => span.ToString());
@@ -452,8 +452,8 @@ class GrammarTests
             from _4 in index
             select new[] { _0, _2, _4 };
 
-        queryWithIndices.Parses("ABAB").ShouldBe(new[] { 0, 2, 4 });
-        queryWithIndices.PartiallyParses("ABABA", "A").ShouldBe(new[] { 0, 2, 4 });
+        queryWithIndices.Parses("ABAB").ShouldBe([0, 2, 4]);
+        queryWithIndices.PartiallyParses("ABABA", "A").ShouldBe([0, 2, 4]);
     }
 
     public void ProvidesArbitraryInspectionAtTheCurrentIndexPosition()
@@ -479,21 +479,19 @@ class GrammarTests
                 };
         };
 
-        buildPositionTrackingParser().Parses("AB").ShouldBe(new[]
-        {
+        buildPositionTrackingParser().Parses("AB").ShouldBe([
             (0, 1, 1), //start
             (1, 1, 2), //before zero width whitespace
             (1, 1, 2), //after zero width whitespace
             (2, 1, 3)  //end
-        });
+        ]);
 
-        buildPositionTrackingParser().Parses("A \n \n   B").ShouldBe(new[]
-        {
+        buildPositionTrackingParser().Parses("A \n \n   B").ShouldBe([
             (0, 1, 1), //start
             (1, 1, 2), //before whitespace
             (8, 3, 4), //after whitespace
             (9, 3, 5)  //end
-        });
+        ]);
     }
 
     static Parser<char, (int index, int position, int endlines)> TextPositionTracker()
