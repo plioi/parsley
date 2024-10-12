@@ -1,7 +1,5 @@
 namespace Parsley.Tests.IntegrationTests.Json;
 
-using Fixie.Assertions;
-
 class JsonTests
 {
     public void ParsesTrueLiteral()

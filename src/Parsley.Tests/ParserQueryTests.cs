@@ -1,8 +1,6 @@
 using System.Globalization;
 using static Parsley.Grammar;
 
-using Fixie.Assertions;
-
 namespace Parsley.Tests;
 
 class ParserQueryTests

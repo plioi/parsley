@@ -1,8 +1,6 @@
 using static Parsley.Grammar;
 using static Parsley.Characters;
 
-using Fixie.Assertions;
-
 namespace Parsley.Tests;
 
 class GrammarTests
