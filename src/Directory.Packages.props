@@ -4,7 +4,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Fixie.TestAdapter" Version="3.4.0" />
-    <PackageVersion Include="Shouldly" Version="4.2.1" />
+    <PackageVersion Include="Fixie.Assertions" Version="0.0.3" />
+    <PackageVersion Include="DiffEngine" Version="13.0.2" />
     <GlobalPackageReference Include="MinVer" Version="5.0.0" />
   </ItemGroup>
 </Project>

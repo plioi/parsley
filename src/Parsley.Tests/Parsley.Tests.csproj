@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -6,7 +6,8 @@
 
   <ItemGroup>
     <PackageReference Include="Fixie.TestAdapter" />
-    <PackageReference Include="Shouldly" />
+    <PackageReference Include="Fixie.Assertions" />
+    <PackageReference Include="DiffEngine" />
   </ItemGroup>
 
   <ItemGroup>

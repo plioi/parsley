@@ -38,20 +38,20 @@ class ReadOnlySpanExtensionsTests
         ReadOnlySpan<int> digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
         digits.Peek(0, 0).ToArray().ShouldBe([]);
-        digits.Peek(0, 1).ToArray().ShouldBe([0]);
-        digits.Peek(0, 2).ToArray().ShouldBe([0, 1]);
-        digits.Peek(0, 3).ToArray().ShouldBe([0, 1, 2]);
-        digits.Peek(0, 4).ToArray().ShouldBe([0, 1, 2, 3]);
-        digits.Peek(0, 9).ToArray().ShouldBe([0, 1, 2, 3, 4, 5, 6, 7, 8]);
-        digits.Peek(0, 10).ToArray().ShouldBe([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
-        digits.Peek(0, 100).ToArray().ShouldBe([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        digits.Peek(0, 1).ToArray().ShouldMatch([0]);
+        digits.Peek(0, 2).ToArray().ShouldMatch([0, 1]);
+        digits.Peek(0, 3).ToArray().ShouldMatch([0, 1, 2]);
+        digits.Peek(0, 4).ToArray().ShouldMatch([0, 1, 2, 3]);
+        digits.Peek(0, 9).ToArray().ShouldMatch([0, 1, 2, 3, 4, 5, 6, 7, 8]);
+        digits.Peek(0, 10).ToArray().ShouldMatch([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        digits.Peek(0, 100).ToArray().ShouldMatch([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
         digits.Peek(6, 0).ToArray().ShouldBe([]);
-        digits.Peek(6, 1).ToArray().ShouldBe([6]);
-        digits.Peek(6, 2).ToArray().ShouldBe([6, 7]);
-        digits.Peek(6, 3).ToArray().ShouldBe([6, 7, 8]);
-        digits.Peek(6, 4).ToArray().ShouldBe([6, 7, 8, 9]);
-        digits.Peek(6, 100).ToArray().ShouldBe([6, 7, 8, 9]);
+        digits.Peek(6, 1).ToArray().ShouldMatch([6]);
+        digits.Peek(6, 2).ToArray().ShouldMatch([6, 7]);
+        digits.Peek(6, 3).ToArray().ShouldMatch([6, 7, 8]);
+        digits.Peek(6, 4).ToArray().ShouldMatch([6, 7, 8, 9]);
+        digits.Peek(6, 100).ToArray().ShouldMatch([6, 7, 8, 9]);
 
         digits.Peek(10, 0).ToArray().ShouldBe([]);
         digits.Peek(10, 1).ToArray().ShouldBe([]);

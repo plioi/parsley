@@ -1,1 +1,1 @@
-global using Shouldly;
+global using Fixie.Assertions;
