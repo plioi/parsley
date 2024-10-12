@@ -1,5 +1,7 @@
 namespace Parsley.Tests.IntegrationTests.Json;
 
+using Shouldly;
+
 class JsonTests
 {
     public void ParsesTrueLiteral()

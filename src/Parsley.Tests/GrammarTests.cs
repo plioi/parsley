@@ -1,6 +1,8 @@
 using static Parsley.Grammar;
 using static Parsley.Characters;
 
+using Shouldly;
+
 namespace Parsley.Tests;
 
 class GrammarTests
