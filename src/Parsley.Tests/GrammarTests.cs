@@ -1,7 +1,7 @@
 using static Parsley.Grammar;
 using static Parsley.Characters;
 
-using Shouldly;
+using Fixie.Assertions;
 
 namespace Parsley.Tests;
 
@@ -66,13 +66,13 @@ class GrammarTests
     {
         var parser = ZeroOrMore(AB);
 
-        parser.Parses("").ShouldBeEmpty();
+        parser.Parses("").ShouldMatch([]);
 
         parser.PartiallyParses("AB!", "!")
             .Single().ShouldBe("AB");
 
         parser.PartiallyParses("ABAB!", "!")
-            .ShouldBe(["AB", "AB"]);
+            .ShouldMatch(["AB", "AB"]);
 
         parser.FailsToParse("ABABA!", "!", "B expected");
 
@@ -99,7 +99,7 @@ class GrammarTests
             .Single().ShouldBe("AB");
 
         parser.PartiallyParses("ABAB!", "!")
-            .ShouldBe(["AB", "AB"]);
+            .ShouldMatch(["AB", "AB"]);
 
         parser.FailsToParse("ABABA!", "!", "B expected");
 
@@ -120,8 +120,8 @@ class GrammarTests
     {
         var parser = ZeroOrMore(AB, AND);
 
-        parser.Parses("").ShouldBeEmpty();
-        parser.PartiallyParses("&", "&").ShouldBeEmpty();
+        parser.Parses("").ShouldMatch([]);
+        parser.PartiallyParses("&", "&").ShouldMatch([]);
 
         parser.FailsToParse("A", "", "B expected");
         parser.FailsToParse("A&", "&", "B expected");
@@ -129,9 +129,9 @@ class GrammarTests
         parser.FailsToParse("AB&", "", "& expected");
         parser.FailsToParse("AB&&", "", "A expected");
         parser.FailsToParse("AB&&A", "", "B expected");
-        parser.Parses("AB&&AB").ShouldBe(["AB", "AB"]);
-        parser.Parses("AB&&AB&&AB").ShouldBe(["AB", "AB", "AB"]);
-        parser.PartiallyParses("AB&&AB&&ABA", "A").ShouldBe(["AB", "AB", "AB"]);
+        parser.Parses("AB&&AB").ShouldMatch(["AB", "AB"]);
+        parser.Parses("AB&&AB&&AB").ShouldMatch(["AB", "AB", "AB"]);
+        parser.PartiallyParses("AB&&AB&&ABA", "A").ShouldMatch(["AB", "AB", "AB"]);
     }
 
     public void ApplyingARuleOneOrMoreTimesInterspersedByASeparatorRule()
@@ -147,9 +147,9 @@ class GrammarTests
         parser.FailsToParse("AB&", "", "& expected");
         parser.FailsToParse("AB&&", "", "A expected");
         parser.FailsToParse("AB&&A", "", "B expected");
-        parser.Parses("AB&&AB").ShouldBe(["AB", "AB"]);
-        parser.Parses("AB&&AB&&AB").ShouldBe(["AB", "AB", "AB"]);
-        parser.PartiallyParses("AB&&AB&&ABA", "A").ShouldBe(["AB", "AB", "AB"]);
+        parser.Parses("AB&&AB").ShouldMatch(["AB", "AB"]);
+        parser.Parses("AB&&AB&&AB").ShouldMatch(["AB", "AB", "AB"]);
+        parser.PartiallyParses("AB&&AB&&ABA", "A").ShouldMatch(["AB", "AB", "AB"]);
     }
 
     public void ApplyingARuleBetweenTwoOtherRules()
@@ -281,8 +281,8 @@ class GrammarTests
         int[] empty = [];
         even.Parses(empty).ShouldBe(empty);
         even.PartiallyParses([1, 2, 4, 6], [1, 2, 4, 6]).ShouldBe(empty);
-        even.PartiallyParses([2, 4, 6, 1, 3, 5], [1, 3, 5]).ShouldBe([2, 4, 6]);
-        even.Parses([2, 4, 6]).ShouldBe([2, 4, 6]);
+        even.PartiallyParses([2, 4, 6, 1, 3, 5], [1, 3, 5]).ShouldMatch([2, 4, 6]);
+        even.Parses([2, 4, 6]).ShouldMatch([2, 4, 6]);
     }
 
     public void ProvidesConveniencePrimitiveRecognizingNonemptySequencesOfItemsSatisfyingSomePredicate()
@@ -310,8 +310,8 @@ class GrammarTests
         int[] empty = [];
         even.FailsToParse(empty, empty, "even number expected");
         even.FailsToParse([1, 2, 4, 6], [1, 2, 4, 6], "even number expected");
-        even.PartiallyParses([2, 4, 6, 1, 3, 5], [1, 3, 5]).ShouldBe([2, 4, 6]);
-        even.Parses([2, 4, 6]).ShouldBe([2, 4, 6]);
+        even.PartiallyParses([2, 4, 6, 1, 3, 5], [1, 3, 5]).ShouldMatch([2, 4, 6]);
+        even.Parses([2, 4, 6]).ShouldMatch([2, 4, 6]);
     }
 
     public void ProvidesConveniencePrimitiveRecognizingSequencesOfItemsSatisfyingSomePredicateAFixedNumberOfTimes()
@@ -363,11 +363,11 @@ class GrammarTests
         int[] empty = [];
         even.FailsToParse(empty, empty, "2 even numbers expected");
         even.FailsToParse([1, 2, 4, 6], [1, 2, 4, 6], "2 even numbers expected");
-        even.PartiallyParses([2, 4, 6, 1, 3, 5], [6, 1, 3, 5]).ShouldBe([2, 4]);
-        even.PartiallyParses([4, 6, 1, 3, 5], [1, 3, 5]).ShouldBe([4, 6]);
+        even.PartiallyParses([2, 4, 6, 1, 3, 5], [6, 1, 3, 5]).ShouldMatch([2, 4]);
+        even.PartiallyParses([4, 6, 1, 3, 5], [1, 3, 5]).ShouldMatch([4, 6]);
         even.FailsToParse([6, 1, 3, 5], [6, 1, 3, 5], "2 even numbers expected");
-        even.PartiallyParses([2, 4, 6], [6]).ShouldBe([2, 4]);
-        even.Parses([2, 4]).ShouldBe([2, 4]);
+        even.PartiallyParses([2, 4, 6], [6]).ShouldMatch([2, 4]);
+        even.Parses([2, 4]).ShouldMatch([2, 4]);
 
 
         var attemptRepeat0char = () => Repeat(IsLower, 0, "Lowercase", span => span.ToString());
@@ -454,8 +454,8 @@ class GrammarTests
             from _4 in index
             select new[] { _0, _2, _4 };
 
-        queryWithIndices.Parses("ABAB").ShouldBe([0, 2, 4]);
-        queryWithIndices.PartiallyParses("ABABA", "A").ShouldBe([0, 2, 4]);
+        queryWithIndices.Parses("ABAB").ShouldMatch([0, 2, 4]);
+        queryWithIndices.PartiallyParses("ABABA", "A").ShouldMatch([0, 2, 4]);
     }
 
     public void ProvidesArbitraryInspectionAtTheCurrentIndexPosition()
@@ -481,14 +481,14 @@ class GrammarTests
                 };
         };
 
-        buildPositionTrackingParser().Parses("AB").ShouldBe([
+        buildPositionTrackingParser().Parses("AB").ShouldMatch([
             (0, 1, 1), //start
             (1, 1, 2), //before zero width whitespace
             (1, 1, 2), //after zero width whitespace
             (2, 1, 3)  //end
         ]);
 
-        buildPositionTrackingParser().Parses("A \n \n   B").ShouldBe([
+        buildPositionTrackingParser().Parses("A \n \n   B").ShouldMatch([
             (0, 1, 1), //start
             (1, 1, 2), //before whitespace
             (8, 3, 4), //after whitespace

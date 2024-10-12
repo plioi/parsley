@@ -1,7 +1,7 @@
 using System.Globalization;
 using static Parsley.Grammar;
 
-using Shouldly;
+using Fixie.Assertions;
 
 namespace Parsley.Tests;
 

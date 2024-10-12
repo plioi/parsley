@@ -1,6 +1,6 @@
 namespace Parsley.Tests.IntegrationTests.Json;
 
-using Shouldly;
+using Fixie.Assertions;
 
 class JsonTests
 {
@@ -53,11 +53,11 @@ class JsonTests
 
         var emptyValue = Parses(empty);
         emptyValue.ShouldNotBeNull();
-        ((object[]) emptyValue).ShouldBeEmpty();
+        ((object[]) emptyValue).ShouldBe([]);
 
         var value = Parses(filled);
         value.ShouldNotBeNull();
-        ((object[]) value).ShouldBe([0m, 1m, 2m]);
+        ((object[]) value).ShouldMatch([0m, 1m, 2m]);
     }
 
     public void ParsesDictionaries()
@@ -104,11 +104,11 @@ class JsonTests
 
         var json = (Dictionary<string, object>) value;
         var numbers = json["numbers"];
-        ((object[])numbers).ShouldBe([10m, 20m, 30m]);
+        ((object[])numbers).ShouldMatch([10m, 20m, 30m]);
 
         var window = (Dictionary<string, object>) json["window"];
         window["title"].ShouldBe("Sample Widget");
-        window["parent"].ShouldBeNull();
+        window["parent"].ShouldBe(null);
         window["maximized"].ShouldBe(true);
         window["transparent"].ShouldBe(false);
     }
