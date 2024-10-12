@@ -85,8 +85,7 @@ class GrammarTests
         };
 
         infiniteLoop
-            .ShouldThrow<Exception>()
-            .Message.ShouldBe("Parser encountered a potential infinite loop at index 0.");
+            .ShouldThrow<Exception>("Parser encountered a potential infinite loop at index 0.");
     }
 
     public void ApplyingARuleOneOrMoreTimes()
@@ -112,8 +111,7 @@ class GrammarTests
         };
 
         infiniteLoop
-            .ShouldThrow<Exception>()
-            .Message.ShouldBe("Parser encountered a potential infinite loop at index 0.");
+            .ShouldThrow<Exception>("Parser encountered a potential infinite loop at index 0.");
     }
 
     public void ApplyingARuleZeroOrMoreTimesInterspersedByASeparatorRule()
@@ -372,23 +370,19 @@ class GrammarTests
 
         var attemptRepeat0char = () => Repeat(IsLower, 0, "Lowercase", span => span.ToString());
         attemptRepeat0char
-            .ShouldThrow<ArgumentException>()
-            .Message.ShouldBe("Repeat requires the given count to be > 1. (Parameter 'count')");
+            .ShouldThrow<ArgumentException>("Repeat requires the given count to be > 1. (Parameter 'count')");
 
         var attemptRepeat1char = () => Repeat(IsLower, 1, "Lowercase", span => span.ToString());
         attemptRepeat1char
-            .ShouldThrow<ArgumentException>()
-            .Message.ShouldBe("Repeat requires the given count to be > 1. (Parameter 'count')");
+            .ShouldThrow<ArgumentException>("Repeat requires the given count to be > 1. (Parameter 'count')");
 
         var attemptRepeat0int = () => Repeat(isEven, 0, "even number", span => span.ToArray());
         attemptRepeat0int
-            .ShouldThrow<ArgumentException>()
-            .Message.ShouldBe("Repeat requires the given count to be > 1. (Parameter 'count')");
+            .ShouldThrow<ArgumentException>("Repeat requires the given count to be > 1. (Parameter 'count')");
 
         var attemptRepeat1int = () => Repeat(isEven, 1, "even number", span => span.ToArray());
         attemptRepeat1int
-            .ShouldThrow<ArgumentException>()
-            .Message.ShouldBe("Repeat requires the given count to be > 1. (Parameter 'count')");
+            .ShouldThrow<ArgumentException>("Repeat requires the given count to be > 1. (Parameter 'count')");
     }
 
     public void ProvidesConveniencePrimitiveForDefiningKeywords()
@@ -408,8 +402,7 @@ class GrammarTests
         foo.FailsToParse("foobar", "foobar", "foo expected");
 
         var notJustLetters = () => Keyword(" oops ");
-        notJustLetters.ShouldThrow<ArgumentException>()
-            .Message.ShouldBe("Keywords may only contain letters. (Parameter 'word')");
+        notJustLetters.ShouldThrow<ArgumentException>("Keywords may only contain letters. (Parameter 'word')");
     }
 
     public void ProvidesConveniencePrimitiveForDefiningOperators()
@@ -552,13 +545,11 @@ public class AlternationTests
     {
         var attemptChoiceBetweenZeroAlternatives = () => Choice<char, string>();
         attemptChoiceBetweenZeroAlternatives
-            .ShouldThrow<ArgumentException>()
-            .Message.ShouldBe("Choice requires at least two parsers to choose between. (Parameter 'parsers')");
+            .ShouldThrow<ArgumentException>("Choice requires at least two parsers to choose between. (Parameter 'parsers')");
 
         var attemptChoiceBetweenOneAlternatives = () => Choice(A);
         attemptChoiceBetweenOneAlternatives
-            .ShouldThrow<ArgumentException>()
-            .Message.ShouldBe("Choice requires at least two parsers to choose between. (Parameter 'parsers')");
+            .ShouldThrow<ArgumentException>("Choice requires at least two parsers to choose between. (Parameter 'parsers')");
     }
 
     public void FirstParserCanSucceedWithoutExecutingOtherAlternatives()
