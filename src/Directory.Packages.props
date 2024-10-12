@@ -5,7 +5,6 @@
   <ItemGroup>
     <PackageVersion Include="Fixie.TestAdapter" Version="3.4.0" />
     <PackageVersion Include="Fixie.Assertions" Version="0.0.3" />
-    <PackageVersion Include="Shouldly" Version="4.2.1" />
     <GlobalPackageReference Include="MinVer" Version="5.0.0" />
   </ItemGroup>
 </Project>
