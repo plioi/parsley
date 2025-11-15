@@ -3,7 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Fixie.TestAdapter" Version="4.1.0" />
+    <PackageVersion Include="Fixie.TestAdapter" Version="4.2.0" />
     <PackageVersion Include="Fixie.Assertions" Version="0.0.3" />
     <PackageVersion Include="DiffEngine" Version="13.0.2" />
     <GlobalPackageReference Include="MinVer" Version="5.0.0" />
